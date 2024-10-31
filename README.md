@@ -1,10 +1,10 @@
-# *x*b : a *variable* book
+# bq - an interactive notebook
 
 ## Overview
 
-*x*b is a Web-standards based notebook that can render high-quality markup including HTML, Markdown and LaTeX.
-In addition, *x*b can host executable content in a Web-based sandbox, and gives access to high-quality graphics and plotting.
-*x*b can also be used to easily create Web-based applications that combine high-quality markup and interactive elements.
+*bq* is a Web-standards based notebook that can render high-quality markup including HTML, Markdown and LaTeX.
+In addition, *bq* can host executable content in a Web-based sandbox, and gives access to high-quality graphics and plotting.
+*bq* can also be used to easily create Web-based applications that combine high-quality markup and interactive elements.
 
 ## Availability
 
