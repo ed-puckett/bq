@@ -1,0 +1,15 @@
+/* scrollbar width */
+
+* {
+    scrollbar-width: thin;
+}
+
+/* the following was suggested in https://adrianroselli.com/2019/09/under-engineered-text-boxen.html
+ * to make these controls' text more consistent with other page text
+ */
+textarea,
+input: {
+    font: inherit;
+    letter-spacing: inherit;
+    word-spacing: inherit;
+}

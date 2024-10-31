@@ -1,0 +1,9 @@
+# /dist/
+# build/
+node_modules/
+.tmp/
+.nyc_output/
+coverage/
+public/index.html
+
+*.log

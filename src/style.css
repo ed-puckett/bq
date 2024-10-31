@@ -1,0 +1,563 @@
+/* all other stylesheets have been incorporated into this one */
+
+/* var(--theme-*, hotpink) computed values use hotpink defaults to make omissions evident */
+
+/* See settings/theme-settings.ts for definition of --theme-* properties */
+
+/*
+  To determine current user preference for "prefers dark mode",
+  it is sufficient to test the presence (indicating "dark")
+  or absence (indicating "light", the default) of the attribute
+  "data-theme" on the :root element.  When present, the attribute
+  "data-theme" will have the value "dark".  This works whether the
+  user has set a global system-wide preference or if the user has
+  set a specific preference in the current document.  The document
+  setting overrides the system-wide preference.
+  See settings/theme-settings.ts.
+*/
+
+:root {
+    --cell-max-height-scrolling: 33dvh;
+
+    --header-height: 1.5rem;
+}
+
+body {
+    overflow: hidden;  /* inhibit scrolling for body */
+    margin: 0;
+    color:            var(--theme-ui-fg, hotpink);
+    background-color: var(--theme-ui-bg, hotpink);
+}
+
+header {
+    /* header without classic menubar menu */
+    /* (just default settings */
+
+    &:has(menu.menubar) {  /* header containing classic menubar menu */
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+
+        height: var(--header-height);
+        background-color: var(--theme-si-bg, hotpink);
+
+        border: 0px solid var(--theme-si-rc, hotpink);
+        border-bottom-width: 1px;
+    }
+}
+
+main {
+    /* enable scrolling for main element */
+    overflow: auto;
+    max-height: 100dvh;
+    max-width:  100dvw;
+    scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */
+}
+header:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */
+    max-height: calc(100dvh - var(--header-height));
+}
+
+.bq-cell-output {
+    display: block;
+    overflow: auto;  /* enable h/v scrolling */
+    height: fit-content;
+    padding: 0 1em 0 1em;
+    color:            var(--theme-ou-fg, hotpink);
+    background-color: var(--theme-ou-bg, hotpink);
+}
+.bq-cell-output:empty,
+.bq-cell-output:not(:has(> *:not(:empty))) {
+    display: none;
+}
+.bq-cell-output .katex-display {
+    /* eliminate spacing for empty output case */
+    margin: 0;
+}
+.bq-cell-output .katex-display .katex-html:not(:empty) {
+    /* add spacing back to more interior element for "display" output */
+    margin: 1rem 0;
+}
+
+.plain-text {
+    white-space: pre-wrap;  /* display white-space properly */
+    line-height: 125%;
+}
+
+bq-cell {
+    --content-color: lightgrey;
+
+    display: block;
+    overflow: hidden;
+
+    margin: 0 0 0.25em 0;
+    padding: 0;
+    max-height: fit-content;
+
+    border: 1px solid var(--content-color);
+    border-radius: 0.5em;
+
+    caret-color: red;
+    /*outline: 0px solid transparent;*/  /* disable default contenteditable outline */
+
+    white-space: pre-wrap;  /* properly display white-space */
+    font-family: monospace;
+
+    color: var(--theme-ui-fg, hotpink);
+    background-image: linear-gradient(90deg, var(--content-color), transparent);
+    /* background-color: var(--content-color); */
+
+    &::before {
+        content: "markdown";  /* markdown is the default */
+        display: inline-block;
+        padding: 0 0 0 0.5em;
+        max-width: fit-content;
+    }
+
+    &[data-active][data-type]::before {
+        font-weight: bold;
+    }
+
+    & > * {
+        /* make sure --content-color is restricted to border and padding,
+         * and does not bleed through transparent children
+         */
+        background-color: var(--theme-ui-bg, hotpink);
+    }
+
+    /* data-type handling */
+
+    &[data-type]::before {
+        content: attr(data-type);
+    }
+
+    &,  /* markdown is the default */
+    &[data-type="markdown"] {
+        --content-color: var(--theme-ty-markdown, hotpink);
+    }
+    &[data-type="plain"] {
+        --content-color: var(--theme-ty-plain, hotpink);
+    }
+    &[data-type="tex"] {
+        --content-color: var(--theme-ty-tex, hotpink);
+    }
+    &[data-type="javascript"] {
+        --content-color: var(--theme-ty-javascript, hotpink);
+    }
+
+    /* data-cell-view handling */
+
+    /* html[data-cell-view]: none|hide|normal|full|presentation
+     * - none:         cells are not displayed
+     * - hide:         cells auto-hide; focused cell scrolls, other cells minimized
+     * - normal:       all cells scroll (default)
+     * - full:         all cells shown completely
+     * - presentation: like none, but also the header element is hidden and no document close warning is issued
+     *   -- in presentation view, cells with css class "show-in-presentation" will be shown as in "normal" view
+     */
+
+    html[data-cell-view="none"] & {
+        display: none;
+    }
+    html[data-cell-view="hide"] &:not([data-active]) {
+        display: block;
+        max-height: 0.2rem;
+        padding: 0;
+        margin: 0.2rem;
+        border-width: 1px;
+        border-color: transparent;
+    }
+    html[data-cell-view="presentation"] & {
+        display: none;
+    }
+    &,
+    html[data-cell-view="presentation"] &.show-in-presentation {
+        display: block;
+        max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */
+        transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+}
+
+.markdown-code-source {
+    max-width: fit-content;
+    padding: 0.25em;
+    margin-block-start: 1em;
+    margin-block-end:   0.5em;
+    border: 1px solid var(--theme-ui-rc, hotpink);
+
+    & pre {
+        margin: 0;
+    }
+}
+
+
+/* === codemirror === */
+
+/* scroll long content unless html[data-cell-view="full"] */
+/* see: https://discuss.codemirror.net/t/code-editor-with-automatic-height-that-has-a-minimum-and-maximum-height/4015 */
+.cm-editor {
+    max-height: var(--cell-max-height-scrolling);
+}
+.cm-scroller {
+    overflow-y: auto;
+}
+
+/* tone down bright gutter color for active line */
+:root[data-theme="dark"] .cm-activeLineGutter {
+    background-color: hsl(170deg 25% 55% / 40%);
+}
+
+/* show full content if html[data-cell-view="full"] */
+html[data-cell-view="full"] bq-cell,
+html[data-cell-view="full"] .cm-editor,
+html[data-cell-view="full"] .cm-scroller {
+    overflow-y: hidden;
+    max-height: unset;
+    height: 100%;
+}
+
+/* line number switch */
+.codemirror-hide-line-numbers .cm-lineNumbers {
+    display: none !important;  /* must use !important to override codemirror's setting */
+}
+
+/* patch too-bright light-mode .activeLine color */
+:root:not([data-theme="dark"]) .cm-activeLine {  /* :root:not(---) for specificity */
+    background-color: hsl(200deg 100% 93% / 27%) !important;  /* otherwise overly light */  /* must use !important to override codemirror's setting */
+}
+
+/* patches for CodeMirror colors in dark mode */
+:root[data-theme="dark"] .cm-gutters {
+    background-color: revert !important;  /* otherwise glaringly light */  /* must use !important to override codemirror's setting */
+}
+:root[data-theme="dark"] .cm-activeLine {
+    background-color: hsl(200deg 100% 12% / 27%);  /* otherwise glaringly light */
+}
+:root[data-theme="dark"] .cm-editor .cm-cursor {
+    border-left-color: orange;  /* too dim */  /* see: https://discuss.codemirror.net/t/caret-color-css-seems-locked/7011/5 */
+}
+
+
+/* === theme-aware graphics === */
+
+[data-source-media-type="application/graphviz"] svg polygon:not([fill="none"]) {
+    fill: var(--theme-gr-bg, hotpink);
+}
+[data-source-media-type="application/graphviz"] svg polygon:not([stroke="none"]) {
+    stroke: var(--theme-gr-fg, hotpink);
+}
+[data-source-media-type="application/graphviz"] svg path,
+[data-source-media-type="application/graphviz"] svg ellipse {
+    stroke: var(--theme-gr-fg, hotpink);
+}
+[data-source-media-type="application/graphviz"] svg text {
+    fill: var(--theme-gr-fg, hotpink);
+}
+
+
+/* === error messages === */
+
+.error-message {
+    display: block;
+    margin: 1.75em;
+    padding: 0.5em;
+    border-radius: 3pt;
+    border: 1px solid var(--theme-si-ef, hotpink);  /* use error foreground color for border color */
+    color:            var(--theme-si-ef, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+
+/* === menu === */
+
+.menubar {
+    user-select: none;
+    margin: 0;
+    padding: 0.1rem 0 0.1rem 0;
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+.menubar div {
+    display: inline;
+}
+
+.menubar > li {
+    user-select: none;
+    display: inline;  /* horizontal orientation for top-level items of menubar */
+    padding: 0 0.5rem 0 0.5rem;
+}
+
+.menuitem {
+    user-select: none;
+    list-style-type: none;
+    min-width: max-content;
+}
+
+.menuitem * {
+    user-select: none;
+}
+
+.menuitem .menuitem-label {
+    font-family: sans-serif;
+    font-size: 90%;
+}
+
+.menuitem.checked::before {
+    content: "\2713";  /* unicode check mark */
+    position: absolute;
+    left: 0.5em;
+}
+
+.menuitem {
+    color: var(--theme-si-fg, hotpink);
+}
+.menuitem.disabled {
+    color: var(--theme-si-df, hotpink);
+}
+.menuitem.selected {
+    background-color: var(--theme-si-hb, hotpink);
+}
+
+.menu:not(.active) {
+    display: none;
+}
+
+.menu:not(.menubar) {
+    position: absolute;
+    z-index: 999;
+    background-color: var(--theme-si-bg, hotpink);
+    padding: 0.25rem 0 0.25rem 0;  /* override standard ul/li padding */
+    border-radius: 0.25rem;
+    border: 1px solid var(--theme-si-rc, hotpink);
+    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);
+
+    /* eliminate default styling for menu elements */
+    margin-block-start:   0;
+    margin-block-end:     0;
+    margin-inline-start:  0;
+    margin-inline-end:    0;
+    padding-inline-start: 0;
+}
+.menu:not(.menubar).toplevel-menu {
+    inset: unset;
+    right: 1rem;
+    padding-left:  0.5em;
+    padding-right: 0.5em;
+}
+
+.menu:not(.menubar) li.menuitem {  /* .menu selector selects .menu items but not .menubar items */
+    display: flex;
+}
+
+.menu:not(.menubar):not(.toplevel-menu) .menuitem:not(.menuitem-separator) {
+    padding: 0 0.5rem 0 1.5rem;
+}
+
+.menu:not(.menubar):not(.toplevel-menu) .menuitem.menuitem-separator {
+    margin: 0.2rem 0 0.2rem 0;
+    height: 0px;
+    color: transparent;
+    border-bottom: 1px solid var(--theme-si-rc, hotpink);
+}
+
+.menu:not(.menubar) .menuitem .menuitem-annotation {
+    margin-left: auto;   /* right justify */
+    padding-left: 1rem;  /* add a little extra space between menu command and keyboard shortcut */
+}
+
+.menu:not(.menubar) .menuitem kbd {
+    margin: 0 0 0 0.5rem;
+}
+
+
+/* === notification === */
+
+.notification-area {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;  /* enable scrollbars */
+    display: flex;
+    flex-direction:  column;
+    justify-content: flex-start;
+    align-items:     flex-end;
+    margin-right: 0.75rem;
+}
+
+.notification-area {  /* with ellipsis menu */
+    padding-top: 1.75rem;
+}
+header:has(menu.menubar) ~ .notification-area {  /* .notification-area preceded by header containing classic menubar */
+    padding-top: calc(var(--header-height) + 0.25rem);
+}
+
+.notification-message {
+    max-width: fit-content;
+    padding: 0.5em;
+    margin:  0.25rem;
+    white-space: pre-wrap;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+
+/* === dialog === */
+
+dialog {
+    border-radius: 0.5em;
+    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+dialog .dialog-form-terminals {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1.5em 0 0 0;
+}
+
+dialog .dialog-form-terminals button,
+dialog .dialog-form-terminals input[type="button"] {
+    margin: 0 0 0 0;
+}
+
+dialog .dialog-form-terminals .dialog-accept,
+dialog .dialog-form-terminals .dialog-decline {
+    display: inline;
+    margin: 0 0 0 0.5em;
+    padding: 0.25em 2em;
+}
+
+dialog .dialog-message-text {
+    font-weight: bold;
+    font-size: larger;
+}
+
+dialog .dialog-text {
+}
+
+
+/* === settings-dialog === */
+
+.settings-dialog {
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+.settings-dialog .dialog-text {
+    font-style: italic;
+}
+
+.settings-dialog [data-section] {
+    position: relative;
+    display: grid;
+    grid-template-columns: min-content min-content;
+    min-width: max-content;
+    margin: 1.75em 0 0 0;
+    padding: 1em 0.5em 0.5em;
+    border-radius: 8px;
+    border: 1px solid var(--theme-si-rc, hotpink);
+}
+
+.settings-dialog [data-section]::before {  /* named section heading */
+    position: absolute;
+    content: attr(data-section);
+    left: 0.8em;
+    top: -0.7em;
+    padding: 0 1em;
+    border-radius: 4px;
+    border: 1px solid var(--theme-si-rc, hotpink);
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+    font-style: italic;
+}
+
+.settings-dialog [data-section] label {
+    align-self: center;
+    justify-self: end;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.settings-dialog [data-section] input,
+.settings-dialog [data-section] select {
+    align-self: center;
+    justify-self: start;
+    margin: 0.25em;
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+
+.settings-dialog [data-section] input[type="text"] {
+    width: 5em;
+}
+
+.settings-dialog .error-message {
+    display: none;
+}
+.settings-dialog .error-message.active {
+    display: block;
+}
+
+
+/* === dialog === */
+
+dialog.export-options-dialog .dialog-form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+dialog.export-options-dialog fieldset {
+    display: flex;
+    flex-direction: column;
+    gap:    0.25em;
+    margin: 1em 0 0 0;
+    border-radius: 0.5rem;
+}
+dialog.export-options-dialog fieldset label {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 1em;
+    border: 1px solid var(--theme-si-rc, hotpink);
+    border-radius: 0.5rem;
+    background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);
+    user-select: none;
+}
+dialog.export-options-dialog fieldset input[type="radio"] {
+    height: 1em;  /* prevent button from stretching in height on chromium, affecting "active" outline */
+}
+dialog.export-options-dialog form select {
+    padding: 0 0.5em;
+    color:            var(--theme-si-fg, hotpink);
+    background-color: var(--theme-si-bg, hotpink);
+}
+dialog.export-options-dialog fieldset label:has(input[type="radio"]:checked) {
+    outline: 1px solid var(--theme-si-fg, hotpink);
+}
+
+
+/* === print media queries === */
+
+@media not print {
+    /* nothing for now */
+}
+
+@media print {
+
+    header {
+        display: none;
+    }
+
+    .notification-area {
+        display: none;
+    }
+
+    main {
+        overflow: visible;
+    }
+
+}

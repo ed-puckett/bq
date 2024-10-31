@@ -1,0 +1,639 @@
+make help document
+update README.md
+documentation: tell Firefox users about "Always ask you where to save files" setting
+KeySpec.#is_on_macos needs to be tested/fixed
+canceling save-as creates notification "document saved" (Firefox, not Chromium)
+some code in bq-manager/commands.ts should be implemented as methods in BqManager
+improve appearance of notifications, AlertDialog, ConfirmDialog and SettingsDialog
+replace marked with remark?  See: https://github.com/remarkjs/remark
+data-active on cell is (sometimes?) ignored when loading document (focus is set to first cell even when data-active="true" is set on last cell)
+assets_server_url(): in lib but highly dependent on src-dependent information like bootstrap script location
+bq.set_structure_modified and associated logic is kludgey and hard to maintain
+test set_editable() on and off and on again in the presence of modifications
+what about x- media-types?  E.g., "x-tex" instead of "tex" (see also: https://stackoverflow.com/questions/54548502/what-is-the-correct-mimetype-for-tex-files)
+mobile: menu element can scroll out of view (interaction with on-screen keyboard?)
+fix syntax coloring in CodeMirror
+menu.remove() is a little kludgey
+mobile: menus are not updated after reloaded
+settings schema changes are not reflected in user's databases without purging the old settings (!) (see: reset_to_standard_themes_settings)
+need to listen for and respond to settings changes (from other instances, too)
+review the way global_eval_context is used/partitioned
+BqManager: root element (use instead of document, etc, for e.g., querySelector())
+allow multiple disjoint BqManager instances controlling different documents (e.g., for Help)
+think about: maintain (weak) list of BqManager instances, require non-overlapping root elements, be able to identify an BqManager given a child element; eliminate need for CellElement._set_bq()
+CellElement.outerHTML does not correctly translate attribute values that contain a " character (should maybe provide a function in dom-tools)
+determine if the component attribute observers would be useful in BqCellElement
+can't undo structural changes (e.g., deleting a cell, moving a cell, etc)
+tsconfig: module, moduleResolution
+make legacy_file_input_element_id element ephemeral in lib/sys/fs-interface.ts
+search for uses of BqManager.singleton (should be few; instead: access through OutputContext, BqCellElement, KeyEventManager or Menu)
+
+
+--- DONE ---
+* add cell duplicate command
+* moving a cell disassociates its output element (if any); it then no longer follows the cell
+* when adding a new cell, set same type as current cell
+* make notifications proceed from top-to-bottom
+* auto-eval should be an option in export dialog
+* convert stylesheets to use css nesting which is now supported by Firefox ESR (now 128.3.0esr)
+* remove use of css class "with-menubar" now that :has() is supported by Firefox ESR (now 128.3.0esr)
+* Firefox: saving document does not show save file picker, but instead just downloads file to default location with current filename (fixed by setting "Always ask you where to save files")
+* how does parent ActivityManager get notified if a child stops?  necessary?
+* when rendering bq-cell with data type set to custom renderer, get error "renderer._render is not a function" in OutputContext._invoke_renderer() -- examples/test.html, set data-type on an bq-cell
+* copy licenses from packages copied from their dist
+* test behavior of BqManager.singleton.#activity_manager: do activities eventually get purged after they are stopped?
+* output markdown "source code" ($ specifier on ```) in a specific css style (class="markdown-code-source")
+* add export option to eliminate data-active setting on <bq-cell> elements when saving, thereby using the first cell (default) as the active cell when loading the saved document
+* set-mode-* should be set-type-*
+* javascript renderer eval environment: does bg() need a catch handler?  (it has one)
+* javascript renderer: code_to_run uses bg() but not end_bg()
+* does an ActivityManager ever release activities once they are done?
+* multiple bg()/end_bg()-using code sections in a markdown document will interfere when end_bg() is called in one (will also stop the other)
+* EvalWorker does not notify when done, should probably extend Activity directly
+* summarize licenses in a single file in dist
+* output elements can become orphaned (when deleting corresponding bq-cell?)  see examples/test.html
+* cannot fully stop auto-eval document (subsequent cells continue evaluating)
+* need auto-eval setting for document, especially for data-cell-view="presentation" case
+* implement recents?  or not?  (NO)
+* presentation view should limit interaction
+* presentation view: dialogs can be activated but do not show
+* inhibit notifications when printing
+* notifications are obscured by ellipsis menu (vs classic menu)
+* kiosk --> presentation
+* ExportOptionsDialog, AlertDialog and ConfirmDialog do not support dark mode yet
+* save_serializer: extra newlines are output at the end of the <body> element
+* save: bq-bootstrap.js src in bootstrap script tag: making absolute causes, e.g., when the absolute URL is local and then the page is saved to the server
+* beforeunload: make less strict
+* choose menu type in settings
+* copy/paste: readText() not available in Firefox in an unsecure context (available after interaction; good enough?)
+* should the loading origin be relative to the bootstrap script instead of the main document?  (see also: dom-tools: load_script() and load_script_and_wait_for_condition())
+* manage scroll position better
+* scroll/focus active cell for commands where it is appropriate
+* mobile: need long-press (right-click) menu
+* beforeunload warning not working (but works after interacting with menu...)
+* TeX formatting settings no longer work
+* discrepency between inline and block fonts (TeX) in varying resolutions (e.g., phone)
+* empty inputs should yield "empty" (0-area) outputs
+* provide feedback for "saved", etc
+* when menu has been used (and is still focused), issuing key command like focus-down also opens menu
+* menu spec ids should just use the corresponding command (eliminating those ids)
+* rework settings-dialog and dialog in general (need to segregate accept/decline controls)
+* fix save-as, etc; fs-interface needs a rewrite (did a little cleanup, no rewrite...)
+* display unhandled rejections and errors
+* save-as does not work in Chromium
+* async command handlers do not trigger error (beep) when they return false (indicating failure)
+* review BqManager.#update_menu_state(); also: put check marks on items appropriately
+* menus with multiple keyboard bindings that are in turn multi-key sequences display confusingly (see command set-mode-plain)
+* during document init, repsect 'data-active' on loaded cells
+* validate data-cell-view during init
+* preserve data-cell-view in save_serializer()
+* animate data-cell-view transitions
+* can't click to select a collapsed (via hide) cell
+* make cells collapsed from data-cell-view="hide" look better
+* data-source-element is not set for all outputs [not fixing; the top-level output does have this set--by BqManager.singleton.invoke_renderer()]
+* data-type on output elements (vs data-source-media-type, etc) -- rationalize creation of output elements and sub-elements
+* rationalize data-type and data-media-type
+* OutputContextLike.abort_if_stopped(): these exceptions are uncaught, should catch them and output an appropriate message
+* fix dialog/settings-dialog #ui hack
+* markdown renderer: is there a way to keep a computation running (keepalive).  Yes....
+* fix console.{error,warn} usages
+* implement CellElement.stop()
+* rationalize running jobs: BqManager.#multi_eval_manager, ocx, renderer (isa ActivityManager), etc
+* menu sometimes opens with everything text-selected
+* fix keepalive for renderer/ocx
+* menu separators are not showing up
+* make ActivityManager extend Activity so that one ActivityManager can control another (Q: how does parent manager get notified if a child stops?)
+
+
+
+========================================================================================================================
+
+=== OBJECTS WITH OWN BQ REFERENCE ===
+
+OutputContext (ocx)
+CellElement
+MenuBar (for CommandContext)(parameterized by type DocumentManager to avoid src/BqManager references in lib/)
+KeyEventManager (for CommandContext)(parameterized by type DocumentManager)
+
+Also: CommandContext (parameterized by type DocumentManager)
+Not:  Renderer
+
+
+=== BQ DESIGN NOTES ===
+
+editor
+renderer
+ocx (output context)
+
+document_manager
+activity_manager
+command_manager
+
+settings
+
+---
+locus of activity management candidates:
+- BqManager.singleton
+- ocx
+- renderer
+- cell
+- output_element
+choose: BqManager.singleton and ocx
+
+---
+"cell" elements
+- id
+- css class: "cell"
+- dataset attributes:
+  -- type: media-type, e.g., "text/plain", "text/html", "text/javascipt", "text/typescript", "application/json", "text/x-tex", "text/x-latex", ...
+
+"output" elements
+- class: "output" (necessary?)
+- dataset attributes:
+  -- source-element: source element (cell) id
+  -- source-media-type
+
+see: https://www.iana.org/assignments/media-types/media-types.xhtml
+
+---
+alternative terms: renderer, translator, converter, interpreter, compiler, evaluator
+
+---
+reactive?
+typescript?
+Signals?
+
+immutable?
+virtual dom?
+
+---
+https://stackoverflow.com/questions/14587396/how-to-run-typescript-compiler-within-a-website
+
+---
+https://www.npmjs.com/package/signal-polyfill
+https://github.com/tc39/proposal-signals
+https://github.com/tc39/proposal-signals/issues/30 <<< async
+https://github.com/tc39/proposal-signals/issues/73 <<< transactions
+https://en.wikipedia.org/wiki/Reactive_programming
+https://www.tedinski.com/2018/11/13/function-coloring.html
+
+https://www.tedinski.com/ <<< good stuff
+
+https://www.youtube.com/watch?v=U0_ZKRWW6E4 "SolidJS The World Beyond Components by Ryan Carniato" [JNation]
+
+---
+io-ts -- validation
+https://github.com/gcanti/io-ts
+https://www.npmjs.com/package/io-ts
+https://dev.to/busypeoples/notes-on-advanced-typescript-runtime-validations-5b
+
+
+
+========================================================================================================================
+
+=== OLD LOGBOOK NOTES ===
+
+header/menu glitch when loading very large document: height is too small, can be fixed by display:none and then back to display:flex on header element
+automatic textarea resize acts wonky when the textarea gets too large.
+eval-cell textarea should not grow beyond the viewport, and should scroll if too large (behavior when viewport size changes?)
+document: bootstrap script must be first script in head
+set "for" attribute for output_element <output> elements?
+beep() does not work on Firefox until the document is clicked (repro: load document, press Alt-UP; should beep() but errors in Firefox until document clicked)
+replace beep() with LogbookManager.singleton.notify(message)
+notify user of initialization warnings, not just to the console (e.g., ignored extraneous elements)
+import_lib (within evaluation by javascript renderer) does not work reliably (webpack-related?)
+ocx parent? (to detect if parent ocx is stopped even when child has not yet been stopped...)
+document: view and autoeval variables (in: URL search, document.documentElement, document.body)
+fs-interface.js: revist because fsaapi has broader support now (however Safari does not support createWritable)
+ConfirmDialog does not always set default button focus
+provide way to reset themes in settings
+create dark mode colors for dialogs
+favicon error (using default path /favicon.ico) before <link rel="icon"> is honored (intermittent, timing?)
+fix css overrides for graphviz, one problem being that arrowhead fill is wrong
+remove border from rendered graphviz objects
+graphviz (and other?) formats do not respect dark mode
+graphviz graphics flash black when reloading examples/test.html
+when in dark mode, document flashes white momentarily when loading document
+fix dialog and settings-dialog in the way they handle the header, main and #ui elements
+fix sbom -- packages loaded dynamically and loaded via load_script (which is true for most packages) are not accounted for
+menu navigation with mouse is sluggish
+review uses of addEventListener() (maybe use EventListenerManager instead)
+toggle-menu command (for keyboard)
+implement recents
+implement go/stop control in tool-bar
+improve saving
+save can cause disconnect between current document and its "file_handle" if the user saves to a different file
+replace make with npm, grunt, or similar (?)
+Map vs Object (problems: ephemeral_eval_context, vars() in code, logbook_manager.#global_eval_context, fs_interface (?), ...) (https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/the-dangers-of-square-bracket-notation.md)
+
+maybe use CodeMirror
+- after using CodeMirror, elimniate Key* stuff, ChangeManager
+- after using CodeMirror, rewire key bindings through CodeMirror
+- after using CodeMirror, confirm before deleting cell with non-empty undo/redo history
+
+
+--- DONE ---
+set up css class for handling white-space (white-space: pre-wrap, which is set on .eval-cell-output, causes display problems in other output html)
+eval-all, etc, do not stop when stop is triggered, only the current evaluation is stopped
+Renderer: method to reset classes to initial values / use in logbook reset/clear
+vars() update: return arguments instead of undefined
+default / mapping_default_key / create_element_mapping / return_mapping=false
+Stoppable objects are not currently being removed from a StoppableObjectsManager, even if they have already been stopped; actually, StoppableObjectsManager.stop() clears
+examples/test.html: Custom Renderer Example: fails during eval-all when document first loaded, but works a second time (cause: marked runs all extensions in parallel)
+MarkdownRenderer does not record sub-renderers (ocx is created in walkTokens, but there is no apparent way to get back to the main renderer to record the sub-renderer
+visible indicator shows "not visible" (may be only when visible is set initially on loaded element) (no longer used)
+f11, ctrl-alt-I, etc do not work when e.g., body is focused
+filter mutations in ChangeManager (e.g., tool-bar attributes, contenteditable, etc).  Still perform them, but do not count them in the "neutral" determination. (no longer used)
+add resize commands for key and menu: shrink-inputs, enlarge-inputs, collapse-inputs, expand-inputs
+key bindings do not work when tool-bar elements (e.g., type selector) are focused
+update examples / convert old esbook examples
+ChangeManager does not work well with the textarea implementation in EditorCellElement
+prevent spellcheck in text areas
+textarea does not resize correctly when parent cell resizes
+textarea does not shrink when content shrinks
+baby step: use textarea for eval-cell contents (maybe CodeMirror is not completely necessary?)
+validate that themes from storage define the correct properties when first loading from storage
+confirm before clear document from a modified document
+confirm before deleting via ui a non-empty cell or a cell with a non-empty output_element
+make sure LogbookManager.singleton.active_cell remains valid when deleting stuff or otherwise modifying document
+empty cell does not show anything visible unless editable
+set contenteditable for empty document (so that not just a blank page is displayed), or indicate that the document is empty
+make active_cell determination ephemeral (and not part of saved document structure)
+lazy-load the support files for renderers (esp. Plotly which is so large)
+prevent default generation of element ids by create_element()
+fix class: in attrs in lib/ui/menu/_.js (need to explicitly add classes to classList)
+make sure that "error" renderer is always available
+Plotly output causes subsequent cells to not be selectable, behave badly, etc
+pluggable renderers
+pluggable evaluators (maybe not)
+remove icons from top of Plotly plots
+when theme css variables change, the user's stored theme-settings are no longer valid and the user is stuck with old (and/or missing) variables
+disable eval* menu options when not editable
+handle disabled display state for toggle-switch
+need enabled state for tool-bar controls like "visible" and "type", and this needs to control whether or not the control can be changed (use "readonly" property?)
+click on body leaves body selected (want: select active cell)
+make toggle-switch more ui-aware (press space to click, aria stuff, etc)
+save is broken
+update dark theme in src/settings/theme-settings.js
+handle (prefers-color-scheme: light) [nothing to do, it's just the default]
+implement dark/light mode setting in ui
+rationalize style settings in preparation for dark/light mode
+rationalize use of LocalStorage and IndexedDB for config, recents, settings and theme_settings (use IndexedDB instead of LocalStorage)
+make KeySpec, etc events fire directly so they do not lose the "trusted" aspect (e.g., for "paste") (good enough now?)
+implement and use LogbookManager.singleton.update_menu_state()
+new cell should be set to "visible" (ended up instead requiring "contenteditable" for document in command handlers)
+content->main, controls->header
+dblclick handler in ToolBarElement is improper when ToolBarElement is used in the top-level menu, and not a cell
+dblclick in output toggles visibility but also selects word in output (sometimes?)
+undo setting eval-cell visible: eval cell has "data-visible" attribute set to "null" (should have removed the attribute)
+first click in newly-opened document's first eval-cell sends focus to <body>, second click causes document modification but focuses to eval-cell
+handle keypresses originating outside of cells
+find alternate implementation of KeySpec.#is_on_macos (just changed the order so that navigator.userAgentData.platform is tried before navigator.platform)
+ChangeManager: handle initial "neutral" setting better (using setTimeout() currently)
+make clicking status-bar not move selection in eval-cell (currently selection gets reset)
+show "modified" warning when closing
+save: remove status-bar elements
+'+' and '-' KeySpec problems
+
+
+--- HOLD ---
+subscribe()s leak if not unsubscribed (probably "expected behavior")
+static initialization for classes should not automatically add stylesheet (do it on demand later)
+context menu cut/copy/paste: can this be hooked to use our internal implementation?
+make sure deleting selection that contains elements with !element_too deletes only the text
+rtl text is not handled correctly
+make modification operations direction-aware (ltr vs rtl)
+
+
+=== EVALUATION AND STOPPING ===
+
+Evaluator objects evaluate an eval-cell using a Renderer object
+Renderer (JavaScriptRenderer and MarkdownRenderer specifically) objects render a format into an OutputContext
+Renderer objects may invoke other sub-renderers
+OutputContext objects have a stop() method and a "stopped" getter
+OutputContext objects have a new_stoppables property which dispatches notifications of new Stoppable objects that are created by the ocx
+JavaScriptRenderer and MarkdownRenderer objects may invoke sub-renderers; notifications are sent via the ocx's new_stoppables, and add_stoppable() is called on them
+The instance methods of OutputContext will throw an Error if the OutputContext object is stopped
+Evaluator and Renderer each inherit StoppableObjectsManager
+Evaluator objects keep track of their main renderer as a Stoppable object
+Renderer objects use their own StoppableObjectsManager parent class to subscribe to stop_states, and when the Renderer is stopped, its ocx is also stopped
+
+
+=== ARCHITECTURAL OVERVIEW ===
+
+Note: Each eval-cell maintains its own key_event_manager and key maps.
+Therefore the (active) eval-cell is the locus for incoming commands,
+whether from the menu or the keyboard.  The eval-cell in effect "precompiles"
+command dispatch in eval_cell.get_command_bindings().
+
+===
+
+LogbookManager
+- keeps track of "active cell" (necessary for directing menu commands)
+- maintains global ChangeManager
+- maintains global eval context
+- sets up menubar
+- contains some document-level command handlers
+
+EvalCellElement / EditorCellElement
+- eval_cell.eval() --> Evaluator.content_recognizer(this) to get evaluator_class --> evaluator_class.eval()
+- constructor allocates a KeyEventManager (with a new keymap)
+- implements method perform_command(command_context)
+- instance handles commands from key_event_manager via perform_command()
+- perform_command() is called from LogbookManager for commands from the menu
+
+Evaluators
+- evaluate an input cell into an output output
+- Evaluator.handles(input_element, innerText=null)
+- Evaluator.content_recognizer(input_element, innerText=null)  // async
+- Evaluator.eval(input_element, output_element, eval_context=null) --> create instance --> evaluator._perform_eval()
+- create instance allocates an ocx ("output context", an instance of OutputContext)
+
+OutputContext
+- instances are typically named "ocx"
+- ocx.invoke_renderer(type, value, options=null)
+- manages output operations to output_element
+- (DOM manipulation methods for the output element)
+- etc...
+
+(eval context)
+(ephemeral eval context)
+
+(command context)
+
+Renderers
+- render specific type of content with use of an ocx
+- main
+- various renderer classes represent various formats
+- renderer instances: main method: async render(ocx, value, options)
+- Renderer class management:
+  -- Renderer.class_from_type(type)
+  -- Renderer.get_classes()
+  -- Renderer.set_classes(new_classes)
+  -- Renderer.add_class(rc)
+  -- Renderer.remove_class(rc)
+  -- Renderer.get_class_types()
+  -- Renderer.remove_class_for_type(type)
+
+KeyEventManager
+- maintains key map stack (support for emacs-like modes)
+- listens for keyboard events and through the use of the key map stack emits commands
+
+MenuBar
+- listens for menu clicks and emits commands
+
+Dialog
+
+ChangeManager
+
+KeyMap / KeySpec
+
+(command subscriptions)
+
+config
+settings / theme-settings
+
+help
+
+======================================================================
+
+dom
+clipboard
+change-manager (undo/redo)
+input
+- keymaps
+- menus
+command engines
+persistence
+- config
+- data
+- document
+
+---
+selection (point & mark)
+"kill" ring
+
+=== OLD TODO ===
+
+remove use of DOMContentLoaded (rely on defer instead)
+sometimes underlying markup is displayed, e.g., html('br') has been seen to cause this
+nerdamer: nested functions using sum or product are not alpha-renamed properly and they fail strangely
+"Typesetting math: 100%" is shown on printout (e.g., examples/solve-logistic-equation-fixed-points.esbook) (#MathJax_Message)
+review Content-Security-Policy
+emacs key bindings shadow other important standard key bindings (e.g., Ctrl-X)
+call cleanup on change objects that are deleted by being trimmed by new edits
+provide "toast" messages + dialog to display past messages
+update theme-colors (for dark/light modes, etc)
+system dark/light mode switch is not detected (chromium bug on gnome/linux) (perhaps only snap-installed chromium)
+support dark mode in dagre css (also: Plotly and other graphics outputs)
+sometimes input cell does not respond to keyboard shortcuts after focus is reset (with mouse into output area?) (focus issues?)
+set width on graphics output DIVs
+provide settings to only enable autoeval with prompt (prompt default false)
+nerdamer matrices are rendered with simple vertical bars (TeX vmatrix seems to be hard-coded instead of bmatrix)
+provide "clear" action for current output or all outputs
+effects of set_formatting_options in an ie may not participate in undo/redo -- see: notebook.js: evaluate_ie(): add_ie_output_change(this, ie.id)
+review setting of focus overall (many places use setTimeout() to defer setting of focus, which is kludgey)
+can't scroll to last ie when focused to the next-to-last ie (if the last ie is autohide and currently has no output)
+reopen does not work as expected
+new notebook, add space, delete, save, cancel: notebook shows unmodified even though there are undos past the last save...
+provide direct access to last recent
+text coalescing does not work when multiple printf() calls happen too quickly; see: output-context.js: create_text_output_data(): output_data_collection remains empty
+legacy_open() sometimes gets blocked until keypress or mouse click (seen in Firefox)
+legacy_save(): no stats are returned and therefore the new filename and notebook name are not set
+sometimes web workers are not removed (seen in dev tools, two sets of workers)
+Save should not change focus
+undo/redo should position cursor at the affected text
+settings dialog and validation, while working, is a little rough around the edges
+make settings dialog error messages fit within dialog better
+cannot use keyboard navigation in menu when screen reader is on (focus does not move)
+change menuitems to use <a> or <button> (for accessibility concerns)
+
+documentation: create_worker(); async generator model, "objects" argument for extra arguments to EvalWorker.eval(); eval/stream_eval
+documentation: legacy file handling issues: no quick-save, no modified check before save, no recents, ...
+documentation: document: only the last formatting() call in an ie has effect
+documentation: recommend: avoid latex equation numbers, labels, etc (use \tag{...} instead)
+documentation: separate help from README.md
+documentation: warning about executable content
+documentation: discuss possiblility of injection vulnerabilities
+documentation: interaction elements: input, output/graphics, selected_indicator
+documentation: interaction elements: focus, move, add
+documentation: evaluation: mdmj (template literal model), javascript (async function model)
+documentation: using vars() in mdmj
+documentation: mdmj: autohide, template literal, must escape ` and ${
+documentation: async evaluation (mdmj and javascript)
+documentation: document eval context (plus vars())
+documentation: evaluation: definitions need to be progressive within the notebook
+documentation: document output context
+documentation: document output handlers
+documentation: graphics are stored as images in saved notebooks
+documentation: interaction with SVG elements (SHIFT-scroll to zoom, etc)
+documentation: indicators (modified, running, formatting)
+documentation: various actions (menu and key-bindings)
+documentation: key bindings; menu glyphs for modifiers
+documentation: settings
+documentation: import (javascript)
+documentation: export, also ?s= parameter on exported html
+documentation: open/save dialogs (plus confirmations)
+documentation: alerts, confirmation and close warnings
+documentation: initial comment; autoeval, autohide
+documentation: creating dialogs and ui
+documentation: add demos (html-based)
+documentation: browser support
+documentation: local server
+
+
+=== THINK ABOUT ===
+need an improved CAS
+update license
+undo is maybe too fne-grained
+review possiblility of injection vulnerabilities for javascript and mdmj; mdmj example: `+alert('hi')&&`gotcha!
+mathjax menu event handlers get lost (probably with markdown processing/innerHTML)
+mathjax: latex equation numbers, labels, etc need to be reset (if used)
+options for printing (e.g., show autohide elements)
+installer
+"unevaluated" status for an ie (with an associated indicator)
+support configurable key bindings
+provide print_markup() (or something) in eval
+save fails silently when there is a permissions error (showSaveFilePicker returns undefined for permissions error and also for user cancel)
+implement auto-hide for autoeval ie and dynamically change when its input element is modified (maybe not?)
+how to distribute?  create small server apps for each major platform?  how to maintain?
+manage memory used by undo/redo (Change)
+provide fallback for file open/save interfaces (when on non-chromium browsers)
+is the use of innerHTML acceptable?
+settings update broadcast to other instances (polling?)
+provide options when doing export (e.g., clear outputs)
+more extensively support undo/redo (Change) for output
+coalesce "empty" changes to output (Change)
+enable api to perform operations programmatically (e.g., eval-notebook)
+re-install @yaffle/expression when it is more "distributable"
+add Algebite and Mathjs
+save to MIME format (multipart/mixed) to allow easy editing (issue: UTF-8) (see https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html )
+use "contenteditable" element instead of CodeMirror stuff?
+figure out what to do with nb_state
+figure out how to reload / re-initialize eval state
+figure out codemirror + emacs clipboard support
+deleting element with an eval agent running something like setInterval(): old eval agent keeps running even though "stopped" (maybe on_stopped event could help)
+provide on_stopped event to allow cleanup of background "processes" (e.g., setInterval)
+
+
+=== UNREPEATED BUGS ====
+formatting indicator is not shown after a notebook is loaded from embedded content in an html page (exported notebook)
+investigate: seems like files are being reloaded a lot as elements are evaluated
+pythagorean-triples.esbook: first cell lines are concatenated (saw once, but not again...)
+have witnessed stray text in buffers after copying/pasting/evaluating (accidental scroll wheel paste?)
+
+
+=== DONE ===
+* swap cmd and shift in menu accelerator glyph order
+* replace current dialog implementation with new html dialog element
+* dialogs: don't let keyboard focus "fall off the edge" down to the underlying notebook
+* #dialog_event_blocker is not deflecting focus (no longer used)
+* indent does not work correctly (at least in "default" editor mode)
+* evaluate: does exposing the src/build directory represent a risk (because its contained scripts write files)? (moved to ./build-tools/)
+* build demos from examples when building
+* test autoeval (and also from embedded content in exported html files)
+* make autoeval evaulate entire notebook
+* change <ul> elements to <menu> elements in menu and fix positioning logic
+* add support for web workers
+* preserve notebook title in exported format
+* exported notebooks: title is "undefined" when loaded
+* provide legacy file handling when FileSystemFileHandle and associated API is not available (e.g., on Firefox, Safari)
+* provide indicator for "formatting"
+* invalid/incomplete sprintf arguments cause Uncaught TypeError that is not displayed
+* theme-settings / settings are sort of mixed together
+* need better validation in settings dialog (e.g., displayIndent)
+* allow MathJax formatting configuration per document
+* things like matrices and square root are sometimes scaled wrong in TeX output, e.g., return _('diff((e^x*sqrt(x)-e^x/(2*sqrt(x)))/x, x)') (also, exponents are large)
+* canceling Save leads to another prompt and also clears file_handle and stats in notebook
+* after an eval_notebook, sometimes the modified indicator indicates modified when in fact it is not (see canvas2d-demo.esbook)
+* expose settings/theme-settings in eval
+* empty elements when not selected are almost invisible (just a 1 pixel blank space)
+* evaluate ie with containing only '//' causes an error: Unexpected token ')'
+* allow empty notebooks and permit delete_element to remove the last element
+* default element mode should be markup, with // on first line as mode switch sequence (switch to JavaScript)
+* autohide: check when edit changes appear and also when loading
+* recents: old entries are being filtered (isSameEntry() seems to always be returning true) (isSameEntry returns a promise)
+* recents: cannot access file name (need to store in IndexedDB storage along with FileSystemFileHandle?)
+* recents: when to rebuild recents (need to make sure we can access...)
+* provide recent file interface
+* exported dagre svg from an html-embedded server has arrowheads but default fill and stroke colors are transparent (style apparently not found and not embedded)
+* provide keyboard navigation into and out of input areas
+* menus: provide way to activate menu from keyboard (including TAB navigation to menu)
+* preview images in saved notebooks that have been opened should cause a line break before next element (set examples/many-ecas.esbook)
+* output-context.js: create_svg_output_data() hard-codes css selector 'svg.dagre'
+* dagre: no arrow heads displayed in saved rendered image
+* when loading, menus flash briefly as unformatted <ul>s before turning into menus
+* first ie is initially too tall and has extraneous scroll bar
+* defer loading of code until used for graphics output-handlers (e.g., plotly)
+* menus: allow cross-navigation without going all the way to the top of the current menu
+* menus: position submenus when opening
+* menus: enable/disable menu items based on notebook state
+* menus: add keyboard navigation
+* menus: adjust order of modified keys in display of keyboard equivalent
+* key-spec.js: key_spec_to_glyphs: is_on_macos_result not implemented (removed)
+* menus: show keyboard equivalents using glyphs
+* provide menus (basic functionality)
+* make whether opening or importing more apparent (in file open dialog)
+* file open/save dialog does not use the "suggested" filename or extensions (seems to be a deficiency of ShowSaveFilePicker)
+* cannot receive click events on things like button elements in the output portion of an ie (problem: redirecting click focus from output to input)
+* examples/cmjs-demo.esbook: output of count tree and of node graph are clipped and not positioned well
+* notebook.js: send_tab_state_to_parent_processes: rename to something more appropriate (re-appropriated update_global_view_properties)
+* provide feedback when saving and provide visible modified indicator
+* need to check graphics output
+* notebook imported from html embedded data starts out with modified indicator active (and yet can exit page without warning)
+* not prompting user when leaving a modified page
+* provide status bar (modified status, eval running, help link, ...)
+* provide help link
+* save/export to a loadable web page instead of a separate document format
+* bundle code instead of loading out of node_modules
+* dagre: edges not rendered in image_uri
+* svg elements are not displayed wide enough, both in the saved image form and the rendered form (see examples/cmjs-demo.esbook)
+* use Shift-ENTER for eval and Ctrl-ENTER for eval-and-stay
+* make global_export not modify globalThis
+* https://github.com/Yaffle/Expression / https://www.npmjs.com/package/@yaffle/expression
+* canvas2d image_uri not being rendered for persistent state
+* need a way to easily define variables that are visible in subsequent interaction elements
+* fix loading of old facet code in examples
+* markdown processing: html tags in markdown trip up the display of the element
+* markdown processing: code blocks have extraneous stuff at beginning: <span class="MathJax_Preview" ... (see: https://stackoverflow.com/questions/62111699/mathjax-strangely-render-back-tick-in-code-blocks )
+* [no longer relevant] make facet scripts inline-able without having been loaded via facet() [need to have one single export handler that listens for any facet export or error event]
+* update facet mechanism to use ES6 modules
+* settings dialog is partially hidden by event blocker element (first time only?)
+* Ctrl-, can bring up multiple settings dialogs (if a settings dialog is already showing)
+* implement settings dialog
+* notebook.js: update_cm_from_settings(cm, ie): not defined: bind_key_handler, remove_current_key_handler
+* too many questions when saving
+* message_controller: provide better handling of scrolling and focus
+* keyboard handling / key bindings
+* notebook / notebook state
+* integrate key-handler.js into key-bindings.js
+* set up html for notebook during initialization
+* set up css for notebook during initialization
+* load codemirror
+* implement esbook mode for codemirror
+* reimplement stuff that uses ipcRenderer
+* implement eval
+* support opening/saving notebooks
+* open: prompts for saving (!)
+* implement interface to IndexedDB
+* provide settings persistence (through IndexedDB)
+* set up "recents" (through IndexedDB)
+* confirm close
+* switch codemirror mode based on input type (md+mj or javascript)
+* update ie class according to text/code mode (watch 'change' events that affect line 1)
+* move to different ie with keyboard does not set focus correctly
+* implement auto-hide for non-expression inputs
+* implement message_controller.confirm_sync (eliminated the need for _sync variant...)
+* update output-handlers.js
+* update class OutputContext in notebook.js
+* update eval-agent.js
+* save failed: get_fs_stats_for_file_handle is not defined
+* eval: graphics element is not sized correctly (see examples/dagre-demo.esbook)
+* streamline operation of output handlers
+* provide interface in eval for creating output elements, etc
+* eval: provide access to output_context
+* make eval_fn "this" be a persistent context for the notebook
+* reset the persistent context for the notebook when resetting evaluation
+* add an api for creating CanvasRendering2DContext/Element
+* definable notebook init script (to be run when notebook is loaded) (autoeval)
+* don't load scripts more that once: load_script(), load_script_and_wait_for_condition()

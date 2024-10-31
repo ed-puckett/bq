@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-cell-view="full">
+<head>
+    <meta charset="utf-8">
+    <script src="../dist/bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="markdown" id="id-6f7b7bde-4e30-4630-80e4-1bf57d042d3d" data-active="true">## Markdown
+## One
+``` !
+bg(async () => {
+    for (let i = 100; i <= 199; i++) {
+        await printf(' %d', i);
+        await sleep(0.1);
+    }
+    end_bg();
+});
+```
+# Two
+``` !
+bg(async () => {
+    for (let i = 100; i <= 299; i++) {
+        await printf(' %d', i);
+        await sleep(0.1);
+    }
+    end_bg();
+});
+```
+# Three
+``` javascript !$
+yield 123;
+```
+</bq-cell>
+</body>
+</html>

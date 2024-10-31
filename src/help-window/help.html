@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-cell-view="presentation">
+<head>
+    <meta charset="utf-8">
+    <script src="https://ed-puckett.github.io/bq/dist/bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell id="id-d54b874e-16db-49b5-8946-97a6af438abb" data-type="markdown">$\gdef\bq{x\textrm{b}}$
+
+# $\bq \textrm{ } \cdot \textrm{ a } variable \textrm{ book}$
+
+***(sorry, this document a barely-started work in progress)***
+
+$\bq$ is a versatile notebook that can become a variety of things: a web page, a report, a technical document or even an interactive application!
+
+All this within a Web-standards-based platform.
+
+See the source code here: https://github.com/ed-puckett/bq
+
+### Goals
+- zero install
+- portable
+- durable
+- typeset math, etc
+- executable content
+- standalone (not quite: requires static server)
+
+---
+
+- cell element
+  - associated with bq: BqManager
+  - attributes: data-type, data-active
+- output element
+  - created by OutputContext.create_cell_output()
+  - attributes: data-source-media-type, data-source-element
+  - css class: bq-cell-output
+- OutputContext (ocx)
+  - associated with bq: BqManager
+  - associated with element: Element
+- BqManager.singleton
+  - controls data-cell-view attribute on document.documentElement (:root)
+  - invoke_renderer() and invoke_renderer_for_type() methods
+</bq-cell><output class="bq-cell-output" data-source-element="id-d54b874e-16db-49b5-8946-97a6af438abb" data-source-media-type="text/markdown"><div data-source-media-type="text/markdown"><p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow></mrow><annotation encoding="application/x-tex">\gdef\bq{x\textrm{b}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"></span></span></p>
+<h1 id="bq-⋅-a-variable-bookbq-textrm--cdot-textrm-a--variable-textrm-bookbq-⋅-a-variable-book"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mtext>b&nbsp;</mtext><mo>⋅</mo><mtext>&nbsp;a&nbsp;</mtext><mi>v</mi><mi>a</mi><mi>r</mi><mi>i</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><mtext>&nbsp;book</mtext></mrow><annotation encoding="application/x-tex">\bq \textrm{ } \cdot \textrm{ a } variable \textrm{ book}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">x</span><span class="mord text"><span class="mord textrm">b</span></span><span class="mord text"><span class="mord textrm">&nbsp;</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textrm">&nbsp;a&nbsp;</span></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">iab</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord text"><span class="mord textrm">&nbsp;book</span></span></span></span></span></h1>
+<p><em><strong>(sorry, this document a barely-started work in progress)</strong></em></p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mtext>b</mtext></mrow><annotation encoding="application/x-tex">\bq</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">x</span><span class="mord text"><span class="mord textrm">b</span></span></span></span></span> is a versatile notebook that can become a variety of things: a web page, a report, a technical document or even an interactive application!</p>
+<p>All this within a Web-standards-based platform.</p>
+<p>See the source code here: <a href="https://github.com/ed-puckett/bq">https://github.com/ed-puckett/bq</a></p>
+<h3 id="goals">Goals</h3>
+<ul>
+<li>zero install</li>
+<li>portable</li>
+<li>durable</li>
+<li>typeset math, etc</li>
+<li>executable content</li>
+<li>standalone (not quite: requires static server)</li>
+</ul>
+<hr>
+<ul>
+<li>cell element<ul>
+<li>associated with bq: BqManager</li>
+<li>attributes: data-type, data-active</li>
+</ul>
+</li>
+<li>output element<ul>
+<li>created by OutputContext.create_cell_output()</li>
+<li>attributes: data-source-media-type, data-source-element</li>
+<li>css class: bq-cell-output</li>
+</ul>
+</li>
+<li>OutputContext (ocx)<ul>
+<li>associated with bq: BqManager</li>
+<li>associated with element: Element</li>
+</ul>
+</li>
+<li>BqManager.singleton<ul>
+<li>controls data-cell-view attribute on document.documentElement (:root)</li>
+<li>invoke_renderer() and invoke_renderer_for_type() methods</li>
+</ul>
+</li>
+</ul>
+</div></output>
+</body>
+</html>

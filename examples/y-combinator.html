@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="../dist/bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript" spellcheck="false">// Basic Definition of a Fixed-Point "Y" Operator
+
+const Y_divergent = (F) =&gt; ( ((q) =&gt; F( q(q) )) (
+                             ((q) =&gt; F( q(q) )) ) );
+
+// The indentation has been adjusted to illustrate that the internal function is applied to a copy
+// of itself.  To understand the operation, note that q is always equivalent to the function:
+//
+//     ((q) =&gt; F( q(q) ))
+//
+// q(q) is the fixed-point, and q keeps passing itself into itself at each recursive call, each
+// time wrapping F(*) around the previous intermediate result.
+//
+// Unwrapping one invocation, Y(F) becomes F(q(q)) which is equivalent to F(Y(F)) because q is
+// equivalent to ((q) =&gt; F( q(q) )).
+//
+// However, this implementation does not work with an applicative-order calling convention like
+// that of JavaScript.  It endlessly recurses.  This can be fixed by converting to an applicative-
+// order style of defintion.
+//
+// Applicative-Order Definition of a Fixed-Point "Y" Operator
+//
+// This next definition works under an applicative-order calling convention as in JavaScript.
+// Here, Y's F argument is treated as a function whose parameter will be handled in call-by-name
+// way as in Algol.  Call-by-name works similarly to how "calling" works in the Lamda Calculus,
+// like substitution.  In Algol, call-by-name is implemented by wrapping a "thunk", i.e. a
+// 0-parameter function, around a call-by-name argument expression, and then applying this thunk
+// whenever the value of the argument is needed.  This wrapping and unwrapping is performed
+// implicitly in Algol, but in JavaScript the mechanism must be made explicit.
+//
+// Therefore, Y's argument F must accept a thunk and then, when needed, explicitly apply that thunk
+// to get the represented value.  Thus Y computes the fixed-point in the following sense:
+// Y(F) is equivalent to F(() =&gt; Y(F)).  Y(F) returns the "unthunked" value of the fixed-point.
+//
+// Because the function F accepts a thunk t, the conditional logic in F can terminate the
+// calculation by simply returning a value, or can recurse by applying t and calling that
+// value with the recursive arguments.
+
+const Y = (F) =&gt; ( ((q) =&gt; F( () =&gt; q(q) )) (
+                   ((q) =&gt; F( () =&gt; q(q) )) ) );
+
+const FactorialPattern = (factorial_thunk) =&gt; (n) =&gt; (n &lt;= 1) ? 1 : n*factorial_thunk()(n-1);
+const factorial = Y(FactorialPattern);
+await println(factorial);
+await println(factorial(6));  // 720
+
+const FibonacciPattern = (f_t) =&gt; (n) =&gt; (n &lt; 1) ? 0 : (n &lt; 2) ? 1 : f_t()(n-1) + f_t()(n-2);
+const fibonacci = Y(FibonacciPattern);
+await println(fibonacci(10));  // 55</bq-cell>
+</body>
+</html>
