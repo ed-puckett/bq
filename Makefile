@@ -32,7 +32,8 @@ lint: ./node_modules
 #!!!	./node_modules/.bin/eslint --config .eslintrc.cjs src lib
 
 $(DIST_DIR): ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
-	make lint && ./build-tools/build-dist.sh
+	./build-tools/build-dist.sh
+#!!!	make lint && ./build-tools/build-dist.sh
 
 ./package-lock.json ./node_modules: ./package.json
 	npm install
