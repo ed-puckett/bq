@@ -20,14 +20,10 @@ import {
     KeyMapMapper,
 } from './key-map';
 
+import {
+    CommandContext,
+} from 'lib/ui/command-context';
 
-export type CommandContext<DocumentManager> = {
-    dm:        DocumentManager,
-    command:   string,
-    event?:    null|Event,
-    target?:   null|EventTarget,
-    key_spec?: null|KeySpec,
-};
 
 export class KeyEventManager<DocumentManager> {
     #dm:               DocumentManager;
@@ -174,7 +170,6 @@ export class KeyEventManager<DocumentManager> {
                             const command_context: CommandContext<DocumentManager> = {
                                 dm:      this.dm,
                                 command,
-                                event,
                                 target:  event.target,
                                 key_spec,
                             };

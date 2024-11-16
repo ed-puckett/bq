@@ -1,3 +1,7 @@
+fix deprecation warnings when compiling
+change source type "tex" to "latex" ?
+create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
+BqManager.singleton.inject_key_event(): move functionality into lib/ui/key/... ?
 make help document
 update README.md
 documentation: tell Firefox users about "Always ask you where to save files" setting
@@ -30,6 +34,8 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* define CommandContext separately, move out of lib/ui/key/key-event-manager.ts
+* expose command interface in BqManager.singleton (without having to create a synthetic event, etc)
 * add cell duplicate command
 * moving a cell disassociates its output element (if any); it then no longer follows the cell
 * when adding a new cell, set same type as current cell

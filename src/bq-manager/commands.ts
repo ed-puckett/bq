@@ -10,7 +10,7 @@ import {
 
 import {
     CommandContext,
-} from 'lib/ui/key/_';
+} from 'lib/ui/command-context';
 
 import {
     move_node,
@@ -91,34 +91,6 @@ export function command_handler__toggle_auto_eval(command_context: CommandContex
 export function command_handler__show_settings_dialog(command_context: CommandContext<BqManager>): boolean {
     SettingsDialog.run();
     return true;
-}
-
-export async function command_handler__cut(command_context: CommandContext<BqManager>): Promise<boolean> {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    const result = document.execCommand('cut');
-    command_context.dm.set_structure_modified();
-    return result;
-}
-export async function command_handler__copy(command_context: CommandContext<BqManager>): Promise<boolean> {
-    return document.execCommand('copy');
-}
-export async function command_handler__paste(command_context: CommandContext<BqManager>): Promise<boolean> {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    if (!navigator.clipboard.readText) {
-        return false;
-    } else {
-        const text = await navigator.clipboard.readText();
-        const result = document.execCommand('insertText', true, text);
-        // scroll into view, but don't use _scroll_target_into_view() above because that
-        // always focuses the active cell, but we may want to paste elsewhere
-        document.activeElement?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        command_context.dm.set_structure_modified();
-        return result;
-    }
 }
 
 /** eval target cell

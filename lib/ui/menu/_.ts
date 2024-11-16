@@ -13,8 +13,11 @@ import {
 } from 'lib/ui/dom-tools';
 
 import {
-    KeySpec,
     CommandContext,
+} from 'lib/ui/command-context';
+
+import {
+    KeySpec,
 } from 'lib/ui/key/_';
 
 import {
@@ -511,7 +514,6 @@ export class Menu<DocumentManager> {
             const command_context: CommandContext<DocumentManager> = {
                 dm:      this.dm,
                 command,
-                event,
                 target:  event.target,
             };
             this.commands.dispatch(command_context);

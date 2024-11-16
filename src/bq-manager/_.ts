@@ -24,9 +24,12 @@ import {
 } from 'lib/sys/activity-manager';
 
 import {
+    CommandContext,
+} from 'lib/ui/command-context';
+
+import {
     KeyEventManager,
     KeyMap,
-    CommandContext,
 } from 'lib/ui/key/_';
 
 import {
@@ -829,6 +832,7 @@ export class BqManager {
         // update reset_before_render
         this.#reset_before_render = !!render_options?.reset_before_render;
     }
+
 
     // === EVAL STATES ===
 

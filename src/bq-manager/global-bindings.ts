@@ -129,10 +129,6 @@ export function get_global_initial_key_map_bindings() {
         'reset-all':             [ 'CmdOrCtrl-Alt-Shift-#' ],
         'clear-all':             [ 'CmdOrCtrl-Shift-!' ],
 
-        'cut':                   [ 'CmdOrCtrl-X' ],
-        'copy':                  [ 'CmdOrCtrl-C' ],
-        'paste':                 [ 'CmdOrCtrl-V' ],
-
         'save':                  [ 'CmdOrCtrl-S' ],
         'save-as':               [ 'CmdOrCtrl-Shift-S' ],
         'export':                [ 'CmdOrCtrl-Shift-E' ],
@@ -191,10 +187,6 @@ export function get_global_command_bindings() {
         'toggle-auto-eval':      commands.command_handler__toggle_auto_eval,
 
         'settings':              commands.command_handler__show_settings_dialog,
-
-        'cut':                   commands.command_handler__cut,
-        'copy':                  commands.command_handler__copy,
-        'paste':                 commands.command_handler__paste,
 
         'eval':                  commands.command_handler__eval,
         'eval-and-refocus':      commands.command_handler__eval_and_refocus,

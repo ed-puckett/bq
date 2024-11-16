@@ -10195,7 +10195,6 @@ class KeyEventManager {
                             const command_context = {
                                 dm: this.dm,
                                 command,
-                                event,
                                 target: event.target,
                                 key_spec,
                             };
@@ -10692,7 +10691,6 @@ class Menu {
             const command_context = {
                 dm: this.dm,
                 command,
-                event,
                 target: event.target,
             };
             this.commands.dispatch(command_context);
@@ -12242,7 +12240,6 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   QF: () => (/* binding */ command_handler__delete),
 /* harmony export */   QK: () => (/* binding */ command_handler__reset_all),
 /* harmony export */   Rq: () => (/* binding */ command_handler__eval_before),
-/* harmony export */   ST: () => (/* binding */ command_handler__copy),
 /* harmony export */   WF: () => (/* binding */ command_handler__set_type_markdown),
 /* harmony export */   Xr: () => (/* binding */ command_handler__eval_all),
 /* harmony export */   Xv: () => (/* binding */ command_handler__set_type_plain),
@@ -12250,9 +12247,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   _d: () => (/* binding */ command_handler__toggle_auto_eval),
 /* harmony export */   dB: () => (/* binding */ command_handler__add_after),
 /* harmony export */   fq: () => (/* binding */ command_handler__move_down),
-/* harmony export */   he: () => (/* binding */ command_handler__cut),
 /* harmony export */   ht: () => (/* binding */ command_handler__set_view_normal),
-/* harmony export */   o8: () => (/* binding */ command_handler__paste),
 /* harmony export */   ot: () => (/* binding */ command_handler__set_view_hide),
 /* harmony export */   r1: () => (/* binding */ command_handler__eval),
 /* harmony export */   s0: () => (/* binding */ command_handler__reset),
@@ -12322,34 +12317,6 @@ function command_handler__toggle_auto_eval(command_context) {
 function command_handler__show_settings_dialog(command_context) {
     _settings_dialog___WEBPACK_IMPORTED_MODULE_4__/* .SettingsDialog */ .g.run();
     return true;
-}
-async function command_handler__cut(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    const result = document.execCommand('cut');
-    command_context.dm.set_structure_modified();
-    return result;
-}
-async function command_handler__copy(command_context) {
-    return document.execCommand('copy');
-}
-async function command_handler__paste(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    if (!navigator.clipboard.readText) {
-        return false;
-    }
-    else {
-        const text = await navigator.clipboard.readText();
-        const result = document.execCommand('insertText', true, text);
-        // scroll into view, but don't use _scroll_target_into_view() above because that
-        // always focuses the active cell, but we may want to paste elsewhere
-        document.activeElement?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        command_context.dm.set_structure_modified();
-        return result;
-    }
 }
 /** eval target cell
  *  @return {Boolean} true iff command successfully handled
@@ -13015,9 +12982,6 @@ function get_global_initial_key_map_bindings() {
         'reset': ['CmdOrCtrl-Shift-#'],
         'reset-all': ['CmdOrCtrl-Alt-Shift-#'],
         'clear-all': ['CmdOrCtrl-Shift-!'],
-        'cut': ['CmdOrCtrl-X'],
-        'copy': ['CmdOrCtrl-C'],
-        'paste': ['CmdOrCtrl-V'],
         'save': ['CmdOrCtrl-S'],
         'save-as': ['CmdOrCtrl-Shift-S'],
         'export': ['CmdOrCtrl-Shift-E'],
@@ -13063,9 +13027,6 @@ function get_global_command_bindings() {
         'export': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__export */ .NO,
         'toggle-auto-eval': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__toggle_auto_eval */ ._d,
         'settings': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__show_settings_dialog */ .vc,
-        'cut': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__cut */ .he,
-        'copy': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__copy */ .ST,
-        'paste': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__paste */ .o8,
         'eval': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval */ .r1,
         'eval-and-refocus': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval_and_refocus */ .Pg,
         'eval-before': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval_before */ .Rq,
