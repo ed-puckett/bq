@@ -6,6 +6,7 @@ import {
     cell_view_attribute_name,
     cell_view_values_default,
     get_auto_eval,
+    set_auto_eval,
     bootstrap_script_src_alternatives_default,
 } from 'src/init';
 
@@ -37,8 +38,17 @@ import {
 } from 'lib/ui/dialog/_';
 
 import {
+    SettingsDialog,
+} from './settings-dialog/_';
+
+import {
+    open_help_window,
+} from 'src/help-window/_';
+
+import {
     create_element,
     clear_element,
+    move_node,
 } from 'lib/ui/dom-tools';
 
 import {
@@ -715,7 +725,7 @@ export class BqManager {
 
     // note: an updated command_context with target set to this.active_cell
     // is sent to the command handler.
-    #perform_command(command_context: CommandContext<BqManager>): void {
+    async #perform_command(command_context: CommandContext<BqManager>): Promise<boolean> {
         let success: boolean = false;  // for now...
         try {
             if (command_context) {
@@ -728,16 +738,17 @@ export class BqManager {
                     const bindings_fn = this.#command_bindings[updated_command_context.command];
                     if (bindings_fn) {
                         if (bindings_fn instanceof AsyncFunction) {
-                            bindings_fn(updated_command_context)
+                            return bindings_fn(updated_command_context)
                                 .then((success: boolean) => {
                                     if (!success) {
                                         beep();
                                     }
+                                    return success;
                                 })
                                 .catch((error: unknown) => {
                                     console.error('error performing command', error, command_context);
+                                    return false;
                                 });
-                            success = true;  // so far..., a failure may yet happen asynchronously
                         } else {
                             success = bindings_fn(updated_command_context);
                         }
@@ -750,6 +761,7 @@ export class BqManager {
         if (!success) {
             beep();
         }
+        return success;
     }
 
     #update_menu_state() {
@@ -932,6 +944,374 @@ export class BqManager {
     _show_unhandled_event(event: Event, is_unhandled_rejection: boolean): void {
         const message = `Unhandled ${is_unhandled_rejection ? 'rejection' : 'error'}: ${(event as any)?.reason?.message}`;
         AlertDialog.run(message);
+    }
+
+
+    // === COMMAND HANDLER IMPLEMENTATIONS ===
+
+    // These command__* methods handle commands directly without user interaction.
+    //
+    // Each of these command__* methods each returns a boolean.  The return value
+    // is true iff the command was successfully handled.
+    //
+    // command_context.target is used for the target cell, ignoring this.active_cell.
+    //
+    // These commands are non-interactive, however the following commands by necessity
+    // interact with the user to some degree:
+    //
+    // - command__save,
+    // - command__save_as,
+    // - command__export ................. must use the system file select dialog due to sandbox
+    //                                     also, shows notification
+    //
+    // - command__toggle_auto_eval ....... shows notification
+    //
+    // - command__show_settings_dialog ... shows settings dialog
+    //
+    // - command__eval_before,
+    // - command__eval_all ............... will show notification if evaluation is subsequently stopped
+    //
+    // - command__focus_up,
+    // - command__focus_down,
+    // - command__move_up,
+    // - command__move_down,
+    // - command__add_before,
+    // - command__add_after,
+    // - command__duplicate,
+    // - command__delete ................. scrolls cell into view
+    //
+    // - command__show_help .............. opens help window
+
+    async command__clear_all(command_context: CommandContext<BqManager>): Promise<boolean> {
+        this.clear();
+        return true;
+    }
+
+    async command__save(command_context: CommandContext<BqManager>): Promise<boolean> {
+        return this.perform_save();
+    }
+
+    async command__save_as(command_context: CommandContext<BqManager>): Promise<boolean> {
+        return this.perform_save(true);
+    }
+
+    async command__export(command_context: CommandContext<BqManager>): Promise<boolean> {
+        return this.perform_save(true, true);
+    }
+
+    command__toggle_auto_eval(command_context: CommandContext<BqManager>): boolean {
+        const new_auto_eval_setting = !get_auto_eval();
+        set_auto_eval(new_auto_eval_setting);
+        this.set_structure_modified();
+        this.notification_manager.add(`auto-eval ${new_auto_eval_setting ? 'on' : 'off'}`);
+        return true;
+    }
+
+    command__show_settings_dialog(command_context: CommandContext<BqManager>): boolean {
+        SettingsDialog.run();
+        return true;
+    }
+
+    /** eval target cell
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval(command_context: CommandContext<BqManager>): Promise<boolean> {
+        const cell = command_context.target;
+        if (!(cell instanceof BqCellElement)) {
+            return false;
+        } else {
+            this.set_structure_modified();
+            try {
+                await this.invoke_renderer_for_type(cell.type, undefined, cell);
+            } catch (error: unknown) {
+                console.error('error rendering cell', error, cell);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    async #multi_eval_helper(command_context: CommandContext<BqManager>, eval_all: boolean = false): Promise<boolean> {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            return eval_all
+                ? this.render_cells()
+                : this.render_cells(command_context.target);
+        }
+    }
+
+    /** reset global eval context and then eval all cells in the document
+     *  from the beginning up to but not including the target cell.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval_before(command_context: CommandContext<BqManager>): Promise<boolean> {
+        return this.#multi_eval_helper(command_context, false);
+    }
+
+    /** stop all running evaluations, reset global eval context and then eval all cells in the document
+     *  from first to last, and set focus to the last.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval_all(command_context: CommandContext<BqManager>): Promise<boolean> {
+        return this.#multi_eval_helper(command_context, true);
+    }
+
+    /** stop evaluation for the target cell.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__stop(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            command_context.target.stop();
+            return true;
+        }
+    }
+
+    /** stop all running evaluations.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__stop_all(command_context: CommandContext<BqManager>): boolean {
+        this.stop();
+        return true;
+    }
+
+    command__reset(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            command_context.target.reset();
+            this.set_structure_modified();
+            return true;
+        }
+    }
+
+    command__reset_all(command_context: CommandContext<BqManager>): boolean {
+        this.reset();
+        return true;
+    }
+
+    command__focus_up(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            const focus_cell = this.adjacent_cell(command_context.target, false);
+            if (!focus_cell) {
+                return false;
+            } else {
+                focus_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+
+    command__focus_down(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            const focus_cell = this.adjacent_cell(command_context.target, true);
+            if (!focus_cell) {
+                return false;
+            } else {
+                focus_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+
+    #move_helper(command_context: CommandContext<BqManager>, move_down: boolean): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            const cell = command_context.target;
+            let before = this.adjacent_cell(cell, move_down);
+            if (!before) {
+                return false;
+            } else {
+                if (move_down) {
+                    before = this.adjacent_cell(before, move_down);
+                }
+                const parent = before ? before.parentElement : this.cell_parent;
+                move_node(cell, { parent, before });
+                // now move associated output elements, if any
+                // note that we support multiple output elements per cell, even
+                // though there is usually only one.
+                const output_elements = [ ...document.querySelectorAll(cell.get_output_element_selector()) ];
+                for (const oe of output_elements.toReversed()) {  // reverse because assuming output elements follow cell
+                    const oe_next_sibling = oe.nextSibling;
+                    // move newline text node, if any, following output element, too.
+                    // it is included for formatting....
+                    if (oe_next_sibling && oe_next_sibling.nodeType === Node.TEXT_NODE && oe_next_sibling.nodeValue === '\n') {
+                        move_node(oe_next_sibling, {
+                            parent,
+                            before: cell.nextElementSibling,
+                        });
+                    }
+                    // now move the output element
+                    // note that we are moving these nodes in reverse order
+                    // because they are being moved releative to cell.nextElementSibling
+                    move_node(oe, {
+                        parent,
+                        before: cell.nextSibling,
+                    });
+                }
+                cell.scroll_into_view(true);
+                this.set_structure_modified();
+                return true;
+            }
+        }
+    }
+
+    command__move_up(command_context: CommandContext<BqManager>): boolean {
+        return this.#move_helper(command_context, false);
+    }
+
+    command__move_down(command_context: CommandContext<BqManager>): boolean {
+        return this.#move_helper(command_context, true);
+    }
+
+    #add_cell_helper(command_context: CommandContext<BqManager>, add_before: boolean, duplicate: boolean = false) {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            const current_cell = command_context.target;
+            this.set_structure_modified();
+            const this_cell = command_context.target;
+            const before = add_before
+                ? this_cell
+                : this.adjacent_cell(this_cell, true);
+            const parent = before ? before.parentElement : this.cell_parent;
+            const new_cell = this.create_cell({ before, parent });
+            if (!new_cell) {
+                return false;
+            } else {
+                new_cell.type = current_cell.type;
+                if (duplicate) {
+                    new_cell.set_text(current_cell.get_text());
+                }
+                new_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+
+    command__add_before(command_context: CommandContext<BqManager>): boolean {
+        return this.#add_cell_helper(command_context, true);
+    }
+
+    command__add_after(command_context: CommandContext<BqManager>): boolean {
+        return this.#add_cell_helper(command_context, false);
+    }
+
+    command__duplicate(command_context: CommandContext<BqManager>): boolean {
+        return this.#add_cell_helper(command_context, false, true);
+    }
+
+    async command__delete(command_context: CommandContext<BqManager>): Promise<boolean> {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            this.set_structure_modified();
+            const cell = command_context.target;
+            let next_cell = this.adjacent_cell(cell, true) ?? this.adjacent_cell(cell, false);
+            cell.reset();  // stop cell and remove output element, if any
+            cell.remove();
+            if (!next_cell) {
+                next_cell = this.create_cell();
+            }
+            next_cell.scroll_into_view(true);
+            return true;
+        }
+    }
+
+    #set_type_helper(command_context: CommandContext<BqManager>, type: string) {
+        this.set_structure_modified();
+        const cell = command_context.target;
+        if (!(cell instanceof BqCellElement)) {
+            return false;
+        } else {
+            cell.type = type;
+            return true;
+        }
+    }
+
+    /** set the target cell's type to "markdown".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_markdown(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_type_helper(command_context, 'markdown');
+    }
+
+    /** set the target cell's type to "tex".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_tex(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_type_helper(command_context, 'tex');
+    }
+
+    /** set the target cell's type to "javascript".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_javascript(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_type_helper(command_context, 'javascript');
+    }
+
+    /** set the target cell's type to "plain".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_plain(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_type_helper(command_context, 'plain');
+    }
+
+    #set_view_helper(command_context: CommandContext<BqManager>, view: string): boolean {
+        this.set_structure_modified();
+        if (view === cell_view_values_default) {
+            document.documentElement.removeAttribute(cell_view_attribute_name);
+        } else {
+            document.documentElement.setAttribute(cell_view_attribute_name, view);
+        }
+        return true;
+    }
+
+    /** set the document view to "normal".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_normal(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_view_helper(command_context, 'normal');
+    }
+
+    /** set the document view to "hide".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_hide(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_view_helper(command_context, 'hide');
+    }
+
+    /** set the document view to "full".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_full(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_view_helper(command_context, 'full');
+    }
+
+    /** set the document view to "none".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_none(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_view_helper(command_context, 'none');
+    }
+
+    /** set the document view to "presentation".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_presentation(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_view_helper(command_context, 'presentation');
+    }
+
+    command__show_help(command_context: CommandContext<BqManager>): boolean {
+        open_help_window();
+        return true;
     }
 }
 (globalThis as any).BqManager = BqManager;//!!!

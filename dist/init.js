@@ -11441,26 +11441,30 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(742);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(5428);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
-/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3854);
-/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1327);
-/* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(9779);
-/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(4395);
-/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(2023);
-/* harmony import */ var lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(3178);
-/* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4641);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(3593);
-/* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3882);
-/* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(6136);
-/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(5934);
-/* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(4511);
-/* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, src_renderer___WEBPACK_IMPORTED_MODULE_6__, src_output_context___WEBPACK_IMPORTED_MODULE_7__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__, src_settings___WEBPACK_IMPORTED_MODULE_11__, _global_bindings__WEBPACK_IMPORTED_MODULE_12__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_13__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, src_renderer___WEBPACK_IMPORTED_MODULE_6__, src_output_context___WEBPACK_IMPORTED_MODULE_7__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__, src_settings___WEBPACK_IMPORTED_MODULE_11__, _global_bindings__WEBPACK_IMPORTED_MODULE_12__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_13__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var _settings_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1140);
+/* harmony import */ var src_help_window___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(2512);
+/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3854);
+/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1327);
+/* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9779);
+/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
+/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(2023);
+/* harmony import */ var lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3178);
+/* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4641);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3593);
+/* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3882);
+/* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(6136);
+/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
+/* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
+/* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
+
+
 
 
 
@@ -11532,19 +11536,19 @@ class BqManager {
     #start_called = false;
     constructor() {
         this.#eval_states.subscribe(this.#eval_states_observer.bind(this)); //!!! never unsubscribed
-        this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_12__/* .get_global_command_bindings */ .yU)();
+        this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_command_bindings */ .yU)();
         this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyEventManager */ .jC(this, window, this.#perform_command.bind(this));
         try {
-            const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_11__/* .get_settings */ .TJ)();
+            const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)();
             // must set bq on all incoming cells
             for (const cell of this.get_cells()) {
                 cell._set_bq(this);
             }
             this.reset_global_state();
             // listen for settings changed events and trigger update in cells
-            src_settings___WEBPACK_IMPORTED_MODULE_11__/* .settings_updated_events */ .KW.subscribe(this.update_from_settings.bind(this)); //!!! never unsubscribed
+            src_settings___WEBPACK_IMPORTED_MODULE_13__/* .settings_updated_events */ .KW.subscribe(this.update_from_settings.bind(this)); //!!! never unsubscribed
             this.update_from_settings(); // establish initial settings right away
-            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_12__/* .get_global_initial_key_map_bindings */ .oX)());
+            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX)());
             this.push_key_map(key_map);
             this.#key_event_manager.attach();
             this.set_editable(true);
@@ -11568,7 +11572,7 @@ class BqManager {
         }
     }
     #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .B(true); // true: multiple_stops
-    #eval_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_16__/* .SerialDataSource */ .Y();
+    #eval_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_18__/* .SerialDataSource */ .Y();
     #command_bindings;
     #key_event_manager;
     #with_menubar = undefined; // undefined until first time a menu is set up
@@ -11580,7 +11584,7 @@ class BqManager {
     #active_cell = null;
     #global_state = {}; // persistent state for renderers
     #cell_ocx_map = new WeakMap(); // maintained by this.invoke_renderer()
-    #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_10__/* .NotificationManager */ .h();
+    #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__/* .NotificationManager */ .h();
     get notification_manager() { return this.#notification_manager; }
     #reset_before_render = false; // from settings, kept up-to-date via settings_updated_events
     get reset_before_render() { return this.#reset_before_render; }
@@ -11637,7 +11641,7 @@ class BqManager {
         catch (error) {
             console.error('error calling this.stop()', error, this);
         }
-        src_renderer___WEBPACK_IMPORTED_MODULE_6__/* .TextBasedRenderer */ .m9.reset_renderer_factories();
+        src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.reset_renderer_factories();
         this.reset_global_state();
         this.#file_handle = undefined;
         for (const cell of this.get_cells()) {
@@ -11656,7 +11660,7 @@ class BqManager {
     clear() {
         this.reset();
         if (this.main_element) {
-            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_5__/* .clear_element */ .ho)(this.main_element);
+            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .clear_element */ .ho)(this.main_element);
         }
         const first_cell = this.create_cell();
         first_cell.focus();
@@ -11726,7 +11730,7 @@ class BqManager {
                 "media-src   'self' data: blob: *",
                 "connect-src data:",
             ].join('; ');
-            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_5__/* .create_element */ .Wh)({
+            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .create_element */ .Wh)({
                 parent: document.head,
                 tag: 'meta',
                 attrs: {
@@ -11743,8 +11747,8 @@ class BqManager {
         this.set_menu_style(with_menubar);
     }
     #set_initial_active_cell() {
-        const active_cell = (document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c.custom_element_name}[${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c.attribute__active}]`) ?? // cell currently set as active
-            document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c.custom_element_name}`) ?? // first cell
+        const active_cell = (document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name}[${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.attribute__active}]`) ?? // cell currently set as active
+            document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name}`) ?? // first cell
             this.create_cell() // new cell
         );
         if (active_cell.bq !== this) {
@@ -11767,11 +11771,11 @@ class BqManager {
             this.#menu?.remove();
             this.#menu = undefined;
             // setup new menu
-            const get_menu_spec = with_menubar ? _global_bindings__WEBPACK_IMPORTED_MODULE_12__/* .get_menubar_spec */ .q7 : _global_bindings__WEBPACK_IMPORTED_MODULE_12__/* .get_ellipsis_menu_spec */ .Ho;
-            this.#menu = lib_ui_menu___WEBPACK_IMPORTED_MODULE_8__/* .Menu */ .W.create(this, this.header_element, get_menu_spec(), {
+            const get_menu_spec = with_menubar ? _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_menubar_spec */ .q7 : _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_ellipsis_menu_spec */ .Ho;
+            this.#menu = lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__/* .Menu */ .W.create(this, this.header_element, get_menu_spec(), {
                 as_menubar: with_menubar,
                 persistent: true,
-                get_command_bindings: _global_bindings__WEBPACK_IMPORTED_MODULE_12__/* .get_global_initial_key_map_bindings */ .oX,
+                get_command_bindings: _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX,
             });
             this.#menu_commands_subscription = this.#menu.commands.subscribe(this.#perform_command.bind(this));
             this.#menu_selects_subscription = this.#menu.selects.subscribe(this.#update_menu_state.bind(this));
@@ -11809,7 +11813,7 @@ class BqManager {
         let auto_eval = (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_eval */ .u1)();
         let active_cell = false;
         if (show_options_dialog) {
-            const options_dialog_result = await _export_options_dialog___WEBPACK_IMPORTED_MODULE_13__/* .ExportOptionsDialog */ .F.run();
+            const options_dialog_result = await _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__/* .ExportOptionsDialog */ .F.run();
             if (!options_dialog_result) {
                 this.notification_manager.add('save canceled');
                 return false; // indicate: canceled
@@ -11855,7 +11859,7 @@ class BqManager {
             throw new Error('unexpected: cell has a different bq');
         }
         type ??= 'plain';
-        const renderer = src_renderer___WEBPACK_IMPORTED_MODULE_6__/* .TextBasedRenderer */ .m9.renderer_for_type(type);
+        const renderer = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.renderer_for_type(type);
         if (!renderer) {
             throw new Error('no renderer found for type "${type}"');
         }
@@ -11882,18 +11886,18 @@ class BqManager {
         if (!output_element && this.#reset_before_render) {
             cell.reset();
         }
-        output_element ??= src_output_context___WEBPACK_IMPORTED_MODULE_7__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
+        output_element ??= src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
         // resources to be cleaned up, too.  However, the returned function
         // remove_event_handlers() can be called to explicitly remove the
         // handlers.  This is useful if the output_element is passed in
         // from the outside and that sort of control is desired.
-        const event_listener_manager = new lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_17__/* .EventListenerManager */ .W();
+        const event_listener_manager = new lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_19__/* .EventListenerManager */ .W();
         const event_listener = (event) => {
             // use querySelector() to re-find the cell in case it is no longer present
             const refound_cell = document.querySelector(`#${cell_id}`);
-            if (refound_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c) {
+            if (refound_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c) {
                 if (refound_cell !== this.active_cell && refound_cell.bq === this) {
                     this.set_active_cell(refound_cell);
                 }
@@ -11907,7 +11911,7 @@ class BqManager {
                 event_listener_manager.detach();
             }
         };
-        const ocx = new src_output_context___WEBPACK_IMPORTED_MODULE_7__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
+        const ocx = new src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
         this.activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
@@ -12020,7 +12024,7 @@ class BqManager {
     }
     // note: an updated command_context with target set to this.active_cell
     // is sent to the command handler.
-    #perform_command(command_context) {
+    async #perform_command(command_context) {
         let success = false; // for now...
         try {
             if (command_context) {
@@ -12033,16 +12037,17 @@ class BqManager {
                     const bindings_fn = this.#command_bindings[updated_command_context.command];
                     if (bindings_fn) {
                         if (bindings_fn instanceof AsyncFunction) {
-                            bindings_fn(updated_command_context)
+                            return bindings_fn(updated_command_context)
                                 .then((success) => {
                                 if (!success) {
-                                    (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_18__/* .beep */ .T)();
+                                    (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
                                 }
+                                return success;
                             })
                                 .catch((error) => {
                                 console.error('error performing command', error, command_context);
+                                return false;
                             });
-                            success = true; // so far..., a failure may yet happen asynchronously
                         }
                         else {
                             success = bindings_fn(updated_command_context);
@@ -12055,8 +12060,9 @@ class BqManager {
             console.error('error processing command', command_context, error);
         }
         if (!success) {
-            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_18__/* .beep */ .T)();
+            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
         }
+        return success;
     }
     #update_menu_state() {
         //!!! review this !!!
@@ -12108,7 +12114,7 @@ class BqManager {
         }
     }
     update_from_settings() {
-        const { classic_menu, editor_options, render_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_11__/* .get_settings */ .TJ)() ?? {});
+        const { classic_menu, editor_options, render_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)() ?? {});
         this.set_menu_style(classic_menu);
         for (const cell of this.get_cells()) {
             cell.update_from_settings();
@@ -12139,7 +12145,7 @@ class BqManager {
     /** return an ordered list of the BqCellElement (bq-cell) cells in the document
      */
     get_cells() {
-        return [...document.getElementsByTagName(src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c.custom_element_name)];
+        return [...document.getElementsByTagName(src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name)];
     }
     /** Return the cell that is adjacent to the given cell, either forward (or
      * alternately backward) from the reference.  If include_non_shown is false,
@@ -12196,8 +12202,8 @@ class BqManager {
                 parent: this.main_element,
                 ...options,
             };
-        const cell = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_5__/* .create_element */ .Wh)({
-            tag: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_9__/* .BqCellElement */ .c.custom_element_name,
+        const cell = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .create_element */ .Wh)({
+            tag: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name,
             set_id: true,
             ...extended_options,
         });
@@ -12210,465 +12216,353 @@ class BqManager {
         const message = `Unhandled ${is_unhandled_rejection ? 'rejection' : 'error'}: ${event?.reason?.message}`;
         lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__/* .AlertDialog */ .Lt.run(message);
     }
-}
-globalThis.BqManager = BqManager; //!!!
-
-__webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } });
-
-/***/ }),
-
-/***/ 9838:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AA: () => (/* binding */ command_handler__focus_down),
-/* harmony export */   CJ: () => (/* binding */ command_handler__save),
-/* harmony export */   D2: () => (/* binding */ command_handler__save_as),
-/* harmony export */   EF: () => (/* binding */ command_handler__set_type_tex),
-/* harmony export */   EL: () => (/* binding */ command_handler__show_help),
-/* harmony export */   FP: () => (/* binding */ command_handler__stop),
-/* harmony export */   K6: () => (/* binding */ command_handler__duplicate),
-/* harmony export */   M: () => (/* binding */ command_handler__set_view_none),
-/* harmony export */   MB: () => (/* binding */ command_handler__add_before),
-/* harmony export */   NO: () => (/* binding */ command_handler__export),
-/* harmony export */   Nf: () => (/* binding */ command_handler__focus_up),
-/* harmony export */   Nm: () => (/* binding */ command_handler__set_view_full),
-/* harmony export */   OR: () => (/* binding */ command_handler__move_up),
-/* harmony export */   Pg: () => (/* binding */ command_handler__eval_and_refocus),
-/* harmony export */   QF: () => (/* binding */ command_handler__delete),
-/* harmony export */   QK: () => (/* binding */ command_handler__reset_all),
-/* harmony export */   Rq: () => (/* binding */ command_handler__eval_before),
-/* harmony export */   WF: () => (/* binding */ command_handler__set_type_markdown),
-/* harmony export */   Xr: () => (/* binding */ command_handler__eval_all),
-/* harmony export */   Xv: () => (/* binding */ command_handler__set_type_plain),
-/* harmony export */   YB: () => (/* binding */ command_handler__clear_all),
-/* harmony export */   _d: () => (/* binding */ command_handler__toggle_auto_eval),
-/* harmony export */   dB: () => (/* binding */ command_handler__add_after),
-/* harmony export */   fq: () => (/* binding */ command_handler__move_down),
-/* harmony export */   ht: () => (/* binding */ command_handler__set_view_normal),
-/* harmony export */   ot: () => (/* binding */ command_handler__set_view_hide),
-/* harmony export */   r1: () => (/* binding */ command_handler__eval),
-/* harmony export */   s0: () => (/* binding */ command_handler__reset),
-/* harmony export */   uk: () => (/* binding */ command_handler__set_view_presentation),
-/* harmony export */   vA: () => (/* binding */ command_handler__stop_all),
-/* harmony export */   vc: () => (/* binding */ command_handler__show_settings_dialog),
-/* harmony export */   wv: () => (/* binding */ command_handler__set_type_javascript)
-/* harmony export */ });
-/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2023);
-/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8380);
-/* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6336);
-/* harmony import */ var _settings_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1140);
-/* harmony import */ var src_help_window___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(2512);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__, src_init__WEBPACK_IMPORTED_MODULE_3__, _settings_dialog___WEBPACK_IMPORTED_MODULE_4__]);
-([src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__, src_init__WEBPACK_IMPORTED_MODULE_3__, _settings_dialog___WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
-// === COMMAND HANDLERS ===
-
-
-
-
-
-
-// _scroll_target_into_view() is used by some commands to scroll the active cell
-// into view before performing the command.
-function _scroll_target_into_view(command_context) {
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        console.warn('internal function _scroll_target_into_view(): command_context.target is not a cell', command_context);
-    }
-    else {
-        command_context.dm.active_cell?.scroll_into_view(true);
-    }
-}
-// These command_handler__* functions each return a boolean.  The return value
-// is true iff the command was successfully handled.  It is assumed that
-// command_context.target === command_context.dm.active_cell on entry.
-async function command_handler__clear_all(command_context) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    if (!await lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ConfirmDialog */ .TM.run('Clear document?')) {
-        command_context.dm.active_cell?.focus();
-        return false;
-    }
-    command_context.dm.clear();
-    return true;
-}
-async function command_handler__save(command_context) {
-    return command_context.dm.perform_save();
-}
-async function command_handler__save_as(command_context) {
-    return command_context.dm.perform_save(true);
-}
-async function command_handler__export(command_context) {
-    return command_context.dm.perform_save(true, true);
-}
-function command_handler__toggle_auto_eval(command_context) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    const new_auto_eval_setting = !(0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_auto_eval */ .u1)();
-    (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .set_auto_eval */ .wG)(new_auto_eval_setting);
-    command_context.dm.set_structure_modified();
-    command_context.dm.notification_manager.add(`auto-eval ${new_auto_eval_setting ? 'on' : 'off'}`);
-    return true;
-}
-function command_handler__show_settings_dialog(command_context) {
-    _settings_dialog___WEBPACK_IMPORTED_MODULE_4__/* .SettingsDialog */ .g.run();
-    return true;
-}
-/** eval target cell
- *  @return {Boolean} true iff command successfully handled
- */
-async function command_handler__eval(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    _scroll_target_into_view(command_context);
-    const cell = command_context.target;
-    if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        command_context.dm.set_structure_modified();
-        try {
-            await command_context.dm.invoke_renderer_for_type(cell.type, undefined, cell);
-        }
-        catch (error) {
-            console.error('error rendering cell', error, cell);
-            return false;
-        }
+    // === COMMAND HANDLER IMPLEMENTATIONS ===
+    // These command__* methods handle commands directly without user interaction.
+    //
+    // Each of these command__* methods each returns a boolean.  The return value
+    // is true iff the command was successfully handled.
+    //
+    // command_context.target is used for the target cell, ignoring this.active_cell.
+    //
+    // These commands are non-interactive, however the following commands by necessity
+    // interact with the user to some degree:
+    //
+    // - command__save,
+    // - command__save_as,
+    // - command__export ................. must use the system file select dialog due to sandbox
+    //                                     also, shows notification
+    //
+    // - command__toggle_auto_eval ....... shows notification
+    //
+    // - command__show_settings_dialog ... shows settings dialog
+    //
+    // - command__eval_before,
+    // - command__eval_all ............... will show notification if evaluation is subsequently stopped
+    //
+    // - command__focus_up,
+    // - command__focus_down,
+    // - command__move_up,
+    // - command__move_down,
+    // - command__add_before,
+    // - command__add_after,
+    // - command__duplicate,
+    // - command__delete ................. scrolls cell into view
+    //
+    // - command__show_help .............. opens help window
+    async command__clear_all(command_context) {
+        this.clear();
         return true;
     }
-}
-/** eval target cell and refocus to next cell (or a new one if at the end of the document)
- *  @return {Boolean} true iff command successfully handled
- */
-async function command_handler__eval_and_refocus(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
+    async command__save(command_context) {
+        return this.perform_save();
     }
-    _scroll_target_into_view(command_context);
-    const eval_result = await command_handler__eval(command_context);
-    if (!eval_result) {
-        return false;
+    async command__save_as(command_context) {
+        return this.perform_save(true);
     }
-    else {
-        const adjacent_cell = command_context.dm.adjacent_cell(command_context.target, true);
-        const next_cell = adjacent_cell
-            ? adjacent_cell
-            : (command_context.dm.in_presentation_view ? undefined : command_context.dm.create_cell());
-        next_cell?.scroll_into_view(true);
+    async command__export(command_context) {
+        return this.perform_save(true, true);
+    }
+    command__toggle_auto_eval(command_context) {
+        const new_auto_eval_setting = !(0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_eval */ .u1)();
+        (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .set_auto_eval */ .wG)(new_auto_eval_setting);
+        this.set_structure_modified();
+        this.notification_manager.add(`auto-eval ${new_auto_eval_setting ? 'on' : 'off'}`);
         return true;
     }
-}
-async function multi_eval_helper(command_context, eval_all = false) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    _scroll_target_into_view(command_context);
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        return eval_all
-            ? command_context.dm.render_cells()
-            : command_context.dm.render_cells(command_context.target);
-    }
-}
-/** reset global eval context and then eval all cells in the document
- *  from the beginning up to but not including the target cell.
- *  @return {Boolean} true iff command successfully handled
- */
-async function command_handler__eval_before(command_context) {
-    return multi_eval_helper(command_context, false);
-}
-/** stop all running evaluations, reset global eval context and then eval all cells in the document
- *  from first to last, and set focus to the last.
- *  @return {Boolean} true iff command successfully handled
- */
-async function command_handler__eval_all(command_context) {
-    return multi_eval_helper(command_context, true);
-}
-/** stop evaluation for the active cell.
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__stop(command_context) {
-    _scroll_target_into_view(command_context);
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        command_context.target.stop();
+    command__show_settings_dialog(command_context) {
+        _settings_dialog___WEBPACK_IMPORTED_MODULE_5__/* .SettingsDialog */ .g.run();
         return true;
     }
-}
-/** stop all running evaluations.
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__stop_all(command_context) {
-    command_context.dm.stop();
-    return true;
-}
-function command_handler__reset(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        command_context.target.reset();
-        command_context.dm.set_structure_modified();
-        return true;
-    }
-}
-function command_handler__reset_all(command_context) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    command_context.dm.reset();
-    return true;
-}
-function command_handler__focus_up(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        const focus_cell = command_context.dm.adjacent_cell(command_context.target, false);
-        if (!focus_cell) {
-            return false;
-        }
-        else {
-            focus_cell.scroll_into_view(true);
-            return true;
-        }
-    }
-}
-function command_handler__focus_down(command_context) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        const focus_cell = command_context.dm.adjacent_cell(command_context.target, true);
-        if (!focus_cell) {
-            return false;
-        }
-        else {
-            focus_cell.scroll_into_view(true);
-            return true;
-        }
-    }
-}
-function move_helper(command_context, move_down) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
+    /** eval target cell
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval(command_context) {
         const cell = command_context.target;
-        let before = command_context.dm.adjacent_cell(cell, move_down);
-        if (!before) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
-            if (move_down) {
-                before = command_context.dm.adjacent_cell(before, move_down);
+            this.set_structure_modified();
+            try {
+                await this.invoke_renderer_for_type(cell.type, undefined, cell);
             }
-            const parent = before ? before.parentElement : command_context.dm.cell_parent;
-            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .move_node */ .NM)(cell, { parent, before });
-            // now move associated output elements, if any
-            // note that we support multiple output elements per cell, even
-            // though there is usually only one.
-            const output_elements = [...document.querySelectorAll(cell.get_output_element_selector())];
-            for (const oe of output_elements.toReversed()) { // reverse because assuming output elements follow cell
-                const oe_next_sibling = oe.nextSibling;
-                // move newline text node, if any, following output element, too.
-                // it is included for formatting....
-                if (oe_next_sibling && oe_next_sibling.nodeType === Node.TEXT_NODE && oe_next_sibling.nodeValue === '\n') {
-                    (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .move_node */ .NM)(oe_next_sibling, {
-                        parent,
-                        before: cell.nextElementSibling,
-                    });
-                }
-                // now move the output element
-                // note that we are moving these nodes in reverse order
-                // because they are being moved releative to cell.nextElementSibling
-                (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .move_node */ .NM)(oe, {
-                    parent,
-                    before: cell.nextSibling,
-                });
-            }
-            cell.scroll_into_view(true);
-            command_context.dm.set_structure_modified();
-            return true;
-        }
-    }
-}
-function command_handler__move_up(command_context) {
-    return move_helper(command_context, false);
-}
-function command_handler__move_down(command_context) {
-    return move_helper(command_context, true);
-}
-function add_cell_helper(command_context, add_before, duplicate = false) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        const current_cell = command_context.target;
-        command_context.dm.set_structure_modified();
-        const this_cell = command_context.target;
-        const before = add_before
-            ? this_cell
-            : command_context.dm.adjacent_cell(this_cell, true);
-        const parent = before ? before.parentElement : command_context.dm.cell_parent;
-        const new_cell = command_context.dm.create_cell({ before, parent });
-        if (!new_cell) {
-            return false;
-        }
-        else {
-            new_cell.type = current_cell.type;
-            if (duplicate) {
-                new_cell.set_text(current_cell.get_text());
-            }
-            new_cell.scroll_into_view(true);
-            return true;
-        }
-    }
-}
-function command_handler__add_before(command_context) {
-    return add_cell_helper(command_context, true);
-}
-function command_handler__add_after(command_context) {
-    return add_cell_helper(command_context, false);
-}
-function command_handler__duplicate(command_context) {
-    return add_cell_helper(command_context, false, true);
-}
-async function command_handler__delete(command_context) {
-    if (command_context.dm.in_presentation_view) {
-        return false;
-    }
-    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        command_context.dm.set_structure_modified();
-        const cell = command_context.target;
-        if (cell.get_text().trim().length > 0 || document.querySelectorAll(cell.get_output_element_selector()).length > 0) {
-            const ok = await lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ConfirmDialog */ .TM.run('Cannot undo delete of cell and output element.\nContinue?');
-            if (!ok) {
-                cell.focus();
+            catch (error) {
+                console.error('error rendering cell', error, cell);
                 return false;
             }
+            return true;
         }
-        let next_cell = command_context.dm.adjacent_cell(cell, true) ?? command_context.dm.adjacent_cell(cell, false);
-        cell.reset(); // stop cell and remove output element, if any
-        cell.remove();
-        if (!next_cell) {
-            next_cell = command_context.dm.create_cell();
+    }
+    async #multi_eval_helper(command_context, eval_all = false) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
         }
-        next_cell.scroll_into_view(true);
+        else {
+            return eval_all
+                ? this.render_cells()
+                : this.render_cells(command_context.target);
+        }
+    }
+    /** reset global eval context and then eval all cells in the document
+     *  from the beginning up to but not including the target cell.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval_before(command_context) {
+        return this.#multi_eval_helper(command_context, false);
+    }
+    /** stop all running evaluations, reset global eval context and then eval all cells in the document
+     *  from first to last, and set focus to the last.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval_all(command_context) {
+        return this.#multi_eval_helper(command_context, true);
+    }
+    /** stop evaluation for the target cell.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__stop(command_context) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            command_context.target.stop();
+            return true;
+        }
+    }
+    /** stop all running evaluations.
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__stop_all(command_context) {
+        this.stop();
+        return true;
+    }
+    command__reset(command_context) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            command_context.target.reset();
+            this.set_structure_modified();
+            return true;
+        }
+    }
+    command__reset_all(command_context) {
+        this.reset();
+        return true;
+    }
+    command__focus_up(command_context) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            const focus_cell = this.adjacent_cell(command_context.target, false);
+            if (!focus_cell) {
+                return false;
+            }
+            else {
+                focus_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+    command__focus_down(command_context) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            const focus_cell = this.adjacent_cell(command_context.target, true);
+            if (!focus_cell) {
+                return false;
+            }
+            else {
+                focus_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+    #move_helper(command_context, move_down) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            const cell = command_context.target;
+            let before = this.adjacent_cell(cell, move_down);
+            if (!before) {
+                return false;
+            }
+            else {
+                if (move_down) {
+                    before = this.adjacent_cell(before, move_down);
+                }
+                const parent = before ? before.parentElement : this.cell_parent;
+                (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(cell, { parent, before });
+                // now move associated output elements, if any
+                // note that we support multiple output elements per cell, even
+                // though there is usually only one.
+                const output_elements = [...document.querySelectorAll(cell.get_output_element_selector())];
+                for (const oe of output_elements.toReversed()) { // reverse because assuming output elements follow cell
+                    const oe_next_sibling = oe.nextSibling;
+                    // move newline text node, if any, following output element, too.
+                    // it is included for formatting....
+                    if (oe_next_sibling && oe_next_sibling.nodeType === Node.TEXT_NODE && oe_next_sibling.nodeValue === '\n') {
+                        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(oe_next_sibling, {
+                            parent,
+                            before: cell.nextElementSibling,
+                        });
+                    }
+                    // now move the output element
+                    // note that we are moving these nodes in reverse order
+                    // because they are being moved releative to cell.nextElementSibling
+                    (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(oe, {
+                        parent,
+                        before: cell.nextSibling,
+                    });
+                }
+                cell.scroll_into_view(true);
+                this.set_structure_modified();
+                return true;
+            }
+        }
+    }
+    command__move_up(command_context) {
+        return this.#move_helper(command_context, false);
+    }
+    command__move_down(command_context) {
+        return this.#move_helper(command_context, true);
+    }
+    #add_cell_helper(command_context, add_before, duplicate = false) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            const current_cell = command_context.target;
+            this.set_structure_modified();
+            const this_cell = command_context.target;
+            const before = add_before
+                ? this_cell
+                : this.adjacent_cell(this_cell, true);
+            const parent = before ? before.parentElement : this.cell_parent;
+            const new_cell = this.create_cell({ before, parent });
+            if (!new_cell) {
+                return false;
+            }
+            else {
+                new_cell.type = current_cell.type;
+                if (duplicate) {
+                    new_cell.set_text(current_cell.get_text());
+                }
+                new_cell.scroll_into_view(true);
+                return true;
+            }
+        }
+    }
+    command__add_before(command_context) {
+        return this.#add_cell_helper(command_context, true);
+    }
+    command__add_after(command_context) {
+        return this.#add_cell_helper(command_context, false);
+    }
+    command__duplicate(command_context) {
+        return this.#add_cell_helper(command_context, false, true);
+    }
+    async command__delete(command_context) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            this.set_structure_modified();
+            const cell = command_context.target;
+            let next_cell = this.adjacent_cell(cell, true) ?? this.adjacent_cell(cell, false);
+            cell.reset(); // stop cell and remove output element, if any
+            cell.remove();
+            if (!next_cell) {
+                next_cell = this.create_cell();
+            }
+            next_cell.scroll_into_view(true);
+            return true;
+        }
+    }
+    #set_type_helper(command_context, type) {
+        this.set_structure_modified();
+        const cell = command_context.target;
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            return false;
+        }
+        else {
+            cell.type = type;
+            return true;
+        }
+    }
+    /** set the target cell's type to "markdown".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_markdown(command_context) {
+        return this.#set_type_helper(command_context, 'markdown');
+    }
+    /** set the target cell's type to "tex".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_tex(command_context) {
+        return this.#set_type_helper(command_context, 'tex');
+    }
+    /** set the target cell's type to "javascript".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_javascript(command_context) {
+        return this.#set_type_helper(command_context, 'javascript');
+    }
+    /** set the target cell's type to "plain".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_type_plain(command_context) {
+        return this.#set_type_helper(command_context, 'plain');
+    }
+    #set_view_helper(command_context, view) {
+        this.set_structure_modified();
+        if (view === src_init__WEBPACK_IMPORTED_MODULE_0__/* .cell_view_values_default */ .I7) {
+            document.documentElement.removeAttribute(src_init__WEBPACK_IMPORTED_MODULE_0__/* .cell_view_attribute_name */ .Qy);
+        }
+        else {
+            document.documentElement.setAttribute(src_init__WEBPACK_IMPORTED_MODULE_0__/* .cell_view_attribute_name */ .Qy, view);
+        }
+        return true;
+    }
+    /** set the document view to "normal".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_normal(command_context) {
+        return this.#set_view_helper(command_context, 'normal');
+    }
+    /** set the document view to "hide".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_hide(command_context) {
+        return this.#set_view_helper(command_context, 'hide');
+    }
+    /** set the document view to "full".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_full(command_context) {
+        return this.#set_view_helper(command_context, 'full');
+    }
+    /** set the document view to "none".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_none(command_context) {
+        return this.#set_view_helper(command_context, 'none');
+    }
+    /** set the document view to "presentation".
+     *  @return {Boolean} true iff command successfully handled
+     */
+    command__set_view_presentation(command_context) {
+        return this.#set_view_helper(command_context, 'presentation');
+    }
+    command__show_help(command_context) {
+        (0,src_help_window___WEBPACK_IMPORTED_MODULE_6__/* .open_help_window */ .S)();
         return true;
     }
 }
-function set_type_helper(command_context, type) {
-    if (!command_context.dm.interactive) {
-        return false;
-    }
-    command_context.dm.set_structure_modified();
-    _scroll_target_into_view(command_context);
-    const cell = command_context.target;
-    if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
-        return false;
-    }
-    else {
-        cell.type = type;
-        return true;
-    }
-}
-/** set the active cell's type to "markdown".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_type_markdown(command_context) {
-    return set_type_helper(command_context, 'markdown');
-}
-/** set the active cell's type to "tex".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_type_tex(command_context) {
-    return set_type_helper(command_context, 'tex');
-}
-/** set the active cell's type to "javascript".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_type_javascript(command_context) {
-    return set_type_helper(command_context, 'javascript');
-}
-/** set the active cell's type to "plain".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_type_plain(command_context) {
-    return set_type_helper(command_context, 'plain');
-}
-function set_view_helper(command_context, view) {
-    command_context.dm.set_structure_modified();
-    _scroll_target_into_view(command_context);
-    if (view === src_init__WEBPACK_IMPORTED_MODULE_3__/* .cell_view_values_default */ .I7) {
-        document.documentElement.removeAttribute(src_init__WEBPACK_IMPORTED_MODULE_3__/* .cell_view_attribute_name */ .Qy);
-    }
-    else {
-        document.documentElement.setAttribute(src_init__WEBPACK_IMPORTED_MODULE_3__/* .cell_view_attribute_name */ .Qy, view);
-    }
-    return true;
-}
-/** set the document view to "normal".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_view_normal(command_context) {
-    return set_view_helper(command_context, 'normal');
-}
-/** set the document view to "hide".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_view_hide(command_context) {
-    return set_view_helper(command_context, 'hide');
-}
-/** set the document view to "full".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_view_full(command_context) {
-    return set_view_helper(command_context, 'full');
-}
-/** set the document view to "none".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_view_none(command_context) {
-    return set_view_helper(command_context, 'none');
-}
-/** set the document view to "presentation".
- *  @return {Boolean} true iff command successfully handled
- */
-function command_handler__set_view_presentation(command_context) {
-    return set_view_helper(command_context, 'presentation');
-}
-function command_handler__show_help(command_context) {
-    (0,src_help_window___WEBPACK_IMPORTED_MODULE_5__/* .open_help_window */ .S)();
-    return true;
-}
+globalThis.BqManager = BqManager; //!!!
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
@@ -12861,9 +12755,9 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   q7: () => (/* binding */ get_menubar_spec),
 /* harmony export */   yU: () => (/* binding */ get_global_command_bindings)
 /* harmony export */ });
-/* harmony import */ var _commands__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9838);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_commands__WEBPACK_IMPORTED_MODULE_0__]);
-_commands__WEBPACK_IMPORTED_MODULE_0__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var _interactive_commands__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5661);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_interactive_commands__WEBPACK_IMPORTED_MODULE_0__]);
+_interactive_commands__WEBPACK_IMPORTED_MODULE_0__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 /** return the initial menu specification
  *  @return {Object} menu specification
@@ -13015,44 +12909,336 @@ function get_global_initial_key_map_bindings() {
 }
 /** return global command bindings
  *  @return {Object} mapping from command strings to functions implementing that command
- * The handler functions are taken from the commands argument.
  */
 function get_global_command_bindings() {
     const command_bindings = {
-        'reset': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__reset */ .s0,
-        'reset-all': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__reset_all */ .QK,
-        'clear-all': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__clear_all */ .YB,
-        'save': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__save */ .CJ,
-        'save-as': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__save_as */ .D2,
-        'export': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__export */ .NO,
-        'toggle-auto-eval': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__toggle_auto_eval */ ._d,
-        'settings': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__show_settings_dialog */ .vc,
-        'eval': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval */ .r1,
-        'eval-and-refocus': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval_and_refocus */ .Pg,
-        'eval-before': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval_before */ .Rq,
-        'eval-all': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__eval_all */ .Xr,
-        'stop': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__stop */ .FP,
-        'stop-all': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__stop_all */ .vA,
-        'focus-up': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__focus_up */ .Nf,
-        'focus-down': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__focus_down */ .AA,
-        'move-up': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__move_up */ .OR,
-        'move-down': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__move_down */ .fq,
-        'add-before': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__add_before */ .MB,
-        'add-after': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__add_after */ .dB,
-        'duplicate': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__duplicate */ .K6,
-        'delete': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__delete */ .QF,
-        'set-type-plain': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_type_plain */ .Xv,
-        'set-type-markdown': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_type_markdown */ .WF,
-        'set-type-tex': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_type_tex */ .EF,
-        'set-type-javascript': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_type_javascript */ .wv,
-        'set-view-normal': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_view_normal */ .ht,
-        'set-view-hide': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_view_hide */ .ot,
-        'set-view-full': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_view_full */ .Nm,
-        'set-view-none': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_view_none */ .M,
-        'set-view-presentation': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__set_view_presentation */ .uk,
-        'help': _commands__WEBPACK_IMPORTED_MODULE_0__/* .command_handler__show_help */ .EL,
+        'reset': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__reset */ ._l,
+        'reset-all': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__reset_all */ .a5,
+        'clear-all': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__clear_all */ .uA,
+        'save': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__save */ .i7,
+        'save-as': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__save_as */ .$0,
+        'export': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__export */ .BG,
+        'toggle-auto-eval': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__toggle_auto_eval */ .SX,
+        'settings': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__show_settings_dialog */ .vy,
+        'eval': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__eval */ .Fo,
+        'eval-and-refocus': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__eval_and_refocus */ .DM,
+        'eval-before': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__eval_before */ .tI,
+        'eval-all': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__eval_all */ .vT,
+        'stop': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__stop */ .t9,
+        'stop-all': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__stop_all */ .FP,
+        'focus-up': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__focus_up */ .lv,
+        'focus-down': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__focus_down */ .YO,
+        'move-up': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__move_up */ .MS,
+        'move-down': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__move_down */ .fQ,
+        'add-before': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__add_before */ .eS,
+        'add-after': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__add_after */ .Fp,
+        'duplicate': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__duplicate */ .Ef,
+        'delete': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__delete */ .m_,
+        'set-type-plain': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_plain */ .J8,
+        'set-type-markdown': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_markdown */ .ul,
+        'set-type-tex': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_tex */ .Se,
+        'set-type-javascript': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_javascript */ .yy,
+        'set-view-normal': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_normal */ .BF,
+        'set-view-hide': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_hide */ .O2,
+        'set-view-full': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_full */ .jd,
+        'set-view-none': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_none */ .QK,
+        'set-view-presentation': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_presentation */ .Gg,
+        'help': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__show_help */ .q8,
     };
     return command_bindings;
+}
+
+__webpack_async_result__();
+} catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 5661:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   $0: () => (/* binding */ interactive_command__save_as),
+/* harmony export */   BF: () => (/* binding */ interactive_command__set_view_normal),
+/* harmony export */   BG: () => (/* binding */ interactive_command__export),
+/* harmony export */   DM: () => (/* binding */ interactive_command__eval_and_refocus),
+/* harmony export */   Ef: () => (/* binding */ interactive_command__duplicate),
+/* harmony export */   FP: () => (/* binding */ interactive_command__stop_all),
+/* harmony export */   Fo: () => (/* binding */ interactive_command__eval),
+/* harmony export */   Fp: () => (/* binding */ interactive_command__add_after),
+/* harmony export */   Gg: () => (/* binding */ interactive_command__set_view_presentation),
+/* harmony export */   J8: () => (/* binding */ interactive_command__set_type_plain),
+/* harmony export */   MS: () => (/* binding */ interactive_command__move_up),
+/* harmony export */   O2: () => (/* binding */ interactive_command__set_view_hide),
+/* harmony export */   QK: () => (/* binding */ interactive_command__set_view_none),
+/* harmony export */   SX: () => (/* binding */ interactive_command__toggle_auto_eval),
+/* harmony export */   Se: () => (/* binding */ interactive_command__set_type_tex),
+/* harmony export */   YO: () => (/* binding */ interactive_command__focus_down),
+/* harmony export */   _l: () => (/* binding */ interactive_command__reset),
+/* harmony export */   a5: () => (/* binding */ interactive_command__reset_all),
+/* harmony export */   eS: () => (/* binding */ interactive_command__add_before),
+/* harmony export */   fQ: () => (/* binding */ interactive_command__move_down),
+/* harmony export */   i7: () => (/* binding */ interactive_command__save),
+/* harmony export */   jd: () => (/* binding */ interactive_command__set_view_full),
+/* harmony export */   lv: () => (/* binding */ interactive_command__focus_up),
+/* harmony export */   m_: () => (/* binding */ interactive_command__delete),
+/* harmony export */   q8: () => (/* binding */ interactive_command__show_help),
+/* harmony export */   t9: () => (/* binding */ interactive_command__stop),
+/* harmony export */   tI: () => (/* binding */ interactive_command__eval_before),
+/* harmony export */   uA: () => (/* binding */ interactive_command__clear_all),
+/* harmony export */   ul: () => (/* binding */ interactive_command__set_type_markdown),
+/* harmony export */   vT: () => (/* binding */ interactive_command__eval_all),
+/* harmony export */   vy: () => (/* binding */ interactive_command__show_settings_dialog),
+/* harmony export */   yy: () => (/* binding */ interactive_command__set_type_javascript)
+/* harmony export */ });
+/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2023);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8380);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__]);
+src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+// === COMMAND HANDLERS ===
+
+
+// _scroll_target_into_view() is used by some commands to scroll the active cell
+// into view before performing the command.
+function _scroll_target_into_view(command_context) {
+    if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_0__/* .BqCellElement */ .c)) {
+        console.warn('internal function _scroll_target_into_view(): command_context.target is not a cell', command_context);
+    }
+    else {
+        command_context.dm.active_cell?.scroll_into_view(true);
+    }
+}
+// === INTERACTIVE COMMAND HANDLER IMPLEMENTATIONS ===
+// These interactive_command__* functions each return a boolean.  The return value
+// is true iff the command was successfully handled.  It is assumed that
+// command_context.target === command_context.dm.active_cell on entry.
+async function interactive_command__clear_all(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    if (!await lib_ui_dialog___WEBPACK_IMPORTED_MODULE_1__/* .ConfirmDialog */ .TM.run('Clear document?')) {
+        command_context.dm.active_cell?.focus();
+        return false;
+    }
+    return command_context.dm.command__clear_all(command_context);
+}
+async function interactive_command__save(command_context) {
+    return command_context.dm.command__save(command_context);
+}
+async function interactive_command__save_as(command_context) {
+    return command_context.dm.command__save_as(command_context);
+}
+async function interactive_command__export(command_context) {
+    return command_context.dm.command__export(command_context);
+}
+function interactive_command__toggle_auto_eval(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__toggle_auto_eval(command_context);
+}
+function interactive_command__show_settings_dialog(command_context) {
+    return command_context.dm.command__show_settings_dialog(command_context);
+}
+/** eval target cell
+ *  @return {Boolean} true iff command successfully handled
+ */
+async function interactive_command__eval(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__eval(command_context);
+}
+/** eval target cell and refocus to next cell (or a new one if at the end of the document)
+ *  @return {Boolean} true iff command successfully handled
+ */
+async function interactive_command__eval_and_refocus(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    _scroll_target_into_view(command_context);
+    const eval_result = await command_context.dm.command__eval(command_context);
+    if (!eval_result) {
+        return false;
+    }
+    else {
+        const adjacent_cell = command_context.dm.adjacent_cell(command_context.target, true);
+        const next_cell = adjacent_cell
+            ? adjacent_cell
+            : (command_context.dm.in_presentation_view ? undefined : command_context.dm.create_cell());
+        next_cell?.scroll_into_view(true);
+        return true;
+    }
+}
+/** reset global eval context and then eval all cells in the document
+ *  from the beginning up to but not including the target cell.
+ *  @return {Boolean} true iff command successfully handled
+ */
+async function interactive_command__eval_before(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__eval_before(command_context);
+}
+/** stop all running evaluations, reset global eval context and then eval all cells in the document
+ *  from first to last, and set focus to the last.
+ *  @return {Boolean} true iff command successfully handled
+ */
+async function interactive_command__eval_all(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__eval_all(command_context);
+}
+/** stop evaluation for the target cell.
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__stop(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__stop(command_context);
+}
+/** stop all running evaluations.
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__stop_all(command_context) {
+    return command_context.dm.command__stop_all(command_context);
+}
+function interactive_command__reset(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__reset(command_context);
+}
+function interactive_command__reset_all(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__reset_all(command_context);
+}
+function interactive_command__focus_up(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__focus_up(command_context);
+}
+function interactive_command__focus_down(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__focus_down(command_context);
+}
+function interactive_command__move_up(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__move_up(command_context);
+}
+function interactive_command__move_down(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__move_down(command_context);
+}
+function interactive_command__add_before(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__add_before(command_context);
+}
+function interactive_command__add_after(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__add_after(command_context);
+}
+function interactive_command__duplicate(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__duplicate(command_context);
+}
+async function interactive_command__delete(command_context) {
+    if (command_context.dm.in_presentation_view) {
+        return false;
+    }
+    return command_context.dm.command__delete(command_context);
+}
+/** set the target cell's type to "markdown".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_type_markdown(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__set_type_markdown(command_context);
+}
+/** set the target cell's type to "tex".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_type_tex(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__set_type_tex(command_context);
+}
+/** set the target cell's type to "javascript".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_type_javascript(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__set_type_javascript(command_context);
+}
+/** set the target cell's type to "plain".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_type_plain(command_context) {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__set_type_plain(command_context);
+}
+/** set the document view to "normal".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_view_normal(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__set_view_normal(command_context);
+}
+/** set the document view to "hide".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_view_hide(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__set_view_hide(command_context);
+}
+/** set the document view to "full".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_view_full(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__set_view_full(command_context);
+}
+/** set the document view to "none".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_view_none(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__set_view_none(command_context);
+}
+/** set the document view to "presentation".
+ *  @return {Boolean} true iff command successfully handled
+ */
+function interactive_command__set_view_presentation(command_context) {
+    _scroll_target_into_view(command_context);
+    return command_context.dm.command__set_view_presentation(command_context);
+}
+function interactive_command__show_help(command_context) {
+    return command_context.dm.command__show_help(command_context);
 }
 
 __webpack_async_result__();

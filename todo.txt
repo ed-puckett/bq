@@ -1,3 +1,4 @@
+rework BqManager.singleton.#perform_command() and BqManager.singleton.inject_command()
 fix deprecation warnings when compiling
 change source type "tex" to "latex" ?
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
@@ -7,7 +8,6 @@ update README.md
 documentation: tell Firefox users about "Always ask you where to save files" setting
 KeySpec.#is_on_macos needs to be tested/fixed
 canceling save-as creates notification "document saved" (Firefox, not Chromium)
-some code in bq-manager/commands.ts should be implemented as methods in BqManager
 improve appearance of notifications, AlertDialog, ConfirmDialog and SettingsDialog
 replace marked with remark?  See: https://github.com/remarkjs/remark
 data-active on cell is (sometimes?) ignored when loading document (focus is set to first cell even when data-active="true" is set on last cell)
@@ -34,6 +34,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* some code in bq-manager/commands.ts should be implemented as methods in BqManager
 * define CommandContext separately, move out of lib/ui/key/key-event-manager.ts
 * expose command interface in BqManager.singleton (without having to create a synthetic event, etc)
 * add cell duplicate command

@@ -1,4 +1,4 @@
-import * as commands from './commands';
+import * as interactive_commands from './interactive-commands';
 
 /** return the initial menu specification
  *  @return {Object} menu specification
@@ -172,52 +172,51 @@ export function get_global_initial_key_map_bindings() {
 
 /** return global command bindings
  *  @return {Object} mapping from command strings to functions implementing that command
- * The handler functions are taken from the commands argument.
  */
 export function get_global_command_bindings() {
     const command_bindings = {
-        'reset':                 commands.command_handler__reset,
-        'reset-all':             commands.command_handler__reset_all,
-        'clear-all':             commands.command_handler__clear_all,
+        'reset':                 interactive_commands.interactive_command__reset,
+        'reset-all':             interactive_commands.interactive_command__reset_all,
+        'clear-all':             interactive_commands.interactive_command__clear_all,
 
-        'save':                  commands.command_handler__save,
-        'save-as':               commands.command_handler__save_as,
-        'export':                commands.command_handler__export,
+        'save':                  interactive_commands.interactive_command__save,
+        'save-as':               interactive_commands.interactive_command__save_as,
+        'export':                interactive_commands.interactive_command__export,
 
-        'toggle-auto-eval':      commands.command_handler__toggle_auto_eval,
+        'toggle-auto-eval':      interactive_commands.interactive_command__toggle_auto_eval,
 
-        'settings':              commands.command_handler__show_settings_dialog,
+        'settings':              interactive_commands.interactive_command__show_settings_dialog,
 
-        'eval':                  commands.command_handler__eval,
-        'eval-and-refocus':      commands.command_handler__eval_and_refocus,
-        'eval-before':           commands.command_handler__eval_before,
-        'eval-all':              commands.command_handler__eval_all,
+        'eval':                  interactive_commands.interactive_command__eval,
+        'eval-and-refocus':      interactive_commands.interactive_command__eval_and_refocus,
+        'eval-before':           interactive_commands.interactive_command__eval_before,
+        'eval-all':              interactive_commands.interactive_command__eval_all,
 
-        'stop':                  commands.command_handler__stop,
-        'stop-all':              commands.command_handler__stop_all,
+        'stop':                  interactive_commands.interactive_command__stop,
+        'stop-all':              interactive_commands.interactive_command__stop_all,
 
-        'focus-up':              commands.command_handler__focus_up,
-        'focus-down':            commands.command_handler__focus_down,
+        'focus-up':              interactive_commands.interactive_command__focus_up,
+        'focus-down':            interactive_commands.interactive_command__focus_down,
 
-        'move-up':               commands.command_handler__move_up,
-        'move-down':             commands.command_handler__move_down,
-        'add-before':            commands.command_handler__add_before,
-        'add-after':             commands.command_handler__add_after,
-        'duplicate':             commands.command_handler__duplicate,
-        'delete':                commands.command_handler__delete,
+        'move-up':               interactive_commands.interactive_command__move_up,
+        'move-down':             interactive_commands.interactive_command__move_down,
+        'add-before':            interactive_commands.interactive_command__add_before,
+        'add-after':             interactive_commands.interactive_command__add_after,
+        'duplicate':             interactive_commands.interactive_command__duplicate,
+        'delete':                interactive_commands.interactive_command__delete,
 
-        'set-type-plain':        commands.command_handler__set_type_plain,
-        'set-type-markdown':     commands.command_handler__set_type_markdown,
-        'set-type-tex':          commands.command_handler__set_type_tex,
-        'set-type-javascript':   commands.command_handler__set_type_javascript,
+        'set-type-plain':        interactive_commands.interactive_command__set_type_plain,
+        'set-type-markdown':     interactive_commands.interactive_command__set_type_markdown,
+        'set-type-tex':          interactive_commands.interactive_command__set_type_tex,
+        'set-type-javascript':   interactive_commands.interactive_command__set_type_javascript,
 
-        'set-view-normal':       commands.command_handler__set_view_normal,
-        'set-view-hide':         commands.command_handler__set_view_hide,
-        'set-view-full':         commands.command_handler__set_view_full,
-        'set-view-none':         commands.command_handler__set_view_none,
-        'set-view-presentation': commands.command_handler__set_view_presentation,
+        'set-view-normal':       interactive_commands.interactive_command__set_view_normal,
+        'set-view-hide':         interactive_commands.interactive_command__set_view_hide,
+        'set-view-full':         interactive_commands.interactive_command__set_view_full,
+        'set-view-none':         interactive_commands.interactive_command__set_view_none,
+        'set-view-presentation': interactive_commands.interactive_command__set_view_presentation,
 
-        'help':                  commands.command_handler__show_help,
+        'help':                  interactive_commands.interactive_command__show_help,
     };
 
     return command_bindings;
