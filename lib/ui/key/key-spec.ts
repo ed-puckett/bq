@@ -13,6 +13,8 @@ type ExtendedModifierDesc = ModifierDesc & {
 
 
 export class KeySpec {
+    get CLASS (){ return this.constructor as typeof KeySpec; }
+
     readonly key_string: string;
     readonly context:    any;
 

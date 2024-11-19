@@ -15,6 +15,8 @@ export type KeyMapMapping = {
 
 
 export class KeyMap {
+    get CLASS (){ return this.constructor as typeof KeyMap; }
+
     readonly bindings:   null|KeyMapBindings;
     readonly recognizer: null|KeyMapRecognizer;
     readonly mapping:    KeyMapMapping;

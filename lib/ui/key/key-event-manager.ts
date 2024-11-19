@@ -26,6 +26,8 @@ import {
 
 
 export class KeyEventManager<DocumentManager> {
+    get CLASS (){ return this.constructor as typeof KeyEventManager<DocumentManager>; }
+
     #dm:               DocumentManager;
     #event_target:     EventTarget;
     #command_observer: ((cc: CommandContext<DocumentManager>) => void);
@@ -210,6 +212,37 @@ export class KeyEventManager<DocumentManager> {
 
     inject_key_event(key_event: KeyboardEvent): void {
         this.#key_handler?.(key_event);
+    }
+
+    /** Return a (somewhat clumsy) clone of a KeyboardEvent with a new target.
+     * @param {KeyboardEvent} key_event to be cloned
+     * @param {Node} replacement_target
+     * @return {KeyboardEvent} cloned event
+     * The goal is to clone the event but change target and currentTarget.
+     * This is intended for use with inject_key_event().
+     */
+    static clone_key_event_with_alternate_target(key_event: KeyboardEvent, replacement_target: Node) {
+        if (!(key_event instanceof KeyboardEvent)) {
+            throw new Error('key_event must be an instance of KeyboardEvent');
+        }
+        if (!(replacement_target instanceof Node)) {
+            throw new Error('replacement_target must be an instance of Node');
+        }
+        return {
+            ...key_event,  // captures almost nothing, e.g., just the "isTrusted" property
+
+            key:           key_event.key,       // non-enumerable getter
+            metaKey:       key_event.metaKey,   // non-enumerable getter
+            ctrlKey:       key_event.ctrlKey,   // non-enumerable getter
+            shiftKey:      key_event.shiftKey,  // non-enumerable getter
+            altKey:        key_event.altKey,    // non-enumerable getter
+
+            preventDefault:  key_event.preventDefault.bind(key_event),
+            stopPropagation: key_event.stopPropagation.bind(key_event),
+
+            target:        replacement_target,
+            currentTarget: replacement_target,
+        };
     }
 
 

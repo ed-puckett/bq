@@ -161,7 +161,7 @@ export class BqManager {
 
         this.#command_bindings = get_global_command_bindings();
 
-        this.#key_event_manager = new KeyEventManager<BqManager>(this, window, this.#perform_command.bind(this));
+        this.#key_event_manager = new KeyEventManager<BqManager>(this, window, this.#perform_command_for_ui.bind(this));
 
         try {
 
@@ -438,7 +438,7 @@ export class BqManager {
                 persistent: true,
                 get_command_bindings: get_global_initial_key_map_bindings,
             });
-            this.#menu_commands_subscription = this.#menu.commands.subscribe(this.#perform_command.bind(this));
+            this.#menu_commands_subscription = this.#menu.commands.subscribe(this.#perform_command_for_ui.bind(this));
             this.#menu_selects_subscription = this.#menu.selects.subscribe(this.#update_menu_state.bind(this));
         }
     }
@@ -691,77 +691,89 @@ export class BqManager {
 
     // === COMMAND HANDLER INTERFACE ===
 
+    /** Inject a KeyboardEvent but with target updated to be within this.active_cell.
+     * @param {KeyboardEvent} key_event
+     */
     inject_key_event(key_event: KeyboardEvent): void {
         const active_cell = this.active_cell;
         const target      = key_event.target;
-        if (active_cell && target instanceof Node && !active_cell.contains(target as Node)) {
-            // try to set target to the currently active cell
-            if (active_cell) {
-                // this is a clumsy clone of key_event, but it will only be used internally from this point
-                // the goal is to clone the event but change target and currentTarget
-                key_event = {
-                    ...key_event,  // captures almost nothing, e.g., just the "isTrusted" property
-
-                    key:           key_event.key,       // non-enumerable getter
-                    metaKey:       key_event.metaKey,   // non-enumerable getter
-                    ctrlKey:       key_event.ctrlKey,   // non-enumerable getter
-                    shiftKey:      key_event.shiftKey,  // non-enumerable getter
-                    altKey:        key_event.altKey,    // non-enumerable getter
-
-                    preventDefault:  key_event.preventDefault.bind(key_event),
-                    stopPropagation: key_event.stopPropagation.bind(key_event),
-
-                    target:        active_cell,
-                    currentTarget: active_cell,
-                };
-            }
+        if (active_cell && target instanceof Node && !active_cell.contains(target)) {
+            key_event = this.#key_event_manager.CLASS.clone_key_event_with_alternate_target(key_event, active_cell);
         }
         this.#key_event_manager.inject_key_event(key_event);
     }
 
-    inject_command(command: string) {
-        return this.#perform_command({ dm: this, command, target: this.active_cell });
+    /** Inject a synthetic command.
+     * @param {string} command to be performed.
+     * This command is performed within a command_context where dm (the
+     * DocumentManager) is set to this BqManager instance and target is
+     * set to this.active_cell.
+     */
+    async inject_command(command: string) {
+        return this.#perform_command({ dm: this, command });
     }
 
-    // note: an updated command_context with target set to this.active_cell
-    // is sent to the command handler.
+    /** Perform the command representing by command_context.
+     * @param {CommandContext} command_context
+     * @return {Promise<boolean>} a promise that resolves to a boolean
+     *                            indicating success.
+     * An updated command_context with target set to this.active_cell is sent
+     * to the command handler.  Note that commands that operate asynchronously
+     * begin their actions synchronously but do not complete immediately.
+     * This is relevant when implementing ui operations; see
+     * #perform_command_for_ui().
+     */
     async #perform_command(command_context: CommandContext<BqManager>): Promise<boolean> {
-        let success: boolean = false;  // for now...
+        if (typeof command_context !== 'object') {
+            throw new Error('command_context must be an object');
+        }
+        if (command_context.dm !== this) {
+            throw new Error('command_context.dm does not match this BqManager instance');
+        }
+        if (typeof command_context.command !== 'string' || command_context.command.length <= 0) {
+            throw new Error('command_context.command must be a non-empty string');
+        }
+        let result: boolean = false;  // for now...
         try {
             if (command_context) {
-                const target = command_context.target;
-                if (target) {
-                    const updated_command_context = {
-                        ...command_context,
-                        target: this.active_cell,
-                    };
-                    const bindings_fn = this.#command_bindings[updated_command_context.command];
-                    if (bindings_fn) {
-                        if (bindings_fn instanceof AsyncFunction) {
-                            return bindings_fn(updated_command_context)
-                                .then((success: boolean) => {
-                                    if (!success) {
-                                        beep();
-                                    }
-                                    return success;
-                                })
-                                .catch((error: unknown) => {
-                                    console.error('error performing command', error, command_context);
-                                    return false;
-                                });
-                        } else {
-                            success = bindings_fn(updated_command_context);
-                        }
+                const updated_command_context = {
+                    ...command_context,
+                    dm:     this,
+                    target: this.active_cell,
+                };
+                const bindings_fn = this.#command_bindings[updated_command_context.command];
+                if (bindings_fn) {
+                    if (bindings_fn instanceof AsyncFunction) {
+                        return bindings_fn(updated_command_context)
+                            .then((result: boolean) => {
+                                if (!result) {
+                                    beep();
+                                }
+                                return result;
+                            })
+                            .catch((error: unknown) => {
+                                console.error('error performing command', error, updated_command_context);
+                                return false;
+                            });
+                    } else {
+                        result = bindings_fn(updated_command_context);
                     }
                 }
             }
         } catch (error: unknown) {
             console.error('error processing command', command_context, error);
         }
-        if (!success) {
+        if (!result) {
             beep();
         }
-        return success;
+        return result;
+    }
+
+    async #perform_command_for_ui(command_context: CommandContext<BqManager>): Promise<void> {
+        const result = await this.#perform_command(command_context);
+        if (!result) {
+            beep();
+        }
     }
 
     #update_menu_state() {
