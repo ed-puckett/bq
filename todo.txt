@@ -1,4 +1,3 @@
-change source type "tex" to "latex" ?
 complete _bootstrap_script_src_alternative_descriptions in src/init.ts
 complete _cell_view_descriptions in src/init.ts
 make help document
@@ -34,6 +33,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* change source type "tex" to "latex"
 * rework BqManager.singleton.#perform_command() and BqManager.singleton.inject_command()
 * BqManager.singleton.inject_key_event(): move functionality into lib/ui/key/...
 * some code in bq-manager/commands.ts should be implemented as methods in BqManager

@@ -825,7 +825,7 @@ export class BqManager {
 
             menu.set_menu_state('set-type-plain',        { checked: (cell_type === 'plain'),      enabled: interactive });
             menu.set_menu_state('set-type-markdown',     { checked: (cell_type === 'markdown'),   enabled: interactive });
-            menu.set_menu_state('set-type-tex',          { checked: (cell_type === 'tex'),        enabled: interactive });
+            menu.set_menu_state('set-type-latex',        { checked: (cell_type === 'latex'),      enabled: interactive });
             menu.set_menu_state('set-type-javascript',   { checked: (cell_type === 'javascript'), enabled: interactive });
 
             menu.set_menu_state('set-view-normal',       { checked: (cell_view === 'normal') });
@@ -1255,11 +1255,11 @@ export class BqManager {
         return this.#set_type_helper(command_context, 'markdown');
     }
 
-    /** set the target cell's type to "tex".
+    /** set the target cell's type to "latex".
      *  @return {Boolean} true iff command successfully handled
      */
-    command__set_type_tex(command_context: CommandContext<BqManager>): boolean {
-        return this.#set_type_helper(command_context, 'tex');
+    command__set_type_latex(command_context: CommandContext<BqManager>): boolean {
+        return this.#set_type_helper(command_context, 'latex');
     }
 
     /** set the target cell's type to "javascript".

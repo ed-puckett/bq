@@ -43,7 +43,7 @@ export function get_menubar_spec() {
         { label: 'Type', collection: [
             { label: 'Plain text',      item: { command: 'set-type-plain'        } },
             { label: 'Markdown',        item: { command: 'set-type-markdown'     } },
-            { label: 'TeX',             item: { command: 'set-type-tex'          } },
+            { label: 'LaTeX',           item: { command: 'set-type-latex'        } },
             { label: 'JavaScript',      item: { command: 'set-type-javascript'   } },
         ] },
 
@@ -101,7 +101,7 @@ export function get_ellipsis_menu_spec() {
         { label: 'Type', collection: [
             { label: 'Plain text',      item: { command: 'set-type-plain'        } },
             { label: 'Markdown',        item: { command: 'set-type-markdown'     } },
-            { label: 'TeX',             item: { command: 'set-type-tex'          } },
+            { label: 'LaTeX',           item: { command: 'set-type-latex'        } },
             { label: 'JavaScript',      item: { command: 'set-type-javascript'   } },
         ] },
 
@@ -157,7 +157,7 @@ export function get_global_initial_key_map_bindings() {
 
         'set-type-plain':        [ 'Alt-T t', 'Alt-T p' ],
         'set-type-markdown':     [ 'Alt-T m' ],
-        'set-type-tex':          [ 'Alt-T x' ],
+        'set-type-latex':        [ 'Alt-T l' ],
         'set-type-javascript':   [ 'Alt-T j' ],
 
         'set-view-normal':       [ 'Alt-V n' ],
@@ -207,7 +207,7 @@ export function get_global_command_bindings() {
 
         'set-type-plain':        interactive_commands.interactive_command__set_type_plain,
         'set-type-markdown':     interactive_commands.interactive_command__set_type_markdown,
-        'set-type-tex':          interactive_commands.interactive_command__set_type_tex,
+        'set-type-latex':        interactive_commands.interactive_command__set_type_latex,
         'set-type-javascript':   interactive_commands.interactive_command__set_type_javascript,
 
         'set-view-normal':       interactive_commands.interactive_command__set_view_normal,

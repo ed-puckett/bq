@@ -35,7 +35,7 @@ import {
     TextBasedRendererOptionsType,
     TextRenderer,
     MarkdownRenderer,
-    TeXRenderer,
+    LaTeXRenderer,
     JavaScriptRenderer,
 } from 'src/renderer/_';
 
@@ -253,9 +253,9 @@ export class OutputContext extends OutputContextLike {
         return new MarkdownRenderer().render(this, code, options);
     }
 
-    async tex(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async latex(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
-        return new TeXRenderer().render(this, code, options);
+        return new LaTeXRenderer().render(this, code, options);
     }
 
     async image_data(code: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element> {

@@ -221,14 +221,14 @@ export function interactive_command__set_type_markdown(command_context: CommandC
     return command_context.dm.command__set_type_markdown(command_context);
 }
 
-/** set the target cell's type to "tex".
+/** set the target cell's type to "latex".
  *  @return {Boolean} true iff command successfully handled
  */
-export function interactive_command__set_type_tex(command_context: CommandContext<BqManager>): boolean {
+export function interactive_command__set_type_latex(command_context: CommandContext<BqManager>): boolean {
     if (!command_context.dm.interactive) {
         return false;
     }
-    return command_context.dm.command__set_type_tex(command_context);
+    return command_context.dm.command__set_type_latex(command_context);
 }
 
 /** set the target cell's type to "javascript".

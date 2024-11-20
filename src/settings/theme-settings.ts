@@ -108,7 +108,7 @@ const theme_property_name_documentation = `\
   TYPE INDICATOR COLOR:         LANGUAGE TYPE:
   ty -- type indicator color    markdown
                                 plain
-                                tex
+                                latex
                                 javascript
   ---
 
@@ -160,7 +160,7 @@ const standard_themes_spec = {
 
     "--theme-ty-markdown":   [ 'hsl(205deg  85%  88% / 100%)',  'hsl(205deg  80%  20% / 100%)' ],
     "--theme-ty-plain":      [ 'lightgrey',                     'hsl(  0deg   0%  20% / 100%)' ],
-    "--theme-ty-tex":        [ 'hsl(325deg  30%  85% / 100%)',  'hsl(325deg  30%  24% / 100%)' ],
+    "--theme-ty-latex":      [ 'hsl(325deg  30%  85% / 100%)',  'hsl(325deg  30%  24% / 100%)' ],
     "--theme-ty-javascript": [ 'hsl(105deg  55%  85% / 100%)',  'hsl(135deg  45%  15% / 100%)' ],
 };
 

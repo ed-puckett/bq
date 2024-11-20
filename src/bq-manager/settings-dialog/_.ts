@@ -128,7 +128,7 @@ const sections = [
             convert_to_number: true,
         }],
     }, {
-        name: 'TeX Formatting',
+        name: 'LaTeX Formatting',
         settings: [{
             id: 'formatting_options_flush_left',
             label: 'Flush left',

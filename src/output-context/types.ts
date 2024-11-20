@@ -404,7 +404,7 @@ export abstract class OutputContextLike extends ActivityManager {
     abstract /*async*/ print__(options?: TextBasedRendererOptionsType): Promise<Element>;
     abstract /*async*/ javascript(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
     abstract /*async*/ markdown(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ tex(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
+    abstract /*async*/ latex(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
     abstract /*async*/ image_data(code: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element>;
     abstract /*async*/ graphviz(code: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element>;
     abstract /*async*/ plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element>;

@@ -77,7 +77,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     print__
 //     javascript
 //     markdown
-//     tex
+//     latex
 //     image_data
 //     graphviz
 //     plotly
@@ -354,7 +354,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             // code and graphics rendering defined by ocx
             javascript:      ocx.javascript.bind(ocx),
             markdown:        ocx.markdown.bind(ocx),
-            tex:             ocx.tex.bind(ocx),
+            latex:           ocx.latex.bind(ocx),
             image_data:      ocx.image_data.bind(ocx),
             graphviz:        ocx.graphviz.bind(ocx),
             plotly:          ocx.plotly.bind(ocx),

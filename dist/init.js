@@ -364,8 +364,8 @@ bq-cell {
     &[data-type="plain"] {
         --content-color: var(--theme-ty-plain, hotpink);
     }
-    &[data-type="tex"] {
-        --content-color: var(--theme-ty-tex, hotpink);
+    &[data-type="latex"] {
+        --content-color: var(--theme-ty-latex, hotpink);
     }
     &[data-type="javascript"] {
         --content-color: var(--theme-ty-javascript, hotpink);
@@ -788,7 +788,7 @@ dialog.export-options-dialog fieldset label:has(input[type="radio"]:checked) {
     }
 
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/* all other stylesheets have been incorporated into this one */\n\n/* var(--theme-*, hotpink) computed values use hotpink defaults to make omissions evident */\n\n/* See settings/theme-settings.ts for definition of --theme-* properties */\n\n/*\n  To determine current user preference for \"prefers dark mode\",\n  it is sufficient to test the presence (indicating \"dark\")\n  or absence (indicating \"light\", the default) of the attribute\n  \"data-theme\" on the :root element.  When present, the attribute\n  \"data-theme\" will have the value \"dark\".  This works whether the\n  user has set a global system-wide preference or if the user has\n  set a specific preference in the current document.  The document\n  setting overrides the system-wide preference.\n  See settings/theme-settings.ts.\n*/\n\n:root {\n    --cell-max-height-scrolling: 33dvh;\n\n    --header-height: 1.5rem;\n}\n\nbody {\n    overflow: hidden;  /* inhibit scrolling for body */\n    margin: 0;\n    color:            var(--theme-ui-fg, hotpink);\n    background-color: var(--theme-ui-bg, hotpink);\n}\n\nheader {\n    /* header without classic menubar menu */\n    /* (just default settings */\n\n    &:has(menu.menubar) {  /* header containing classic menubar menu */\n        display: flex;\n        align-items: flex-end;\n        justify-content: flex-start;\n\n        height: var(--header-height);\n        background-color: var(--theme-si-bg, hotpink);\n\n        border: 0px solid var(--theme-si-rc, hotpink);\n        border-bottom-width: 1px;\n    }\n}\n\nmain {\n    /* enable scrolling for main element */\n    overflow: auto;\n    max-height: 100dvh;\n    max-width:  100dvw;\n    scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */\n}\nheader:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */\n    max-height: calc(100dvh - var(--header-height));\n}\n\n.bq-cell-output {\n    display: block;\n    overflow: auto;  /* enable h/v scrolling */\n    height: fit-content;\n    padding: 0 1em 0 1em;\n    color:            var(--theme-ou-fg, hotpink);\n    background-color: var(--theme-ou-bg, hotpink);\n}\n.bq-cell-output:empty,\n.bq-cell-output:not(:has(> *:not(:empty))) {\n    display: none;\n}\n.bq-cell-output .katex-display {\n    /* eliminate spacing for empty output case */\n    margin: 0;\n}\n.bq-cell-output .katex-display .katex-html:not(:empty) {\n    /* add spacing back to more interior element for \"display\" output */\n    margin: 1rem 0;\n}\n\n.plain-text {\n    white-space: pre-wrap;  /* display white-space properly */\n    line-height: 125%;\n}\n\nbq-cell {\n    --content-color: lightgrey;\n\n    display: block;\n    overflow: hidden;\n\n    margin: 0 0 0.25em 0;\n    padding: 0;\n    max-height: fit-content;\n\n    border: 1px solid var(--content-color);\n    border-radius: 0.5em;\n\n    caret-color: red;\n    /*outline: 0px solid transparent;*/  /* disable default contenteditable outline */\n\n    white-space: pre-wrap;  /* properly display white-space */\n    font-family: monospace;\n\n    color: var(--theme-ui-fg, hotpink);\n    background-image: linear-gradient(90deg, var(--content-color), transparent);\n    /* background-color: var(--content-color); */\n\n    &::before {\n        content: \"markdown\";  /* markdown is the default */\n        display: inline-block;\n        padding: 0 0 0 0.5em;\n        max-width: fit-content;\n    }\n\n    &[data-active][data-type]::before {\n        font-weight: bold;\n    }\n\n    & > * {\n        /* make sure --content-color is restricted to border and padding,\n         * and does not bleed through transparent children\n         */\n        background-color: var(--theme-ui-bg, hotpink);\n    }\n\n    /* data-type handling */\n\n    &[data-type]::before {\n        content: attr(data-type);\n    }\n\n    &,  /* markdown is the default */\n    &[data-type=\"markdown\"] {\n        --content-color: var(--theme-ty-markdown, hotpink);\n    }\n    &[data-type=\"plain\"] {\n        --content-color: var(--theme-ty-plain, hotpink);\n    }\n    &[data-type=\"tex\"] {\n        --content-color: var(--theme-ty-tex, hotpink);\n    }\n    &[data-type=\"javascript\"] {\n        --content-color: var(--theme-ty-javascript, hotpink);\n    }\n\n    /* data-cell-view handling */\n\n    /* html[data-cell-view]: none|hide|normal|full|presentation\n     * - none:         cells are not displayed\n     * - hide:         cells auto-hide; focused cell scrolls, other cells minimized\n     * - normal:       all cells scroll (default)\n     * - full:         all cells shown completely\n     * - presentation: like none, but also the header element is hidden and no document close warning is issued\n     *   -- in presentation view, cells with css class \"show-in-presentation\" will be shown as in \"normal\" view\n     */\n\n    html[data-cell-view=\"none\"] & {\n        display: none;\n    }\n    html[data-cell-view=\"hide\"] &:not([data-active]) {\n        display: block;\n        max-height: 0.2rem;\n        padding: 0;\n        margin: 0.2rem;\n        border-width: 1px;\n        border-color: transparent;\n    }\n    html[data-cell-view=\"presentation\"] & {\n        display: none;\n    }\n    &,\n    html[data-cell-view=\"presentation\"] &.show-in-presentation {\n        display: block;\n        max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */\n        transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);\n    }\n}\n\n.markdown-code-source {\n    max-width: fit-content;\n    padding: 0.25em;\n    margin-block-start: 1em;\n    margin-block-end:   0.5em;\n    border: 1px solid var(--theme-ui-rc, hotpink);\n\n    & pre {\n        margin: 0;\n    }\n}\n\n\n/* === codemirror === */\n\n/* scroll long content unless html[data-cell-view=\"full\"] */\n/* see: https://discuss.codemirror.net/t/code-editor-with-automatic-height-that-has-a-minimum-and-maximum-height/4015 */\n.cm-editor {\n    max-height: var(--cell-max-height-scrolling);\n}\n.cm-scroller {\n    overflow-y: auto;\n}\n\n/* tone down bright gutter color for active line */\n:root[data-theme=\"dark\"] .cm-activeLineGutter {\n    background-color: hsl(170deg 25% 55% / 40%);\n}\n\n/* show full content if html[data-cell-view=\"full\"] */\nhtml[data-cell-view=\"full\"] bq-cell,\nhtml[data-cell-view=\"full\"] .cm-editor,\nhtml[data-cell-view=\"full\"] .cm-scroller {\n    overflow-y: hidden;\n    max-height: unset;\n    height: 100%;\n}\n\n/* line number switch */\n.codemirror-hide-line-numbers .cm-lineNumbers {\n    display: none !important;  /* must use !important to override codemirror's setting */\n}\n\n/* patch too-bright light-mode .activeLine color */\n:root:not([data-theme=\"dark\"]) .cm-activeLine {  /* :root:not(---) for specificity */\n    background-color: hsl(200deg 100% 93% / 27%) !important;  /* otherwise overly light */  /* must use !important to override codemirror's setting */\n}\n\n/* patches for CodeMirror colors in dark mode */\n:root[data-theme=\"dark\"] .cm-gutters {\n    background-color: revert !important;  /* otherwise glaringly light */  /* must use !important to override codemirror's setting */\n}\n:root[data-theme=\"dark\"] .cm-activeLine {\n    background-color: hsl(200deg 100% 12% / 27%);  /* otherwise glaringly light */\n}\n:root[data-theme=\"dark\"] .cm-editor .cm-cursor {\n    border-left-color: orange;  /* too dim */  /* see: https://discuss.codemirror.net/t/caret-color-css-seems-locked/7011/5 */\n}\n\n\n/* === theme-aware graphics === */\n\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([fill=\"none\"]) {\n    fill: var(--theme-gr-bg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([stroke=\"none\"]) {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg path,\n[data-source-media-type=\"application/graphviz\"] svg ellipse {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg text {\n    fill: var(--theme-gr-fg, hotpink);\n}\n\n\n/* === error messages === */\n\n.error-message {\n    display: block;\n    margin: 1.75em;\n    padding: 0.5em;\n    border-radius: 3pt;\n    border: 1px solid var(--theme-si-ef, hotpink);  /* use error foreground color for border color */\n    color:            var(--theme-si-ef, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === menu === */\n\n.menubar {\n    user-select: none;\n    margin: 0;\n    padding: 0.1rem 0 0.1rem 0;\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.menubar div {\n    display: inline;\n}\n\n.menubar > li {\n    user-select: none;\n    display: inline;  /* horizontal orientation for top-level items of menubar */\n    padding: 0 0.5rem 0 0.5rem;\n}\n\n.menuitem {\n    user-select: none;\n    list-style-type: none;\n    min-width: max-content;\n}\n\n.menuitem * {\n    user-select: none;\n}\n\n.menuitem .menuitem-label {\n    font-family: sans-serif;\n    font-size: 90%;\n}\n\n.menuitem.checked::before {\n    content: \"\\2713\";  /* unicode check mark */\n    position: absolute;\n    left: 0.5em;\n}\n\n.menuitem {\n    color: var(--theme-si-fg, hotpink);\n}\n.menuitem.disabled {\n    color: var(--theme-si-df, hotpink);\n}\n.menuitem.selected {\n    background-color: var(--theme-si-hb, hotpink);\n}\n\n.menu:not(.active) {\n    display: none;\n}\n\n.menu:not(.menubar) {\n    position: absolute;\n    z-index: 999;\n    background-color: var(--theme-si-bg, hotpink);\n    padding: 0.25rem 0 0.25rem 0;  /* override standard ul/li padding */\n    border-radius: 0.25rem;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n\n    /* eliminate default styling for menu elements */\n    margin-block-start:   0;\n    margin-block-end:     0;\n    margin-inline-start:  0;\n    margin-inline-end:    0;\n    padding-inline-start: 0;\n}\n.menu:not(.menubar).toplevel-menu {\n    inset: unset;\n    right: 1rem;\n    padding-left:  0.5em;\n    padding-right: 0.5em;\n}\n\n.menu:not(.menubar) li.menuitem {  /* .menu selector selects .menu items but not .menubar items */\n    display: flex;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem:not(.menuitem-separator) {\n    padding: 0 0.5rem 0 1.5rem;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem.menuitem-separator {\n    margin: 0.2rem 0 0.2rem 0;\n    height: 0px;\n    color: transparent;\n    border-bottom: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.menu:not(.menubar) .menuitem .menuitem-annotation {\n    margin-left: auto;   /* right justify */\n    padding-left: 1rem;  /* add a little extra space between menu command and keyboard shortcut */\n}\n\n.menu:not(.menubar) .menuitem kbd {\n    margin: 0 0 0 0.5rem;\n}\n\n\n/* === notification === */\n\n.notification-area {\n    pointer-events: none;\n    position: absolute;\n    inset: 0;\n    overflow-y: auto;  /* enable scrollbars */\n    display: flex;\n    flex-direction:  column;\n    justify-content: flex-start;\n    align-items:     flex-end;\n    margin-right: 0.75rem;\n}\n\n.notification-area {  /* with ellipsis menu */\n    padding-top: 1.75rem;\n}\nheader:has(menu.menubar) ~ .notification-area {  /* .notification-area preceded by header containing classic menubar */\n    padding-top: calc(var(--header-height) + 0.25rem);\n}\n\n.notification-message {\n    max-width: fit-content;\n    padding: 0.5em;\n    margin:  0.25rem;\n    white-space: pre-wrap;\n    border: 1px solid black;\n    border-radius: 0.25rem;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === dialog === */\n\ndialog {\n    border-radius: 0.5em;\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\ndialog .dialog-form-terminals {\n    display: flex;\n    justify-content: flex-end;\n    margin: 1.5em 0 0 0;\n}\n\ndialog .dialog-form-terminals button,\ndialog .dialog-form-terminals input[type=\"button\"] {\n    margin: 0 0 0 0;\n}\n\ndialog .dialog-form-terminals .dialog-accept,\ndialog .dialog-form-terminals .dialog-decline {\n    display: inline;\n    margin: 0 0 0 0.5em;\n    padding: 0.25em 2em;\n}\n\ndialog .dialog-message-text {\n    font-weight: bold;\n    font-size: larger;\n}\n\ndialog .dialog-text {\n}\n\n\n/* === settings-dialog === */\n\n.settings-dialog {\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog .dialog-text {\n    font-style: italic;\n}\n\n.settings-dialog [data-section] {\n    position: relative;\n    display: grid;\n    grid-template-columns: min-content min-content;\n    min-width: max-content;\n    margin: 1.75em 0 0 0;\n    padding: 1em 0.5em 0.5em;\n    border-radius: 8px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.settings-dialog [data-section]::before {  /* named section heading */\n    position: absolute;\n    content: attr(data-section);\n    left: 0.8em;\n    top: -0.7em;\n    padding: 0 1em;\n    border-radius: 4px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n    font-style: italic;\n}\n\n.settings-dialog [data-section] label {\n    align-self: center;\n    justify-self: end;\n    white-space: nowrap;\n    user-select: none;\n}\n\n.settings-dialog [data-section] input,\n.settings-dialog [data-section] select {\n    align-self: center;\n    justify-self: start;\n    margin: 0.25em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog [data-section] input[type=\"text\"] {\n    width: 5em;\n}\n\n.settings-dialog .error-message {\n    display: none;\n}\n.settings-dialog .error-message.active {\n    display: block;\n}\n\n\n/* === dialog === */\n\ndialog.export-options-dialog .dialog-form-content {\n    display: flex;\n    flex-direction: column;\n    gap: 1em;\n}\n\ndialog.export-options-dialog fieldset {\n    display: flex;\n    flex-direction: column;\n    gap:    0.25em;\n    margin: 1em 0 0 0;\n    border-radius: 0.5rem;\n}\ndialog.export-options-dialog fieldset label {\n    display: grid;\n    grid-template-columns: min-content 1fr;\n    align-items: center;\n    gap: 1rem;\n    padding: 1em;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    border-radius: 0.5rem;\n    background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);\n    user-select: none;\n}\ndialog.export-options-dialog fieldset input[type=\"radio\"] {\n    height: 1em;  /* prevent button from stretching in height on chromium, affecting \"active\" outline */\n}\ndialog.export-options-dialog form select {\n    padding: 0 0.5em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\ndialog.export-options-dialog fieldset label:has(input[type=\"radio\"]:checked) {\n    outline: 1px solid var(--theme-si-fg, hotpink);\n}\n\n\n/* === print media queries === */\n\n@media not print {\n    /* nothing for now */\n}\n\n@media print {\n\n    header {\n        display: none;\n    }\n\n    .notification-area {\n        display: none;\n    }\n\n    main {\n        overflow: visible;\n    }\n\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/* all other stylesheets have been incorporated into this one */\n\n/* var(--theme-*, hotpink) computed values use hotpink defaults to make omissions evident */\n\n/* See settings/theme-settings.ts for definition of --theme-* properties */\n\n/*\n  To determine current user preference for \"prefers dark mode\",\n  it is sufficient to test the presence (indicating \"dark\")\n  or absence (indicating \"light\", the default) of the attribute\n  \"data-theme\" on the :root element.  When present, the attribute\n  \"data-theme\" will have the value \"dark\".  This works whether the\n  user has set a global system-wide preference or if the user has\n  set a specific preference in the current document.  The document\n  setting overrides the system-wide preference.\n  See settings/theme-settings.ts.\n*/\n\n:root {\n    --cell-max-height-scrolling: 33dvh;\n\n    --header-height: 1.5rem;\n}\n\nbody {\n    overflow: hidden;  /* inhibit scrolling for body */\n    margin: 0;\n    color:            var(--theme-ui-fg, hotpink);\n    background-color: var(--theme-ui-bg, hotpink);\n}\n\nheader {\n    /* header without classic menubar menu */\n    /* (just default settings */\n\n    &:has(menu.menubar) {  /* header containing classic menubar menu */\n        display: flex;\n        align-items: flex-end;\n        justify-content: flex-start;\n\n        height: var(--header-height);\n        background-color: var(--theme-si-bg, hotpink);\n\n        border: 0px solid var(--theme-si-rc, hotpink);\n        border-bottom-width: 1px;\n    }\n}\n\nmain {\n    /* enable scrolling for main element */\n    overflow: auto;\n    max-height: 100dvh;\n    max-width:  100dvw;\n    scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */\n}\nheader:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */\n    max-height: calc(100dvh - var(--header-height));\n}\n\n.bq-cell-output {\n    display: block;\n    overflow: auto;  /* enable h/v scrolling */\n    height: fit-content;\n    padding: 0 1em 0 1em;\n    color:            var(--theme-ou-fg, hotpink);\n    background-color: var(--theme-ou-bg, hotpink);\n}\n.bq-cell-output:empty,\n.bq-cell-output:not(:has(> *:not(:empty))) {\n    display: none;\n}\n.bq-cell-output .katex-display {\n    /* eliminate spacing for empty output case */\n    margin: 0;\n}\n.bq-cell-output .katex-display .katex-html:not(:empty) {\n    /* add spacing back to more interior element for \"display\" output */\n    margin: 1rem 0;\n}\n\n.plain-text {\n    white-space: pre-wrap;  /* display white-space properly */\n    line-height: 125%;\n}\n\nbq-cell {\n    --content-color: lightgrey;\n\n    display: block;\n    overflow: hidden;\n\n    margin: 0 0 0.25em 0;\n    padding: 0;\n    max-height: fit-content;\n\n    border: 1px solid var(--content-color);\n    border-radius: 0.5em;\n\n    caret-color: red;\n    /*outline: 0px solid transparent;*/  /* disable default contenteditable outline */\n\n    white-space: pre-wrap;  /* properly display white-space */\n    font-family: monospace;\n\n    color: var(--theme-ui-fg, hotpink);\n    background-image: linear-gradient(90deg, var(--content-color), transparent);\n    /* background-color: var(--content-color); */\n\n    &::before {\n        content: \"markdown\";  /* markdown is the default */\n        display: inline-block;\n        padding: 0 0 0 0.5em;\n        max-width: fit-content;\n    }\n\n    &[data-active][data-type]::before {\n        font-weight: bold;\n    }\n\n    & > * {\n        /* make sure --content-color is restricted to border and padding,\n         * and does not bleed through transparent children\n         */\n        background-color: var(--theme-ui-bg, hotpink);\n    }\n\n    /* data-type handling */\n\n    &[data-type]::before {\n        content: attr(data-type);\n    }\n\n    &,  /* markdown is the default */\n    &[data-type=\"markdown\"] {\n        --content-color: var(--theme-ty-markdown, hotpink);\n    }\n    &[data-type=\"plain\"] {\n        --content-color: var(--theme-ty-plain, hotpink);\n    }\n    &[data-type=\"latex\"] {\n        --content-color: var(--theme-ty-latex, hotpink);\n    }\n    &[data-type=\"javascript\"] {\n        --content-color: var(--theme-ty-javascript, hotpink);\n    }\n\n    /* data-cell-view handling */\n\n    /* html[data-cell-view]: none|hide|normal|full|presentation\n     * - none:         cells are not displayed\n     * - hide:         cells auto-hide; focused cell scrolls, other cells minimized\n     * - normal:       all cells scroll (default)\n     * - full:         all cells shown completely\n     * - presentation: like none, but also the header element is hidden and no document close warning is issued\n     *   -- in presentation view, cells with css class \"show-in-presentation\" will be shown as in \"normal\" view\n     */\n\n    html[data-cell-view=\"none\"] & {\n        display: none;\n    }\n    html[data-cell-view=\"hide\"] &:not([data-active]) {\n        display: block;\n        max-height: 0.2rem;\n        padding: 0;\n        margin: 0.2rem;\n        border-width: 1px;\n        border-color: transparent;\n    }\n    html[data-cell-view=\"presentation\"] & {\n        display: none;\n    }\n    &,\n    html[data-cell-view=\"presentation\"] &.show-in-presentation {\n        display: block;\n        max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */\n        transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);\n    }\n}\n\n.markdown-code-source {\n    max-width: fit-content;\n    padding: 0.25em;\n    margin-block-start: 1em;\n    margin-block-end:   0.5em;\n    border: 1px solid var(--theme-ui-rc, hotpink);\n\n    & pre {\n        margin: 0;\n    }\n}\n\n\n/* === codemirror === */\n\n/* scroll long content unless html[data-cell-view=\"full\"] */\n/* see: https://discuss.codemirror.net/t/code-editor-with-automatic-height-that-has-a-minimum-and-maximum-height/4015 */\n.cm-editor {\n    max-height: var(--cell-max-height-scrolling);\n}\n.cm-scroller {\n    overflow-y: auto;\n}\n\n/* tone down bright gutter color for active line */\n:root[data-theme=\"dark\"] .cm-activeLineGutter {\n    background-color: hsl(170deg 25% 55% / 40%);\n}\n\n/* show full content if html[data-cell-view=\"full\"] */\nhtml[data-cell-view=\"full\"] bq-cell,\nhtml[data-cell-view=\"full\"] .cm-editor,\nhtml[data-cell-view=\"full\"] .cm-scroller {\n    overflow-y: hidden;\n    max-height: unset;\n    height: 100%;\n}\n\n/* line number switch */\n.codemirror-hide-line-numbers .cm-lineNumbers {\n    display: none !important;  /* must use !important to override codemirror's setting */\n}\n\n/* patch too-bright light-mode .activeLine color */\n:root:not([data-theme=\"dark\"]) .cm-activeLine {  /* :root:not(---) for specificity */\n    background-color: hsl(200deg 100% 93% / 27%) !important;  /* otherwise overly light */  /* must use !important to override codemirror's setting */\n}\n\n/* patches for CodeMirror colors in dark mode */\n:root[data-theme=\"dark\"] .cm-gutters {\n    background-color: revert !important;  /* otherwise glaringly light */  /* must use !important to override codemirror's setting */\n}\n:root[data-theme=\"dark\"] .cm-activeLine {\n    background-color: hsl(200deg 100% 12% / 27%);  /* otherwise glaringly light */\n}\n:root[data-theme=\"dark\"] .cm-editor .cm-cursor {\n    border-left-color: orange;  /* too dim */  /* see: https://discuss.codemirror.net/t/caret-color-css-seems-locked/7011/5 */\n}\n\n\n/* === theme-aware graphics === */\n\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([fill=\"none\"]) {\n    fill: var(--theme-gr-bg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([stroke=\"none\"]) {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg path,\n[data-source-media-type=\"application/graphviz\"] svg ellipse {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg text {\n    fill: var(--theme-gr-fg, hotpink);\n}\n\n\n/* === error messages === */\n\n.error-message {\n    display: block;\n    margin: 1.75em;\n    padding: 0.5em;\n    border-radius: 3pt;\n    border: 1px solid var(--theme-si-ef, hotpink);  /* use error foreground color for border color */\n    color:            var(--theme-si-ef, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === menu === */\n\n.menubar {\n    user-select: none;\n    margin: 0;\n    padding: 0.1rem 0 0.1rem 0;\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.menubar div {\n    display: inline;\n}\n\n.menubar > li {\n    user-select: none;\n    display: inline;  /* horizontal orientation for top-level items of menubar */\n    padding: 0 0.5rem 0 0.5rem;\n}\n\n.menuitem {\n    user-select: none;\n    list-style-type: none;\n    min-width: max-content;\n}\n\n.menuitem * {\n    user-select: none;\n}\n\n.menuitem .menuitem-label {\n    font-family: sans-serif;\n    font-size: 90%;\n}\n\n.menuitem.checked::before {\n    content: \"\\2713\";  /* unicode check mark */\n    position: absolute;\n    left: 0.5em;\n}\n\n.menuitem {\n    color: var(--theme-si-fg, hotpink);\n}\n.menuitem.disabled {\n    color: var(--theme-si-df, hotpink);\n}\n.menuitem.selected {\n    background-color: var(--theme-si-hb, hotpink);\n}\n\n.menu:not(.active) {\n    display: none;\n}\n\n.menu:not(.menubar) {\n    position: absolute;\n    z-index: 999;\n    background-color: var(--theme-si-bg, hotpink);\n    padding: 0.25rem 0 0.25rem 0;  /* override standard ul/li padding */\n    border-radius: 0.25rem;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n\n    /* eliminate default styling for menu elements */\n    margin-block-start:   0;\n    margin-block-end:     0;\n    margin-inline-start:  0;\n    margin-inline-end:    0;\n    padding-inline-start: 0;\n}\n.menu:not(.menubar).toplevel-menu {\n    inset: unset;\n    right: 1rem;\n    padding-left:  0.5em;\n    padding-right: 0.5em;\n}\n\n.menu:not(.menubar) li.menuitem {  /* .menu selector selects .menu items but not .menubar items */\n    display: flex;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem:not(.menuitem-separator) {\n    padding: 0 0.5rem 0 1.5rem;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem.menuitem-separator {\n    margin: 0.2rem 0 0.2rem 0;\n    height: 0px;\n    color: transparent;\n    border-bottom: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.menu:not(.menubar) .menuitem .menuitem-annotation {\n    margin-left: auto;   /* right justify */\n    padding-left: 1rem;  /* add a little extra space between menu command and keyboard shortcut */\n}\n\n.menu:not(.menubar) .menuitem kbd {\n    margin: 0 0 0 0.5rem;\n}\n\n\n/* === notification === */\n\n.notification-area {\n    pointer-events: none;\n    position: absolute;\n    inset: 0;\n    overflow-y: auto;  /* enable scrollbars */\n    display: flex;\n    flex-direction:  column;\n    justify-content: flex-start;\n    align-items:     flex-end;\n    margin-right: 0.75rem;\n}\n\n.notification-area {  /* with ellipsis menu */\n    padding-top: 1.75rem;\n}\nheader:has(menu.menubar) ~ .notification-area {  /* .notification-area preceded by header containing classic menubar */\n    padding-top: calc(var(--header-height) + 0.25rem);\n}\n\n.notification-message {\n    max-width: fit-content;\n    padding: 0.5em;\n    margin:  0.25rem;\n    white-space: pre-wrap;\n    border: 1px solid black;\n    border-radius: 0.25rem;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === dialog === */\n\ndialog {\n    border-radius: 0.5em;\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\ndialog .dialog-form-terminals {\n    display: flex;\n    justify-content: flex-end;\n    margin: 1.5em 0 0 0;\n}\n\ndialog .dialog-form-terminals button,\ndialog .dialog-form-terminals input[type=\"button\"] {\n    margin: 0 0 0 0;\n}\n\ndialog .dialog-form-terminals .dialog-accept,\ndialog .dialog-form-terminals .dialog-decline {\n    display: inline;\n    margin: 0 0 0 0.5em;\n    padding: 0.25em 2em;\n}\n\ndialog .dialog-message-text {\n    font-weight: bold;\n    font-size: larger;\n}\n\ndialog .dialog-text {\n}\n\n\n/* === settings-dialog === */\n\n.settings-dialog {\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog .dialog-text {\n    font-style: italic;\n}\n\n.settings-dialog [data-section] {\n    position: relative;\n    display: grid;\n    grid-template-columns: min-content min-content;\n    min-width: max-content;\n    margin: 1.75em 0 0 0;\n    padding: 1em 0.5em 0.5em;\n    border-radius: 8px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.settings-dialog [data-section]::before {  /* named section heading */\n    position: absolute;\n    content: attr(data-section);\n    left: 0.8em;\n    top: -0.7em;\n    padding: 0 1em;\n    border-radius: 4px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n    font-style: italic;\n}\n\n.settings-dialog [data-section] label {\n    align-self: center;\n    justify-self: end;\n    white-space: nowrap;\n    user-select: none;\n}\n\n.settings-dialog [data-section] input,\n.settings-dialog [data-section] select {\n    align-self: center;\n    justify-self: start;\n    margin: 0.25em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog [data-section] input[type=\"text\"] {\n    width: 5em;\n}\n\n.settings-dialog .error-message {\n    display: none;\n}\n.settings-dialog .error-message.active {\n    display: block;\n}\n\n\n/* === dialog === */\n\ndialog.export-options-dialog .dialog-form-content {\n    display: flex;\n    flex-direction: column;\n    gap: 1em;\n}\n\ndialog.export-options-dialog fieldset {\n    display: flex;\n    flex-direction: column;\n    gap:    0.25em;\n    margin: 1em 0 0 0;\n    border-radius: 0.5rem;\n}\ndialog.export-options-dialog fieldset label {\n    display: grid;\n    grid-template-columns: min-content 1fr;\n    align-items: center;\n    gap: 1rem;\n    padding: 1em;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    border-radius: 0.5rem;\n    background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);\n    user-select: none;\n}\ndialog.export-options-dialog fieldset input[type=\"radio\"] {\n    height: 1em;  /* prevent button from stretching in height on chromium, affecting \"active\" outline */\n}\ndialog.export-options-dialog form select {\n    padding: 0 0.5em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\ndialog.export-options-dialog fieldset label:has(input[type=\"radio\"]:checked) {\n    outline: 1px solid var(--theme-si-fg, hotpink);\n}\n\n\n/* === print media queries === */\n\n@media not print {\n    /* nothing for now */\n}\n\n@media print {\n\n    header {\n        display: none;\n    }\n\n    .notification-area {\n        display: none;\n    }\n\n    main {\n        overflow: visible;\n    }\n\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12147,7 +12147,7 @@ class BqManager {
             menu.set_menu_state('delete', { enabled: !presentation && editable && !!active_cell });
             menu.set_menu_state('set-type-plain', { checked: (cell_type === 'plain'), enabled: interactive });
             menu.set_menu_state('set-type-markdown', { checked: (cell_type === 'markdown'), enabled: interactive });
-            menu.set_menu_state('set-type-tex', { checked: (cell_type === 'tex'), enabled: interactive });
+            menu.set_menu_state('set-type-latex', { checked: (cell_type === 'latex'), enabled: interactive });
             menu.set_menu_state('set-type-javascript', { checked: (cell_type === 'javascript'), enabled: interactive });
             menu.set_menu_state('set-view-normal', { checked: (cell_view === 'normal') });
             menu.set_menu_state('set-view-hide', { checked: (cell_view === 'hide') });
@@ -12543,11 +12543,11 @@ class BqManager {
     command__set_type_markdown(command_context) {
         return this.#set_type_helper(command_context, 'markdown');
     }
-    /** set the target cell's type to "tex".
+    /** set the target cell's type to "latex".
      *  @return {Boolean} true iff command successfully handled
      */
-    command__set_type_tex(command_context) {
-        return this.#set_type_helper(command_context, 'tex');
+    command__set_type_latex(command_context) {
+        return this.#set_type_helper(command_context, 'latex');
     }
     /** set the target cell's type to "javascript".
      *  @return {Boolean} true iff command successfully handled
@@ -12844,7 +12844,7 @@ function get_menubar_spec() {
         { label: 'Type', collection: [
                 { label: 'Plain text', item: { command: 'set-type-plain' } },
                 { label: 'Markdown', item: { command: 'set-type-markdown' } },
-                { label: 'TeX', item: { command: 'set-type-tex' } },
+                { label: 'LaTeX', item: { command: 'set-type-latex' } },
                 { label: 'JavaScript', item: { command: 'set-type-javascript' } },
             ] },
         { label: 'View', collection: [
@@ -12897,7 +12897,7 @@ function get_ellipsis_menu_spec() {
         { label: 'Type', collection: [
                 { label: 'Plain text', item: { command: 'set-type-plain' } },
                 { label: 'Markdown', item: { command: 'set-type-markdown' } },
-                { label: 'TeX', item: { command: 'set-type-tex' } },
+                { label: 'LaTeX', item: { command: 'set-type-latex' } },
                 { label: 'JavaScript', item: { command: 'set-type-javascript' } },
             ] },
         { label: 'View', collection: [
@@ -12941,7 +12941,7 @@ function get_global_initial_key_map_bindings() {
         'delete': ['CmdOrCtrl-Alt-Backspace'],
         'set-type-plain': ['Alt-T t', 'Alt-T p'],
         'set-type-markdown': ['Alt-T m'],
-        'set-type-tex': ['Alt-T x'],
+        'set-type-latex': ['Alt-T l'],
         'set-type-javascript': ['Alt-T j'],
         'set-view-normal': ['Alt-V n'],
         'set-view-hide': ['Alt-V h'],
@@ -12980,7 +12980,7 @@ function get_global_command_bindings() {
         'delete': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__delete */ .m_,
         'set-type-plain': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_plain */ .J8,
         'set-type-markdown': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_markdown */ .ul,
-        'set-type-tex': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_tex */ .Se,
+        'set-type-latex': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_latex */ .Ph,
         'set-type-javascript': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_type_javascript */ .yy,
         'set-view-normal': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_normal */ .BF,
         'set-view-hide': _interactive_commands__WEBPACK_IMPORTED_MODULE_0__/* .interactive_command__set_view_hide */ .O2,
@@ -13014,9 +13014,9 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   J8: () => (/* binding */ interactive_command__set_type_plain),
 /* harmony export */   MS: () => (/* binding */ interactive_command__move_up),
 /* harmony export */   O2: () => (/* binding */ interactive_command__set_view_hide),
+/* harmony export */   Ph: () => (/* binding */ interactive_command__set_type_latex),
 /* harmony export */   QK: () => (/* binding */ interactive_command__set_view_none),
 /* harmony export */   SX: () => (/* binding */ interactive_command__toggle_auto_eval),
-/* harmony export */   Se: () => (/* binding */ interactive_command__set_type_tex),
 /* harmony export */   YO: () => (/* binding */ interactive_command__focus_down),
 /* harmony export */   _l: () => (/* binding */ interactive_command__reset),
 /* harmony export */   a5: () => (/* binding */ interactive_command__reset_all),
@@ -13219,14 +13219,14 @@ function interactive_command__set_type_markdown(command_context) {
     }
     return command_context.dm.command__set_type_markdown(command_context);
 }
-/** set the target cell's type to "tex".
+/** set the target cell's type to "latex".
  *  @return {Boolean} true iff command successfully handled
  */
-function interactive_command__set_type_tex(command_context) {
+function interactive_command__set_type_latex(command_context) {
     if (!command_context.dm.interactive) {
         return false;
     }
-    return command_context.dm.command__set_type_tex(command_context);
+    return command_context.dm.command__set_type_latex(command_context);
 }
 /** set the target cell's type to "javascript".
  *  @return {Boolean} true iff command successfully handled
@@ -13391,7 +13391,7 @@ const sections = [
                 convert_to_number: true,
             }],
     }, {
-        name: 'TeX Formatting',
+        name: 'LaTeX Formatting',
         settings: [{
                 id: 'formatting_options_flush_left',
                 label: 'Flush left',
@@ -14071,9 +14071,9 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
         this.abort_if_stopped();
         return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .MarkdownRenderer */ .To().render(this, code, options);
     }
-    async tex(code, options) {
+    async latex(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .TeXRenderer */ .R2().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .LaTeXRenderer */ .MH().render(this, code, options);
     }
     async image_data(code, options) {
         this.abort_if_stopped();
@@ -14413,7 +14413,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   B5: () => (/* reexport safe */ _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__.B),
 /* harmony export */   Dh: () => (/* reexport safe */ _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__.D),
 /* harmony export */   Js: () => (/* reexport safe */ _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__.J),
-/* harmony export */   R2: () => (/* reexport safe */ _text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__.R),
+/* harmony export */   MH: () => (/* reexport safe */ _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__.M),
 /* harmony export */   To: () => (/* reexport safe */ _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__.T),
 /* harmony export */   ZS: () => (/* reexport safe */ _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__.Z),
 /* harmony export */   bN: () => (/* reexport safe */ _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__.b),
@@ -14424,7 +14424,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
 /* harmony import */ var _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2221);
 /* harmony import */ var _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4699);
-/* harmony import */ var _text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6473);
+/* harmony import */ var _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9406);
 /* harmony import */ var _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
 /* harmony import */ var _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3161);
 /* harmony import */ var _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4863);
@@ -14432,8 +14432,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(39);
 /* harmony import */ var _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7895);
 /* harmony import */ var _factories__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1024);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__]);
-([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__]);
+([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 // === RE-EXPORTS ===
 
 
@@ -15126,7 +15126,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     print__
 //     javascript
 //     markdown
-//     tex
+//     latex
 //     image_data
 //     graphviz
 //     plotly
@@ -15322,7 +15322,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             // code and graphics rendering defined by ocx
             javascript: ocx.javascript.bind(ocx),
             markdown: ocx.markdown.bind(ocx),
-            tex: ocx.tex.bind(ocx),
+            latex: ocx.latex.bind(ocx),
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
@@ -34177,6 +34177,75 @@ const _katex = katex;
 
 /***/ }),
 
+/***/ 9406:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   M: () => (/* binding */ LaTeXRenderer)
+/* harmony export */ });
+/* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
+/* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1024);
+/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9799);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3593);
+/* harmony import */ var _katex___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1404);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__]);
+([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+
+
+
+
+
+class LaTeXRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* .TextBasedRenderer */ .m9 {
+    get CLASS() { return this.constructor; }
+    static get type() { return 'latex'; }
+    static {
+        // required for all TextBasedRenderer extensions
+        src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__/* ._initial_text_renderer_factories */ .$W.push(this);
+    }
+    /** Render the given LaTeX source to ocx.
+     * @param {OutputContextLike} ocx,
+     * @param {String} latex,
+     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @return {Element} element to which output was rendered
+     * @throws {Error} if error occurs
+     */
+    async _render(ocx, latex, options) {
+        latex ??= '';
+        const { style, inline, global_state = ocx.bq.global_state ?? {}, } = (options ?? {});
+        const markup = this.CLASS.render_to_string(latex, global_state, {
+            displayMode: !inline,
+            throwOnError: false,
+        });
+        const parent = ocx.create_child({
+            attrs: {
+                [src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+            },
+            style,
+        });
+        parent.innerHTML = markup;
+        return parent;
+    }
+    static render_to_string(latex, global_state, katex_options) {
+        latex ??= '';
+        const { flush_left, } = (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .get_settings */ .TJ)().formatting_options;
+        //!!! fix usage of katex_options
+        // this function encapsulates how the "macros" options is gotten from global_state
+        katex_options = {
+            macros: (global_state[this.type] ??= {}),
+            fleqn: flush_left,
+            ...(katex_options ?? {}),
+        };
+        katex_options.macros ??= (global_state[this.type] ??= {}); // for persistent \gdef macros
+        return _katex___WEBPACK_IMPORTED_MODULE_4__/* .katex */ .Y.renderToString(latex, katex_options);
+    }
+}
+
+__webpack_async_result__();
+} catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
 /***/ 4699:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -34187,13 +34256,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1024);
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7007);
 /* harmony import */ var src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3161);
-/* harmony import */ var src_renderer_text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6473);
+/* harmony import */ var src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9406);
 /* harmony import */ var src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
 /* harmony import */ var _marked__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8150);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3141);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
-([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
+([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 
 
 
@@ -34202,7 +34271,7 @@ var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_
 
 
 
-// TeX handling adapted from: marked-katex-extension/index.js
+// LaTeX handling adapted from: marked-katex-extension/index.js
 // https://github.com/UziTech/marked-katex-extension/blob/main/src/index.js
 // See also: https://marked.js.org/using_pro#async
 // ``` blocks are extended as follows:
@@ -34212,11 +34281,11 @@ var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_
 //      --- $ indicates that the "source" should be output (in a block with css class: eval_code_source_css_class)
 //      --- ! indicates that the source should be rendered (executed) and output
 // - the source type, $ and ! can be separated by any amount of whitespace, or none
-const extension_name__inline_tex = 'inline-tex';
-const extension_name__block_tex = 'block-tex';
+const extension_name__inline_latex = 'inline-latex';
+const extension_name__block_latex = 'block-latex';
 const extension_name__eval_code = 'eval-code';
-const inline_tex_match_re = /^\$+([^$]+?)\$+/;
-const block_tex_match_re = /^\$\$([^$]+?)\$\$/;
+const inline_latex_match_re = /^\$+([^$]+?)\$+/;
+const block_latex_match_re = /^\$\$([^$]+?)\$\$/;
 const eval_code_start_re = /^[`]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]/;
 const eval_code_match_re = /^[`]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[`]{3}/s;
 const eval_code_source_type_default = src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__/* .JavaScriptRenderer */ .Z.type;
@@ -34248,8 +34317,8 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
         const marked_options = {
             walkTokens(token) {
                 switch (token.type) {
-                    case extension_name__inline_tex:
-                    case extension_name__block_tex: {
+                    case extension_name__inline_latex:
+                    case extension_name__block_latex: {
                         token.global_state = global_state;
                         break;
                     }
@@ -34327,17 +34396,17 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
 _marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
     extensions: [
         {
-            name: extension_name__inline_tex,
+            name: extension_name__inline_latex,
             level: 'inline',
             start(src) { return src.indexOf('$'); },
             tokenizer(src, tokens) {
-                const match = src.match(inline_tex_match_re);
+                const match = src.match(inline_latex_match_re);
                 if (!match) {
                     return undefined;
                 }
                 else {
                     return {
-                        type: extension_name__inline_tex,
+                        type: extension_name__inline_latex,
                         raw: match[0],
                         text: match[1].trim(),
                         global_state: undefined, // filled in later by walkTokens
@@ -34345,24 +34414,24 @@ _marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
                 }
             },
             renderer(token) {
-                return src_renderer_text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TeXRenderer */ .R.render_to_string(token.text ?? '', token.global_state, {
+                return src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LaTeXRenderer */ .M.render_to_string(token.text ?? '', token.global_state, {
                     displayMode: false,
                     throwOnError: false,
                 });
             },
         },
         {
-            name: extension_name__block_tex,
+            name: extension_name__block_latex,
             level: 'block',
             start(src) { return src.indexOf('$$'); },
             tokenizer(src, tokens) {
-                const match = src.match(block_tex_match_re);
+                const match = src.match(block_latex_match_re);
                 if (!match) {
                     return undefined;
                 }
                 else {
                     return {
-                        type: extension_name__block_tex,
+                        type: extension_name__block_latex,
                         raw: match[0],
                         text: match[1].trim(),
                         global_state: undefined, // filled in later by walkTokens
@@ -34370,7 +34439,7 @@ _marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
                 }
             },
             renderer(token) {
-                const markup = src_renderer_text_tex_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TeXRenderer */ .R.render_to_string(token.text ?? '', token.global_state, {
+                const markup = src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LaTeXRenderer */ .M.render_to_string(token.text ?? '', token.global_state, {
                     displayMode: true,
                     throwOnError: false,
                 });
@@ -34429,74 +34498,6 @@ const marked = globalThis.marked;
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } }, 1);
-
-/***/ }),
-
-/***/ 6473:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   R: () => (/* binding */ TeXRenderer)
-/* harmony export */ });
-/* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1024);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9799);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3593);
-/* harmony import */ var _katex___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1404);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__]);
-([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
-
-
-
-
-
-class TeXRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* .TextBasedRenderer */ .m9 {
-    get CLASS() { return this.constructor; }
-    static get type() { return 'tex'; }
-    static {
-        // required for all TextBasedRenderer extensions
-        src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__/* ._initial_text_renderer_factories */ .$W.push(this);
-    }
-    /** Render the given TeX source to ocx.
-     * @param {OutputContextLike} ocx,
-     * @param {String} tex,
-     * @param {TextBasedRendererOptionsType|undefined} options,
-     * @return {Element} element to which output was rendered
-     * @throws {Error} if error occurs
-     */
-    async _render(ocx, tex, options) {
-        tex ??= '';
-        const { style, inline, global_state = ocx.bq.global_state ?? {}, } = (options ?? {});
-        const markup = this.CLASS.render_to_string(tex, global_state, {
-            displayMode: !inline,
-            throwOnError: false,
-        });
-        const parent = ocx.create_child({
-            attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-            },
-            style,
-        });
-        parent.innerHTML = markup;
-        return parent;
-    }
-    static render_to_string(tex, global_state, katex_options) {
-        const { flush_left, } = (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .get_settings */ .TJ)().formatting_options;
-        //!!! fix usage of katex_options
-        // this function encapsulates how the "macros" options is gotten from global_state
-        katex_options = {
-            macros: (global_state[this.type] ??= {}),
-            fleqn: flush_left,
-            ...(katex_options ?? {}),
-        };
-        katex_options.macros ??= (global_state[this.type] ??= {}); // for persistent \gdef macros
-        return _katex___WEBPACK_IMPORTED_MODULE_4__/* .katex */ .Y.renderToString(tex, katex_options);
-    }
-}
-
-__webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } });
 
 /***/ }),
 
@@ -35044,7 +35045,7 @@ class IndexedDBInterface {
 
 ;// ./src/settings/storage.ts
 
-const uuid = 'e9e4f36a-02fb-42b3-918a-c846df4a1b51';
+const uuid = 'aed2419a-d23e-48b0-ae31-4f378729bf9b';
 const db_key_settings = 'settings';
 const db_key_themes = 'themes';
 // database_name and database_store_name use UUIDs, but these must be constant,
@@ -35150,7 +35151,7 @@ const theme_property_name_documentation = `\
   TYPE INDICATOR COLOR:         LANGUAGE TYPE:
   ty -- type indicator color    markdown
                                 plain
-                                tex
+                                latex
                                 javascript
   ---
 
@@ -35193,7 +35194,7 @@ const standard_themes_spec = {
     "--theme-gr-bg": ['transparent', 'transparent'],
     "--theme-ty-markdown": ['hsl(205deg  85%  88% / 100%)', 'hsl(205deg  80%  20% / 100%)'],
     "--theme-ty-plain": ['lightgrey', 'hsl(  0deg   0%  20% / 100%)'],
-    "--theme-ty-tex": ['hsl(325deg  30%  85% / 100%)', 'hsl(325deg  30%  24% / 100%)'],
+    "--theme-ty-latex": ['hsl(325deg  30%  85% / 100%)', 'hsl(325deg  30%  24% / 100%)'],
     "--theme-ty-javascript": ['hsl(105deg  55%  85% / 100%)', 'hsl(135deg  45%  15% / 100%)'],
 };
 const standard_theme_prop_names = Object.keys(standard_themes_spec);
