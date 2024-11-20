@@ -8,7 +8,7 @@ export {
 
 export { TextRenderer        } from './text/text-renderer';
 export { MarkdownRenderer    } from './text/markdown-renderer';
-export { TeXRenderer         } from './text/tex-renderer';
+export { LaTeXRenderer       } from './text/latex-renderer';
 export { JavaScriptRenderer  } from './text/javascript-renderer/_';
 
 export { ErrorRenderer       } from './application/error-renderer';

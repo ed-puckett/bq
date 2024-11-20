@@ -23,25 +23,25 @@ import {
 } from './katex/_';
 
 
-export class TeXRenderer extends TextBasedRenderer {
-    get CLASS () { return this.constructor as typeof TeXRenderer; }
+export class LaTeXRenderer extends TextBasedRenderer {
+    get CLASS () { return this.constructor as typeof LaTeXRenderer; }
 
-    static get type (){ return 'tex'; }
+    static get type (){ return 'latex'; }
 
     static {
         // required for all TextBasedRenderer extensions
         _initial_text_renderer_factories.push(this);
     }
 
-    /** Render the given TeX source to ocx.
+    /** Render the given LaTeX source to ocx.
      * @param {OutputContextLike} ocx,
-     * @param {String} tex,
+     * @param {String} latex,
      * @param {TextBasedRendererOptionsType|undefined} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async _render(ocx: OutputContextLike, tex: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        tex ??= '';
+    async _render(ocx: OutputContextLike, latex: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        latex ??= '';
 
         const {
             style,
@@ -49,7 +49,7 @@ export class TeXRenderer extends TextBasedRenderer {
             global_state = ocx.bq.global_state ?? {},
         } = (options ?? {});
 
-        const markup = this.CLASS.render_to_string(tex, global_state, {
+        const markup = this.CLASS.render_to_string(latex, global_state, {
             displayMode:  !inline,
             throwOnError: false,
         });
@@ -65,7 +65,9 @@ export class TeXRenderer extends TextBasedRenderer {
         return parent;
     }
 
-    static render_to_string(tex: string, global_state: any, katex_options?: object): string {
+    static render_to_string(latex: string, global_state: any, katex_options?: object): string {
+        latex ??= '';
+
         const {
             flush_left,
         } = (get_settings() as any).formatting_options as any;
@@ -78,6 +80,6 @@ export class TeXRenderer extends TextBasedRenderer {
             ...(katex_options ?? {}),
         };
         (katex_options as any).macros ??= (global_state[this.type] ??= {});  // for persistent \gdef macros
-        return katex.renderToString(tex, katex_options);
+        return katex.renderToString(latex, katex_options);
     }
 }

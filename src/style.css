@@ -137,8 +137,8 @@ bq-cell {
     &[data-type="plain"] {
         --content-color: var(--theme-ty-plain, hotpink);
     }
-    &[data-type="tex"] {
-        --content-color: var(--theme-ty-tex, hotpink);
+    &[data-type="latex"] {
+        --content-color: var(--theme-ty-latex, hotpink);
     }
     &[data-type="javascript"] {
         --content-color: var(--theme-ty-javascript, hotpink);

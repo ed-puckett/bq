@@ -16,8 +16,8 @@ import {
 } from 'src/renderer/application/error-renderer';
 
 import {
-    TeXRenderer,
-} from 'src/renderer/text/tex-renderer';
+    LaTeXRenderer,
+} from 'src/renderer/text/latex-renderer';
 
 import {
     JavaScriptRenderer,
@@ -36,7 +36,7 @@ import {
 } from 'lib/sys/uuid';
 
 
-// TeX handling adapted from: marked-katex-extension/index.js
+// LaTeX handling adapted from: marked-katex-extension/index.js
 // https://github.com/UziTech/marked-katex-extension/blob/main/src/index.js
 // See also: https://marked.js.org/using_pro#async
 
@@ -49,13 +49,13 @@ import {
 //      --- ! indicates that the source should be rendered (executed) and output
 // - the source type, $ and ! can be separated by any amount of whitespace, or none
 
-const extension_name__inline_tex = 'inline-tex';
-const extension_name__block_tex  = 'block-tex';
-const extension_name__eval_code  = 'eval-code';
+const extension_name__inline_latex = 'inline-latex';
+const extension_name__block_latex  = 'block-latex';
+const extension_name__eval_code    = 'eval-code';
 
-const inline_tex_match_re = /^\$+([^$]+?)\$+/;
+const inline_latex_match_re = /^\$+([^$]+?)\$+/;
 
-const block_tex_match_re = /^\$\$([^$]+?)\$\$/;
+const block_latex_match_re = /^\$\$([^$]+?)\$\$/;
 
 const eval_code_start_re = /^[`]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]/;
 const eval_code_match_re = /^[`]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[`]{3}/s;
@@ -70,7 +70,7 @@ type walkTokens_token_type = {
     markup?:       string,
     source_type?:  string,
     show?:         boolean,
-    global_state?: object,  // used only by extension_name__inline_tex and extension_name__block_tex
+    global_state?: object,  // used only by extension_name__inline_latex and extension_name__block_latex
 };
 
 export class MarkdownRenderer extends TextBasedRenderer {
@@ -115,8 +115,8 @@ export class MarkdownRenderer extends TextBasedRenderer {
         const marked_options = {
             walkTokens(token: walkTokens_token_type) {
                 switch (token.type) {
-                    case extension_name__inline_tex:
-                    case extension_name__block_tex: {
+                    case extension_name__inline_latex:
+                    case extension_name__block_latex: {
                         token.global_state = global_state;
                         break;
                     }
@@ -203,16 +203,16 @@ export class MarkdownRenderer extends TextBasedRenderer {
 marked.use({
     extensions: [
         {
-            name: extension_name__inline_tex,
+            name: extension_name__inline_latex,
             level: 'inline',
             start(src: string) { return src.indexOf('$'); },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
-                const match = src.match(inline_tex_match_re);
+                const match = src.match(inline_latex_match_re);
                 if (!match) {
                     return undefined;
                 } else {
                     return {
-                        type: extension_name__inline_tex,
+                        type: extension_name__inline_latex,
                         raw:  match[0],
                         text: match[1].trim(),
                         global_state: undefined,  // filled in later by walkTokens
@@ -220,23 +220,23 @@ marked.use({
                 }
             },
             renderer(token: walkTokens_token_type) {
-                return TeXRenderer.render_to_string(token.text ?? '', token.global_state, {
+                return LaTeXRenderer.render_to_string(token.text ?? '', token.global_state, {
                     displayMode:  false,
                     throwOnError: false,
                 });
             },
         },
         {
-            name: extension_name__block_tex,
+            name: extension_name__block_latex,
             level: 'block',
             start(src: string) { return src.indexOf('$$'); },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
-                const match = src.match(block_tex_match_re);
+                const match = src.match(block_latex_match_re);
                 if (!match) {
                     return undefined;
                 } else {
                     return {
-                        type: extension_name__block_tex,
+                        type: extension_name__block_latex,
                         raw:  match[0],
                         text: match[1].trim(),
                         global_state: undefined,  // filled in later by walkTokens
@@ -244,7 +244,7 @@ marked.use({
                 }
             },
             renderer(token: walkTokens_token_type) {
-                const markup = TeXRenderer.render_to_string(token.text ?? '', token.global_state, {
+                const markup = LaTeXRenderer.render_to_string(token.text ?? '', token.global_state, {
                     displayMode:  true,
                     throwOnError: false,
                 });
