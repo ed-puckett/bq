@@ -1,8 +1,10 @@
 change source type "tex" to "latex" ?
-create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
+complete _bootstrap_script_src_alternative_descriptions in src/init.ts
+complete _cell_view_descriptions in src/init.ts
 make help document
 update README.md
-fix deprecation warnings when compiling (happening with node v23.2.0 but not v22.11.0)
+create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
+fix deprecation warnings when compiling (inflight and glob packages)
 documentation: tell Firefox users about "Always ask you where to save files" setting
 KeySpec.#is_on_macos needs to be tested/fixed
 canceling save-as creates notification "document saved" (Firefox, not Chromium)

@@ -15063,7 +15063,7 @@ const src_dir_url = new URL(src_dir_path, (0,lib_sys_assets_server_url__WEBPACK_
 // provide an implementation of dynamic import that is safe from modification by webpack
 const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
-//!!!
+// !!! out of date !!!
 // CODE EVALUATION
 // ---------------
 // Within the code given for evaluation, "this" references the context
@@ -15087,14 +15087,52 @@ const dynamic_import = new Function('path', 'return import(path);');
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
-//     println:        prints its argument followed by newline
-//     printf:         implementation of std C printf()
-//     sprintf:        implementation of std C sprintf()
-//     import_lib:     import other libraries from the lib/ directory
-//     vars:           export new "global" properties
-//     is_stopped:     determine if the evaluation has been stopped
-//     delay_ms:       return a Promise that resolves after a specified delay
-//     create_worker:  create a new EvalWorker instance
+//     println:       prints its argument followed by newline
+//     printf:        implementation of std C printf()
+//     sprintf:       implementation of std C sprintf()
+//     import_local:  import other libraries from the lib/ directory
+//     vars:          export new "global" properties
+//     is_stopped:    determine if the evaluation has been stopped
+//     delay_ms:      return a Promise that resolves after a specified delay
+//     create_worker: create a new EvalWorker instance
+//!!!
+//     env_vars
+//     ocx
+//     source_code
+//     cell
+//     TextBasedRenderer
+//     ApplicationBasedRenderer
+//     d3
+//     load_Plotly
+//     load_Algebrite
+//     rxjs
+//     is_stopped
+//     keepalive
+//     bg
+//     end_bg
+//     create_worker
+//     import_local
+//     vars
+//     sprintf
+//     sleep
+//     delay_ms
+//     next_tick
+//     next_micro_tick
+//     render_text
+//     render_error
+//     render_value
+//     println
+//     printf
+//     print__
+//     javascript
+//     markdown
+//     tex
+//     image_data
+//     graphviz
+//     plotly
+//     canvas_image
+//     canvas_tools
+//!!!
 //
 // These all continue to be available even after the evaluation has
 // returned if there are any async operations still active.
@@ -15240,13 +15278,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             ocx.manage_activity(worker);
             return worker;
         }
-        async function import_lib(lib_path) {
-            return dynamic_import(new URL(lib_path, lib_dir_url));
-        }
-        async function import_src(src_path) {
-            return dynamic_import(new URL(src_path, src_dir_url));
-        }
-        async function import_location(location_relative_path) {
+        async function import_local(location_relative_path) {
             return dynamic_import(new URL(location_relative_path, document.location.href));
         }
         function vars(...objects) {
@@ -15254,7 +15286,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             return objects;
         }
         const eval_environment = {
-            env_keys: [], // updated below to be an array of all the keys in eval_environment
+            env_vars: [], // updated below to be an array of all the keys in eval_environment
             ocx,
             source_code, // this evaluation's source code
             cell, // this evaluation's associated cell or undefined if no associated cell
@@ -15271,9 +15303,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             bg, // don't wrap with AIS because that will cause an unhandled rejection if stopped
             end_bg, // don't wrap with AIS because that will cause an error
             create_worker: ocx.AIS(create_worker),
-            import_lib: ocx.AIS(import_lib),
-            import_src: ocx.AIS(import_src),
-            import_location: ocx.AIS(import_location),
+            import_local: ocx.AIS(import_local),
             vars: ocx.AIS(vars),
             // external
             sprintf: ocx.sprintf.bind(ocx),
@@ -15299,7 +15329,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             canvas_image: ocx.canvas_image.bind(ocx),
             canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__,
         };
-        eval_environment.env_keys = Object.keys(eval_environment);
+        eval_environment.env_vars = Object.keys(eval_environment);
         return eval_environment;
     }
 }
