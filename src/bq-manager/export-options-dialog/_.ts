@@ -60,8 +60,9 @@ export class ExportOptionsDialog extends Dialog {
         const bss_choices = Object.entries(get_bootstrap_script_src_alternatives())
             .map( ([ choice, { description, url } ]: [ choice: string, _: { description: string, url: string } ]) => {
                 return {
-                    value: choice,
-                    label: description,
+                    value:   choice,
+                    label:   description,
+                    tooltip: url,
                 };
             } );
         create_radio_control(this._dialog_form_content, 'Bootstrap script', 'bootstrap_script_src', bss_choices_default, bss_choices);
@@ -73,6 +74,7 @@ export class ExportOptionsDialog extends Dialog {
         const cv_unset_value = '';  // must be empty string; this will be recognized by caller as "unset"
         const cv_choices_default = cv_current ?? cv_unset_value;
         const cv_choices_standard = get_valid_cell_view_values();
+        const cv_descriptions = get_cell_view_descriptions();
         if (cv_choices_standard.includes(cv_unset_value)) {
             throw new Error('unexpected: valid_cell_view_values already includes cv_unset_value');
         }
@@ -81,10 +83,16 @@ export class ExportOptionsDialog extends Dialog {
         }
         const cv_choices = [
             {
-                label: cv_unset_choice,
                 value: cv_unset_value,
+                label: cv_unset_choice,
             },
-            ...cv_choices_standard,
+            ...Object.entries(cv_descriptions).map( ([ value, description ]) => {
+                return {
+                    value,
+                    label:   value,
+                    tooltip: description,
+                };
+            }),
         ];
         create_select_control(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
 
@@ -128,8 +136,9 @@ export class ExportOptionsDialog extends Dialog {
 
 
 type RADIO_ALTERNATIVE_SPEC = {
-    label:  string;
-    value?: string;  // value will be taken from label if value is undefined
+    label:    string;
+    value?:   string;  // value will be taken from label if value is undefined
+    tooltip?: string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
 };
 
 function create_radio_control(parent: HTMLElement, legend: string, name: string, checked_value: null|string, alternatives_specs: RADIO_ALTERNATIVE_SPEC[]) {
@@ -144,10 +153,13 @@ function create_radio_control(parent: HTMLElement, legend: string, name: string,
         ],
     };
 
-    for (const { label, value: spec_value } of alternatives_specs) {
+    for (const { label, value: spec_value, tooltip } of alternatives_specs) {
         const value = spec_value ?? label;
         (spec.children as any).push({
             tag: 'label',
+            attrs: {
+                title: tooltip ? tooltip : undefined,
+            },
             children: [
                 {
                     tag: 'input',
@@ -168,8 +180,9 @@ function create_radio_control(parent: HTMLElement, legend: string, name: string,
 
 
 type SELECT_ALTERNATIVE_SPEC = string | {
-    label:  string;
-    value?: string;  // value will be taken from label if value is undefined
+    label:    string;
+    value?:   string;  // value will be taken from label if value is undefined
+    tooltip?: string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
 };
 
 function create_select_control(parent: HTMLElement, label: string, name: string, selected_value: null|string, alternatives_specs: SELECT_ALTERNATIVE_SPEC[]) {
@@ -191,19 +204,21 @@ function create_select_control(parent: HTMLElement, label: string, name: string,
     const select_children = (spec.children[spec.children.length-1] as any).children;
 
     for (const spec of alternatives_specs) {
-        let label, value;
+        let label, value, tooltip;
         if (typeof spec === 'string') {
             label = spec;
             value = spec;
         } else {
-            label = spec.label;
-            value = spec.value ?? spec.label;
+            label   = spec.label;
+            value   = spec.value ?? spec.label;
+            tooltip = spec.tooltip;
         }
         (select_children as any).push({
             tag: 'option',
             innerText: label,
             attrs: {
                 value,
+                title: tooltip ? tooltip : undefined,
                 selected: (value === selected_value) ? true : undefined,
             },
         });

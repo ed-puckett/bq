@@ -350,7 +350,7 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
 
     if (typeof children !== 'undefined' && children !== null) {
         if (!Array.isArray(children) || !children.every(child => ['object', 'string' ].includes(typeof child))) {
-            throw new Error('children must be an array of objects');
+            throw new Error('children must be an array of objects and/or strings');
         }
         if (typeof innerText !== 'undefined' || typeof innerHTML !== 'undefined') {
             throw new Error('"innerText" or "innerHTML" may not be specified if "children" is specified');

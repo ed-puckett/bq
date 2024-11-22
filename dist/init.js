@@ -9302,7 +9302,7 @@ function create_element_or_mapping(options, return_mapping = false) {
     const { parent, before, } = validate_parent_and_before_from_options(options);
     if (typeof children !== 'undefined' && children !== null) {
         if (!Array.isArray(children) || !children.every(child => ['object', 'string'].includes(typeof child))) {
-            throw new Error('children must be an array of objects');
+            throw new Error('children must be an array of objects and/or strings');
         }
         if (typeof innerText !== 'undefined' || typeof innerHTML !== 'undefined') {
             throw new Error('"innerText" or "innerHTML" may not be specified if "children" is specified');
@@ -12658,6 +12658,7 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
             return {
                 value: choice,
                 label: description,
+                tooltip: url,
             };
         });
         create_radio_control(this._dialog_form_content, 'Bootstrap script', 'bootstrap_script_src', bss_choices_default, bss_choices);
@@ -12667,6 +12668,7 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
         const cv_unset_value = ''; // must be empty string; this will be recognized by caller as "unset"
         const cv_choices_default = cv_current ?? cv_unset_value;
         const cv_choices_standard = (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_valid_cell_view_values */ .ct)();
+        const cv_descriptions = (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_cell_view_descriptions */ .oy)();
         if (cv_choices_standard.includes(cv_unset_value)) {
             throw new Error('unexpected: valid_cell_view_values already includes cv_unset_value');
         }
@@ -12675,10 +12677,16 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
         }
         const cv_choices = [
             {
-                label: cv_unset_choice,
                 value: cv_unset_value,
+                label: cv_unset_choice,
             },
-            ...cv_choices_standard,
+            ...Object.entries(cv_descriptions).map(([value, description]) => {
+                return {
+                    value,
+                    label: value,
+                    tooltip: description,
+                };
+            }),
         ];
         create_select_control(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
         // --- auto-eval? ---
@@ -12726,10 +12734,13 @@ function create_radio_control(parent, legend, name, checked_value, alternatives_
             },
         ],
     };
-    for (const { label, value: spec_value } of alternatives_specs) {
+    for (const { label, value: spec_value, tooltip } of alternatives_specs) {
         const value = spec_value ?? label;
         spec.children.push({
             tag: 'label',
+            attrs: {
+                title: tooltip ? tooltip : undefined,
+            },
             children: [
                 {
                     tag: 'input',
@@ -12763,7 +12774,7 @@ function create_select_control(parent, label, name, selected_value, alternatives
     };
     const select_children = spec.children[spec.children.length - 1].children;
     for (const spec of alternatives_specs) {
-        let label, value;
+        let label, value, tooltip;
         if (typeof spec === 'string') {
             label = spec;
             value = spec;
@@ -12771,12 +12782,14 @@ function create_select_control(parent, label, name, selected_value, alternatives
         else {
             label = spec.label;
             value = spec.value ?? spec.label;
+            tooltip = spec.tooltip;
         }
         select_children.push({
             tag: 'option',
             innerText: label,
             attrs: {
                 value,
+                title: tooltip ? tooltip : undefined,
                 selected: (value === selected_value) ? true : undefined,
             },
         });
@@ -13534,10 +13547,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   bI: () => (/* binding */ bootstrap_script_src_alternatives_default),
 /* harmony export */   ct: () => (/* binding */ get_valid_cell_view_values),
 /* harmony export */   o6: () => (/* binding */ get_bootstrap_script_src_alternatives),
+/* harmony export */   oy: () => (/* binding */ get_cell_view_descriptions),
 /* harmony export */   u1: () => (/* binding */ get_auto_eval),
 /* harmony export */   wG: () => (/* binding */ set_auto_eval)
 /* harmony export */ });
-/* unused harmony exports auto_eval_attribute_name, get_cell_view_descriptions */
+/* unused harmony export auto_eval_attribute_name */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1496);
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4931);
