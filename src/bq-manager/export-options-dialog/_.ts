@@ -6,7 +6,7 @@ import {
 
 import {
     create_stylesheet_link,
-    create_element
+    create_element,
 } from 'lib/ui/dom-tools';
 
 import {
@@ -58,11 +58,13 @@ export class ExportOptionsDialog extends Dialog {
 
         const bss_choices_default = bootstrap_script_src_alternatives_default;
         const bss_choices = Object.entries(get_bootstrap_script_src_alternatives())
-            .map( ([ choice, { description, url } ]: [ choice: string, _: { description: string, url: string } ]) => {
+            .map( ([ choice, { label, details, url } ]: [ choice: string, _: { label: string, details: string, url: string } ]) => {
                 return {
-                    value:   choice,
-                    label:   description,
-                    tooltip: url,
+                    value:     choice,
+                    label,
+                    label_aux: url,
+                    details,
+                    tooltip:   `script url: ${url}`,
                 };
             } );
         create_radio_control(this._dialog_form_content, 'Bootstrap script', 'bootstrap_script_src', bss_choices_default, bss_choices);
@@ -94,7 +96,30 @@ export class ExportOptionsDialog extends Dialog {
                 };
             }),
         ];
-        create_select_control(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
+        const cv_element_tree = create_select_control(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
+        const cv_description_element = create_element({
+            parent: cv_element_tree,
+            attrs: {
+                class: 'export-cell-view-description',
+            },
+            innerText: ' ',
+        }) as HTMLElement;
+        const cv_select_element = cv_element_tree.querySelector('select');
+        if (cv_select_element) {
+            cv_select_element.onchange = (event) => {
+                if (event.target) {
+                    const value = (event.target as HTMLSelectElement).value;
+                    if (value) {
+                        const description = (cv_descriptions as any)[value];
+                        if (description) {
+                            cv_description_element.innerText = description;
+                            return;
+                        }
+                    }
+                }
+                cv_description_element.innerText = ' ';  // clear if nothing matched
+            };
+        }
 
         // --- auto-eval? ---
 
@@ -102,7 +127,7 @@ export class ExportOptionsDialog extends Dialog {
             parent: this._dialog_form_content,
             tag: 'label',
             children: [
-                'Auto-eval notebook',  // string: create text node
+                'Auto-eval saved notebook when loading',  // string: create text node
                 {
                     tag: 'input',
                     attrs: {
@@ -120,7 +145,7 @@ export class ExportOptionsDialog extends Dialog {
             parent: this._dialog_form_content,
             tag: 'label',
             children: [
-                'Save active cell setting',  // string: create text node
+                'Preserve current active cell setting in saved notebook',  // string: create text node
                 {
                     tag: 'input',
                     attrs: {
@@ -136,9 +161,11 @@ export class ExportOptionsDialog extends Dialog {
 
 
 type RADIO_ALTERNATIVE_SPEC = {
-    label:    string;
-    value?:   string;  // value will be taken from label if value is undefined
-    tooltip?: string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
+    label:     string;
+    label_aux: string;
+    details?:  string;
+    value?:    string;  // value will be taken from label if value is undefined
+    tooltip?:  string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
 };
 
 function create_radio_control(parent: HTMLElement, legend: string, name: string, checked_value: null|string, alternatives_specs: RADIO_ALTERNATIVE_SPEC[]) {
@@ -153,9 +180,9 @@ function create_radio_control(parent: HTMLElement, legend: string, name: string,
         ],
     };
 
-    for (const { label, value: spec_value, tooltip } of alternatives_specs) {
+    for (const { label, label_aux, details, value: spec_value, tooltip } of alternatives_specs) {
         const value = spec_value ?? label;
-        (spec.children as any).push({
+        const child = {
             tag: 'label',
             attrs: {
                 title: tooltip ? tooltip : undefined,
@@ -170,9 +197,41 @@ function create_radio_control(parent: HTMLElement, legend: string, name: string,
                         checked: (value === checked_value) ? true : undefined,
                     },
                 },
-                label,  // string: create text node
+                {
+                    children: [
+                        {
+                            tag: 'span',
+                            attrs: {
+                                class: 'export-radio-label',
+                            },
+                            children: [
+                                `${label}:`,  // string: create text node
+                            ],
+                        },
+                        {
+                            tag: 'span',
+                            attrs: {
+                                class: 'export-radio-label-aux',
+                            },
+                            children: [
+                                label_aux,  // string: create text node
+                            ],
+                        },
+                    ],
+                },
             ],
-        });
+        };
+        if (details) {
+            (child.children[1].children as any).push({
+                attrs: {
+                    class: 'export-radio-details',
+                },
+                children: [
+                    details.toString(),
+                ],
+            });
+        }
+        (spec.children as any).push(child);
     }
 
     return create_element(spec);

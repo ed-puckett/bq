@@ -1,5 +1,3 @@
-complete _bootstrap_script_src_alternative_descriptions in src/init.ts
-complete _cell_view_descriptions in src/init.ts
 make help document
 update README.md
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
@@ -33,6 +31,8 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* complete _bootstrap_script_src_alternative_descriptions in src/init.ts
+* complete _cell_view_descriptions in src/init.ts
 * change source type "tex" to "latex"
 * rework BqManager.singleton.#perform_command() and BqManager.singleton.inject_command()
 * BqManager.singleton.inject_key_event(): move functionality into lib/ui/key/...
