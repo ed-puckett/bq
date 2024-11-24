@@ -13938,12 +13938,11 @@ function _get_basic_bootstrap_script_src_alternatives() {
                 }
             }
             let external = _external_bootstrap_link;
-            if (external === absolute) {
-                external = undefined;
-            }
             const results = { original, relative, absolute, external };
             // preserve ordering from _bootstrap_script_src_alternative_descriptions
-            return Object.fromEntries(Object.keys(_bootstrap_script_src_alternative_descriptions).map(key => {
+            return Object.fromEntries(Object.keys(_bootstrap_script_src_alternative_descriptions)
+                .filter(key => !!results[key])
+                .map(key => {
                 return [
                     key,
                     results[key],
