@@ -148,7 +148,7 @@ bq-cell {
 
     /* html[data-cell-view]: none|hide|normal|full|presentation
      * - none:         cells are not displayed
-     * - hide:         cells auto-hide; focused cell scrolls, other cells minimized
+     * - hide:         cells auto-hide; active cell scrolls, all others are minimized
      * - normal:       all cells scroll (default)
      * - full:         all cells shown completely
      * - presentation: like none, but also the header element is hidden and no document close warning is issued
@@ -503,40 +503,69 @@ dialog .dialog-text {
 
 /* === dialog === */
 
-dialog.export-options-dialog .dialog-form-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-}
+dialog.export-options-dialog {
+    max-width: min(85dvw, 75ch);
 
-dialog.export-options-dialog fieldset {
-    display: flex;
-    flex-direction: column;
-    gap:    0.25em;
-    margin: 1em 0 0 0;
-    border-radius: 0.5rem;
-}
-dialog.export-options-dialog fieldset label {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    align-items: center;
-    gap: 1rem;
-    padding: 1em;
-    border: 1px solid var(--theme-si-rc, hotpink);
-    border-radius: 0.5rem;
-    background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);
-    user-select: none;
-}
-dialog.export-options-dialog fieldset input[type="radio"] {
-    height: 1em;  /* prevent button from stretching in height on chromium, affecting "active" outline */
-}
-dialog.export-options-dialog form select {
-    padding: 0 0.5em;
-    color:            var(--theme-si-fg, hotpink);
-    background-color: var(--theme-si-bg, hotpink);
-}
-dialog.export-options-dialog fieldset label:has(input[type="radio"]:checked) {
-    outline: 1px solid var(--theme-si-fg, hotpink);
+    & .dialog-form-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+
+        & .export-cell-view-description {
+            font-size: smaller;
+            font-style: italic;
+        }
+    }
+
+    & form select {
+        padding: 0 0.5em;
+        color:            var(--theme-si-fg, hotpink);
+        background-color: var(--theme-si-bg, hotpink);
+    }
+
+    & fieldset {
+        display: flex;
+        flex-direction: column;
+        gap:    0.25em;
+        margin: 1em 0 0 0;
+        border-radius: 0.5em;
+
+        & label {
+            display: grid;
+            grid-template-columns: min-content 1fr;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.5em;
+            border: 1px solid var(--theme-si-rc, hotpink);
+            border-radius: 0.5em;
+            background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);
+            user-select: none;
+
+            & .export-radio-label {
+                font-weight: bold;
+            }
+
+            & .export-radio-label-aux {
+                padding-left: 1ch;
+                font-style: italic;
+                word-break: break-all;  /* prevent long url displayed here from causing overflows */
+                user-select: text;
+            }
+
+            & .export-radio-details {
+                margin-top: 0.25em;
+                font-size: smaller;
+            }
+        }
+
+        & input[type="radio"] {
+            height: 1em;  /* prevent button from stretching in height on chromium, affecting "active" outline */
+        }
+
+        & label:has(input[type="radio"]:checked) {
+            outline: 1px solid var(--theme-si-fg, hotpink);
+        }
+    }
 }
 
 

@@ -1,34 +1,64 @@
-dialog.export-options-dialog .dialog-form-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-}
+dialog.export-options-dialog {
+    max-width: min(85dvw, 75ch);
 
-dialog.export-options-dialog fieldset {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    border-radius: 0.5rem;
-}
-dialog.export-options-dialog fieldset label {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    align-items: center;
-    gap: 1rem;
-    padding: 1em;
-    border: 1px solid lightgrey;
-    border-radius: 0.5rem;
-    background-color: hsla(  0deg,   0%,  96%, 100%);
-    user-select: none;
-}
-dialog.export-options-dialog fieldset input[type="radio"] {
-    height: 1em;  /* prevent button from stretching in height on chromium, affecting "active" outline */
-}
-dialog.export-options-dialog form select {
-    padding: 0 0.5em;
-}
-@supports selector(:has(*)) {
-    dialog.export-options-dialog fieldset label:has(input[type="radio"]:checked) {
-        background-color: hsla(  0deg,   0%, 100%, 100%);
+    & .dialog-form-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+
+        & .export-cell-view-description {
+            font-size: smaller;
+            font-style: italic;
+        }
+    }
+
+    & form select {
+        padding: 0 0.5em;
+        color:            black;
+        background-color: lightgrey;
+    }
+
+    & fieldset {
+        display: flex;
+        flex-direction: column;
+        gap:    0.25em;
+        margin: 1em 0 0 0;
+        border-radius: 0.5em;
+
+        & label {
+            display: grid;
+            grid-template-columns: min-content 1fr;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.5em;
+            border: 1px solid lightgrey;
+            border-radius: 0.5em;
+            background-color: lightgrey;
+            user-select: none;
+
+            & .export-radio-label {
+                font-weight: bold;
+            }
+
+            & .export-radio-label-aux {
+                padding-left: 1ch;
+                font-style: italic;
+                word-break: break-all;  /* prevent long url displayed here from causing overflows */
+                user-select: text;
+            }
+
+            & .export-radio-details {
+                margin-top: 0.25em;
+                font-size: smaller;
+            }
+        }
+
+        & input[type="radio"] {
+            height: 1em;  /* prevent button from stretching in height on chromium, affecting "active" outline */
+        }
+
+        & label:has(input[type="radio"]:checked) {
+            outline: 1px solid black;
+        }
     }
 }

@@ -23,11 +23,23 @@ import {
 
 // === BOOTSTRAP SCRIPT SRC DATA ===
 
-const _bootstrap_script_src_alternative_descriptions = {
-    original: 'original !!!',
-    absolute: 'absolute !!!',
-    relative: 'relative !!!',
-    external: 'external !!!',
+const _bootstrap_script_src_alternative_descriptions = {  // these items may be either a description string or [ description, details ]
+    original: [
+        'Original' ,
+        'Preserve the bootstrap script url as originally loaded.',
+    ],
+    relative: [
+        'Relative',
+        'Use a relative bootstrap script url.  This will make the saved notebook independent of any particular server but will work only if the saved notebook will be loaded from a server that contains the bootstrap code in the same relative location as the current server.',
+    ],
+    absolute: [
+        'Absolute',
+        'Use an absolute bootstrap script url from the current server.  This will make the saved notebook independent of its relative location, but will only work if the current server will be accessible when loading the saved notebook.',
+    ],
+    external: [
+        'External',
+        'Use an absolute external bootstrap script url.  This is a good choice when the saved notebook will be loaded from a server that is independent of the bootstrap script server.',
+    ],
 };
 export const bootstrap_script_src_alternatives_default = 'original';
 
@@ -42,11 +54,11 @@ export const cell_view_attribute_name = 'data-cell-view';  // set on document.do
 export const auto_eval_attribute_name = 'data-auto-eval';  // set on document.documentElement; significance: only presence or absence
 
 const _cell_view_descriptions = {
-    normal:       'normal !!!',
-    hide:         'hide !!!',
-    full:         'full !!!',
-    none:         'none !!!',
-    presentation: 'presentation !!!',
+    normal:       'normal: show all cells, scrolling if necessary (the default)',
+    none:         'none: hide all cells',
+    hide:         'hide: cells auto-hide; show active cell, scrolling if necessary, and minimize all others',
+    full:         'full: show all cells fully without scrolling',
+    presentation: 'presentation mode: limit interaction and hide all cells (except those with class "show-in-presentation")',
 };
 const _valid_cell_view_values = Object.keys(_cell_view_descriptions);
 export const cell_view_values_default = 'normal';
@@ -329,7 +341,16 @@ function _get_basic_bootstrap_script_src_alternatives(): undefined|object {
             if (external === absolute) {
                 external = undefined;
             }
-            return { original, absolute, relative, external };
+            const results = { original, relative, absolute, external };
+            // preserve ordering from _bootstrap_script_src_alternative_descriptions
+            return Object.fromEntries(
+                Object.keys(_bootstrap_script_src_alternative_descriptions).map(key => {
+                    return [
+                        key,
+                        (results as any)[key],
+                    ];
+                })
+            );
         }
     }
     // if we get here, then the bootstrap script was not found
@@ -350,7 +371,7 @@ function _get_bootstrap_script_src(bootstrap_script_src_choice?: string): string
     return src;
 }
 
-export function get_bootstrap_script_src_alternatives(): { [choice: string]: { url: string, description: string } } {
+export function get_bootstrap_script_src_alternatives(): { [choice: string]: { url: string, label: string, details: string } } {
     if (!_basic_bootstrap_script_src_alternatives) {
         // this should never happen because the loading is aborted if !_basic_bootstrap_script_src_alternatives
         throw new Error('unexpected: !_basic_bootstrap_script_src_alternatives');
@@ -360,9 +381,21 @@ export function get_bootstrap_script_src_alternatives(): { [choice: string]: { u
         if (!(key in _bootstrap_script_src_alternative_descriptions)) {
             throw new Error(`unexpected: key in src_alternatives has no corresponding description: ${key}`);
         }
+        let label, details;
+        const label_and_details = (_bootstrap_script_src_alternative_descriptions as any)[key];
+        if ( !(typeof label_and_details === 'string') &&
+             !(Array.isArray(label_and_details) && label_and_details.length === 2 && label_and_details.every(it => typeof it === 'string')) ) {
+            throw new Error(`unexpected: _bootstrap_script_src_alternative_descriptions["${key}"] must be a string or a two-element array of strings`);
+        }
+        if (typeof label_and_details === 'string') {
+            label = label_and_details;
+        } else {
+            ([ label, details ] = label_and_details);
+        }
         (src_alternatives as any)[key] = {
-            url:         (src_alternatives as any)[key],
-            description: (_bootstrap_script_src_alternative_descriptions as any)[key],
+            url: (src_alternatives as any)[key],
+            label,
+            details,
         };
     }
     return src_alternatives;
