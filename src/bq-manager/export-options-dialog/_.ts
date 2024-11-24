@@ -104,21 +104,21 @@ export class ExportOptionsDialog extends Dialog {
             },
             innerText: ' ',
         }) as HTMLElement;
-        const cv_select_element = cv_element_tree.querySelector('select');
+        const cv_select_element = cv_element_tree.querySelector('select') as null|HTMLSelectElement;
         if (cv_select_element) {
-            cv_select_element.onchange = (event) => {
-                if (event.target) {
-                    const value = (event.target as HTMLSelectElement).value;
-                    if (value) {
-                        const description = (cv_descriptions as any)[value];
-                        if (description) {
-                            cv_description_element.innerText = description;
-                            return;
-                        }
+            function update_cv_description() {
+                const value = cv_select_element?.value;
+                if (value) {
+                    const description = (cv_descriptions as any)[value];
+                    if (description) {
+                        cv_description_element.innerText = description;
+                        return;
                     }
                 }
                 cv_description_element.innerText = ' ';  // clear if nothing matched
-            };
+            }
+            update_cv_description();
+            cv_select_element.onchange = (event) => update_cv_description();
         }
 
         // --- auto-eval? ---

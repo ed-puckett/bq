@@ -12729,19 +12729,19 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
         });
         const cv_select_element = cv_element_tree.querySelector('select');
         if (cv_select_element) {
-            cv_select_element.onchange = (event) => {
-                if (event.target) {
-                    const value = event.target.value;
-                    if (value) {
-                        const description = cv_descriptions[value];
-                        if (description) {
-                            cv_description_element.innerText = description;
-                            return;
-                        }
+            function update_cv_description() {
+                const value = cv_select_element?.value;
+                if (value) {
+                    const description = cv_descriptions[value];
+                    if (description) {
+                        cv_description_element.innerText = description;
+                        return;
                     }
                 }
                 cv_description_element.innerText = ' '; // clear if nothing matched
-            };
+            }
+            update_cv_description();
+            cv_select_element.onchange = (event) => update_cv_description();
         }
         // --- auto-eval? ---
         (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
