@@ -337,19 +337,18 @@ function _get_basic_bootstrap_script_src_alternatives(): undefined|object {
                     relative = rel_path_segments.join('/') + abs_url.search + abs_url.hash;
                 }
             }
-            let external: undefined|string = _external_bootstrap_link;
-            if (external === absolute) {
-                external = undefined;
-            }
+            let external: string = _external_bootstrap_link;
             const results = { original, relative, absolute, external };
             // preserve ordering from _bootstrap_script_src_alternative_descriptions
             return Object.fromEntries(
-                Object.keys(_bootstrap_script_src_alternative_descriptions).map(key => {
-                    return [
-                        key,
-                        (results as any)[key],
-                    ];
-                })
+                Object.keys(_bootstrap_script_src_alternative_descriptions)
+                    .filter(key => !!(results as any)[key])
+                    .map(key => {
+                        return [
+                            key,
+                            (results as any)[key],
+                        ];
+                    })
             );
         }
     }
