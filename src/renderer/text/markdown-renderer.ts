@@ -57,8 +57,19 @@ const inline_latex_match_re = /^\$+([^$]+?)\$+/;
 
 const block_latex_match_re = /^\$\$([^$]+?)\$\$/;
 
-const eval_code_start_re = /^[`]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]/;
-const eval_code_match_re = /^[`]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[`]{3}/s;
+function make_eval_code_start_re(introducer_char: string) {
+    return new RegExp(String.raw`^[${introducer_char}]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]`);
+}
+function make_eval_code_match_re(introducer_char: string) {
+    return new RegExp(String.raw`^[${introducer_char}]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[${introducer_char}]{3}`, 's');
+}
+
+const eval_code_start_re_tilde     = make_eval_code_start_re('~');
+const eval_code_start_re_backquote = make_eval_code_start_re('`');
+
+const eval_code_match_re_tilde     = make_eval_code_match_re('~');
+const eval_code_match_re_backquote = make_eval_code_match_re('`');
+
 const eval_code_source_type_default = JavaScriptRenderer.type;
 const eval_code_source_css_class = 'markdown-code-source';
 
@@ -254,9 +265,12 @@ marked.use({
         {
             name: extension_name__eval_code,
             level: 'block',
-            start(src: string) { return src.match(eval_code_start_re)?.index; },
+            start(src: string) {
+                const match = src.match(eval_code_start_re_tilde) || src.match(eval_code_start_re_backquote);
+                return match?.index;
+            },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
-                const match = src.match(eval_code_match_re);
+                const match = src.match(eval_code_match_re_tilde) || src.match(eval_code_match_re_backquote);
                 if (!match) {
                     return undefined;
                 } else {
