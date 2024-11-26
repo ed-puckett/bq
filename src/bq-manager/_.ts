@@ -43,7 +43,7 @@ import {
 
 import {
     open_help_window,
-} from 'src/help-window/_';
+} from './help-window';
 
 import {
     create_element,

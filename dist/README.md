@@ -6,13 +6,15 @@
 In addition, *bq* can host executable content in a Web-based sandbox, and gives access to high-quality graphics and plotting.
 *bq* can also be used to easily create Web-based applications that combine high-quality markup and interactive elements.
 
+## Installation
+
+Bq is supported on popular Web browsers including Firefox and Chromium and requires no explicit installation.
+
 ## Availability
 
 * [Examples](https://ed-puckett.github.io/bq/examples/index.html)
 * [Blank notebook](https://ed-puckett.github.io/bq/dist/index.html)
 * [Source code](https://github.com/ed-puckett/bq)
-
----
 
 ## Goals
 
@@ -20,11 +22,9 @@ In addition, *bq* can host executable content in a Web-based sandbox, and gives 
 1. portable
 1. durable
 1. typeset math, etc
-1. executable content
-1. standalone (not quite: requires static server)
+1. programmatic content
+1. standalone (with static server)
 
-## Notebook Structure
+## More Information
 
----
-
-***(sorry, this document is a barely-started work in progress)***
+* [Help Document](https://ed-puckett.github.io/bq/dist/help.html)

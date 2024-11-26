@@ -285,6 +285,9 @@ export async function save_serializer(
  * bootstrap script src attribute.
  * @return {undefined|object} undefined if bootstrap script not found,
  *         otherwise a promise resolving to an object containing the alternatives.
+ * If non-undefined i.e., an object is returned, then is possible that nothing
+ * will be returned for "relative" if the origins on the "absolute" url and
+ * document.location do not match.
  */
 function _get_basic_bootstrap_script_src_alternatives(): undefined|object {
     const markup_segments: string[] = [];

@@ -31,7 +31,7 @@ install: ./node_modules $(DIST_DIR)
 lint: ./node_modules
 #!!!	./node_modules/.bin/eslint --config .eslintrc.cjs src lib
 
-$(DIST_DIR): ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
+$(DIST_DIR): ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./help ./help/* ./help/*/* ./node_modules README.md
 	./build-tools/build-dist.sh
 #!!!	make lint && ./build-tools/build-dist.sh
 
@@ -60,7 +60,7 @@ kill-server:
 
 .PHONY: dev-server
 dev-server:
-	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch .eslintrc.cjs --watch webpack.config.js --watch build-tools --watch node_modules  --ext ts,js,cjs,mjs,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
+	npx nodemon --watch src --watch lib --watch help --watch package.json --watch Makefile --watch .eslintrc.cjs --watch webpack.config.js --watch build-tools --watch node_modules  --ext ts,js,cjs,mjs,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
 
 .PHONY: client
 client:

@@ -28,7 +28,6 @@ declare -a FILES_TO_COPY=(
     'README.md'
     'src/bq-bootstrap.js'
     'src/index.html'
-    'src/help-window/help.html'
     'src/favicon.ico'
     'src/renderer/text/javascript-renderer/eval-worker/web-worker.js'
     'node_modules/sprintf-js/dist/sprintf.min.js'
@@ -41,11 +40,13 @@ declare -a FILES_TO_COPY=(
     'node_modules/@hpcc-js/wasm/dist/graphviz.umd.js'
     'node_modules/d3-graphviz/build/d3-graphviz.min.js'
     'node_modules/algebrite/dist/algebrite.bundle-for-browser.js'
+    'help/help.html'
 )
 
 declare -a DIRECTORIES_TO_COPY=(
 #   ---directory---                --- destination--- <<< (pairs of entries)
     'node_modules/katex/dist'      'katex-dist'
+    'help/help-pages'              'help-pages'
 )
 
 declare -a LICENSES_TO_GATHER=(

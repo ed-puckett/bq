@@ -11505,7 +11505,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
 /* harmony import */ var _settings_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1140);
-/* harmony import */ var src_help_window___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(2512);
+/* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4568);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3854);
 /* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1327);
 /* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9779);
@@ -12631,7 +12631,7 @@ class BqManager {
         return this.#set_view_helper(command_context, 'presentation');
     }
     command__show_help(command_context) {
-        (0,src_help_window___WEBPACK_IMPORTED_MODULE_6__/* .open_help_window */ .S)();
+        (0,_help_window__WEBPACK_IMPORTED_MODULE_6__/* .open_help_window */ .S)();
         return true;
     }
 }
@@ -13093,6 +13093,22 @@ function get_global_command_bindings() {
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 4568:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   S: () => (/* binding */ open_help_window)
+/* harmony export */ });
+/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
+const current_script_url = "file:///home/ed/code/bq/src/bq-manager/help-window.ts"; // save for later
+
+function open_help_window() {
+    window.open(new URL('../../dist/help.html', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
+}
+
 
 /***/ }),
 
@@ -13605,22 +13621,6 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 2512:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   S: () => (/* binding */ open_help_window)
-/* harmony export */ });
-/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-const current_script_url = "file:///home/ed/code/bq/src/help-window/_.ts"; // save for later
-
-function open_help_window() {
-    window.open(new URL('../../dist/help.html', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
-}
-
-
-/***/ }),
-
 /***/ 6336:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -13882,6 +13882,9 @@ async function save_serializer(bootstrap_script_src_choice, options) {
  * bootstrap script src attribute.
  * @return {undefined|object} undefined if bootstrap script not found,
  *         otherwise a promise resolving to an object containing the alternatives.
+ * If non-undefined i.e., an object is returned, then is possible that nothing
+ * will be returned for "relative" if the origins on the "absolute" url and
+ * document.location do not match.
  */
 function _get_basic_bootstrap_script_src_alternatives() {
     const markup_segments = [];
@@ -34417,8 +34420,16 @@ const extension_name__block_latex = 'block-latex';
 const extension_name__eval_code = 'eval-code';
 const inline_latex_match_re = /^\$+([^$]+?)\$+/;
 const block_latex_match_re = /^\$\$([^$]+?)\$\$/;
-const eval_code_start_re = /^[`]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]/;
-const eval_code_match_re = /^[`]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[`]{3}/s;
+function make_eval_code_start_re(introducer_char) {
+    return new RegExp(String.raw `^[${introducer_char}]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]`);
+}
+function make_eval_code_match_re(introducer_char) {
+    return new RegExp(String.raw `^[${introducer_char}]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[${introducer_char}]{3}`, 's');
+}
+const eval_code_start_re_tilde = make_eval_code_start_re('~');
+const eval_code_start_re_backquote = make_eval_code_start_re('`');
+const eval_code_match_re_tilde = make_eval_code_match_re('~');
+const eval_code_match_re_backquote = make_eval_code_match_re('`');
 const eval_code_source_type_default = src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__/* .JavaScriptRenderer */ .Z.type;
 const eval_code_source_css_class = 'markdown-code-source';
 class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9 {
@@ -34580,9 +34591,12 @@ _marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
         {
             name: extension_name__eval_code,
             level: 'block',
-            start(src) { return src.match(eval_code_start_re)?.index; },
+            start(src) {
+                const match = src.match(eval_code_start_re_tilde) || src.match(eval_code_start_re_backquote);
+                return match?.index;
+            },
             tokenizer(src, tokens) {
-                const match = src.match(eval_code_match_re);
+                const match = src.match(eval_code_match_re_tilde) || src.match(eval_code_match_re_backquote);
                 if (!match) {
                     return undefined;
                 }
