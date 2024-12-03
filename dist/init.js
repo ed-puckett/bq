@@ -14191,7 +14191,7 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
             }
             text = this.CLASS.sprintf(format, ...args);
         }
-        return this.render_text(text);
+        return this.render_text(text, { inline: true });
     }
     async print__(options) {
         this.abort_if_stopped();
@@ -15353,9 +15353,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             if (typeof value !== 'undefined') {
                 if (done) {
                     // this was the return value, so precede with a special demarcation
-                    await eval_environment.render_text('\n>>> ');
+                    await eval_environment.render_text('\n>>> ', { inline: true });
                 }
-                await eval_environment.render_value(value);
+                await eval_environment.render_value(value, { inline: true });
             }
             if (done) {
                 break eval_loop;
@@ -34669,16 +34669,16 @@ class TextRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* 
     }
     async _render(ocx, text, options) {
         const { style, inline, } = (options ?? {});
-        const span = ocx.create_child({
-            tag: 'span',
+        const element = ocx.create_child({
+            tag: inline ? 'span' : 'div',
             attrs: {
                 [src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
                 class: 'plain-text', // see 'src/style.css'
             },
             style,
         });
-        span.innerText = text; // innerText sanitizes text
-        return span;
+        element.innerText = text; // innerText sanitizes text
+        return element;
     }
 }
 

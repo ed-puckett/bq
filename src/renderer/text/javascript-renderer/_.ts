@@ -232,10 +232,10 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             if (typeof value !== 'undefined') {
                 if (done) {
                     // this was the return value, so precede with a special demarcation
-                    await eval_environment.render_text('\n>>> ');
+                    await eval_environment.render_text('\n>>> ', { inline: true });
                 }
 
-                await eval_environment.render_value(value);
+                await eval_environment.render_value(value, { inline: true });
             }
 
             if (done) {
