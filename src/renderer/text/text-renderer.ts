@@ -29,15 +29,15 @@ export class TextRenderer extends TextBasedRenderer {
             inline,
         } = (options ?? {});
 
-        const span = ocx.create_child({
-            tag: 'span',
+        const element = ocx.create_child({
+            tag: inline ? 'span' : 'div',
             attrs: {
                 [OutputContextLike.attribute__data_source_media_type]: this.media_type,
                 class: 'plain-text',  // see 'src/style.css'
             },
             style,
         }) as HTMLElement;
-        span.innerText = text;  // innerText sanitizes text
-        return span;
+        element.innerText = text;  // innerText sanitizes text
+        return element;
     }
 }

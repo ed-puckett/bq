@@ -1,3 +1,7 @@
+add command/menu to reset cell and output ids
+add export option to reset cell and output ids
+create_child_ocx seems to modify parent ocx behavior (?)
+provide show_in_presentation setting in cell menu and as a toggle command
 make help document
 update README.md
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)

@@ -235,7 +235,7 @@ export class OutputContext extends OutputContextLike {
             }
             text = this.CLASS.sprintf(format, ...args);
         }
-        return this.render_text(text)
+        return this.render_text(text, { inline: true });
     }
 
     async print__(options?: TextBasedRendererOptionsType): Promise<Element> {
