@@ -158,6 +158,7 @@ bq-cell {
     html[data-cell-view="none"] & {
         display: none;
     }
+
     html[data-cell-view="hide"] &:not([data-active]) {
         display: block;
         max-height: 0.2rem;
@@ -166,14 +167,20 @@ bq-cell {
         border-width: 1px;
         border-color: transparent;
     }
+
     html[data-cell-view="presentation"] & {
         display: none;
     }
+
     &,
     html[data-cell-view="presentation"] &.show-in-presentation {
         display: block;
         max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */
         transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+
+        &.show-full {
+            max-height: fit-content;
+        }
     }
 }
 
@@ -206,10 +213,12 @@ bq-cell {
     background-color: hsl(170deg 25% 55% / 40%);
 }
 
-/* show full content if html[data-cell-view="full"] */
+/* show full content if html[data-cell-view="full"] or if bq-cell has class "show-full" */
 html[data-cell-view="full"] bq-cell,
 html[data-cell-view="full"] .cm-editor,
-html[data-cell-view="full"] .cm-scroller {
+html[data-cell-view="full"] .cm-scroller,
+bq-cell.show-full .cm-editor,
+bq-cell.show-full .cm-scroller {
     overflow-y: hidden;
     max-height: unset;
     height: 100%;
