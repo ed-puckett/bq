@@ -211,6 +211,20 @@ export async function interactive_command__delete(command_context: CommandContex
     return command_context.dm.command__delete(command_context);
 }
 
+export function interactive_command__toggle_show_full(command_context: CommandContext<BqManager>): boolean {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__toggle_show_full(command_context);
+}
+
+export function interactive_command__toggle_show_in_presentation(command_context: CommandContext<BqManager>): boolean {
+    if (!command_context.dm.interactive) {
+        return false;
+    }
+    return command_context.dm.command__toggle_show_in_presentation(command_context);
+}
+
 /** set the target cell's type to "markdown".
  *  @return {Boolean} true iff command successfully handled
  */

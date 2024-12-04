@@ -1,7 +1,10 @@
+provide visual indication of a cell's show-full and show-in-presentation states
+provide settings to turn off automatic parenthesis/quote generation in CodeMirror
+provide settings to turn off completion menus in CodeMirror
+need to support (persistent) historical versions so that others can have a stable version to work against
 add command/menu to reset cell and output ids
 add export option to reset cell and output ids
 create_child_ocx seems to modify parent ocx behavior (?)
-provide show_in_presentation setting in cell menu and as a toggle command
 make help document
 update README.md
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
@@ -35,6 +38,8 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* provide show_in_presentation setting in cell (toggle) menu and as a command
+* provide show_full setting per cell, and as a (toggle) menu and as a command
 * complete _bootstrap_script_src_alternative_descriptions in src/init.ts
 * complete _cell_view_descriptions in src/init.ts
 * change source type "tex" to "latex"

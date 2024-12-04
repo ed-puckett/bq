@@ -56,6 +56,9 @@ export class BqCellElement extends HTMLElement {
     static #custom_element_name = 'bq-cell';
     static get custom_element_name (){ return this.#custom_element_name; }
 
+    static #css_class__show_full = 'show-full';
+    static get css_class__show_full (){ return this.#css_class__show_full; }
+
     static #css_class__show_in_presentation = 'show-in-presentation';
     static get css_class__show_in_presentation (){ return this.#css_class__show_in_presentation; }
 
@@ -99,6 +102,21 @@ export class BqCellElement extends HTMLElement {
 
 
     // === SHOWING ===
+
+    /** control whether or not this element is always shown full without scrolling
+     * @param {Boolean} new_state
+     */
+    show_full(new_state: boolean = true): void {
+        if (new_state) {
+            this.classList.add(this.CLASS.css_class__show_full);
+        } else {
+            this.classList.remove(this.CLASS.css_class__show_full);
+        }
+    }
+
+    /** @return (Boolean) whether or not this element is always shown full without scrolling.
+     */
+    get shown_full (){ return this.classList.contains(this.CLASS.css_class__show_full); }
 
     /** control whether or not this element is shown when view is set to "presentation"
      * @param {Boolean} new_state

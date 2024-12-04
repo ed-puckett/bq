@@ -792,47 +792,50 @@ export class BqManager {
             const has_save_handle = !!this.#file_handle;
             const is_neutral      = this.is_neutral();
 
-            menu.set_menu_state('clear-all',             { enabled: !presentation && editable });
+            menu.set_menu_state('clear-all',                   { enabled: !presentation && editable });
 
-            menu.set_menu_state('save',                  { enabled: !is_neutral && has_save_handle });
+            menu.set_menu_state('save',                        { enabled: !is_neutral && has_save_handle });
             // no update to command 'save-as'
             // no update to command 'export'
 
-            menu.set_menu_state('toggle-auto-eval',      { checked: get_auto_eval(), enabled: !presentation });
+            menu.set_menu_state('toggle-auto-eval',            { checked: get_auto_eval(), enabled: !presentation });
 
             // no update to command 'settings'
 
-            menu.set_menu_state('eval',                  { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-and-refocus',      { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-before',           { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-all',              { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('eval',                        { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('eval-and-refocus',            { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('eval-before',                 { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('eval-all',                    { enabled: interactive && editable && !!active_cell });
 
-            menu.set_menu_state('stop',                  { enabled: active_cell?.can_stop });
-            menu.set_menu_state('stop-all',              { enabled: all_cells.some(cell => cell.can_stop) });
+            menu.set_menu_state('stop',                        { enabled: active_cell?.can_stop });
+            menu.set_menu_state('stop-all',                    { enabled: all_cells.some(cell => cell.can_stop) });
 
-            menu.set_menu_state('reset',                 { enabled: interactive   && editable });
-            menu.set_menu_state('reset-all',             { enabled: !presentation && editable });
+            menu.set_menu_state('reset',                       { enabled: interactive   && editable });
+            menu.set_menu_state('reset-all',                   { enabled: !presentation && editable });
 
-            menu.set_menu_state('focus-up',              { enabled: interactive && !!active_cell && active_index > 0 });
-            menu.set_menu_state('focus-down',            { enabled: interactive && !!active_cell && active_index < cells.length-1 });
+            menu.set_menu_state('focus-up',                    { enabled: interactive && !!active_cell && active_index > 0 });
+            menu.set_menu_state('focus-down',                  { enabled: interactive && !!active_cell && active_index < cells.length-1 });
 
-            menu.set_menu_state('move-up',               { enabled: !presentation && !!active_cell && active_index > 0 });
-            menu.set_menu_state('move-down',             { enabled: !presentation && !!active_cell && active_index < cells.length-1 });
-            menu.set_menu_state('add-before',            { enabled: !presentation && editable && !!active_cell });
-            menu.set_menu_state('add-after',             { enabled: !presentation && editable && !!active_cell });
-            menu.set_menu_state('duplicate',             { enabled: !presentation && editable && !!active_cell });
-            menu.set_menu_state('delete',                { enabled: !presentation && editable && !!active_cell });
+            menu.set_menu_state('move-up',                     { enabled: !presentation && !!active_cell && active_index > 0 });
+            menu.set_menu_state('move-down',                   { enabled: !presentation && !!active_cell && active_index < cells.length-1 });
+            menu.set_menu_state('add-before',                  { enabled: !presentation && editable && !!active_cell });
+            menu.set_menu_state('add-after',                   { enabled: !presentation && editable && !!active_cell });
+            menu.set_menu_state('duplicate',                   { enabled: !presentation && editable && !!active_cell });
+            menu.set_menu_state('delete',                      { enabled: !presentation && editable && !!active_cell });
 
-            menu.set_menu_state('set-type-plain',        { checked: (cell_type === 'plain'),      enabled: interactive });
-            menu.set_menu_state('set-type-markdown',     { checked: (cell_type === 'markdown'),   enabled: interactive });
-            menu.set_menu_state('set-type-latex',        { checked: (cell_type === 'latex'),      enabled: interactive });
-            menu.set_menu_state('set-type-javascript',   { checked: (cell_type === 'javascript'), enabled: interactive });
+            menu.set_menu_state('toggle-show-full',            { checked: !!active_cell?.shown_full,            enabled: interactive });
+            menu.set_menu_state('toggle-show-in-presentation', { checked: !!active_cell?.shown_in_presentation, enabled: interactive });
 
-            menu.set_menu_state('set-view-normal',       { checked: (cell_view === 'normal') });
-            menu.set_menu_state('set-view-hide',         { checked: (cell_view === 'hide') });
-            menu.set_menu_state('set-view-full',         { checked: (cell_view === 'full') });
-            menu.set_menu_state('set-view-none',         { checked: (cell_view === 'none') });
-            menu.set_menu_state('set-view-presentation', { checked: (cell_view === 'presentation') });
+            menu.set_menu_state('set-type-plain',              { checked: (cell_type === 'plain'),      enabled: interactive });
+            menu.set_menu_state('set-type-markdown',           { checked: (cell_type === 'markdown'),   enabled: interactive });
+            menu.set_menu_state('set-type-latex',              { checked: (cell_type === 'latex'),      enabled: interactive });
+            menu.set_menu_state('set-type-javascript',         { checked: (cell_type === 'javascript'), enabled: interactive });
+
+            menu.set_menu_state('set-view-normal',             { checked: (cell_view === 'normal') });
+            menu.set_menu_state('set-view-hide',               { checked: (cell_view === 'hide') });
+            menu.set_menu_state('set-view-full',               { checked: (cell_view === 'full') });
+            menu.set_menu_state('set-view-none',               { checked: (cell_view === 'none') });
+            menu.set_menu_state('set-view-presentation',       { checked: (cell_view === 'presentation') });
 
             // no update to command 'help'
         }
@@ -1233,6 +1236,26 @@ export class BqManager {
                 next_cell = this.create_cell();
             }
             next_cell.scroll_into_view(true);
+            return true;
+        }
+    }
+
+    command__toggle_show_full(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            command_context.target.show_full(!command_context.target.shown_full);
+            this.set_structure_modified();
+            return true;
+        }
+    }
+
+    command__toggle_show_in_presentation(command_context: CommandContext<BqManager>): boolean {
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            command_context.target.show_in_presentation(!command_context.target.shown_in_presentation);
+            this.set_structure_modified();
             return true;
         }
     }
