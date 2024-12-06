@@ -113,7 +113,7 @@ bq-cell {
         max-width: fit-content;
     }
 
-    &[data-active][data-type]::before {
+    &[data-type][data-active]::before {
         font-weight: bold;
     }
 
@@ -267,6 +267,7 @@ bq-cell.show-full .cm-scroller {
 
 .error-message {
     display: block;
+    white-space: break-spaces;
     margin: 1.75em;
     padding: 0.5em;
     border-radius: 3pt;
