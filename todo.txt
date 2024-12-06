@@ -38,6 +38,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* add white-space: break-spaces; to css for elements with class "error-message"
 * provide show_in_presentation setting in cell (toggle) menu and as a command
 * provide show_full setting per cell, and as a (toggle) menu and as a command
 * complete _bootstrap_script_src_alternative_descriptions in src/init.ts
