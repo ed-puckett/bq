@@ -147,6 +147,23 @@ import * as rxjs from 'rxjs';
 
 import * as canvas_tools from 'lib/ui/canvas-tools';
 
+import {
+    parse as babel_parse,
+} from 'lib/sys/babel-parser';
+
+
+export class JavaScriptParseError extends Error {
+    constructor(babel_parse_error_object: any, underlying_error: unknown) {
+        super(babel_parse_error_object.toString(), {
+            cause: underlying_error,
+        });
+        this.#babel_parse_error_object = babel_parse_error_object;
+    }
+    #babel_parse_error_object: any;
+
+    get babel_parse_error_object (){ return this.#babel_parse_error_object; }
+}
+
 
 export class JavaScriptRenderer extends TextBasedRenderer {
     static get type (){ return 'javascript'; }
@@ -203,7 +220,20 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         // add newline to code to prevent problems in case the last line is a // comment
         const code_to_run = code+'\n';
         const eval_fn_body = `try { ${code_to_run} } catch (error) { await ocx.render_error(error, { abbreviated: true }); }`;
-        const eval_fn = new AsyncGeneratorFunction(...eval_fn_params, eval_fn_body);
+        let eval_fn;
+        try {
+            eval_fn = new AsyncGeneratorFunction(...eval_fn_params, eval_fn_body);
+        } catch (parse_error: unknown) {
+            const parse_result = babel_parse(code_to_run, {
+                errorRecovery: true,
+            });
+            if (parse_result.errors.length <= 0) {
+                console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
+                throw parse_error;
+            } else {
+                throw new JavaScriptParseError(parse_result.errors[0], parse_error);
+            }
+        }
         const result_stream = eval_fn.apply(eval_fn_this, eval_fn_args);
 
         // note that using for await ... of misses the return value and we

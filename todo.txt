@@ -1,3 +1,4 @@
+errors in bq-cell javascript do not indicate where the error happened in the code
 provide visual indication of a cell's show-full and show-in-presentation states
 provide settings to turn off automatic parenthesis/quote generation in CodeMirror
 provide settings to turn off completion menus in CodeMirror
@@ -7,9 +8,10 @@ add export option to reset cell and output ids
 create_child_ocx seems to modify parent ocx behavior (?)
 make help document
 update README.md
-create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
 fix deprecation warnings when compiling (inflight and glob packages)
+documentation: explain the dangers of < characters in the body of bq-cell elements
 documentation: tell Firefox users about "Always ask you where to save files" setting
+create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
 KeySpec.#is_on_macos needs to be tested/fixed
 canceling save-as creates notification "document saved" (Firefox, not Chromium)
 improve appearance of notifications, AlertDialog, ConfirmDialog and SettingsDialog
