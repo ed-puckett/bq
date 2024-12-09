@@ -19,6 +19,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@babel/parser": "^7.26.3",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-markdown": "^6.3.0",
     "@replit/codemirror-vim": "^6.2.1",
