@@ -11129,6 +11129,15 @@ class BqCellElement extends HTMLElement {
             }
         }
     }
+    set_cursor_position(line_number, column_index) {
+        if (!this.#codemirror) {
+            console.warn('bq-cell: set_cursor_position() not implemented when !this.#has_text_container');
+            return false;
+        }
+        else {
+            return this.#codemirror.set_cursor_position(line_number, column_index);
+        }
+    }
     #has_text_container() { return !!this.#codemirror; }
     #establish_editable_text_container() {
         if (!this.#has_text_container()) {
@@ -11445,6 +11454,20 @@ class CodemirrorInterface {
         this.#view.dispatch({ changes: [{ from: 0, to: this.#view.state.doc.length, insert: text }] });
         if (set_neutral) {
             this.set_neutral();
+        }
+    }
+    set_cursor_position(line_number, column_index) {
+        const line = this.#view.state.doc.line(line_number);
+        if (!line) {
+            return false;
+        }
+        else {
+            const head = line.from + column_index;
+            this.#view.dispatch({
+                selection: { head, anchor: head },
+                scrollIntoView: true,
+            });
+            return true;
         }
     }
     is_neutral() {
@@ -12017,6 +12040,14 @@ class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
         return renderer.render(ocx, cell.get_text(), options)
+            .catch(error => {
+            if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
+                cell?.set_cursor_position(error.line_number, error.column_index);
+                // return the element associated with the ocx active when the error occurred
+                return error.ocx.element;
+            }
+            return ocx.element; // just return the main element
+        })
             .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
             if (!ocx.keepalive) {
@@ -14632,6 +14663,7 @@ __webpack_async_result__();
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   B5: () => (/* reexport safe */ _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__.B),
+/* harmony export */   BU: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_0__.BU),
 /* harmony export */   Dh: () => (/* reexport safe */ _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__.D),
 /* harmony export */   Js: () => (/* reexport safe */ _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__.J),
 /* harmony export */   MH: () => (/* reexport safe */ _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__.M),
@@ -15160,6 +15192,7 @@ reset_to_initial_text_renderer_factories();
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BU: () => (/* binding */ LocatedError),
 /* harmony export */   Ve: () => (/* binding */ is_RendererFactory),
 /* harmony export */   m9: () => (/* binding */ TextBasedRenderer),
 /* harmony export */   rK: () => (/* binding */ ApplicationBasedRenderer)
@@ -15194,7 +15227,7 @@ class Renderer {
                 console.error('ignored second-level error while stopping ocx after render error', ignored_error);
                 // nothing
             }
-            return result;
+            throw error;
         });
     }
 }
@@ -15250,6 +15283,20 @@ class ApplicationBasedRenderer extends Renderer {
     async render(ocx, value, options) {
         return Renderer._invoke_renderer(this, ocx, value, options);
     }
+}
+class LocatedError extends Error {
+    constructor(message, line_number, column_index, ocx, options) {
+        super(message, options);
+        this.#ocx = ocx;
+        this.#line_number = line_number;
+        this.#column_index = column_index;
+    }
+    #line_number;
+    #column_index;
+    #ocx;
+    get line_number() { return this.#line_number; }
+    get column_index() { return this.#column_index; }
+    get ocx() { return this.#ocx; }
 }
 
 
@@ -15374,9 +15421,9 @@ const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).con
 
 
 
-class JavaScriptParseError extends Error {
-    constructor(babel_parse_error_object, underlying_error) {
-        super(babel_parse_error_object.toString(), {
+class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .LocatedError */ .BU {
+    constructor(babel_parse_error_object, underlying_error, ocx) {
+        super(babel_parse_error_object.toString(), babel_parse_error_object.loc.line, babel_parse_error_object.loc.column, ocx, {
             cause: underlying_error,
         });
         this.#babel_parse_error_object = babel_parse_error_object;
@@ -15440,7 +15487,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
                 throw parse_error;
             }
             else {
-                throw new JavaScriptParseError(parse_result.errors[0], parse_error);
+                throw new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
             }
         }
         const result_stream = eval_fn.apply(eval_fn_this, eval_fn_args);

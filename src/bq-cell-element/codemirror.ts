@@ -146,6 +146,20 @@ export class CodemirrorInterface {
         }
     }
 
+    set_cursor_position(line_number: number, column_index: number): boolean {
+        const line = this.#view.state.doc.line(line_number);
+        if (!line) {
+            return false;
+        } else {
+            const head = line.from + column_index;
+            this.#view.dispatch({
+                selection: { head, anchor: head },
+                scrollIntoView: true,
+            });
+            return true;
+        }
+    }
+
     is_neutral(): boolean {
         if (typeof this.#cached__is_neutral !== 'undefined') {
             return this.#cached__is_neutral;

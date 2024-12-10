@@ -54,6 +54,7 @@ import {
 import {
     TextBasedRenderer,
     TextBasedRendererOptionsType,
+    LocatedError,
 } from 'src/renderer/_';
 
 import {
@@ -609,6 +610,14 @@ export class BqManager {
         });
 
         return renderer.render(ocx, cell.get_text(), options)
+            .catch(error => {
+                if (error instanceof LocatedError) {
+                    cell?.set_cursor_position(error.line_number, error.column_index);
+                    // return the element associated with the ocx active when the error occurred
+                    return error.ocx.element;
+                }
+                return ocx.element;  // just return the main element
+            })
             .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
                 if (!ocx.keepalive) {
