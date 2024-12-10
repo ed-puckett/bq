@@ -60,7 +60,7 @@ export class Renderer {
                     console.error('ignored second-level error while stopping ocx after render error', ignored_error);
                     // nothing
                 }
-                return result;
+                throw error;
             });
     }
 }
@@ -133,4 +133,26 @@ export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends R
     /** to be implemented by subclasses
      */
     abstract /*async*/ _render(ocx: OutputContextLike, value: ValueType, options?: OptionsType): Promise<Element>;
+}
+
+
+export class LocatedError extends Error {
+    constructor( message:      string,
+                 line_number:  number,
+                 column_index: number,
+                 ocx:          OutputContextLike,
+                 options?:     { cause?: unknown } ) {
+        super(message, options);
+        this.#ocx = ocx;
+        this.#line_number  = line_number;
+        this.#column_index = column_index;
+    }
+    #line_number:  number;
+    #column_index: number;
+    #ocx:          OutputContextLike;
+
+    get line_number  (){ return this.#line_number; }
+    get column_index (){ return this.#column_index; }
+
+    get ocx (){ return this.#ocx; }
 }

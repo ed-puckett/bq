@@ -166,6 +166,15 @@ export class BqCellElement extends HTMLElement {
         }
     }
 
+    set_cursor_position(line_number: number, column_index: number): boolean {
+        if (!this.#codemirror) {
+            console.warn('bq-cell: set_cursor_position() not implemented when !this.#has_text_container');
+            return false;
+        } else {
+            return this.#codemirror.set_cursor_position(line_number, column_index);
+        }
+    }
+
     #has_text_container(): boolean { return !!this.#codemirror; }
 
     #establish_editable_text_container(): void {

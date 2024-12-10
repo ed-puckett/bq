@@ -100,6 +100,7 @@ import {
 import {
     ApplicationBasedRenderer,
     TextBasedRenderer,
+    LocatedError,
 } from 'src/renderer/renderer';
 
 import {
@@ -152,11 +153,15 @@ import {
 } from 'lib/sys/babel-parser';
 
 
-export class JavaScriptParseError extends Error {
-    constructor(babel_parse_error_object: any, underlying_error: unknown) {
-        super(babel_parse_error_object.toString(), {
-            cause: underlying_error,
-        });
+export class JavaScriptParseError extends LocatedError {
+    constructor(babel_parse_error_object: any, underlying_error: unknown, ocx: OutputContextLike) {
+        super( babel_parse_error_object.toString(),
+               babel_parse_error_object.loc.line,
+               babel_parse_error_object.loc.column,
+               ocx,
+               {
+                   cause: underlying_error,
+               } );
         this.#babel_parse_error_object = babel_parse_error_object;
     }
     #babel_parse_error_object: any;
@@ -231,7 +236,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
                 console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
                 throw parse_error;
             } else {
-                throw new JavaScriptParseError(parse_result.errors[0], parse_error);
+                throw new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
             }
         }
         const result_stream = eval_fn.apply(eval_fn_this, eval_fn_args);

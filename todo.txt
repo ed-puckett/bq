@@ -1,4 +1,6 @@
+invoke_renderer and invoke_renderer_for_type rethrow errors they receive but in that case do not return an element and more importantly do not return remove_event_handlers
 errors in bq-cell javascript do not indicate where the error happened in the code
+provide means of setting title, and remove any title in clear-all command
 provide visual indication of a cell's show-full and show-in-presentation states
 provide settings to turn off automatic parenthesis/quote generation in CodeMirror
 provide settings to turn off completion menus in CodeMirror

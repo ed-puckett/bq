@@ -4,6 +4,7 @@ export {
     RendererFactory,
     TextBasedRenderer,
     ApplicationBasedRenderer,
+    LocatedError,
 } from './renderer';
 
 export { TextRenderer        } from './text/text-renderer';
