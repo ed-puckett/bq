@@ -199,7 +199,8 @@ export class MarkdownRenderer extends TextBasedRenderer {
                 await renderer.render(sub_ocx, text, renderer_options)
                     .catch((error: unknown) => {
                         sub_ocx.keepalive = false;  // in case this got set prior to the error
-                        ErrorRenderer.render_sync(sub_ocx, error);
+                        sub_ocx.stop();  // stop background processing, if any
+                        throw error;
                     });
                 if (!sub_ocx.keepalive) {
                     sub_ocx.stop();  // stop background processing, if any

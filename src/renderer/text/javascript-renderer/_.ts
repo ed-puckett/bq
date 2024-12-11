@@ -224,20 +224,26 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         const eval_fn_this = eval_context;
         // add newline to code to prevent problems in case the last line is a // comment
         const code_to_run = code+'\n';
-        const eval_fn_body = `try { ${code_to_run} } catch (error) { await ocx.render_error(error, { abbreviated: true }); }`;
+        const eval_fn_body = code_to_run;
         let eval_fn;
         try {
             eval_fn = new AsyncGeneratorFunction(...eval_fn_params, eval_fn_body);
         } catch (parse_error: unknown) {
-            const parse_result = babel_parse(code_to_run, {
-                errorRecovery: true,
-            });
-            if (parse_result.errors.length <= 0) {
-                console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
-                throw parse_error;
-            } else {
-                throw new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
+            let updated_parse_error = parse_error;
+            try {
+                const parse_result = babel_parse(code_to_run, {
+                    errorRecovery: true,
+                });
+                if (parse_result.errors.length <= 0) {
+                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
+                    // just leave updated_parse_error as is
+                } else {
+                    updated_parse_error = new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
+                }
+            } catch (babel_error: unknown) {
+                updated_parse_error = new JavaScriptParseError(babel_error, parse_error, eval_ocx);
             }
+            throw updated_parse_error;
         }
         const result_stream = eval_fn.apply(eval_fn_this, eval_fn_args);
 
@@ -258,8 +264,9 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             try {
                 ({ value, done } = await result_stream.next());
             } catch (error) {
-                ErrorRenderer.render_sync(eval_ocx, error);
-                break eval_loop;
+                //!!! ErrorRenderer.render_sync(eval_ocx, error);
+                //!!! break eval_loop;
+                throw error;
             }
 
             // output any non-undefined values that were received either from
