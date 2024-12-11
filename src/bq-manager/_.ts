@@ -55,6 +55,7 @@ import {
     TextBasedRenderer,
     TextBasedRendererOptionsType,
     LocatedError,
+    ErrorRenderer,
 } from 'src/renderer/_';
 
 import {
@@ -611,12 +612,14 @@ export class BqManager {
 
         return renderer.render(ocx, cell.get_text(), options)
             .catch(error => {
+                ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
                 if (error instanceof LocatedError) {
                     cell?.set_cursor_position(error.line_number, error.column_index);
                     // return the element associated with the ocx active when the error occurred
-                    return error.ocx.element;
+                    //!!! return error.ocx.element;
                 }
-                return ocx.element;  // just return the main element
+                //!!! return ocx.element;  // just return the main element
+                throw error;
             })
             .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
@@ -653,7 +656,7 @@ export class BqManager {
                     try {
                         await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
                     } catch (error: unknown) {
-                        console.error('error rendering cell', error, iter_cell);
+                        console.warn('stopped render_cells after error rendering cell', error, iter_cell);
                         return false;
                     }
                 }
@@ -1048,7 +1051,7 @@ export class BqManager {
             try {
                 await this.invoke_renderer_for_type(cell.type, undefined, cell);
             } catch (error: unknown) {
-                console.error('error rendering cell', error, cell);
+                console.warn('error rendering cell', error, cell);
                 return false;
             }
             return true;

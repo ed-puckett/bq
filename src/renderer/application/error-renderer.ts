@@ -41,7 +41,6 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
      *  No ocx methods are called to avoid tripping over an abort_if_stopped error.
      */
     static render_sync(ocx: OutputContextLike, error_object: ErrorRendererValueType, options?: ErrorRendererOptionsType): Element {
-console.log(error_object);//!!! for debugging from console
         const {
             style,
             abbreviated,
@@ -69,7 +68,7 @@ console.log(error_object);//!!! for debugging from console
             },
             style,
         }) as HTMLElement;
-        parent.innerText = text;  // innerText sanitizes text
+        parent.innerText = text || 'Error';  // innerText sanitizes text
 
         return parent;
     }

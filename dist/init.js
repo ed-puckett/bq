@@ -12041,12 +12041,14 @@ class BqManager {
         });
         return renderer.render(ocx, cell.get_text(), options)
             .catch(error => {
+            src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
             if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
                 cell?.set_cursor_position(error.line_number, error.column_index);
                 // return the element associated with the ocx active when the error occurred
-                return error.ocx.element;
+                //!!! return error.ocx.element;
             }
-            return ocx.element; // just return the main element
+            //!!! return ocx.element;  // just return the main element
+            throw error;
         })
             .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
@@ -12082,7 +12084,7 @@ class BqManager {
                         await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
                     }
                     catch (error) {
-                        console.error('error rendering cell', error, iter_cell);
+                        console.warn('stopped render_cells after error rendering cell', error, iter_cell);
                         return false;
                     }
                 }
@@ -12434,7 +12436,7 @@ class BqManager {
                 await this.invoke_renderer_for_type(cell.type, undefined, cell);
             }
             catch (error) {
-                console.error('error rendering cell', error, cell);
+                console.warn('error rendering cell', error, cell);
                 return false;
             }
             return true;
@@ -14826,7 +14828,6 @@ class ErrorRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
      *  No ocx methods are called to avoid tripping over an abort_if_stopped error.
      */
     static render_sync(ocx, error_object, options) {
-        console.log(error_object); //!!! for debugging from console
         const { style, abbreviated, } = (options || {});
         const text_segments = [];
         if (error_object instanceof Error) {
@@ -14850,7 +14851,7 @@ class ErrorRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
             },
             style,
         });
-        parent.innerText = text; // innerText sanitizes text
+        parent.innerText = text || 'Error'; // innerText sanitizes text
         return parent;
     }
 }
@@ -15219,7 +15220,12 @@ class Renderer {
     static async _invoke_renderer(renderer, ocx, value, options) {
         return renderer._render(ocx, value, options)
             .catch((error) => {
-            const result = ocx.render_error(error);
+            // moved to BqManager.singleton.invoke_renderer
+            //                const result = ocx.render_error(error)
+            //                    .catch((ignored_error: unknown) => {
+            //                        console.error('ignored second-level error while rendering error', ignored_error);
+            //                        // nothing
+            //                    });
             try {
                 ocx.stop(); // stop anything that may have been started
             }
@@ -15313,17 +15319,16 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7007);
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1024);
-/* harmony import */ var src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3161);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9799);
-/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(8067);
-/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5462);
-/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(4723);
-/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1576);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(1688);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9015);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_3__, src_output_context_types__WEBPACK_IMPORTED_MODULE_4__, _eval_worker___WEBPACK_IMPORTED_MODULE_5__]);
-([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_3__, src_output_context_types__WEBPACK_IMPORTED_MODULE_4__, _eval_worker___WEBPACK_IMPORTED_MODULE_5__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9799);
+/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8067);
+/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5462);
+/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4723);
+/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1576);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1688);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9015);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__]);
+([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
 
 const lib_dir_path = '../../../lib/';
@@ -15420,7 +15425,6 @@ const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).con
 
 
 
-
 class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .LocatedError */ .BU {
     constructor(babel_parse_error_object, underlying_error, ocx) {
         super(babel_parse_error_object.toString(), babel_parse_error_object.loc.line, babel_parse_error_object.loc.column, ocx, {
@@ -15454,7 +15458,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             eval_ocx = ocx.create_child_ocx({
                 tag: inline ? 'span' : 'div',
                 attrs: {
-                    [src_output_context_types__WEBPACK_IMPORTED_MODULE_4__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+                    [src_output_context_types__WEBPACK_IMPORTED_MODULE_3__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
                 },
                 style,
             });
@@ -15473,22 +15477,29 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         const eval_fn_this = eval_context;
         // add newline to code to prevent problems in case the last line is a // comment
         const code_to_run = code + '\n';
-        const eval_fn_body = `try { ${code_to_run} } catch (error) { await ocx.render_error(error, { abbreviated: true }); }`;
+        const eval_fn_body = code_to_run;
         let eval_fn;
         try {
             eval_fn = new AsyncGeneratorFunction(...eval_fn_params, eval_fn_body);
         }
         catch (parse_error) {
-            const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_9__/* .parse */ .qg)(code_to_run, {
-                errorRecovery: true,
-            });
-            if (parse_result.errors.length <= 0) {
-                console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
-                throw parse_error;
+            let updated_parse_error = parse_error;
+            try {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_8__/* .parse */ .qg)(code_to_run, {
+                    errorRecovery: true,
+                });
+                if (parse_result.errors.length <= 0) {
+                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
+                    // just leave updated_parse_error as is
+                }
+                else {
+                    updated_parse_error = new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
+                }
             }
-            else {
-                throw new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);
+            catch (babel_error) {
+                updated_parse_error = new JavaScriptParseError(babel_error, parse_error, eval_ocx);
             }
+            throw updated_parse_error;
         }
         const result_stream = eval_fn.apply(eval_fn_this, eval_fn_args);
         // note that using for await ... of misses the return value and we
@@ -15507,8 +15518,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
                 ({ value, done } = await result_stream.next());
             }
             catch (error) {
-                src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_3__/* .ErrorRenderer */ .i.render_sync(eval_ocx, error);
-                break eval_loop;
+                //!!! ErrorRenderer.render_sync(eval_ocx, error);
+                //!!! break eval_loop;
+                throw error;
             }
             // output any non-undefined values that were received either from
             // a return or a yield statement in the code
@@ -15526,9 +15538,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         return eval_ocx.element;
     }
     async #create_eval_environment(eval_context, ocx, source_code) {
-        const cell_id = ocx.element.closest(`[${src_output_context_types__WEBPACK_IMPORTED_MODULE_4__/* .OutputContextLike */ .s.attribute__data_source_element}]`)?.getAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_4__/* .OutputContextLike */ .s.attribute__data_source_element);
+        const cell_id = ocx.element.closest(`[${src_output_context_types__WEBPACK_IMPORTED_MODULE_3__/* .OutputContextLike */ .s.attribute__data_source_element}]`)?.getAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_3__/* .OutputContextLike */ .s.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
-        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_6__/* .load_d3 */ .l)();
+        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__/* .load_d3 */ .l)();
         function is_stopped() {
             return ocx.stopped;
         }
@@ -15570,7 +15582,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             ancestor_ocx.stop();
         }
         async function create_worker(options) {
-            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_5__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
+            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_4__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
             return worker;
         }
@@ -15590,9 +15602,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9,
             ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .ApplicationBasedRenderer */ .rK,
             d3, // for use with Plotly
-            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_7__/* .load_Plotly */ .O,
-            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_8__/* .load_Algebrite */ .B,
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_10__,
+            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__/* .load_Plotly */ .O,
+            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__/* .load_Algebrite */ .B,
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_9__,
             // utility functions defined above
             is_stopped, // no abort_if_stopped()....
             keepalive: ocx.AIS(keepalive),
@@ -15623,7 +15635,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
             canvas_image: ocx.canvas_image.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_11__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__,
         };
         eval_environment.env_vars = Object.keys(eval_environment);
         return eval_environment;
@@ -34687,7 +34699,8 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
                 await renderer.render(sub_ocx, text, renderer_options)
                     .catch((error) => {
                     sub_ocx.keepalive = false; // in case this got set prior to the error
-                    src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__/* .ErrorRenderer */ .i.render_sync(sub_ocx, error);
+                    sub_ocx.stop(); // stop background processing, if any
+                    throw error;
                 });
                 if (!sub_ocx.keepalive) {
                     sub_ocx.stop(); // stop background processing, if any
