@@ -38,6 +38,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
+//     bqe:           the global eval environment (synonym for "this" on entry)
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
@@ -352,6 +353,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
 
         const eval_environment = {
             env_vars: [] as string[],  // updated below to be an array of all the keys in eval_environment
+
+            bqe: eval_context,  // the evalulation context, and a synonym for "this" in the running code
 
             ocx,
             source_code,  // this evaluation's source code

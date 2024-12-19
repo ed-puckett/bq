@@ -40,7 +40,7 @@ class WorkerPool {
 };
 
 keepalive();
-this.WorkerPool = WorkerPool;</bq-cell>
+bqe.WorkerPool = WorkerPool;</bq-cell>
 <bq-cell data-type="javascript">
 const html = `
 &lt;style&gt;
@@ -128,7 +128,7 @@ const html = `
 &lt;div id="ode_plotter_plot"&gt;&lt;/div&gt;
 `;
 
-const worker_pool = await this.WorkerPool.create();
+const worker_pool = await bqe.WorkerPool.create();
 
 const Plotly = await load_Plotly();
 
@@ -816,7 +816,7 @@ function setup(ocx, the_equation_def) {
     }, 500);
 }
 
-this.setup = setup;</bq-cell>
+bqe.setup = setup;</bq-cell>
 <bq-cell data-type="javascript">
 // integrator:
 // f(x) returns xdot which has the same dimension as x
@@ -834,9 +834,9 @@ function runge_kutta_integrator(dt, f, x, params) {
     return x.map( (xi, i) =&gt; xi + (k1[i] + 2*k2[i] + 2*k3[i] + k4[i])/6 );
 }
 
-this.runge_kutta_integrator = runge_kutta_integrator;</bq-cell>
+bqe.runge_kutta_integrator = runge_kutta_integrator;</bq-cell>
 <bq-cell data-type="javascript">
-const go = this.setup.bind(this, ocx);
+const go = bqe.setup.bind(bqe, ocx);
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -877,7 +877,7 @@ const go = this.setup.bind(this, ocx);
 //
 //                 http://csc.ucdavis.edu/~chaos/courses/poci/
 
-const integrator = this.runge_kutta_integrator;
+const integrator = bqe.runge_kutta_integrator;
 
 const lorenz_def = {
     title: 'Lorenz Attractor',
