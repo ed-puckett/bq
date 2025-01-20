@@ -1,3 +1,10 @@
+Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes...
+some methods in OutputContext types.h marked with a comment /*async*/ may not actually be async...
+in markdown, inline invocation of a renderer (especially of javascript) would be nice
+define ocx.render_tty() or something like that (?)
+unhandled rejection when something outputs later from a javascript block inside markdown without using keepalive(); (should display error in markdown section or something)
+sometimes after refresh document hangs with a blank page...
+auto-eval documents cause unhandled rejection when trying to call beep() in Firefox
 BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier
 invoke_renderer and invoke_renderer_for_type rethrow errors they receive but in that case do not return an element and more importantly do not return remove_event_handlers
 errors in bq-cell javascript do not indicate where the error happened in the code
@@ -43,6 +50,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* need "use strict" in eval function bodies?
 * add white-space: break-spaces; to css for elements with class "error-message"
 * provide show_in_presentation setting in cell (toggle) menu and as a command
 * provide show_full setting per cell, and as a (toggle) menu and as a command

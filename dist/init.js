@@ -15345,8 +15345,9 @@ const dynamic_import = new Function('path', 'return import(path);');
 // derived from the global_state property of the options passed to the
 // eval() method.
 //
-// vars(...objects) assigns new properties to "this" within the code),
-// The return value is a array of the arguments which will be unmodified.
+// vars(...objects) assigns new properties to "bqe", the evaluation
+// context, within the code.  The return value is the array of the
+// given arguments (unmodified).
 //
 // A return statement within a cell terminates the evaluation (except
 // for asynchronous parts that have already been evaluated), and the
@@ -15477,7 +15478,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         // evaluate the code:
         const eval_fn_this = eval_context;
         // add newline to code to prevent problems in case the last line is a // comment
-        const code_to_run = code + '\n';
+        const code_to_run = `"use strict";${code}\n`;
         const eval_fn_body = code_to_run;
         let eval_fn;
         try {

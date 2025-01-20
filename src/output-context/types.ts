@@ -28,10 +28,6 @@ import {
 } from 'lib/sys/sprintf';
 
 import {
-    SerialDataSource,
-} from 'lib/sys/serial-data-source';
-
-import {
     ActivityManager,
 } from 'lib/sys/activity-manager';
 
