@@ -14341,10 +14341,6 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
         this.abort_if_stopped();
         return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .PlotlyRenderer */ .e$().render(this, code, options);
     }
-    async canvas_image(canvas_renderer, options) {
-        this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .CanvasImageRenderer */ .Dh().render(this, canvas_renderer, options);
-    }
 }
 
 __webpack_async_result__();
@@ -14666,7 +14662,6 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   B5: () => (/* reexport safe */ _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__.B),
 /* harmony export */   BU: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_0__.BU),
-/* harmony export */   Dh: () => (/* reexport safe */ _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__.D),
 /* harmony export */   Js: () => (/* reexport safe */ _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__.J),
 /* harmony export */   MH: () => (/* reexport safe */ _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__.M),
 /* harmony export */   To: () => (/* reexport safe */ _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__.T),
@@ -14685,10 +14680,9 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4863);
 /* harmony import */ var _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1560);
 /* harmony import */ var _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(39);
-/* harmony import */ var _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7895);
-/* harmony import */ var _factories__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1024);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__]);
-([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__, _application_canvas_image_renderer__WEBPACK_IMPORTED_MODULE_9__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var _factories__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(1024);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__]);
+([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 // === RE-EXPORTS ===
 
 
@@ -14700,69 +14694,6 @@ var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_tex
 
 
 
-
-
-__webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } });
-
-/***/ }),
-
-/***/ 7895:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   D: () => (/* binding */ CanvasImageRenderer)
-/* harmony export */ });
-/* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_1__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
-
-
-class CanvasImageRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* .ApplicationBasedRenderer */ .rK {
-    static get type() { return 'canvas-image'; }
-    async _render(ocx, canvas_renderer, options) {
-        if (typeof canvas_renderer !== 'function') {
-            throw new Error('canvas_renderer must be a function');
-        }
-        options ??= {};
-        if (typeof options.tag !== 'undefined') {
-            console.warn('overriding options.tag value', options.tag);
-        }
-        if (typeof options.attrs?.[src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type] !== 'undefined') {
-            console.warn(`overriding options.attrs["${src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type}"] value`, options.attrs[src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]);
-        }
-        if (typeof options.attrs?.['src'] !== 'undefined') {
-            console.warn('overriding options.src value', options.attrs.src);
-        }
-        const image_options = {
-            ...options,
-            tag: 'img',
-            attrs: {
-                ...(options.attrs ?? {}),
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-                // "src" set below
-            },
-        };
-        // note: "width" and "height" attributes, if specified in options, will be
-        // applied to both the canvas element and the img element.  This is ok because
-        // these attributes represent size in px in both element types.
-        const canvas = ocx.CLASS.create_element({
-            tag: 'canvas',
-            attrs: {
-                ...(options.attrs ?? {}),
-                width: options.attrs?.width,
-                height: options.attrs?.height,
-            },
-            style: options.style,
-        });
-        await canvas_renderer(canvas);
-        image_options.attrs.src = canvas.toDataURL();
-        const image = ocx.create_child(image_options);
-        return image;
-    }
-}
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
@@ -15407,7 +15338,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     image_data
 //     graphviz
 //     plotly
-//     canvas_image
 //     canvas_tools
 //!!!
 //
@@ -15637,7 +15567,6 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_image: ocx.canvas_image.bind(ocx),
             canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__,
         };
         eval_environment.env_vars = Object.keys(eval_environment);

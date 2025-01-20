@@ -1,5 +1,4 @@
-Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes...
-some methods in OutputContext types.h marked with a comment /*async*/ may not actually be async...
+Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 in markdown, inline invocation of a renderer (especially of javascript) would be nice
 define ocx.render_tty() or something like that (?)
 unhandled rejection when something outputs later from a javascript block inside markdown without using keepalive(); (should display error in markdown section or something)
@@ -50,6 +49,8 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* some methods in OutputContext types.h marked with a comment /*async*/ may not actually be async...
+* examples/graphics-examples.html - images truncated due to size (new limitation, both Firefox and Chromium)
 * need "use strict" in eval function bodies?
 * add white-space: break-spaces; to css for elements with class "error-message"
 * provide show_in_presentation setting in cell (toggle) menu and as a command

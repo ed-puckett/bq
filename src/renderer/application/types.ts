@@ -40,12 +40,3 @@ export type PlotlyRendererValueType = {
 export type PlotlyRendererOptionsType = {
     style?: object,
 };
-
-
-export type CanvasImageRendererValueType = {
-    /*async*/ (canvas: HTMLCanvasElement): Promise<void>,
-};
-
-export type CanvasImageRendererOptionsType = {
-    style?: object,
-};
