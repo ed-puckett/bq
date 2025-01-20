@@ -1,6 +1,5 @@
 import {
     Subject,
-    Observer,
     Subscription,
 } from 'rxjs';
 
