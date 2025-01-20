@@ -44,8 +44,6 @@ import {
     GraphvizRendererOptionsType,
     PlotlyRendererValueType,
     PlotlyRendererOptionsType,
-    CanvasImageRendererValueType,
-    CanvasImageRendererOptionsType,
 } from 'src/renderer/application/types';
 
 
@@ -377,17 +375,17 @@ export abstract class OutputContextLike extends ActivityManager {
 
     // === BASIC OPERATIONS ===
 
-    abstract /*async*/ clear(): void;
-    abstract /*async*/ set_attrs(attrs: { [attr: string]: undefined|null|string }): void;
-    abstract /*async*/ update_style(spec: { [prop: string]: undefined|null|string }): void;
-    abstract /*async*/ create_child_or_mapping(options?: object, return_mapping?: boolean): Element|object;
-    abstract /*async*/ create_child(options?: object): Element;
-    abstract /*async*/ create_child_mapping(options?: object): object;
-    abstract /*async*/ create_new_ocx(element: Element, parent?: OutputContextLike): OutputContextLike;
-    abstract /*async*/ create_child_ocx(options?: object): OutputContextLike;
-    abstract /*async*/ is_visible(element: Element, vpos: undefined|null|number, hpos: undefined|null|number): boolean;
-    abstract /*async*/ is_scrollable(): boolean;
-    abstract /*async*/ scrollable_parent(): null|Element;
+    abstract clear(): void;
+    abstract set_attrs(attrs: { [attr: string]: undefined|null|string }): void;
+    abstract update_style(spec: { [prop: string]: undefined|null|string }): void;
+    abstract create_child_or_mapping(options?: object, return_mapping?: boolean): Element|object;
+    abstract create_child(options?: object): Element;
+    abstract create_child_mapping(options?: object): object;
+    abstract create_new_ocx(element: Element, parent?: OutputContextLike): OutputContextLike;
+    abstract create_child_ocx(options?: object): OutputContextLike;
+    abstract is_visible(element: Element, vpos: undefined|null|number, hpos: undefined|null|number): boolean;
+    abstract is_scrollable(): boolean;
+    abstract scrollable_parent(): null|Element;
 
 
     // === ADVANCED OPERATIONS ===
@@ -404,5 +402,4 @@ export abstract class OutputContextLike extends ActivityManager {
     abstract /*async*/ image_data(code: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element>;
     abstract /*async*/ graphviz(code: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element>;
     abstract /*async*/ plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element>;
-    abstract /*async*/ canvas_image(canvas_renderer: CanvasImageRendererValueType, options?: CanvasImageRendererOptionsType): Promise<Element>;
 }

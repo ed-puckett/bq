@@ -7,16 +7,15 @@ export {
     LocatedError,
 } from './renderer';
 
-export { TextRenderer        } from './text/text-renderer';
-export { MarkdownRenderer    } from './text/markdown-renderer';
-export { LaTeXRenderer       } from './text/latex-renderer';
-export { JavaScriptRenderer  } from './text/javascript-renderer/_';
+export { TextRenderer       } from './text/text-renderer';
+export { MarkdownRenderer   } from './text/markdown-renderer';
+export { LaTeXRenderer      } from './text/latex-renderer';
+export { JavaScriptRenderer } from './text/javascript-renderer/_';
 
-export { ErrorRenderer       } from './application/error-renderer';
-export { ImageDataRenderer   } from './application/image-data-renderer';
-export { GraphvizRenderer    } from './application/graphviz-renderer';
-export { PlotlyRenderer      } from './application/plotly-renderer';
-export { CanvasImageRenderer } from './application/canvas-image-renderer';
+export { ErrorRenderer      } from './application/error-renderer';
+export { ImageDataRenderer  } from './application/image-data-renderer';
+export { GraphvizRenderer   } from './application/graphviz-renderer';
+export { PlotlyRenderer     } from './application/plotly-renderer';
 
 export {
     TextBasedRendererOptionsType,
@@ -34,9 +33,6 @@ export {
 
     PlotlyRendererValueType,
     PlotlyRendererOptionsType,
-
-    CanvasImageRendererValueType,
-    CanvasImageRendererOptionsType,
 } from './application/types';
 
 

@@ -83,7 +83,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     image_data
 //     graphviz
 //     plotly
-//     canvas_image
 //     canvas_tools
 //!!!
 //
@@ -404,7 +403,6 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             image_data:      ocx.image_data.bind(ocx),
             graphviz:        ocx.graphviz.bind(ocx),
             plotly:          ocx.plotly.bind(ocx),
-            canvas_image:    ocx.canvas_image.bind(ocx),
             canvas_tools,
         };
 

@@ -28,9 +28,6 @@ import {
     PlotlyRenderer,
     PlotlyRendererValueType,
     PlotlyRendererOptionsType,
-    CanvasImageRenderer,
-    CanvasImageRendererValueType,
-    CanvasImageRendererOptionsType,
     TextBasedRenderer,
     TextBasedRendererOptionsType,
     TextRenderer,
@@ -271,10 +268,5 @@ export class OutputContext extends OutputContextLike {
     async plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
         return new PlotlyRenderer().render(this, code, options);
-    }
-
-    async canvas_image(canvas_renderer: CanvasImageRendererValueType, options?: CanvasImageRendererOptionsType): Promise<Element> {
-        this.abort_if_stopped();
-        return new CanvasImageRenderer().render(this, canvas_renderer, options);
     }
 }
