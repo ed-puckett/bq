@@ -227,6 +227,14 @@ export class BqManager {
     #reset_before_render: boolean = false;  // from settings, kept up-to-date via settings_updated_events
     get reset_before_render (){ return this.#reset_before_render; }
 
+    get head_element (){
+        const el = document.querySelector('head');
+        if (!el) {
+            throw new Error('unexpected: head element not present');
+        }
+        return el;
+    }
+
     get header_element (){
         const el = document.querySelector('header');
         if (!el) {
@@ -240,6 +248,20 @@ export class BqManager {
             throw new Error('unexpected: main element not present');
         }
         return el;
+    }
+
+    get_title() {
+        const title_element: HTMLElement|null = document.querySelector('head title');
+        return title_element ? title_element.innerText : null;
+    }
+    set_title(title: string) {
+        let title_element: HTMLElement|null = this.head_element.querySelector('title') ?? null;
+        if (!title_element) {
+            title_element = document.createElement('title');
+            this.head_element.appendChild(title_element);
+        }
+        title_element.innerText = title;
+        this.set_structure_modified();
     }
 
     get cell_view (){ return document.documentElement.getAttribute(cell_view_attribute_name) ?? cell_view_values_default; }
@@ -302,11 +324,16 @@ export class BqManager {
     }
 
     /** clear the current document
+     * (also removes the title if it exists)
      */
     clear() {
         this.reset();
         if (this.main_element) {
             clear_element(this.main_element);
+            const title_element = this.head_element.querySelector('title');
+            if (title_element) {
+                title_element.remove();
+            }
         }
         const first_cell = this.create_cell();
         first_cell.focus();

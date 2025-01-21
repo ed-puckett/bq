@@ -269,13 +269,16 @@ export async function save_serializer(
     }
     // Now get the final contents for the <body> to be saved
     const contents = contents_segments.join('');
+    const title_element = document.querySelector('head title') as HTMLElement;
+    const title_text    = title_element ? title_element.innerText.replaceAll('<', '&lt;') : '';
+    const title_markup  = title_text ? `  <title>${title_text}</title>\n` : '';
     return `\
 <!DOCTYPE html>
 <html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_eval ? ` ${auto_eval_attribute_name}` : ''}>
 <head>
     <meta charset="utf-8">
     <script src=${make_string_literal(bootstrap_script_src, true)}></script>
-</head>
+${title_markup}</head>
 <body>${contents}</body>
 </html>
 `;

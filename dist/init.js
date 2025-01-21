@@ -11711,6 +11711,13 @@ class BqManager {
     get notification_manager() { return this.#notification_manager; }
     #reset_before_render = false; // from settings, kept up-to-date via settings_updated_events
     get reset_before_render() { return this.#reset_before_render; }
+    get head_element() {
+        const el = document.querySelector('head');
+        if (!el) {
+            throw new Error('unexpected: head element not present');
+        }
+        return el;
+    }
     get header_element() {
         const el = document.querySelector('header');
         if (!el) {
@@ -11724,6 +11731,19 @@ class BqManager {
             throw new Error('unexpected: main element not present');
         }
         return el;
+    }
+    get_title() {
+        const title_element = document.querySelector('head title');
+        return title_element ? title_element.innerText : null;
+    }
+    set_title(title) {
+        let title_element = this.head_element.querySelector('title') ?? null;
+        if (!title_element) {
+            title_element = document.createElement('title');
+            this.head_element.appendChild(title_element);
+        }
+        title_element.innerText = title;
+        this.set_structure_modified();
     }
     get cell_view() { return document.documentElement.getAttribute(src_init__WEBPACK_IMPORTED_MODULE_0__/* .cell_view_attribute_name */ .Qy) ?? src_init__WEBPACK_IMPORTED_MODULE_0__/* .cell_view_values_default */ .I7; }
     get in_presentation_view() { return (this.cell_view === 'presentation'); }
@@ -11779,11 +11799,16 @@ class BqManager {
         return this;
     }
     /** clear the current document
+     * (also removes the title if it exists)
      */
     clear() {
         this.reset();
         if (this.main_element) {
             (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .clear_element */ .ho)(this.main_element);
+            const title_element = this.head_element.querySelector('title');
+            if (title_element) {
+                title_element.remove();
+            }
         }
         const first_cell = this.create_cell();
         first_cell.focus();
@@ -13987,13 +14012,16 @@ async function save_serializer(bootstrap_script_src_choice, options) {
     }
     // Now get the final contents for the <body> to be saved
     const contents = contents_segments.join('');
+    const title_element = document.querySelector('head title');
+    const title_text = title_element ? title_element.innerText.replaceAll('<', '&lt;') : '';
+    const title_markup = title_text ? `  <title>${title_text}</title>\n` : '';
     return `\
 <!DOCTYPE html>
 <html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_eval ? ` ${auto_eval_attribute_name}` : ''}>
 <head>
     <meta charset="utf-8">
     <script src=${(0,lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_4__/* .make_string_literal */ .xA)(bootstrap_script_src, true)}></script>
-</head>
+${title_markup}</head>
 <body>${contents}</body>
 </html>
 `;
