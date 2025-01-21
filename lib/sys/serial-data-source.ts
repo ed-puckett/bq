@@ -11,8 +11,17 @@ export {
 export class SerialDataSource<T> {
     #subject = new Subject<T>();
 
-    subscribe(observerOrNext: ((value: T) => void)): Subscription {
-        return this.#subject.subscribe(observerOrNext);
+    subscribe(observerOrNext: ((value: T) => void), signal: null|AbortSignal=null): Subscription {
+        if (signal?.aborted) {
+            throw new Error('signal already aborted');
+        }
+        const subscription = this.#subject.subscribe(observerOrNext);
+        if (signal) {
+            signal.addEventListener('abort', () => {
+                subscription.unsubscribe();
+            }, { once: true });
+        }
+        return subscription;
     }
 
     dispatch(data: T) {

@@ -55,6 +55,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     cell
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
+//     OpenPromise
+//     SerialDataSource
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -132,6 +134,14 @@ import {
 import {
     EvalWorker,
 } from './eval-worker/_';
+
+import {
+    OpenPromise,
+} from 'lib/sys/open-promise';
+
+import {
+    SerialDataSource,
+} from 'lib/sys/serial-data-source';
 
 import {
     load_d3,
@@ -363,6 +373,9 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             // Renderer, etc classes
             TextBasedRenderer,
             ApplicationBasedRenderer,
+
+            OpenPromise,
+            SerialDataSource,
 
             d3,  // for use with Plotly
             load_Plotly,
