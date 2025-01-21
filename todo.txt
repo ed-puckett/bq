@@ -1,16 +1,16 @@
+stop eval-all if an error is thrown
+provide visual indication of a cell's show-full and show-in-presentation states
+provide settings to turn off automatic parenthesis/quote generation in CodeMirror
+provide settings to turn off completion menus in CodeMirror
+define ocx.render_tty() or something like that (?)
 Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 in markdown, inline invocation of a renderer (especially of javascript) would be nice
-define ocx.render_tty() or something like that (?)
 unhandled rejection when something outputs later from a javascript block inside markdown without using keepalive(); (should display error in markdown section or something)
 sometimes after refresh document hangs with a blank page...
 auto-eval documents cause unhandled rejection when trying to call beep() in Firefox
 BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier
 invoke_renderer and invoke_renderer_for_type rethrow errors they receive but in that case do not return an element and more importantly do not return remove_event_handlers
 errors in bq-cell javascript do not indicate where the error happened in the code
-provide means of setting title, and remove any title in clear-all command
-provide visual indication of a cell's show-full and show-in-presentation states
-provide settings to turn off automatic parenthesis/quote generation in CodeMirror
-provide settings to turn off completion menus in CodeMirror
 need to support (persistent) historical versions so that others can have a stable version to work against
 add command/menu to reset cell and output ids
 add export option to reset cell and output ids
@@ -49,6 +49,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* provide means of setting title, and remove any title in clear-all command
 * some methods in OutputContext types.h marked with a comment /*async*/ may not actually be async...
 * examples/graphics-examples.html - images truncated due to size (new limitation, both Firefox and Chromium)
 * need "use strict" in eval function bodies?
