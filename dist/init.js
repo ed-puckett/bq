@@ -8161,8 +8161,17 @@ class OpenPromise {
 
 class SerialDataSource {
     #subject = new rxjs__WEBPACK_IMPORTED_MODULE_0__/* .Subject */ .B();
-    subscribe(observerOrNext) {
-        return this.#subject.subscribe(observerOrNext);
+    subscribe(observerOrNext, signal = null) {
+        if (signal?.aborted) {
+            throw new Error('signal already aborted');
+        }
+        const subscription = this.#subject.subscribe(observerOrNext);
+        if (signal) {
+            signal.addEventListener('abort', () => {
+                subscription.unsubscribe();
+            }, { once: true });
+        }
+        return subscription;
     }
     dispatch(data) {
         this.#subject.next(data);
@@ -15292,11 +15301,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1024);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9799);
 /* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8067);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(5428);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1576);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1688);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(1688);
 /* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9015);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__]);
 ([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
@@ -15350,6 +15361,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     cell
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
+//     OpenPromise
+//     SerialDataSource
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -15387,6 +15400,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).constructor;
+
+
 
 
 
@@ -15574,10 +15589,12 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             // Renderer, etc classes
             TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9,
             ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .ApplicationBasedRenderer */ .rK,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__/* .OpenPromise */ .q,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__/* .SerialDataSource */ .Y,
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__/* .load_Algebrite */ .B,
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_9__,
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_11__,
             // utility functions defined above
             is_stopped, // no abort_if_stopped()....
             keepalive: ocx.AIS(keepalive),
@@ -15607,7 +15624,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_10__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_12__,
         };
         eval_environment.env_vars = Object.keys(eval_environment);
         return eval_environment;
