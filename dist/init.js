@@ -11737,7 +11737,7 @@ class BqManager {
         return title_element ? title_element.innerText : null;
     }
     set_title(title) {
-        let title_element = this.head_element.querySelector('title') ?? null;
+        let title_element = this.head_element.querySelector('title');
         if (!title_element) {
             title_element = document.createElement('title');
             this.head_element.appendChild(title_element);
@@ -12082,7 +12082,12 @@ class BqManager {
             }
         });
     }
+    // this.#rendering_cells is set to a promise when render_cells() is active, fulfilled and removed when done
+    #rendering_cells = undefined;
+    get rendering_cells() { return this.#rendering_cells; }
     async render_cells(limit_cell) {
+        let resolve_rendering_cells = () => { };
+        this.#rendering_cells = new Promise(resolve => { resolve_rendering_cells = resolve; });
         const cells = this.get_cells();
         if (limit_cell && cells.indexOf(limit_cell) === -1) {
             return false;
@@ -12117,6 +12122,13 @@ class BqManager {
             }
             finally {
                 stop_states_subscription.unsubscribe();
+                this.#rendering_cells = undefined;
+                try {
+                    resolve_rendering_cells?.(undefined);
+                }
+                catch (error) {
+                    console.warn('error received while calling resolve_rendering_cells()', error);
+                }
             }
         }
     }
