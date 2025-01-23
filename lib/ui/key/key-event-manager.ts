@@ -1,6 +1,6 @@
 import {
     SerialDataSource,
-    Subscription,
+    SerialDataSourceSubscription,
 } from 'lib/sys/serial-data-source';
 
 import {
@@ -34,7 +34,7 @@ export class KeyEventManager<DocumentManager> {
     get command_observer (){ return this.#command_observer; }
     get commands         (){ return this.#commands; }
 
-    #commands_subscription:  Subscription;
+    #commands_subscription:  SerialDataSourceSubscription;
     #key_map_stack:          Array<KeyMap>;
     #key_mapper:             null|KeyMapMapper;                       // set iff attached
     #key_handler:            undefined|((e: KeyboardEvent) => void);  // set iff attached

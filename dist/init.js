@@ -8037,17 +8037,21 @@ class OpenPromise {
 
 class SerialDataSource {
     #subject = new rxjs__WEBPACK_IMPORTED_MODULE_0__/* .Subject */ .B();
-    subscribe(observerOrNext, signal = null) {
-        if (signal?.aborted) {
-            throw new Error('signal already aborted');
+    subscribe(observer, options) {
+        const { abort_signal, } = (options ?? {});
+        if (abort_signal?.aborted) {
+            throw new Error('abort_signal already aborted');
         }
-        const subscription = this.#subject.subscribe(observerOrNext);
-        if (signal) {
-            signal.addEventListener('abort', () => {
+        const subscription = this.#subject.subscribe(observer);
+        if (abort_signal) {
+            abort_signal.addEventListener('abort', () => {
                 subscription.unsubscribe();
             }, { once: true });
         }
-        return subscription;
+        return {
+            unsubscribe: subscription.unsubscribe.bind(subscription),
+            abort_signal,
+        };
     }
     dispatch(data) {
         this.#subject.next(data);
@@ -11567,7 +11571,7 @@ class BqManager {
             this.#key_event_manager.attach();
             this.set_editable(true);
             this.#setup_csp();
-            this.#setup_header(!!settings?.classic_menu);
+            this.#setup_header(!!(settings?.classic_menu));
             this.#set_initial_active_cell();
             // add "changes may not be saved" prompt for when document is being closed while modified
             window.addEventListener('beforeunload', (event) => {

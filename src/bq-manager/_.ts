@@ -16,7 +16,7 @@ import {
 
 import {
     SerialDataSource,
-    Subscription,
+    SerialDataSourceSubscription,
 } from 'lib/sys/serial-data-source';
 
 import {
@@ -183,7 +183,7 @@ export class BqManager {
             this.set_editable(true);
 
             this.#setup_csp();
-            this.#setup_header(!!(settings as any)?.classic_menu);
+            this.#setup_header(!!((settings as any)?.classic_menu));
             this.#set_initial_active_cell();
 
             // add "changes may not be saved" prompt for when document is being closed while modified
@@ -209,8 +209,8 @@ export class BqManager {
     #key_event_manager: KeyEventManager<BqManager>;
     #with_menubar: undefined|boolean = undefined;  // undefined until first time a menu is set up
     #menu: undefined|Menu<BqManager> = undefined;
-    #menu_commands_subscription: undefined|Subscription = undefined;
-    #menu_selects_subscription:  undefined|Subscription = undefined;
+    #menu_commands_subscription: undefined|SerialDataSourceSubscription = undefined;
+    #menu_selects_subscription:  undefined|SerialDataSourceSubscription = undefined;
     #file_handle: any = null;
     #editable: boolean = true;
     #active_cell: null|BqCellElement = null;
