@@ -66,7 +66,7 @@ export abstract class OutputContextLike extends ActivityManager {
     static get attribute__data_source_media_type (){ return attribute__data_source_media_type; }
 
     constructor() {
-        super();  // ActivityManager base class; multiple_stops = false
+        super(false);  // ActivityManager base class; multiple_stops = false
     }
 
     abstract get bq      (): BqManager;
@@ -292,7 +292,7 @@ export abstract class OutputContextLike extends ActivityManager {
 
     // === ABORT IF STOPPED ===
 
-    /** abort by throwing an error if this.stopped, otherwise do nothing.
+    /** abort by throwing a StoppedError if this.stopped, otherwise do nothing.
      */
     abort_if_stopped(operation?: string): void {
         if (this.stopped) {
@@ -304,7 +304,7 @@ export abstract class OutputContextLike extends ActivityManager {
 
     /** wrap the given function so that when it is called,
      *  this.abort_if_stopped() will be called first to
-     *  terminate rendering.
+     *  terminate rendering if necessary.
      */
     AIS(f: Function): Function {
         if (typeof f !== 'function') {

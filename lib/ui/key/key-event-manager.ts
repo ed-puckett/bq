@@ -1,8 +1,4 @@
 import {
-    EventListenerManager,
-} from 'lib/sys/event-listener-manager';
-
-import {
     SerialDataSource,
     Subscription,
 } from 'lib/sys/serial-data-source';
@@ -38,11 +34,12 @@ export class KeyEventManager<DocumentManager> {
     get command_observer (){ return this.#command_observer; }
     get commands         (){ return this.#commands; }
 
-    #event_listener_manager: EventListenerManager;
     #commands_subscription:  Subscription;
     #key_map_stack:          Array<KeyMap>;
     #key_mapper:             null|KeyMapMapper;                       // set iff attached
     #key_handler:            undefined|((e: KeyboardEvent) => void);  // set iff attached
+
+    #event_listener_abort_controller: undefined|AbortController;  // set when attached, undefined when not attached
 
     /** KeyEventManager constructor
      *  @param {EventTarget} event_target the source of events
@@ -52,8 +49,6 @@ export class KeyEventManager<DocumentManager> {
         this.#dm               = dm;
         this.#event_target     = event_target;
         this.#command_observer = command_observer;
-
-        this.#event_listener_manager = new EventListenerManager();
 
         this.#commands = new SerialDataSource<CommandContext<DocumentManager>>();
         this.#commands_subscription = this.commands.subscribe(command_observer);  //!!! note: never unsubscribed
@@ -188,15 +183,14 @@ export class KeyEventManager<DocumentManager> {
 
         this.#key_handler = key_handler;  // for inject_key_event()
 
-        this.#event_listener_manager.remove_all();  // prepare to re-add below
-        const listener_specs: [ EventTarget, string, EventListenerOrEventListenerObject, AddEventListenerOptions ][] = [
-            [ this.event_target, 'blur',    blur_handler as EventListener, { capture: true } ],
-            [ this.event_target, 'keydown', key_handler  as EventListener, { capture: true } ],
-        ];
-        for (const [ target, type, listener, options ] of listener_specs) {
-            this.#event_listener_manager.add(target, type, listener, options);
-        }
-        this.#event_listener_manager.attach();
+        this.#event_listener_abort_controller?.abort();  // remove earlier event listeners, if any
+        this.#event_listener_abort_controller = new AbortController();
+        const options = {
+            capture: true,
+            signal:  this.#event_listener_abort_controller.signal,
+        };
+        this.event_target.addEventListener('blur',    blur_handler as EventListener, options);
+        this.event_target.addEventListener('keydown', key_handler  as EventListener, options);
 
         return true;  // indicate: successfully attached
     }
@@ -205,7 +199,10 @@ export class KeyEventManager<DocumentManager> {
      *  no-op if called when this.#event_listener_manager is already empty.
      */
     detach(): void {
-        this.#event_listener_manager.remove_all();
+        if (this.#event_listener_abort_controller) {
+            this.#event_listener_abort_controller.abort();  // remove event listeners
+            this.#event_listener_abort_controller = undefined;
+        }
         this.#key_mapper  = null;
         this.#key_handler = undefined;
     }

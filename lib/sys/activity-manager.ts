@@ -8,21 +8,16 @@ export type StopState = {
     was_stopped: boolean,
 }
 
-export type ObjectWithStopMethod = {
-    stop: () => any,
-}
-
 export class Activity {
     #stop_states = new SerialDataSource<StopState>();
     get stop_states () { return this.#stop_states; }
 
-    #multiple_stops: boolean;
-    #stop_count:     number;
+    readonly #multiple_stops: boolean;
+    #stop_count:              number;
 
     get multiple_stops (){ return this.#multiple_stops; }
     get stop_count     (){ return this.#stop_count; }
     get stopped        (){ return (!this.#multiple_stops && this.#stop_count > 0); }
-
 
     /** create a new object representing an Activity, i.e., something that
      *  is running and can be stopped
@@ -51,14 +46,15 @@ export class Activity {
  * added to a different ActivityManager as an Activity,
  */
 export class ActivityManager extends Activity {
-    #children: Array<Activity>;  // managed Activity objects
-
     constructor(multiple_stops: boolean = false) {
         super(multiple_stops);
         this.#children = [];
     }
 
-    /** add an Activity to this.#children
+    #children: Array<Activity>;  // managed Activity objects
+    get children (){ return [ ...this.#children ]; }  // copy to avoid possibility of modification
+
+   /** add an Activity to this.#children
      *  @param {Activity} activity
      * If activity is already present, then do nothing.
      */
@@ -127,10 +123,7 @@ export class ActivityManager extends Activity {
         super.stop();
     }
 
-
     // === DIAGNOSTICS ===
-
-    get children (){ return [ ...this.#children ]; }  // copy to avoid possibility of modification
 
     /** @return {ActivityTree} tree rooted at this ActivityManager
      * For each recursive level, if children is undefined, then that

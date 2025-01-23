@@ -71,10 +71,6 @@ import {
 } from 'src/bq-cell-element/_';
 
 import {
-    EventListenerManager,
-} from 'lib/sys/event-listener-manager';
-
-import {
     NotificationManager,
 } from 'lib/ui/notification-manager/_';
 
@@ -564,7 +560,7 @@ export class BqManager {
     async invoke_renderer_for_type( type:            string = 'plain',
                                     options?:        null|TextBasedRendererOptionsType,
                                     cell?:           null|BqCellElement,
-                                    output_element?: Element ): Promise<{ element: Element, remove_event_handlers: () => void }> {
+                                    output_element?: Element ): Promise<Element> {
         if (cell && cell.bq !== this) {
             throw new Error('unexpected: cell has a different bq');
         }
@@ -579,7 +575,7 @@ export class BqManager {
     async invoke_renderer( renderer:        TextBasedRenderer,
                            options?:        null|TextBasedRendererOptionsType,
                            cell?:           null|BqCellElement,
-                           output_element?: Element ): Promise<{ element: Element, remove_event_handlers: () => void }> {
+                           output_element?: Element ): Promise<Element> {
         cell ??= this.active_cell;
         if (!cell) {
             throw new Error('cell not specified and no active_cell');
@@ -608,11 +604,7 @@ export class BqManager {
 
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
-        // resources to be cleaned up, too.  However, the returned function
-        // remove_event_handlers() can be called to explicitly remove the
-        // handlers.  This is useful if the output_element is passed in
-        // from the outside and that sort of control is desired.
-        const event_listener_manager = new EventListenerManager();
+        // resources to be cleaned up, too.
         const event_listener = (event: Event) => {
             // use querySelector() to re-find the cell in case it is no longer present
             const refound_cell = document.querySelector(`#${cell_id}`);
@@ -622,14 +614,8 @@ export class BqManager {
                 }
             }
         };
-        event_listener_manager.add(output_element, 'focus', event_listener, { capture: true });
-        event_listener_manager.add(output_element, 'click', event_listener, { capture: true });
-        event_listener_manager.attach();
-        const remove_event_handlers = () => {
-            if (event_listener_manager.attached) {
-                event_listener_manager.detach();
-            }
-        };
+        output_element.addEventListener('focus', event_listener, { capture: true });
+        output_element.addEventListener('click', event_listener, { capture: true });
 
         const ocx = new OutputContext(this, output_element);  // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
@@ -648,7 +634,6 @@ export class BqManager {
                 //!!! return ocx.element;  // just return the main element
                 throw error;
             })
-            .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
                 if (!ocx.keepalive) {
                     ocx.stop();  // stop anything that may have been started
@@ -661,7 +646,7 @@ export class BqManager {
     get rendering_cells (){ return this.#rendering_cells; }
 
     async render_cells(limit_cell?: null|BqCellElement): Promise<boolean> {
-        let resolve_rendering_cells: undefined|((value: PromiseLike<any> | any) => void) = () => {};
+        var resolve_rendering_cells: undefined|((value: PromiseLike<any> | any) => void);
         this.#rendering_cells = new Promise(resolve => { resolve_rendering_cells = resolve; });
 
         const cells = this.get_cells();
@@ -700,11 +685,17 @@ export class BqManager {
                 stop_states_subscription.unsubscribe();
 
                 this.#rendering_cells = undefined;
-                try {
-                    resolve_rendering_cells?.(undefined);
-                } catch (error) {
-                    console.warn('error received while calling resolve_rendering_cells()', error);
-                }
+                // use queueMicrotask to allow async operations to settle before
+                // calling resolve_rendering_cells().
+                queueMicrotask(() => {
+                    try {
+                        // typescript cannot determine that resolve_rendering_cells
+                        // always has a value at this point...
+                        resolve_rendering_cells?.(undefined);
+                    } catch (error) {
+                        console.warn('error received while calling resolve_rendering_cells()', error);
+                    }
+                });
             }
         }
     }

@@ -33,7 +33,7 @@ function show_bootstrap_failed(error) {
         });
     }
 
-    throw error;  // attempt stop further inline execution of this script
+    throw error;  // attempt to stop further inline execution of this script
 }
 
 
