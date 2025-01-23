@@ -159,7 +159,19 @@ export class BqManager {
 
         this.#command_bindings = get_global_command_bindings();
 
-        this.#key_event_manager = new KeyEventManager<BqManager>(this, window, this.#perform_command_for_ui.bind(this));
+        let initial_key_maps: undefined|Array<KeyMap>;
+        try {
+            const key_map = new KeyMap(get_global_initial_key_map_bindings());
+            initial_key_maps = [ key_map ];
+        } catch (error: unknown) {
+            console.warn('received error when calling get_global_initial_key_map_bindings()', error);
+            initial_key_maps = undefined;
+        }
+        this.#key_event_manager = new KeyEventManager<BqManager>(this, window, {
+            command_observer: this.#perform_command_for_ui.bind(this),
+            initial_key_maps,
+            // no abort_signal given, never detached
+        });
 
         try {
 
@@ -175,10 +187,6 @@ export class BqManager {
             // listen for settings changed events and trigger update in cells
             settings_updated_events.subscribe(this.update_from_settings.bind(this));  //!!! never unsubscribed
             this.update_from_settings();  // establish initial settings right away
-
-            const key_map = new KeyMap(get_global_initial_key_map_bindings());
-            this.push_key_map(key_map);
-            this.#key_event_manager.attach();
 
             this.set_editable(true);
 
@@ -198,7 +206,7 @@ export class BqManager {
                 }
             });  //!!! event handler never removed
 
-        } catch (error) {
+        } catch (error: unknown) {
             show_initialization_failed(error);
         }
     }
@@ -374,6 +382,9 @@ export class BqManager {
 
     // === KEY MAP STACK ===
 
+    get_key_maps(): Array<KeyMap> {
+        return this.#key_event_manager.get_key_maps();
+    }
     reset_key_map_stack(): void {
         this.#key_event_manager.reset_key_map_stack();
     }

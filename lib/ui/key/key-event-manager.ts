@@ -21,40 +21,85 @@ import {
 } from 'lib/ui/command-context';
 
 
+export type KeyEventManagerOptions<DocumentManager> = {
+    command_observer?: ((cc: CommandContext<DocumentManager>) => void),  // function to handle command events (can also be added later through this.commands.subscribe())
+    initial_key_maps?: Array<KeyMap>,  // initial key map stack (stack grows from the front, i.e., the first item is the last pushed)
+    abort_signal?:     AbortSignal,    // abort signal (one-shot), causes permanent detach
+};
+
+
 export class KeyEventManager<DocumentManager> {
     get CLASS (){ return this.constructor as typeof KeyEventManager<DocumentManager>; }
 
-    #dm:               DocumentManager;
-    #event_target:     EventTarget;
-    #command_observer: ((cc: CommandContext<DocumentManager>) => void);
-    #commands:         SerialDataSource<CommandContext<DocumentManager>>;
-
-    get dm               (){ return this.#dm; }
-    get event_target     (){ return this.#event_target; }
-    get command_observer (){ return this.#command_observer; }
-    get commands         (){ return this.#commands; }
-
-    #commands_subscription:  SerialDataSourceSubscription;
-    #key_map_stack:          Array<KeyMap>;
-    #key_mapper:             null|KeyMapMapper;                       // set iff attached
-    #key_handler:            undefined|((e: KeyboardEvent) => void);  // set iff attached
-
-    #event_listener_abort_controller: undefined|AbortController;  // set when attached, undefined when not attached
-
     /** KeyEventManager constructor
+     *  @param {DocumentManager} the document manager instance controlling this application
      *  @param {EventTarget} event_target the source of events
-     *  @param {Function} command_observer function to handle command events
+     *  @param {KeyEventManagerOptions<DocumentManager>} options: {
+     *      command_observer?: ((cc: CommandContext<DocumentManager>) => void),
+     *      initial_key_maps?: Array<KeyMap>,
+     *      abort_signal?:     AbortSignal,
+     *  }
+     *  Note: handlers added later via this.commands.subscribe() will not be
+     *  detached when abort_signal fires unless you pass in this.abort_signal
+     *  in options to this.commands.subscribe().
      */
-    constructor(dm: DocumentManager, event_target: EventTarget, command_observer: ((cc: CommandContext<DocumentManager>) => void)) {
+    constructor(dm: DocumentManager, event_target: EventTarget, options?: KeyEventManagerOptions<DocumentManager>) {
+        const {
+            command_observer,
+            initial_key_maps,
+            abort_signal,
+        } = (options ?? {} as KeyEventManagerOptions<DocumentManager>)
+
         this.#dm               = dm;
         this.#event_target     = event_target;
         this.#command_observer = command_observer;
 
         this.#commands = new SerialDataSource<CommandContext<DocumentManager>>();
-        this.#commands_subscription = this.commands.subscribe(command_observer);  //!!! note: never unsubscribed
+        if (command_observer) {
+            this.commands.subscribe(command_observer, {
+                abort_signal,
+            });
+        }
 
-        this.#key_map_stack = [];    // stack grows from the front, i.e., the first item is the last pushed
-        this.#key_mapper    = null;  // set iff attached
+        // stack grows from the front, i.e., the first item is the last pushed
+        this.#key_map_stack = initial_key_maps ? Array.from(initial_key_maps) : [];  // copy initial_key_maps if given
+
+        // set up handler for abort_signal
+        this.#abort_signal = abort_signal;
+        if (abort_signal) {
+            abort_signal.addEventListener('abort', () => {
+                this.#detach();
+            }, { once: true });
+        }
+
+        // finish initialization
+        this.#key_mapper = null;  // set iff attached (will be set by this.#rebuild())
+        this.#rebuild();
+    }
+
+    #dm:               DocumentManager;
+    #event_target:     EventTarget;
+    #command_observer: undefined|((cc: CommandContext<DocumentManager>) => void);
+    #abort_signal:     undefined|AbortSignal;
+
+    get dm               (){ return this.#dm; }
+    get event_target     (){ return this.#event_target; }
+    get command_observer (){ return this.#command_observer; }
+    get abort_signal     (){ return this.#abort_signal; }
+
+    #commands:                  SerialDataSource<CommandContext<DocumentManager>>;
+    #key_map_stack:             Array<KeyMap>;
+    #key_mapper:                null|KeyMapMapper;                       // set iff attached
+    #key_handler:               undefined|((e: KeyboardEvent) => void);  // set iff attached
+    #listener_abort_controller: undefined|AbortController;               // set iff attached
+
+    get commands (){ return this.#commands; }
+
+    get aborted  (){ return this.abort_signal?.aborted ?? false; }
+    get detached (){ return !this.#key_mapper; }  // note: always true if this.aborted
+
+    get_key_maps() {
+        return Array.from(this.#key_map_stack);  // return a copy
     }
 
     reset_key_map_stack(): void {
@@ -96,117 +141,6 @@ export class KeyEventManager<DocumentManager> {
         }
     }
 
-    get is_attached (){ return !!this.#key_mapper; }  // this.#key_mapper set iff attached
-
-    /** attach to event_target and start listening for events.
-     *  @return {Boolean} true iff successful
-     */
-    attach(): boolean {
-        if (this.is_attached) {
-            throw new Error('attach() called when already attached');
-        }
-        // not attached: this.#key_mapper is null
-
-        if (this.#key_map_stack.length <= 0) {
-            return false;  // indicate: attach failed
-        }
-
-        const initial_state = KeyMap.multi_mapper(...this.#key_map_stack);
-        this.#key_mapper = initial_state;
-
-        let state:           KeyMapMapper;    // current "location" in key mapper
-        let key_sequence:    Array<KeySpec>;  // current sequence of key_specs that have been seen
-
-        function reset() {
-            state = initial_state;
-            key_sequence = [];
-        }
-        reset();
-
-        const blur_handler = reset;  // attached to this.event_target
-
-        const key_handler = (event: KeyboardEvent) => {  // attached to this.event_target
-            switch (event.key) {
-                case 'Alt':
-                case 'AltGraph':
-                case 'CapsLock':
-                case 'Control':
-                case 'Fn':
-                case 'FnLock':
-                case 'Hyper':
-                case 'Meta':
-                case 'NumLock':
-                case 'ScrollLock':
-                case 'Shift':
-                case 'Super':
-                case 'Symbol':
-                case 'SymbolLock':
-                case 'OS':  // Firefox quirk
-                    // modifier key, ignore
-                    break;
-
-                default: {
-                    const key_spec = KeySpec.from_keyboard_event(event);
-                    key_sequence?.push(key_spec);
-                    const mapping_result = state.consume(key_spec);
-                    if (!mapping_result) {
-                        // failed
-                        if (state !== initial_state) {
-                            // beep only if at least one keypress has already been accepted
-                            event.preventDefault();
-                            event.stopPropagation();
-                            beep();
-                        }
-                        // if still in initial_state, then no event.preventDefault()
-                        reset();
-                    } else {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        if (typeof mapping_result === 'string') {
-                            const command = mapping_result;
-                            const command_context: CommandContext<DocumentManager> = {
-                                dm:      this.dm,
-                                command,
-                                target:  event.target,
-                                key_spec,
-                            };
-                            this.commands.dispatch(command_context);
-                            reset();
-                        } else {
-                            state = mapping_result;
-                        }
-                    }
-                    break;
-                }
-            }
-        };
-
-        this.#key_handler = key_handler;  // for inject_key_event()
-
-        this.#event_listener_abort_controller?.abort();  // remove earlier event listeners, if any
-        this.#event_listener_abort_controller = new AbortController();
-        const options = {
-            capture: true,
-            signal:  this.#event_listener_abort_controller.signal,
-        };
-        this.event_target.addEventListener('blur',    blur_handler as EventListener, options);
-        this.event_target.addEventListener('keydown', key_handler  as EventListener, options);
-
-        return true;  // indicate: successfully attached
-    }
-
-    /** detach from event_target and stop listening for events.
-     *  no-op if called when this.#event_listener_manager is already empty.
-     */
-    detach(): void {
-        if (this.#event_listener_abort_controller) {
-            this.#event_listener_abort_controller.abort();  // remove event listeners
-            this.#event_listener_abort_controller = undefined;
-        }
-        this.#key_mapper  = null;
-        this.#key_handler = undefined;
-    }
-
     inject_key_event(key_event: KeyboardEvent): void {
         this.#key_handler?.(key_event);
     }
@@ -245,12 +179,102 @@ export class KeyEventManager<DocumentManager> {
 
     // === INTERNAL ===
 
+    #detach() {
+        if (this.#listener_abort_controller) {
+            this.#listener_abort_controller.abort();  // remove event listeners
+            this.#listener_abort_controller = undefined;
+        }
+        this.#key_mapper  = null;
+        this.#key_handler = undefined;
+    }
+
     #rebuild(): void {
         // rebuild the event handlers and state machine.
-        const was_attached = this.is_attached;
-        this.detach();
-        if (was_attached) {
-            this.attach();  // will fail if key_map stack is empty
+
+        // first, detach anything previous
+        this.#detach();
+
+        // now attach
+        if (!this.aborted && this.#key_map_stack.length > 0) {  // otherwise nothing else to do
+            const initial_state = KeyMap.multi_mapper(...this.#key_map_stack);
+            this.#key_mapper = initial_state;
+
+            let state:           KeyMapMapper;    // current "location" in key mapper
+            let key_sequence:    Array<KeySpec>;  // current sequence of key_specs that have been seen
+
+            function reset() {
+                state = initial_state;
+                key_sequence = [];
+            }
+            reset();
+
+            const blur_handler = reset;  // attached to this.event_target
+
+            const key_handler = (event: KeyboardEvent) => {  // attached to this.event_target
+                switch (event.key) {
+                    case 'Alt':
+                    case 'AltGraph':
+                    case 'CapsLock':
+                    case 'Control':
+                    case 'Fn':
+                    case 'FnLock':
+                    case 'Hyper':
+                    case 'Meta':
+                    case 'NumLock':
+                    case 'ScrollLock':
+                    case 'Shift':
+                    case 'Super':
+                    case 'Symbol':
+                    case 'SymbolLock':
+                    case 'OS':  // Firefox quirk
+                        // modifier key, ignore
+                        break;
+
+                    default: {
+                        const key_spec = KeySpec.from_keyboard_event(event);
+                        key_sequence?.push(key_spec);
+                        const mapping_result = state.consume(key_spec);
+                        if (!mapping_result) {
+                            // failed
+                            if (state !== initial_state) {
+                                // beep only if at least one keypress has already been accepted
+                                event.preventDefault();
+                                event.stopPropagation();
+                                beep();
+                            }
+                            // if still in initial_state, then no event.preventDefault()
+                            reset();
+                        } else {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            if (typeof mapping_result === 'string') {
+                                const command = mapping_result;
+                                const command_context: CommandContext<DocumentManager> = {
+                                    dm:      this.dm,
+                                    command,
+                                    target:  event.target,
+                                    key_spec,
+                                };
+                                this.commands.dispatch(command_context);
+                                reset();
+                            } else {
+                                state = mapping_result;
+                            }
+                        }
+                        break;
+                    }
+                }
+            };
+
+            this.#key_handler = key_handler;  // for inject_key_event()
+
+            this.#listener_abort_controller = new AbortController();
+            const options = {
+                capture: true,
+                signal:  this.#listener_abort_controller.signal,
+            };
+            this.event_target.addEventListener('blur',    blur_handler as EventListener, options);
+            this.event_target.addEventListener('keydown', key_handler  as EventListener, options);
         }
     }
 }
