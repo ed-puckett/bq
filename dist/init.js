@@ -7484,15 +7484,16 @@ class Activity {
  * added to a different ActivityManager as an Activity,
  */
 class ActivityManager extends Activity {
-    #children; // managed Activity objects
     constructor(multiple_stops = false) {
         super(multiple_stops);
         this.#children = [];
     }
+    #children; // managed Activity objects
+    get children() { return [...this.#children]; } // copy to avoid possibility of modification
     /** add an Activity to this.#children
-     *  @param {Activity} activity
-     * If activity is already present, then do nothing.
-     */
+      *  @param {Activity} activity
+      * If activity is already present, then do nothing.
+      */
     add_activity(activity) {
         if (!(activity instanceof Activity)) {
             throw new Error('activity must be an instance of Activity');
@@ -7556,7 +7557,6 @@ class ActivityManager extends Activity {
         super.stop();
     }
     // === DIAGNOSTICS ===
-    get children() { return [...this.#children]; } // copy to avoid possibility of modification
     /** @return {ActivityTree} tree rooted at this ActivityManager
      * For each recursive level, if children is undefined, then that
      * level is an Activity but not an ActivityManager.  Otherwise,
@@ -7686,130 +7686,6 @@ function assets_server_url(local_url) {
 // @ts-ignore  // types not available for the imported module
 
 const { /* parse */ "qg": parse, /* parseExpression */ "YK": parseExpression, /* tokTypes */ "Y_": tokTypes, } = _babel_parser_lib_index_js__WEBPACK_IMPORTED_MODULE_0__;
-
-
-/***/ }),
-
-/***/ 3178:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   W: () => (/* binding */ EventListenerManager)
-/* harmony export */ });
-class EventListenerManager {
-    #specs;
-    #attached; // true iff event the handlers have been attached
-    constructor(attached = false) {
-        this.#specs = [];
-        this.#attached = attached;
-    }
-    get empty() { return this.#specs.length <= 0; }
-    get attached() { return this.#attached; }
-    add(target, type, listener, options = {}) {
-        //!!! options is not copied, and yet is used later
-        //!!! could use structuredClone(), but would that prevent remove() from finding?
-        const spec = { target, type, listener, options };
-        EventListenerManager.#validate_spec(spec);
-        if (this.#first_spec_index_of(spec) !== -1) {
-            throw new Error('equivalent event handler already added');
-        }
-        if (this.#attached) {
-            target.addEventListener(type, listener, options);
-        }
-        this.#specs.push(spec);
-    }
-    remove(target, type, listener, options = {}) {
-        const spec = { target, type, listener, options };
-        EventListenerManager.#validate_spec(spec);
-        const index = this.#first_spec_index_of(spec);
-        if (index === -1) {
-            throw new Error('specified event handler not found');
-        }
-        this.#specs.splice(index, 1);
-        if (this.#attached) {
-            target.removeEventListener(type, listener, options);
-        }
-    }
-    remove_all() {
-        if (this.#attached) {
-            for (const spec of this.#specs) {
-                const { target, type, listener, options } = spec;
-                target.removeEventListener(type, listener, options);
-            }
-        }
-        this.#specs.splice(0); // remove all entries
-    }
-    attach() {
-        if (!this.#attached) {
-            for (const spec of this.#specs) {
-                const { target, type, listener, options } = spec;
-                target.addEventListener(type, listener, options);
-            }
-            this.#attached = true;
-        }
-    }
-    detach() {
-        if (this.#attached) {
-            for (const spec of this.#specs) {
-                const { target, type, listener, options } = spec;
-                target.removeEventListener(type, listener, options);
-            }
-            this.#attached = false;
-        }
-    }
-    // === INTERNAL ===
-    // returns -1 if not found, otherwise a positive integer
-    #first_spec_index_of(search_spec) {
-        for (let i = 0; i < this.#specs.length; i++) {
-            const spec = this.#specs[i];
-            if (spec && EventListenerManager.#same_specs(search_spec, spec)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    // returns true iff spec is for a listener that uses "capture"
-    static #validate_spec(spec) {
-        if (typeof spec !== 'object') {
-            throw new Error('spec must be an object');
-        }
-        let uses_capture = false;
-        const { target, type, listener, options } = spec;
-        if (!(target instanceof EventTarget)) {
-            throw new Error('target must be an instance of EventTarget');
-        }
-        if (typeof type !== 'string') {
-            throw new Error('type in spec must be a string');
-        }
-        if (typeof listener !== 'function') {
-            throw new Error('listener in spec must be a function');
-        }
-        // removeEventListener() only pays attention to the "capture" effect
-        // of a handler when determining which handler to remove.
-        if (typeof options === 'boolean') {
-            uses_capture = options;
-        }
-        else if (typeof options === 'object') {
-            uses_capture = !!options.capture;
-        }
-        else if (typeof options !== 'undefined') {
-            throw new Error('options in spec must be a undefined, boolean, or an object');
-        }
-        return uses_capture;
-    }
-    // return truthy iff spec1 and spec2 are the same for the purposes of removal
-    static #same_specs(spec1, spec2) {
-        const uses_capture1 = this.#validate_spec(spec1);
-        const uses_capture2 = this.#validate_spec(spec2);
-        if (uses_capture1 !== uses_capture2) {
-            return false;
-        }
-        else {
-            return (spec1.target === spec2.target && spec1.type === spec2.type && spec1.listener === spec2.listener);
-        }
-        //!!! should other members of options be checked (e.g., "once")?
-    }
-}
 
 
 /***/ }),
@@ -10117,14 +9993,11 @@ class KeyMapMapper {
     }
 }
 
-// EXTERNAL MODULE: ./lib/sys/event-listener-manager.ts
-var event_listener_manager = __webpack_require__(3178);
 // EXTERNAL MODULE: ./lib/sys/serial-data-source.ts
 var serial_data_source = __webpack_require__(5428);
 // EXTERNAL MODULE: ./lib/ui/beep.ts
 var beep = __webpack_require__(5934);
 ;// ./lib/ui/key/key-event-manager.ts
-
 
 
 
@@ -10139,11 +10012,11 @@ class KeyEventManager {
     get event_target() { return this.#event_target; }
     get command_observer() { return this.#command_observer; }
     get commands() { return this.#commands; }
-    #event_listener_manager;
     #commands_subscription;
     #key_map_stack;
     #key_mapper; // set iff attached
     #key_handler; // set iff attached
+    #event_listener_abort_controller; // set when attached, undefined when not attached
     /** KeyEventManager constructor
      *  @param {EventTarget} event_target the source of events
      *  @param {Function} command_observer function to handle command events
@@ -10152,7 +10025,6 @@ class KeyEventManager {
         this.#dm = dm;
         this.#event_target = event_target;
         this.#command_observer = command_observer;
-        this.#event_listener_manager = new event_listener_manager/* EventListenerManager */.W();
         this.#commands = new serial_data_source/* SerialDataSource */.Y();
         this.#commands_subscription = this.commands.subscribe(command_observer); //!!! note: never unsubscribed
         this.#key_map_stack = []; // stack grows from the front, i.e., the first item is the last pushed
@@ -10276,22 +10148,24 @@ class KeyEventManager {
             }
         };
         this.#key_handler = key_handler; // for inject_key_event()
-        this.#event_listener_manager.remove_all(); // prepare to re-add below
-        const listener_specs = [
-            [this.event_target, 'blur', blur_handler, { capture: true }],
-            [this.event_target, 'keydown', key_handler, { capture: true }],
-        ];
-        for (const [target, type, listener, options] of listener_specs) {
-            this.#event_listener_manager.add(target, type, listener, options);
-        }
-        this.#event_listener_manager.attach();
+        this.#event_listener_abort_controller?.abort(); // remove earlier event listeners, if any
+        this.#event_listener_abort_controller = new AbortController();
+        const options = {
+            capture: true,
+            signal: this.#event_listener_abort_controller.signal,
+        };
+        this.event_target.addEventListener('blur', blur_handler, options);
+        this.event_target.addEventListener('keydown', key_handler, options);
         return true; // indicate: successfully attached
     }
     /** detach from event_target and stop listening for events.
      *  no-op if called when this.#event_listener_manager is already empty.
      */
     detach() {
-        this.#event_listener_manager.remove_all();
+        if (this.#event_listener_abort_controller) {
+            this.#event_listener_abort_controller.abort(); // remove event listeners
+            this.#event_listener_abort_controller = undefined;
+        }
         this.#key_mapper = null;
         this.#key_handler = undefined;
     }
@@ -11021,15 +10895,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4931);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3854);
-/* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1496);
-/* harmony import */ var lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3178);
+/* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1496);
 /* harmony import */ var _codemirror__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8046);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3141);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9432);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__]);
 ([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-cell-element/_.ts")); // save for later
-
 
 
 
@@ -11059,7 +10931,6 @@ class BqCellElement extends HTMLElement {
     static #default_type = 'markdown';
     static get default_type() { return this.#default_type; }
     #codemirror = undefined;
-    #event_listener_manager = new lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_5__/* .EventListenerManager */ .W();
     #bq = undefined;
     get bq() { return this.#bq; }
     /** _set_bq() must be called prior this.get_text() or this.set_text() being called.
@@ -11228,7 +11099,7 @@ class BqCellElement extends HTMLElement {
     // === ID, TYPE ===
     ensure_id() {
         if (!this.id) {
-            this.id = (0,lib_sys_uuid__WEBPACK_IMPORTED_MODULE_6__/* .generate_object_id */ .Q7)();
+            this.id = (0,lib_sys_uuid__WEBPACK_IMPORTED_MODULE_5__/* .generate_object_id */ .Q7)();
         }
     }
     get type() { return this.getAttribute(BqCellElement.#attribute__type) ?? this.CLASS.default_type; }
@@ -11241,7 +11112,7 @@ class BqCellElement extends HTMLElement {
     /** reset the cell, removing all associated output elements
      */
     reset() {
-        this.bq?.stop_cell(this);
+        this.stop();
         if (this.id) {
             for (const output_element of document.querySelectorAll(this.get_output_element_selector())) {
                 output_element.remove();
@@ -11284,7 +11155,7 @@ class BqCellElement extends HTMLElement {
                     open_tag_segments.push(name);
                 }
                 else {
-                    open_tag_segments.push(`${name}=${(0,lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_7__/* .make_string_literal */ .xA)(value, true)}`);
+                    open_tag_segments.push(`${name}=${(0,lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_6__/* .make_string_literal */ .xA)(value, true)}`);
                 }
             }
         }
@@ -11292,6 +11163,13 @@ class BqCellElement extends HTMLElement {
         return `${open_tag}${this.get_text()}</${this.CLASS.custom_element_name}>`;
     }
     // === FOCUS LISTENERS / ACTIVE ===
+    #focus_listeners_abort_controller; // set when focus listeners active, otherwise undefined
+    #remove_focus_listeners() {
+        if (this.#focus_listeners_abort_controller) {
+            this.#focus_listeners_abort_controller.abort(); // abort earlier listeners, if any
+            this.#focus_listeners_abort_controller = undefined;
+        }
+    }
     #connect_focus_listeners() {
         // note: this gets called before _set_bq() has been called
         const self = this;
@@ -11305,16 +11183,22 @@ class BqCellElement extends HTMLElement {
                 }
             }
         }
-        this.#event_listener_manager.add(this, 'focus', select_handler, { capture: true });
-        this.#event_listener_manager.add(this, 'click', select_handler, { capture: true });
+        this.#remove_focus_listeners(); // also sets this.#focus_listeners_abort_controller to undefined
+        this.#focus_listeners_abort_controller = new AbortController();
+        const options = {
+            capture: true,
+            signal: this.#focus_listeners_abort_controller.signal,
+        };
+        this.addEventListener('focus', select_handler, options);
+        this.addEventListener('click', select_handler, options);
     }
     // === WEB COMPONENT LIFECYCLE ===
     #update_for_connected() {
-        this.#event_listener_manager.attach();
+        this.#connect_focus_listeners();
         this.removeAttribute('tabindex'); // focusable parent for textarea causes SHIFT-Tab not to work
     }
     #update_for_disconnected() {
-        this.#event_listener_manager.detach();
+        this.#remove_focus_listeners();
     }
     // connectedCallback:
     //     Invoked each time the custom element is appended into a document-connected element.
@@ -11584,18 +11468,16 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9779);
 /* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
 /* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(2023);
-/* harmony import */ var lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3178);
 /* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4641);
 /* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3593);
 /* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3882);
 /* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(6136);
-/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
+/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
 ([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
-
 
 
 
@@ -12046,11 +11928,7 @@ class BqManager {
         output_element ??= src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
-        // resources to be cleaned up, too.  However, the returned function
-        // remove_event_handlers() can be called to explicitly remove the
-        // handlers.  This is useful if the output_element is passed in
-        // from the outside and that sort of control is desired.
-        const event_listener_manager = new lib_sys_event_listener_manager__WEBPACK_IMPORTED_MODULE_19__/* .EventListenerManager */ .W();
+        // resources to be cleaned up, too.
         const event_listener = (event) => {
             // use querySelector() to re-find the cell in case it is no longer present
             const refound_cell = document.querySelector(`#${cell_id}`);
@@ -12060,14 +11938,8 @@ class BqManager {
                 }
             }
         };
-        event_listener_manager.add(output_element, 'focus', event_listener, { capture: true });
-        event_listener_manager.add(output_element, 'click', event_listener, { capture: true });
-        event_listener_manager.attach();
-        const remove_event_handlers = () => {
-            if (event_listener_manager.attached) {
-                event_listener_manager.detach();
-            }
-        };
+        output_element.addEventListener('focus', event_listener, { capture: true });
+        output_element.addEventListener('click', event_listener, { capture: true });
         const ocx = new src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
         this.activity_manager.manage_activity(ocx, () => {
@@ -12084,7 +11956,6 @@ class BqManager {
             //!!! return ocx.element;  // just return the main element
             throw error;
         })
-            .then((element) => ({ element, remove_event_handlers }))
             .finally(() => {
             if (!ocx.keepalive) {
                 ocx.stop(); // stop anything that may have been started
@@ -12095,7 +11966,7 @@ class BqManager {
     #rendering_cells = undefined;
     get rendering_cells() { return this.#rendering_cells; }
     async render_cells(limit_cell) {
-        let resolve_rendering_cells = () => { };
+        var resolve_rendering_cells;
         this.#rendering_cells = new Promise(resolve => { resolve_rendering_cells = resolve; });
         const cells = this.get_cells();
         if (limit_cell && cells.indexOf(limit_cell) === -1) {
@@ -12132,12 +12003,18 @@ class BqManager {
             finally {
                 stop_states_subscription.unsubscribe();
                 this.#rendering_cells = undefined;
-                try {
-                    resolve_rendering_cells?.(undefined);
-                }
-                catch (error) {
-                    console.warn('error received while calling resolve_rendering_cells()', error);
-                }
+                // use queueMicrotask to allow async operations to settle before
+                // calling resolve_rendering_cells().
+                queueMicrotask(() => {
+                    try {
+                        // typescript cannot determine that resolve_rendering_cells
+                        // always has a value at this point...
+                        resolve_rendering_cells?.(undefined);
+                    }
+                    catch (error) {
+                        console.warn('error received while calling resolve_rendering_cells()', error);
+                    }
+                });
             }
         }
     }
@@ -12228,7 +12105,7 @@ class BqManager {
                         return bindings_fn(updated_command_context)
                             .then((result) => {
                             if (!result) {
-                                (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
+                                (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__/* .beep */ .T)();
                             }
                             return result;
                         })
@@ -12247,14 +12124,14 @@ class BqManager {
             console.error('error processing command', command_context, error);
         }
         if (!result) {
-            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
+            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__/* .beep */ .T)();
         }
         return result;
     }
     async #perform_command_for_ui(command_context) {
         const result = await this.#perform_command(command_context);
         if (!result) {
-            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
+            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__/* .beep */ .T)();
         }
     }
     #update_menu_state() {
@@ -14429,7 +14306,7 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
     static get attribute__data_source_element() { return attribute__data_source_element; }
     static get attribute__data_source_media_type() { return attribute__data_source_media_type; }
     constructor() {
-        super(); // ActivityManager base class; multiple_stops = false
+        super(false); // ActivityManager base class; multiple_stops = false
     }
     #keepalive = false;
     get keepalive() { return this.#keepalive; }
@@ -14625,7 +14502,7 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
         return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .scrollable_parent */ .z3)(element);
     }
     // === ABORT IF STOPPED ===
-    /** abort by throwing an error if this.stopped, otherwise do nothing.
+    /** abort by throwing a StoppedError if this.stopped, otherwise do nothing.
      */
     abort_if_stopped(operation) {
         if (this.stopped) {
@@ -14636,7 +14513,7 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
     }
     /** wrap the given function so that when it is called,
      *  this.abort_if_stopped() will be called first to
-     *  terminate rendering.
+     *  terminate rendering if necessary.
      */
     AIS(f) {
         if (typeof f !== 'function') {
@@ -14923,7 +14800,7 @@ async function load_modules() {
 }
 async function render(element_selector, dot, options) {
     const d3 = await load_modules();
-    const { transition = "main", ease = d3.easeLinear, delay = 0, duration = 0, logEvents = true, } = (options ?? {});
+    const { transition = "main", ease = d3.easeLinear, delay = 0, duration = 0, logEvents = false, } = (options ?? {});
     return new Promise((resolve, reject) => {
         try {
             function reject_with_string(...args) {
@@ -15663,7 +15540,7 @@ class EvalWorker extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__/*
      *  }
      */
     constructor(options) {
-        super(); // Activity base class; multiple_stops = false
+        super(false); // Activity base class; multiple_stops = false
         const { keepalive = false, } = (options ?? {});
         this.#keepalive = !!keepalive;
         this.#id = (0,lib_sys_uuid__WEBPACK_IMPORTED_MODULE_2__/* .generate_object_id */ .Q7)();

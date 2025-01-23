@@ -36,7 +36,7 @@ export class EvalWorker extends Activity {
      *  }
      */
     constructor(options?: object) {
-        super();  // Activity base class; multiple_stops = false
+        super(false);  // Activity base class; multiple_stops = false
 
         const {
             keepalive = false,

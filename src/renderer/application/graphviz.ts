@@ -32,7 +32,7 @@ export async function render(element_selector: string, dot: string, options: any
         ease       = d3.easeLinear,
         delay      = 0,
         duration   = 0,
-        logEvents  = true,
+        logEvents  = false,
     } = (options ?? {});
     return new Promise((resolve, reject) => {
         try {

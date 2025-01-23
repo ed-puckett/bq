@@ -21,10 +21,6 @@ import {
 } from 'lib/sys/string-tools';
 
 import {
-    EventListenerManager,
-} from 'lib/sys/event-listener-manager';
-
-import {
     CodemirrorUndoInfo,
     create_null_codemirror_undo_info,
     CodemirrorInterface,
@@ -72,7 +68,6 @@ export class BqCellElement extends HTMLElement {
     static get default_type (){ return this.#default_type; }
 
     #codemirror: undefined|CodemirrorInterface = undefined;
-    #event_listener_manager = new EventListenerManager();
 
     #bq: undefined|BqManager = undefined;
     get bq (){ return this.#bq; }
@@ -288,7 +283,7 @@ export class BqCellElement extends HTMLElement {
     /** reset the cell, removing all associated output elements
      */
     reset(): void {
-        this.bq?.stop_cell(this);        
+        this.stop();
         if (this.id) {
             for (const output_element of document.querySelectorAll(this.get_output_element_selector())) {
                 output_element.remove();
@@ -346,6 +341,15 @@ export class BqCellElement extends HTMLElement {
 
     // === FOCUS LISTENERS / ACTIVE ===
 
+    #focus_listeners_abort_controller: undefined|AbortController;  // set when focus listeners active, otherwise undefined
+
+    #remove_focus_listeners(): void {
+        if (this.#focus_listeners_abort_controller) {
+            this.#focus_listeners_abort_controller.abort();  // abort earlier listeners, if any
+            this.#focus_listeners_abort_controller = undefined;
+        }
+    }
+
     #connect_focus_listeners(): void {
         // note: this gets called before _set_bq() has been called
         const self = this;
@@ -359,20 +363,26 @@ export class BqCellElement extends HTMLElement {
                 }
             }
         }
-        this.#event_listener_manager.add(this, 'focus', select_handler, { capture: true });
-        this.#event_listener_manager.add(this, 'click', select_handler, { capture: true });
+        this.#remove_focus_listeners();  // also sets this.#focus_listeners_abort_controller to undefined
+        this.#focus_listeners_abort_controller = new AbortController();
+        const options = {
+            capture: true,
+            signal:  this.#focus_listeners_abort_controller.signal,
+        };
+        this.addEventListener('focus', select_handler, options);
+        this.addEventListener('click', select_handler, options);
     }
 
 
     // === WEB COMPONENT LIFECYCLE ===
 
     #update_for_connected(): void {
-        this.#event_listener_manager.attach();
+        this.#connect_focus_listeners();
         this.removeAttribute('tabindex');  // focusable parent for textarea causes SHIFT-Tab not to work
     }
 
     #update_for_disconnected(): void {
-        this.#event_listener_manager.detach();
+        this.#remove_focus_listeners();
     }
 
     // connectedCallback:

@@ -128,10 +128,6 @@ import {
 } from 'src/output-context/types';
 
 import {
-    Activity,
-} from 'lib/sys/activity-manager';
-
-import {
     EvalWorker,
 } from './eval-worker/_';
 

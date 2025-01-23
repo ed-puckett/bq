@@ -9,10 +9,8 @@
 keepalive();
 ocx.bq.rendering_cells?.then(() => {
     ocx.println('Render complete!');
-    next_tick().then(() => {
-        cell.focus();
-        cell.scroll_into_view();
-    });
+    cell.focus();
+    cell.scroll_into_view();
 });
 </bq-cell>
 <bq-cell data-type="markdown" id="id-6f7b7bde-4e30-4630-80e4-1bf57d042d3d">## Markdown
