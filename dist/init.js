@@ -10008,31 +10008,60 @@ var beep = __webpack_require__(5934);
 
 class KeyEventManager {
     get CLASS() { return this.constructor; }
-    #dm;
-    #event_target;
-    #command_observer;
-    #commands;
-    get dm() { return this.#dm; }
-    get event_target() { return this.#event_target; }
-    get command_observer() { return this.#command_observer; }
-    get commands() { return this.#commands; }
-    #commands_subscription;
-    #key_map_stack;
-    #key_mapper; // set iff attached
-    #key_handler; // set iff attached
-    #event_listener_abort_controller; // set when attached, undefined when not attached
     /** KeyEventManager constructor
+     *  @param {DocumentManager} the document manager instance controlling this application
      *  @param {EventTarget} event_target the source of events
-     *  @param {Function} command_observer function to handle command events
+     *  @param {KeyEventManagerOptions<DocumentManager>} options: {
+     *      command_observer?: ((cc: CommandContext<DocumentManager>) => void),
+     *      initial_key_maps?: Array<KeyMap>,
+     *      abort_signal?:     AbortSignal,
+     *  }
+     *  Note: handlers added later via this.commands.subscribe() will not be
+     *  detached when abort_signal fires unless you pass in this.abort_signal
+     *  in options to this.commands.subscribe().
      */
-    constructor(dm, event_target, command_observer) {
+    constructor(dm, event_target, options) {
+        const { command_observer, initial_key_maps, abort_signal, } = (options ?? {});
         this.#dm = dm;
         this.#event_target = event_target;
         this.#command_observer = command_observer;
         this.#commands = new serial_data_source/* SerialDataSource */.Y();
-        this.#commands_subscription = this.commands.subscribe(command_observer); //!!! note: never unsubscribed
-        this.#key_map_stack = []; // stack grows from the front, i.e., the first item is the last pushed
-        this.#key_mapper = null; // set iff attached
+        if (command_observer) {
+            this.commands.subscribe(command_observer, {
+                abort_signal,
+            });
+        }
+        // stack grows from the front, i.e., the first item is the last pushed
+        this.#key_map_stack = initial_key_maps ? Array.from(initial_key_maps) : []; // copy initial_key_maps if given
+        // set up handler for abort_signal
+        this.#abort_signal = abort_signal;
+        if (abort_signal) {
+            abort_signal.addEventListener('abort', () => {
+                this.#detach();
+            }, { once: true });
+        }
+        // finish initialization
+        this.#key_mapper = null; // set iff attached (will be set by this.#rebuild())
+        this.#rebuild();
+    }
+    #dm;
+    #event_target;
+    #command_observer;
+    #abort_signal;
+    get dm() { return this.#dm; }
+    get event_target() { return this.#event_target; }
+    get command_observer() { return this.#command_observer; }
+    get abort_signal() { return this.#abort_signal; }
+    #commands;
+    #key_map_stack;
+    #key_mapper; // set iff attached
+    #key_handler; // set iff attached
+    #listener_abort_controller; // set iff attached
+    get commands() { return this.#commands; }
+    get aborted() { return this.abort_signal?.aborted ?? false; }
+    get detached() { return !this.#key_mapper; } // note: always true if this.aborted
+    get_key_maps() {
+        return Array.from(this.#key_map_stack); // return a copy
     }
     reset_key_map_stack() {
         if (this.#key_map_stack.length > 0) {
@@ -10073,106 +10102,6 @@ class KeyEventManager {
             return true;
         }
     }
-    get is_attached() { return !!this.#key_mapper; } // this.#key_mapper set iff attached
-    /** attach to event_target and start listening for events.
-     *  @return {Boolean} true iff successful
-     */
-    attach() {
-        if (this.is_attached) {
-            throw new Error('attach() called when already attached');
-        }
-        // not attached: this.#key_mapper is null
-        if (this.#key_map_stack.length <= 0) {
-            return false; // indicate: attach failed
-        }
-        const initial_state = KeyMap.multi_mapper(...this.#key_map_stack);
-        this.#key_mapper = initial_state;
-        let state; // current "location" in key mapper
-        let key_sequence; // current sequence of key_specs that have been seen
-        function reset() {
-            state = initial_state;
-            key_sequence = [];
-        }
-        reset();
-        const blur_handler = reset; // attached to this.event_target
-        const key_handler = (event) => {
-            switch (event.key) {
-                case 'Alt':
-                case 'AltGraph':
-                case 'CapsLock':
-                case 'Control':
-                case 'Fn':
-                case 'FnLock':
-                case 'Hyper':
-                case 'Meta':
-                case 'NumLock':
-                case 'ScrollLock':
-                case 'Shift':
-                case 'Super':
-                case 'Symbol':
-                case 'SymbolLock':
-                case 'OS': // Firefox quirk
-                    // modifier key, ignore
-                    break;
-                default: {
-                    const key_spec = KeySpec.from_keyboard_event(event);
-                    key_sequence?.push(key_spec);
-                    const mapping_result = state.consume(key_spec);
-                    if (!mapping_result) {
-                        // failed
-                        if (state !== initial_state) {
-                            // beep only if at least one keypress has already been accepted
-                            event.preventDefault();
-                            event.stopPropagation();
-                            (0,beep/* beep */.T)();
-                        }
-                        // if still in initial_state, then no event.preventDefault()
-                        reset();
-                    }
-                    else {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        if (typeof mapping_result === 'string') {
-                            const command = mapping_result;
-                            const command_context = {
-                                dm: this.dm,
-                                command,
-                                target: event.target,
-                                key_spec,
-                            };
-                            this.commands.dispatch(command_context);
-                            reset();
-                        }
-                        else {
-                            state = mapping_result;
-                        }
-                    }
-                    break;
-                }
-            }
-        };
-        this.#key_handler = key_handler; // for inject_key_event()
-        this.#event_listener_abort_controller?.abort(); // remove earlier event listeners, if any
-        this.#event_listener_abort_controller = new AbortController();
-        const options = {
-            capture: true,
-            signal: this.#event_listener_abort_controller.signal,
-        };
-        this.event_target.addEventListener('blur', blur_handler, options);
-        this.event_target.addEventListener('keydown', key_handler, options);
-        return true; // indicate: successfully attached
-    }
-    /** detach from event_target and stop listening for events.
-     *  no-op if called when this.#event_listener_manager is already empty.
-     */
-    detach() {
-        if (this.#event_listener_abort_controller) {
-            this.#event_listener_abort_controller.abort(); // remove event listeners
-            this.#event_listener_abort_controller = undefined;
-        }
-        this.#key_mapper = null;
-        this.#key_handler = undefined;
-    }
     inject_key_event(key_event) {
         this.#key_handler?.(key_event);
     }
@@ -10204,12 +10133,94 @@ class KeyEventManager {
         };
     }
     // === INTERNAL ===
+    #detach() {
+        if (this.#listener_abort_controller) {
+            this.#listener_abort_controller.abort(); // remove event listeners
+            this.#listener_abort_controller = undefined;
+        }
+        this.#key_mapper = null;
+        this.#key_handler = undefined;
+    }
     #rebuild() {
         // rebuild the event handlers and state machine.
-        const was_attached = this.is_attached;
-        this.detach();
-        if (was_attached) {
-            this.attach(); // will fail if key_map stack is empty
+        // first, detach anything previous
+        this.#detach();
+        // now attach
+        if (!this.aborted && this.#key_map_stack.length > 0) { // otherwise nothing else to do
+            const initial_state = KeyMap.multi_mapper(...this.#key_map_stack);
+            this.#key_mapper = initial_state;
+            let state; // current "location" in key mapper
+            let key_sequence; // current sequence of key_specs that have been seen
+            function reset() {
+                state = initial_state;
+                key_sequence = [];
+            }
+            reset();
+            const blur_handler = reset; // attached to this.event_target
+            const key_handler = (event) => {
+                switch (event.key) {
+                    case 'Alt':
+                    case 'AltGraph':
+                    case 'CapsLock':
+                    case 'Control':
+                    case 'Fn':
+                    case 'FnLock':
+                    case 'Hyper':
+                    case 'Meta':
+                    case 'NumLock':
+                    case 'ScrollLock':
+                    case 'Shift':
+                    case 'Super':
+                    case 'Symbol':
+                    case 'SymbolLock':
+                    case 'OS': // Firefox quirk
+                        // modifier key, ignore
+                        break;
+                    default: {
+                        const key_spec = KeySpec.from_keyboard_event(event);
+                        key_sequence?.push(key_spec);
+                        const mapping_result = state.consume(key_spec);
+                        if (!mapping_result) {
+                            // failed
+                            if (state !== initial_state) {
+                                // beep only if at least one keypress has already been accepted
+                                event.preventDefault();
+                                event.stopPropagation();
+                                (0,beep/* beep */.T)();
+                            }
+                            // if still in initial_state, then no event.preventDefault()
+                            reset();
+                        }
+                        else {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            if (typeof mapping_result === 'string') {
+                                const command = mapping_result;
+                                const command_context = {
+                                    dm: this.dm,
+                                    command,
+                                    target: event.target,
+                                    key_spec,
+                                };
+                                this.commands.dispatch(command_context);
+                                reset();
+                            }
+                            else {
+                                state = mapping_result;
+                            }
+                        }
+                        break;
+                    }
+                }
+            };
+            this.#key_handler = key_handler; // for inject_key_event()
+            this.#listener_abort_controller = new AbortController();
+            const options = {
+                capture: true,
+                signal: this.#listener_abort_controller.signal,
+            };
+            this.event_target.addEventListener('blur', blur_handler, options);
+            this.event_target.addEventListener('keydown', key_handler, options);
         }
     }
 }
@@ -11555,7 +11566,20 @@ class BqManager {
     constructor() {
         this.#eval_states.subscribe(this.#eval_states_observer.bind(this)); //!!! never unsubscribed
         this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_command_bindings */ .yU)();
-        this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyEventManager */ .jC(this, window, this.#perform_command_for_ui.bind(this));
+        let initial_key_maps;
+        try {
+            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX)());
+            initial_key_maps = [key_map];
+        }
+        catch (error) {
+            console.warn('received error when calling get_global_initial_key_map_bindings()', error);
+            initial_key_maps = undefined;
+        }
+        this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyEventManager */ .jC(this, window, {
+            command_observer: this.#perform_command_for_ui.bind(this),
+            initial_key_maps,
+            // no abort_signal given, never detached
+        });
         try {
             const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)();
             // must set bq on all incoming cells
@@ -11566,9 +11590,6 @@ class BqManager {
             // listen for settings changed events and trigger update in cells
             src_settings___WEBPACK_IMPORTED_MODULE_13__/* .settings_updated_events */ .KW.subscribe(this.update_from_settings.bind(this)); //!!! never unsubscribed
             this.update_from_settings(); // establish initial settings right away
-            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX)());
-            this.push_key_map(key_map);
-            this.#key_event_manager.attach();
             this.set_editable(true);
             this.#setup_csp();
             this.#setup_header(!!(settings?.classic_menu));
@@ -11746,6 +11767,9 @@ class BqManager {
         }
     }
     // === KEY MAP STACK ===
+    get_key_maps() {
+        return this.#key_event_manager.get_key_maps();
+    }
     reset_key_map_stack() {
         this.#key_event_manager.reset_key_map_stack();
     }
