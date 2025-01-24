@@ -53,7 +53,7 @@ export class Renderer {
     {
         return renderer._render(ocx, value, options)
             .catch((error: unknown) => {
-// moved to BqManager.singleton.invoke_renderer
+// moved to BqManager.prototype.invoke_renderer
 //                const result = ocx.render_error(error)
 //                    .catch((ignored_error: unknown) => {
 //                        console.error('ignored second-level error while rendering error', ignored_error);

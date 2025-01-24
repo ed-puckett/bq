@@ -24,7 +24,7 @@ import {
 export type KeyEventManagerOptions<DocumentManager> = {
     command_observer?: ((cc: CommandContext<DocumentManager>) => void),  // function to handle command events (can also be added later through this.commands.subscribe())
     initial_key_maps?: Array<KeyMap>,  // initial key map stack (stack grows from the front, i.e., the first item is the last pushed)
-    abort_signal?:     AbortSignal,    // abort signal (one-shot), causes permanent detach
+    abort_signal?:     AbortSignal,    // abort signal (one-shot), 'abort' event causes permanent detach
 };
 
 

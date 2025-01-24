@@ -170,7 +170,7 @@ export class BqManager {
         this.#key_event_manager = new KeyEventManager<BqManager>(this, window, {
             command_observer: this.#perform_command_for_ui.bind(this),
             initial_key_maps,
-            // no abort_signal given, never detached
+            // no abort_signal given; never aborted/detached
         });
 
         try {
