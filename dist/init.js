@@ -7453,32 +7453,40 @@ module.exports = styleTagTransform;
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5428);
 
 class Activity {
-    #stop_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__/* .SerialDataSource */ .Y();
-    get stop_states() { return this.#stop_states; }
-    #multiple_stops;
-    #stop_count;
-    get multiple_stops() { return this.#multiple_stops; }
-    get stop_count() { return this.#stop_count; }
-    get stopped() { return (!this.#multiple_stops && this.#stop_count > 0); }
     /** create a new object representing an Activity, i.e., something that
      *  is running and can be stopped
      *  @param {Boolean} multiple_stops whether or not stop method may be called multiple times
      */
     constructor(multiple_stops = false) {
         this.#multiple_stops = multiple_stops;
-        this.#stop_count = 0;
     }
+    get multiple_stops() { return this.#multiple_stops; }
+    get stopped() { return this.#abort_controller.signal.aborted; }
+    get stop_states() { return this.#stop_states; }
+    get abort_signal() { return this.#abort_controller.signal; }
     /** stop this activity.
-     * this.stop_count is incremented, and an event is dispatched through this.stop_states.
+     *  Calls this.#abort_controller.abort() and therefore this.abort_signal
+     *  fires with an 'abort' event.  If this.multiple_stops is true, then
+     *  this.#abort_controller is re-initialized to a new AbortController
+     *  instance and this.abort_signal will therefore also return a new value.
+     *  As a consequence, if this.multiple_stops is true, then this.stopped
+     *  will always return false.
      */
     stop() {
         const was_stopped = this.stopped;
-        this.#stop_count++;
-        this.stop_states.dispatch({
+        this.#abort_controller.abort();
+        if (this.#multiple_stops) {
+            this.#abort_controller = new AbortController();
+        }
+        this.#stop_states.dispatch({
             activity: this,
             was_stopped,
         });
     }
+    // --- internal ---
+    #multiple_stops; // set in constructor
+    #abort_controller = new AbortController();
+    #stop_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__/* .SerialDataSource */ .Y();
 }
 /** ActivityManager can be used hierarchically, i.e., an ActivityManager can be
  * added to a different ActivityManager as an Activity,
@@ -11578,7 +11586,7 @@ class BqManager {
         this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyEventManager */ .jC(this, window, {
             command_observer: this.#perform_command_for_ui.bind(this),
             initial_key_maps,
-            // no abort_signal given, never detached
+            // no abort_signal given; never aborted/detached
         });
         try {
             const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)();
@@ -15105,7 +15113,7 @@ class Renderer {
     static async _invoke_renderer(renderer, ocx, value, options) {
         return renderer._render(ocx, value, options)
             .catch((error) => {
-            // moved to BqManager.singleton.invoke_renderer
+            // moved to BqManager.prototype.invoke_renderer
             //                const result = ocx.render_error(error)
             //                    .catch((ignored_error: unknown) => {
             //                        console.error('ignored second-level error while rendering error', ignored_error);

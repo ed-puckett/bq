@@ -9,36 +9,44 @@ export type StopState = {
 }
 
 export class Activity {
-    #stop_states = new SerialDataSource<StopState>();
-    get stop_states () { return this.#stop_states; }
-
-    readonly #multiple_stops: boolean;
-    #stop_count:              number;
-
-    get multiple_stops (){ return this.#multiple_stops; }
-    get stop_count     (){ return this.#stop_count; }
-    get stopped        (){ return (!this.#multiple_stops && this.#stop_count > 0); }
-
     /** create a new object representing an Activity, i.e., something that
      *  is running and can be stopped
      *  @param {Boolean} multiple_stops whether or not stop method may be called multiple times
      */
     constructor(multiple_stops: boolean = false) {
         this.#multiple_stops = multiple_stops;
-        this.#stop_count     = 0;
     }
 
+    get multiple_stops (){ return this.#multiple_stops; }
+    get stopped        (){ return this.#abort_controller.signal.aborted; }
+    get stop_states    (){ return this.#stop_states; }
+    get abort_signal   (){ return this.#abort_controller.signal; }
+
     /** stop this activity.
-     * this.stop_count is incremented, and an event is dispatched through this.stop_states.
+     *  Calls this.#abort_controller.abort() and therefore this.abort_signal
+     *  fires with an 'abort' event.  If this.multiple_stops is true, then
+     *  this.#abort_controller is re-initialized to a new AbortController
+     *  instance and this.abort_signal will therefore also return a new value.
+     *  As a consequence, if this.multiple_stops is true, then this.stopped
+     *  will always return false.
      */
     stop(): void {
         const was_stopped = this.stopped;
-        this.#stop_count++;
-        this.stop_states.dispatch({
+        this.#abort_controller.abort();
+        if (this.#multiple_stops) {
+            this.#abort_controller = new AbortController();
+        }
+        this.#stop_states.dispatch({
             activity: this,
             was_stopped,
         });
     }
+
+    // --- internal ---
+    readonly #multiple_stops: boolean;  // set in constructor
+    #abort_controller = new AbortController();
+    #stop_states      = new SerialDataSource<StopState>();
+
 }
 
 
