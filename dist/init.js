@@ -7467,10 +7467,12 @@ class Activity {
     /** stop this activity.
      *  Calls this.#abort_controller.abort() and therefore this.abort_signal
      *  fires with an 'abort' event.  If this.multiple_stops is true, then
-     *  this.#abort_controller is re-initialized to a new AbortController
-     *  instance and this.abort_signal will therefore also return a new value.
-     *  As a consequence, if this.multiple_stops is true, then this.stopped
-     *  will always return false.
+     *  this.#abort_controller will be re-initialized to a new AbortController
+     *  instance and this.abort_signal will therefore also return a new,
+     *  non-aborted value.  As a consequence, if this.multiple_stops is true,
+     *  then this.stopped will always return false.  Otherwise, if
+     *  this.multiple_stops is false, then this.stopped will return true
+     *  after this.stop() is called.
      */
     stop() {
         const was_stopped = this.stopped;
