@@ -138,6 +138,19 @@ async function initialize_document(): Promise<void> {
         // create header element
         const header_element = document.createElement('header');
 
+        // Ensure that all bq-cell elements have a unique id.
+        // This is important because otherwise they collide on a single output element.
+        const cell_ids = new Set();
+        for (const cell of document.querySelectorAll('bq-cell')) {
+            const id = cell.id;
+            if (id) {
+                if (cell_ids.has(id)) {
+                    throw new Error(`bq-cell element has a repeated id "${id}"`);
+                }
+                cell_ids.add(id);
+            }
+        }
+
         // create the main element and move the current children of the body element into it
         const main_element = document.createElement('main');
         for (let child; !!(child = document.body.firstChild); ) {
