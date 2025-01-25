@@ -52,13 +52,19 @@ export class Renderer {
         options?: OptionsType ): Promise<Element>
     {
         return renderer._render(ocx, value, options)
+            .then(result => {
+                // Make sure that is the ocx is stopped that the error is registered.
+                // If nothing has yet called a function that checks if the ocx if stopped,
+                // then BqManager.prototype.render_cells() never gets the corresponding
+                // error, and therefore the BqManager.prototype.rendering_cells gets
+                // fulfilled, however the ocx is not in a usable state.  So if some cell
+                // in the document is awaiting that promise and then tries to use the ocx
+                // when it fulfills, an unhandled rejection results.
+                // This turns out to be important for document autoeval.
+                ocx.abort_if_stopped();
+                return result;
+            })
             .catch((error: unknown) => {
-// moved to BqManager.prototype.invoke_renderer
-//                const result = ocx.render_error(error)
-//                    .catch((ignored_error: unknown) => {
-//                        console.error('ignored second-level error while rendering error', ignored_error);
-//                        // nothing
-//                    });
                 try {
                     ocx.stop();  // stop anything that may have been started
                 } catch (ignored_error: unknown) {

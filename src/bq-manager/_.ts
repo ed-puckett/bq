@@ -146,7 +146,7 @@ export class BqManager {
             this.#start_called = true;
 
             if (get_auto_eval()) {
-                this.render_cells();
+                this.inject_command('eval-all');
             } else {
                 this.active_cell?.scroll_into_view(true);
             }
@@ -635,22 +635,25 @@ export class BqManager {
         });
 
         return renderer.render(ocx, cell.get_text(), options)
-            .catch(error => {
-                const error_message_element = ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
-                error_message_element.scrollIntoView(false);
-                if (error instanceof LocatedError) {
-                    cell?.set_cursor_position(error.line_number, error.column_index);
-                    // return the element associated with the ocx active when the error occurred
-                    //!!! return error.ocx.element;
+            .then(
+                (result) => {
+                    if (!ocx.keepalive) {
+                        ocx.stop();  // stop anything that may have been started
+                    }
+                    return result;
+                },
+                (error) => {
+                    const error_message_element = ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
+                    error_message_element.scrollIntoView(false);
+                    if (error instanceof LocatedError) {
+                        cell?.set_cursor_position(error.line_number, error.column_index);
+                    }
+                    if (!ocx.keepalive) {
+                        ocx.stop();  // stop anything that may have been started
+                    }
+                    throw error;
                 }
-                //!!! return ocx.element;  // just return the main element
-                throw error;
-            })
-            .finally(() => {
-                if (!ocx.keepalive) {
-                    ocx.stop();  // stop anything that may have been started
-                }
-            });
+            );
     }
 
     /** this.#rendering_cells is set to a promise when render_cells() is active,

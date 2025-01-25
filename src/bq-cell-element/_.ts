@@ -323,7 +323,7 @@ export class BqCellElement extends HTMLElement {
         const open_tag_segments = [
             `<${this.CLASS.custom_element_name}`,
         ];
-        //!!! attributes values' containing " character are incorrectly translated to \"
+        //!!! attributes values containing " character are incorrectly translated to \"
         for (const name of this.getAttributeNames()) {
             if (name !== this.CLASS.attribute__active || include_active_cell_setting) {
                 const value = this.getAttribute(name);
