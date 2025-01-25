@@ -636,7 +636,8 @@ export class BqManager {
 
         return renderer.render(ocx, cell.get_text(), options)
             .catch(error => {
-                ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
+                const error_message_element = ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
+                error_message_element.scrollIntoView(false);
                 if (error instanceof LocatedError) {
                     cell?.set_cursor_position(error.line_number, error.column_index);
                     // return the element associated with the ocx active when the error occurred
@@ -652,18 +653,26 @@ export class BqManager {
             });
     }
 
-    // this.#rendering_cells is set to a promise when render_cells() is active, fulfilled and removed when done
+    /** this.#rendering_cells is set to a promise when render_cells() is active,
+     * and removed and set back to undefined when render_cells() is done.
+     * (render_cells() implements the command "eval-all".)
+     * If render_cells() completes without error, then the promise will be
+     * fulfilled after queueing a microtask.  Otherwise if there was an error,
+     * the promise never settles.
+     */
     #rendering_cells: undefined|Promise<any> = undefined;
     get rendering_cells (){ return this.#rendering_cells; }
 
     async render_cells(limit_cell?: null|BqCellElement): Promise<boolean> {
+        let result = false;
+
         var resolve_rendering_cells: undefined|((value: PromiseLike<any> | any) => void);
-        this.#rendering_cells = new Promise(resolve => { resolve_rendering_cells = resolve; });
+        this.#rendering_cells = new Promise((resolve) => {
+            resolve_rendering_cells = resolve;
+        });
 
         const cells = this.get_cells();
-        if (limit_cell && cells.indexOf(limit_cell) === -1) {
-            return false;
-        } else {
+        if (!limit_cell || cells.indexOf(limit_cell) !== -1) {
             this.set_structure_modified();
             this.stop();  // stop any previously-running renderers
             this.reset_global_state();
@@ -672,36 +681,44 @@ export class BqManager {
             const stop_states_subscription = this.activity_manager.stop_states.subscribe((state: StopState) => {
                 stopped = true;
             })
-            try {
 
-                for (const iter_cell of cells) {
-                    if (stopped) {
-                        this.notification_manager.add('stopped');
-                        break;
-                    }
-                    iter_cell.scroll_into_view(true);
-                    if (limit_cell && iter_cell === limit_cell) {
-                        break;  // only eval cells before limit_cell if limit_cell given
-                    }
-                    try {
-                        await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
-                    } catch (error: unknown) {
-                        console.warn('stopped render_cells after error rendering cell', error, iter_cell);
-                        return false;
-                    }
+            let render_error: unknown = undefined;
+
+            for (const iter_cell of cells) {
+                if (stopped) {
+                    this.notification_manager.add('stopped');
+                    break;
                 }
-                return true;
+                iter_cell.scroll_into_view(true);
+                if (limit_cell && iter_cell === limit_cell) {
+                    break;  // only eval cells before limit_cell if limit_cell given
+                }
 
-            } finally {
-                stop_states_subscription.unsubscribe();
+                try {
+                    await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
+                } catch (error: unknown) {
+                    console.warn('stopped render_cells after error rendering cell', error, iter_cell);
+                    render_error = error;
+                }
+            }
 
-                this.#rendering_cells = undefined;
+            result = !render_error;
+
+            stop_states_subscription.unsubscribe();
+
+            this.#rendering_cells = undefined;
+            // Only resolve the promise if there were no errors.
+            // The reason is that if there was an error (for example, the ocx
+            // threw an error after being stopped), then the ocx will be
+            // unusable and trying to do something with it will just cause
+            // more errors....
+            if (!render_error) {
                 // use queueMicrotask to allow async operations to settle before
                 // calling resolve_rendering_cells().
                 queueMicrotask(() => {
                     try {
                         // typescript cannot determine that resolve_rendering_cells
-                        // always has a value at this point...
+                        // is not undefined...
                         resolve_rendering_cells?.(undefined);
                     } catch (error) {
                         console.warn('error received while calling resolve_rendering_cells()', error);
@@ -709,6 +726,8 @@ export class BqManager {
                 });
             }
         }
+
+        return result;
     }
 
     #associate_cell_ocx(cell: BqCellElement, ocx: OutputContext) {

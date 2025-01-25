@@ -11985,7 +11985,8 @@ class BqManager {
         });
         return renderer.render(ocx, cell.get_text(), options)
             .catch(error => {
-            src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
+            const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
+            error_message_element.scrollIntoView(false);
             if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
                 cell?.set_cursor_position(error.line_number, error.column_index);
                 // return the element associated with the ocx active when the error occurred
@@ -12000,17 +12001,23 @@ class BqManager {
             }
         });
     }
-    // this.#rendering_cells is set to a promise when render_cells() is active, fulfilled and removed when done
+    /** this.#rendering_cells is set to a promise when render_cells() is active,
+     * and removed and set back to undefined when render_cells() is done.
+     * (render_cells() implements the command "eval-all".)
+     * If render_cells() completes without error, then the promise will be
+     * fulfilled after queueing a microtask.  Otherwise if there was an error,
+     * the promise never settles.
+     */
     #rendering_cells = undefined;
     get rendering_cells() { return this.#rendering_cells; }
     async render_cells(limit_cell) {
+        let result = false;
         var resolve_rendering_cells;
-        this.#rendering_cells = new Promise(resolve => { resolve_rendering_cells = resolve; });
+        this.#rendering_cells = new Promise((resolve) => {
+            resolve_rendering_cells = resolve;
+        });
         const cells = this.get_cells();
-        if (limit_cell && cells.indexOf(limit_cell) === -1) {
-            return false;
-        }
-        else {
+        if (!limit_cell || cells.indexOf(limit_cell) !== -1) {
             this.set_structure_modified();
             this.stop(); // stop any previously-running renderers
             this.reset_global_state();
@@ -12018,35 +12025,39 @@ class BqManager {
             const stop_states_subscription = this.activity_manager.stop_states.subscribe((state) => {
                 stopped = true;
             });
-            try {
-                for (const iter_cell of cells) {
-                    if (stopped) {
-                        this.notification_manager.add('stopped');
-                        break;
-                    }
-                    iter_cell.scroll_into_view(true);
-                    if (limit_cell && iter_cell === limit_cell) {
-                        break; // only eval cells before limit_cell if limit_cell given
-                    }
-                    try {
-                        await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
-                    }
-                    catch (error) {
-                        console.warn('stopped render_cells after error rendering cell', error, iter_cell);
-                        return false;
-                    }
+            let render_error = undefined;
+            for (const iter_cell of cells) {
+                if (stopped) {
+                    this.notification_manager.add('stopped');
+                    break;
                 }
-                return true;
+                iter_cell.scroll_into_view(true);
+                if (limit_cell && iter_cell === limit_cell) {
+                    break; // only eval cells before limit_cell if limit_cell given
+                }
+                try {
+                    await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
+                }
+                catch (error) {
+                    console.warn('stopped render_cells after error rendering cell', error, iter_cell);
+                    render_error = error;
+                }
             }
-            finally {
-                stop_states_subscription.unsubscribe();
-                this.#rendering_cells = undefined;
+            result = !render_error;
+            stop_states_subscription.unsubscribe();
+            this.#rendering_cells = undefined;
+            // Only resolve the promise if there were no errors.
+            // The reason is that if there was an error (for example, the ocx
+            // threw an error after being stopped), then the ocx will be
+            // unusable and trying to do something with it will just cause
+            // more errors....
+            if (!render_error) {
                 // use queueMicrotask to allow async operations to settle before
                 // calling resolve_rendering_cells().
                 queueMicrotask(() => {
                     try {
                         // typescript cannot determine that resolve_rendering_cells
-                        // always has a value at this point...
+                        // is not undefined...
                         resolve_rendering_cells?.(undefined);
                     }
                     catch (error) {
@@ -12055,6 +12066,7 @@ class BqManager {
                 });
             }
         }
+        return result;
     }
     #associate_cell_ocx(cell, ocx) {
         if (cell.bq !== this) {
@@ -13671,8 +13683,7 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
                     if (analyze) {
                         const complaint = analyze(value, label);
                         if (complaint) {
-                            await handle_error(complaint);
-                            return;
+                            return handle_error(complaint);
                         }
                     }
                     (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_4__/* .set_obj_path */ .R)(current_settings, settings_path, value);
@@ -13684,7 +13695,7 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
                         const error_message = (error instanceof Error)
                             ? error.message
                             : 'Error';
-                        await handle_error(error_message);
+                        return handle_error(error_message);
                     }
                 };
                 control.addEventListener('change', update_handler);
@@ -13785,11 +13796,11 @@ if (!_basic_bootstrap_script_src_alternatives) {
 }
 else {
     if (document.readyState === 'interactive' || document.readyState === 'complete') {
-        await initialize_document();
+        initialize_document();
     }
     else {
         window.addEventListener('load', async (load_event) => {
-            await initialize_document();
+            initialize_document();
         }, {
             once: true,
         });
@@ -14085,7 +14096,7 @@ function get_bootstrap_script_src_alternatives() {
 }
 
 __webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } }, 1);
+} catch(e) { __webpack_async_result__(e); } });
 
 /***/ }),
 
@@ -14561,9 +14572,10 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
         if (f instanceof AsyncFunction) {
             return async (...args) => {
                 this.abort_if_stopped(f.name);
-                const result = await f.apply(null, args);
-                this.abort_if_stopped(f.name);
-                return result;
+                return f.apply(null, args).then((result) => {
+                    this.abort_if_stopped(f.name);
+                    return result;
+                });
             };
         }
         else {
@@ -15415,15 +15427,13 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         //
         // we consume the stream "manually":
         eval_loop: while (!eval_ocx.stopped) {
-            let value, done;
-            try {
-                ({ value, done } = await result_stream.next());
+            let caught_error = undefined;
+            const result = await result_stream.next()
+                .catch((error) => { caught_error = error; });
+            if (caught_error) {
+                throw caught_error;
             }
-            catch (error) {
-                //!!! ErrorRenderer.render_sync(eval_ocx, error);
-                //!!! break eval_loop;
-                throw error;
-            }
+            const { value, done } = result;
             // output any non-undefined values that were received either from
             // a return or a yield statement in the code
             if (typeof value !== 'undefined') {

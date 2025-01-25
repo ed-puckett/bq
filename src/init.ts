@@ -83,10 +83,10 @@ if (!_basic_bootstrap_script_src_alternatives) {
     show_initialization_failed('unexpected: failed to find bootstrap script');
 } else {
     if (document.readyState === 'interactive' || document.readyState === 'complete') {
-        await initialize_document();
+        initialize_document();
     } else {
         window.addEventListener('load', async (load_event: Event) => {
-            await initialize_document();
+            initialize_document();
         }, {
             once: true,
         });

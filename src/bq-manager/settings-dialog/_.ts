@@ -230,8 +230,7 @@ export class SettingsDialog extends Dialog {
                     if (analyze) {
                         const complaint = analyze(value, label);
                         if (complaint) {
-                            await handle_error(complaint);
-                            return;
+                            return handle_error(complaint);
                         }
                     }
                     set_obj_path(current_settings, settings_path, value);
@@ -243,7 +242,7 @@ export class SettingsDialog extends Dialog {
                         const error_message = (error instanceof Error)
                             ? error.message
                             : 'Error';
-                        await handle_error(error_message);
+                        return handle_error(error_message);
                     }
                 };
 
