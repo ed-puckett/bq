@@ -13843,6 +13843,18 @@ async function initialize_document() {
         }
         // create header element
         const header_element = document.createElement('header');
+        // Ensure that all bq-cell elements have a unique id.
+        // This is important because otherwise they collide on a single output element.
+        const cell_ids = new Set();
+        for (const cell of document.querySelectorAll('bq-cell')) {
+            const id = cell.id;
+            if (id) {
+                if (cell_ids.has(id)) {
+                    throw new Error(`bq-cell element has a repeated id "${id}"`);
+                }
+                cell_ids.add(id);
+            }
+        }
         // create the main element and move the current children of the body element into it
         const main_element = document.createElement('main');
         for (let child; !!(child = document.body.firstChild);) {
@@ -15302,6 +15314,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     keepalive
 //     bg
 //     end_bg
+//     make_check_tick
+//     range
 //     create_worker
 //     import_local
 //     vars
@@ -15497,6 +15511,60 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             }
             ancestor_ocx.stop();
         }
+        // Mechanism to yield for long computations:
+        // make_check_tick() returns an aync function such that when that function
+        // is called (and awaited), will await a call to next_tick() if the the
+        // specified time has elapsed since the last time this function called
+        // next_tick() and return true.  Otherwise, if the specified time has
+        // not elapsed, the function returns false immediately.
+        const make_check_tick = (the_tick_interval_ms = 200) => {
+            let last_tick_time = Date.now();
+            const check_tick = (tick_interval_ms = the_tick_interval_ms) => {
+                // Return a promise only if next_tick() is to be called.
+                // Otherwise, return a simple false value.
+                const new_last_tick_time = Date.now();
+                if (new_last_tick_time - last_tick_time < tick_interval_ms) {
+                    return false;
+                }
+                else {
+                    last_tick_time = new_last_tick_time;
+                    return new Promise(resolve => {
+                        ocx.next_tick()
+                            .then(() => resolve(true));
+                    });
+                }
+            };
+            return ocx.AIS(check_tick);
+        };
+        function* range(...args) {
+            ocx.abort_if_stopped();
+            let start = 0, limit, step = 1;
+            switch (args.length) {
+                case 1:
+                    ([limit] = args);
+                    break;
+                case 2:
+                    ([start, limit] = args);
+                    break;
+                case 3:
+                    ([start, limit, step] = args);
+                    break;
+                default: throw new TypeError('usage: range([ start ], limit, [ step ])');
+            }
+            for (const [name, variable] of [
+                ['start', start],
+                ['limit', limit],
+                ['step', step],
+            ]) {
+                if (typeof variable !== 'number') {
+                    throw new TypeError(`${name} must be a number`);
+                }
+            }
+            for (let i = start; i < limit; i += step) {
+                ocx.abort_if_stopped();
+                yield i;
+            }
+        }
         async function create_worker(options) {
             const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_4__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
@@ -15529,6 +15597,8 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             keepalive: ocx.AIS(keepalive),
             bg, // don't wrap with AIS because that will cause an unhandled rejection if stopped
             end_bg, // don't wrap with AIS because that will cause an error
+            make_check_tick: ocx.AIS(make_check_tick),
+            range,
             create_worker: ocx.AIS(create_worker),
             import_local: ocx.AIS(import_local),
             vars: ocx.AIS(vars),
