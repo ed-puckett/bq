@@ -1,9 +1,6 @@
 should ocx.abort_if_stopped use ocx.abort_signal.throwIfAborted?
-stop-all on an loading autoeval document does not seem to work....
 use TypeError instead of Error where appropriate
 provide visual indication of a cell's show-full and show-in-presentation states
-provide settings to turn off automatic parenthesis/quote generation in CodeMirror
-provide settings to turn off completion menus in CodeMirror
 define ocx.render_tty() or something like that (?)
 Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 in markdown, inline invocation of a renderer (especially of javascript) would be nice
@@ -50,6 +47,9 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* provide settings to turn off automatic parenthesis/quote generation in CodeMirror (for now, just turned off)
+* provide settings to turn off completion menus in CodeMirror (for now, just turned off)
+* stop-all on an loading autoeval document does not seem to work....
 * stop eval-all if an error is thrown
 * invoke_renderer and invoke_renderer_for_type rethrow errors they receive but in that case do not return an element and more importantly do not return remove_event_handlers (no longer returned)
 * provide means of setting title, and remove any title in clear-all command

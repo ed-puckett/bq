@@ -1,42 +1,80 @@
-import {
-    basicSetup,
-} from 'codemirror';
+// --- codemirror imports ---
 
 import {
-    EditorState,
     Compartment,
-} from "@codemirror/state";
+    EditorState,
+    Extension,
+} from '@codemirror/state';
 
 import {
     EditorView,
     ViewUpdate,
+    crosshairCursor,
+    drawSelection,
+    dropCursor,
+    highlightActiveLine,
+    highlightActiveLineGutter,
+    highlightSpecialChars,
     keymap,
     lineNumbers,
-} from "@codemirror/view";
+    rectangularSelection,
+} from '@codemirror/view';
 
 import {
     defaultKeymap,
     emacsStyleKeymap,
+    history,
+    historyKeymap,
     indentWithTab,
-    undoDepth,
     redoDepth,
-} from "@codemirror/commands";
-
-import {
-    vim,
-} from "@replit/codemirror-vim";
+    undoDepth,
+} from '@codemirror/commands';
 
 import {
     indentUnit,
+    defaultHighlightStyle,
+    syntaxHighlighting,
+    indentOnInput,
+    bracketMatching,
+    foldGutter,
+    foldKeymap,
 } from '@codemirror/language';
 
 import {
     javascript,
-} from "@codemirror/lang-javascript";
+} from '@codemirror/lang-javascript';
 
 import {
     markdown,
-} from "@codemirror/lang-markdown";
+} from '@codemirror/lang-markdown';
+
+import {
+    highlightSelectionMatches,
+    searchKeymap,
+} from '@codemirror/search'
+
+import {
+    vim,
+} from '@replit/codemirror-vim';
+
+//import {
+//    autocompletion,
+//    closeBrackets,
+//    closeBracketsKeymap,
+//    completionKeymap,
+//} from '@codemirror/autocomplete'
+
+//import {
+//    lintKeymap,
+//} from "@codemirror/lint"
+
+//import {
+//    basicSetup,
+//    minimalSetup,
+//} from 'codemirror';
+
+
+// --- bq imports ---
 
 import {
     clear_element,
@@ -49,6 +87,41 @@ import {
 import {
     BqCellElement,
 } from './_';
+
+
+// --- custom codemirror setup ---
+
+const bq_base_codemirror_setup: Extension = (() => [
+    // derived from defintion for basicSetup with certain unwanted features commented out:
+    // see: https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
+
+    lineNumbers(),
+    highlightActiveLineGutter(),
+    highlightSpecialChars(),
+    history(),
+    foldGutter(),
+    drawSelection(),
+    dropCursor(),
+    EditorState.allowMultipleSelections.of(true),
+    indentOnInput(),
+    syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+    bracketMatching(),
+//    closeBrackets(),
+//    autocompletion(),
+    rectangularSelection(),
+    crosshairCursor(),
+    highlightActiveLine(),
+    highlightSelectionMatches(),
+    keymap.of([
+//        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+//        ...completionKeymap,
+//        ...lintKeymap
+    ])
+])();
 
 
 export type CodemirrorUndoInfo = {
@@ -64,7 +137,6 @@ export function create_null_codemirror_undo_info(is_neutral: boolean): Codemirro
         is_neutral,
     };
 }
-
 
 export class CodemirrorInterface {
 
@@ -110,7 +182,7 @@ export class CodemirrorInterface {
                 this.#language_compartment.of([]),
 
                 keymap.of(defaultKeymap),
-                basicSetup,
+                bq_base_codemirror_setup,
             ],
         });
 

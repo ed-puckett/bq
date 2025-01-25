@@ -11278,19 +11278,20 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   M: () => (/* binding */ create_null_codemirror_undo_info),
 /* harmony export */   g: () => (/* binding */ CodemirrorInterface)
 /* harmony export */ });
-/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(6423);
-/* harmony import */ var _codemirror_state__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6585);
-/* harmony import */ var _codemirror_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6898);
-/* harmony import */ var _codemirror_commands__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5230);
-/* harmony import */ var _replit_codemirror_vim__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1315);
+/* harmony import */ var _codemirror_state__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(6585);
+/* harmony import */ var _codemirror_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6898);
+/* harmony import */ var _codemirror_commands__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5230);
 /* harmony import */ var _codemirror_language__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5874);
 /* harmony import */ var _codemirror_lang_javascript__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9273);
 /* harmony import */ var _codemirror_lang_markdown__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(6437);
+/* harmony import */ var _codemirror_search__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3427);
+/* harmony import */ var _replit_codemirror_vim__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1315);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3593);
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2023);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_settings___WEBPACK_IMPORTED_MODULE_1__, ___WEBPACK_IMPORTED_MODULE_2__]);
 ([src_settings___WEBPACK_IMPORTED_MODULE_1__, ___WEBPACK_IMPORTED_MODULE_2__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+// --- codemirror imports ---
 
 
 
@@ -11299,9 +11300,54 @@ var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_
 
 
 
+//import {
+//    autocompletion,
+//    closeBrackets,
+//    closeBracketsKeymap,
+//    completionKeymap,
+//} from '@codemirror/autocomplete'
+//import {
+//    lintKeymap,
+//} from "@codemirror/lint"
+//import {
+//    basicSetup,
+//    minimalSetup,
+//} from 'codemirror';
+// --- bq imports ---
 
 
 
+// --- custom codemirror setup ---
+const bq_base_codemirror_setup = (() => [
+    // derived from defintion for basicSetup with certain unwanted features commented out:
+    // see: https://github.com/codemirror/basic-setup/blob/main/src/codemirror.ts
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .lineNumbers */ .$K)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .highlightActiveLineGutter */ .Wu)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .highlightSpecialChars */ .N$)(),
+    (0,_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .history */ .b6)(),
+    (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .foldGutter */ .Lv)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .drawSelection */ .VH)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .dropCursor */ .A)(),
+    _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .EditorState */ .$t.allowMultipleSelections.of(true),
+    (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .indentOnInput */ .WD)(),
+    (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .syntaxHighlighting */ .y9)(_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .defaultHighlightStyle */ .Zt, { fallback: true }),
+    (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .bracketMatching */ .SG)(),
+    //    closeBrackets(),
+    //    autocompletion(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .rectangularSelection */ .D4)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .crosshairCursor */ .HJ)(),
+    (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .highlightActiveLine */ .dz)(),
+    (0,_codemirror_search__WEBPACK_IMPORTED_MODULE_7__/* .highlightSelectionMatches */ .gN)(),
+    _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .keymap */ .w4.of([
+        //        ...closeBracketsKeymap,
+        ..._codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .defaultKeymap */ .pw,
+        ..._codemirror_search__WEBPACK_IMPORTED_MODULE_7__/* .searchKeymap */ .Eo,
+        ..._codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .historyKeymap */ .cL,
+        ..._codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .foldKeymap */ .f7,
+        //        ...completionKeymap,
+        //        ...lintKeymap
+    ])
+])();
 function create_null_codemirror_undo_info(is_neutral) {
     return {
         undo_depth: 0,
@@ -11322,34 +11368,34 @@ class CodemirrorInterface {
             throw new Error('cell must be an instance of BqCellElement');
         }
         const text = cell.get_text();
-        this.#keymap_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#tab_size_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#indent_unit_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#tab_key_indents_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#line_numbers_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#line_wrapping_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        this.#language_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .Compartment */ .xx();
-        const state = _codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .EditorState */ .$t.create({
+        this.#keymap_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#tab_size_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#indent_unit_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#tab_key_indents_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#line_numbers_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#line_wrapping_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        this.#language_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
+        const state = _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .EditorState */ .$t.create({
             doc: text,
             extensions: [
-                _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .EditorView */ .Lz.updateListener.of((update) => {
+                _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .EditorView */ .Lz.updateListener.of((update) => {
                     if (update.docChanged) {
                         this.#handle_doc_update_event(update);
                     }
                 }),
                 this.#keymap_compartment.of([]),
-                this.#tab_size_compartment.of(_codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .EditorState */ .$t.tabSize.of(8)),
+                this.#tab_size_compartment.of(_codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .EditorState */ .$t.tabSize.of(8)),
                 this.#indent_unit_compartment.of(_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .indentUnit */ .Xt.of(' '.repeat(2))),
-                this.#tab_key_indents_compartment.of(_codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .keymap */ .w4.of([_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .indentWithTab */ .Yc])),
-                this.#line_numbers_compartment.of((0,_codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .lineNumbers */ .$K)()),
-                this.#line_wrapping_compartment.of(_codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .EditorView */ .Lz.lineWrapping),
+                this.#tab_key_indents_compartment.of(_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .keymap */ .w4.of([_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .indentWithTab */ .Yc])),
+                this.#line_numbers_compartment.of((0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .lineNumbers */ .$K)()),
+                this.#line_wrapping_compartment.of(_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .EditorView */ .Lz.lineWrapping),
                 this.#language_compartment.of([]),
-                _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .keymap */ .w4.of(_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .defaultKeymap */ .pw),
-                codemirror__WEBPACK_IMPORTED_MODULE_7__/* .basicSetup */ .oQ,
+                _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .keymap */ .w4.of(_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .defaultKeymap */ .pw),
+                bq_base_codemirror_setup,
             ],
         });
         (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .clear_element */ .ho)(cell);
-        this.#view = new _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .EditorView */ .Lz({
+        this.#view = new _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .EditorView */ .Lz({
             parent: cell,
             state,
         });
@@ -11410,8 +11456,8 @@ class CodemirrorInterface {
     #neutral_state_doc = undefined; //!!!
     get_undo_info() {
         return {
-            undo_depth: (0,_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .undoDepth */ .mk)(this.#view.state),
-            redo_depth: (0,_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .redoDepth */ .mL)(this.#view.state),
+            undo_depth: (0,_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .undoDepth */ .mk)(this.#view.state),
+            redo_depth: (0,_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .redoDepth */ .mL)(this.#view.state),
             is_neutral: this.is_neutral(),
         };
     }
@@ -11419,7 +11465,7 @@ class CodemirrorInterface {
         this.#view.focus();
     }
     scroll_into_view() {
-        this.#view.dispatch({ effects: _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .EditorView */ .Lz.scrollIntoView(this.#view.state.selection.main) });
+        this.#view.dispatch({ effects: _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .EditorView */ .Lz.scrollIntoView(this.#view.state.selection.main) });
     }
     set_language_from_type(type) {
         switch (type) {
@@ -11439,7 +11485,7 @@ class CodemirrorInterface {
         let keymap_config;
         switch (mode) {
             case 'emacs':
-                keymap_config = _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .keymap */ .w4.of(_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .emacsStyleKeymap */ .U0);
+                keymap_config = _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .keymap */ .w4.of(_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .emacsStyleKeymap */ .U0);
                 break;
             case 'vim':
                 keymap_config = (0,_replit_codemirror_vim__WEBPACK_IMPORTED_MODULE_10__/* .vim */ .Pk)();
@@ -11451,11 +11497,11 @@ class CodemirrorInterface {
         const indent_unit_string = ' '.repeat(indent);
         this.#view.dispatch({ effects: [
                 this.#keymap_compartment.reconfigure(keymap_config),
-                this.#tab_size_compartment.reconfigure(_codemirror_state__WEBPACK_IMPORTED_MODULE_3__/* .EditorState */ .$t.tabSize.of(tab_size)),
+                this.#tab_size_compartment.reconfigure(_codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .EditorState */ .$t.tabSize.of(tab_size)),
                 this.#indent_unit_compartment.reconfigure(_codemirror_language__WEBPACK_IMPORTED_MODULE_5__/* .indentUnit */ .Xt.of(indent_unit_string)),
-                this.#tab_key_indents_compartment.reconfigure(tab_key_indents ? _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .keymap */ .w4.of([_codemirror_commands__WEBPACK_IMPORTED_MODULE_6__/* .indentWithTab */ .Yc]) : []),
-                this.#line_numbers_compartment.reconfigure(line_numbers ? (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .lineNumbers */ .$K)() : []),
-                this.#line_wrapping_compartment.reconfigure(line_wrapping ? _codemirror_view__WEBPACK_IMPORTED_MODULE_4__/* .EditorView */ .Lz.lineWrapping : []),
+                this.#tab_key_indents_compartment.reconfigure(tab_key_indents ? _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .keymap */ .w4.of([_codemirror_commands__WEBPACK_IMPORTED_MODULE_4__/* .indentWithTab */ .Yc]) : []),
+                this.#line_numbers_compartment.reconfigure(line_numbers ? (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .lineNumbers */ .$K)() : []),
+                this.#line_wrapping_compartment.reconfigure(line_wrapping ? _codemirror_view__WEBPACK_IMPORTED_MODULE_3__/* .EditorView */ .Lz.lineWrapping : []),
             ] });
         // Note: the line_numbers setting above does not work, so we resort to this:
         const css_class_hide_line_numbers = 'codemirror-hide-line-numbers';
@@ -50287,15 +50333,11 @@ exports.Y_ = tokTypes;
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Ar: () => (/* binding */ ifNotIn),
-/* harmony export */   Bc: () => (/* binding */ closeBracketsKeymap),
 /* harmony export */   Gw: () => (/* binding */ snippetCompletion),
-/* harmony export */   OO: () => (/* binding */ completionKeymap),
 /* harmony export */   _5: () => (/* binding */ CompletionContext),
-/* harmony export */   et: () => (/* binding */ completeFromList),
-/* harmony export */   wm: () => (/* binding */ closeBrackets),
-/* harmony export */   yU: () => (/* binding */ autocompletion)
+/* harmony export */   et: () => (/* binding */ completeFromList)
 /* harmony export */ });
-/* unused harmony exports acceptCompletion, clearSnippet, closeCompletion, completeAnyWord, completionStatus, currentCompletions, deleteBracketPair, hasNextSnippetField, hasPrevSnippetField, ifIn, insertBracket, insertCompletionText, moveCompletionSelection, nextSnippetField, pickedCompletion, prevSnippetField, selectedCompletion, selectedCompletionIndex, setSelectedCompletion, snippet, snippetKeymap, startCompletion */
+/* unused harmony exports acceptCompletion, autocompletion, clearSnippet, closeBrackets, closeBracketsKeymap, closeCompletion, completeAnyWord, completionKeymap, completionStatus, currentCompletions, deleteBracketPair, hasNextSnippetField, hasPrevSnippetField, ifIn, insertBracket, insertCompletionText, moveCompletionSelection, nextSnippetField, pickedCompletion, prevSnippetField, selectedCompletion, selectedCompletionIndex, setSelectedCompletion, snippet, snippetKeymap, startCompletion */
 /* harmony import */ var _codemirror_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6585);
 /* harmony import */ var _codemirror_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6898);
 /* harmony import */ var _codemirror_language__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5874);
@@ -52090,11 +52132,11 @@ function config(state, pos) {
     return state.languageDataAt("closeBrackets", pos)[0] || defaults;
 }
 const android = typeof navigator == "object" && /*@__PURE__*//Android\b/.test(navigator.userAgent);
-const inputHandler = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.inputHandler.of((view, from, to, insert) => {
+const inputHandler = /*@__PURE__*/(/* unused pure expression or super */ null && (EditorView.inputHandler.of((view, from, to, insert) => {
     if ((android ? view.composing : view.compositionStarted) || view.state.readOnly)
         return false;
     let sel = view.state.selection.main;
-    if (insert.length > 2 || insert.length == 2 && (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .codePointSize */ .Fh)((0,_codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .codePointAt */ .vS)(insert, 0)) == 1 ||
+    if (insert.length > 2 || insert.length == 2 && codePointSize(codePointAt(insert, 0)) == 1 ||
         from != sel.from || to != sel.to)
         return false;
     let tr = insertBracket(view.state, insert);
@@ -52102,7 +52144,7 @@ const inputHandler = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/
         return false;
     view.dispatch(tr);
     return true;
-});
+})));
 /**
 Command that implements deleting a pair of matching brackets when
 the cursor is between them.
@@ -52149,7 +52191,7 @@ function insertBracket(state, bracket) {
     let conf = config(state, state.selection.main.head);
     let tokens = conf.brackets || defaults.brackets;
     for (let tok of tokens) {
-        let closed = closing((0,_codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .codePointAt */ .vS)(tok, 0));
+        let closed = closing(codePointAt(tok, 0));
         if (bracket == tok)
             return closed == tok ? handleSame(state, tok, tokens.indexOf(tok + tok + tok) > -1, conf)
                 : handleOpen(state, tok, closed, conf.before || defaults.before);
@@ -52179,12 +52221,12 @@ function handleOpen(state, open, close, closeBefore) {
         if (!range.empty)
             return { changes: [{ insert: open, from: range.from }, { insert: close, from: range.to }],
                 effects: closeBracketEffect.of(range.to + open.length),
-                range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.range(range.anchor + open.length, range.head + open.length) };
+                range: EditorSelection.range(range.anchor + open.length, range.head + open.length) };
         let next = nextChar(state.doc, range.head);
         if (!next || /\s/.test(next) || closeBefore.indexOf(next) > -1)
             return { changes: { insert: open + close, from: range.head },
                 effects: closeBracketEffect.of(range.head + open.length),
-                range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(range.head + open.length) };
+                range: EditorSelection.cursor(range.head + open.length) };
         return { range: dont = range };
     });
     return dont ? null : state.update(changes, {
@@ -52196,7 +52238,7 @@ function handleClose(state, _open, close) {
     let dont = null, changes = state.changeByRange(range => {
         if (range.empty && nextChar(state.doc, range.head) == close)
             return { changes: { from: range.head, to: range.head + close.length, insert: close },
-                range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(range.head + close.length) };
+                range: EditorSelection.cursor(range.head + close.length) };
         return dont = { range };
     });
     return dont ? null : state.update(changes, {
@@ -52212,19 +52254,19 @@ function handleSame(state, token, allowTriple, config) {
         if (!range.empty)
             return { changes: [{ insert: token, from: range.from }, { insert: token, from: range.to }],
                 effects: closeBracketEffect.of(range.to + token.length),
-                range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.range(range.anchor + token.length, range.head + token.length) };
+                range: EditorSelection.range(range.anchor + token.length, range.head + token.length) };
         let pos = range.head, next = nextChar(state.doc, pos), start;
         if (next == token) {
             if (nodeStart(state, pos)) {
                 return { changes: { insert: token + token, from: pos },
                     effects: closeBracketEffect.of(pos + token.length),
-                    range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(pos + token.length) };
+                    range: EditorSelection.cursor(pos + token.length) };
             }
             else if (closedBracketAt(state, pos)) {
                 let isTriple = allowTriple && state.sliceDoc(pos, pos + token.length * 3) == token + token + token;
                 let content = isTriple ? token + token + token : token;
                 return { changes: { from: pos, to: pos + content.length, insert: content },
-                    range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(pos + content.length) };
+                    range: EditorSelection.cursor(pos + content.length) };
             }
         }
         else if (allowTriple && state.sliceDoc(pos - 2 * token.length, pos) == token + token &&
@@ -52232,13 +52274,13 @@ function handleSame(state, token, allowTriple, config) {
             nodeStart(state, start)) {
             return { changes: { insert: token + token + token + token, from: pos },
                 effects: closeBracketEffect.of(pos + token.length),
-                range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(pos + token.length) };
+                range: EditorSelection.cursor(pos + token.length) };
         }
-        else if (state.charCategorizer(pos)(next) != _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .CharCategory */ .Je.Word) {
+        else if (state.charCategorizer(pos)(next) != CharCategory.Word) {
             if (canStartStringAt(state, pos, stringPrefixes) > -1 && !probablyInString(state, pos, token, stringPrefixes))
                 return { changes: { insert: token + token, from: pos },
                     effects: closeBracketEffect.of(pos + token.length),
-                    range: _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .EditorSelection */ .OF.cursor(pos + token.length) };
+                    range: EditorSelection.cursor(pos + token.length) };
         }
         return { range: dont = range };
     });
@@ -52248,11 +52290,11 @@ function handleSame(state, token, allowTriple, config) {
     });
 }
 function nodeStart(state, pos) {
-    let tree = (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_0__/* .syntaxTree */ .mv)(state).resolveInner(pos + 1);
+    let tree = syntaxTree(state).resolveInner(pos + 1);
     return tree.parent && tree.from == pos;
 }
 function probablyInString(state, pos, quoteToken, prefixes) {
-    let node = (0,_codemirror_language__WEBPACK_IMPORTED_MODULE_0__/* .syntaxTree */ .mv)(state).resolveInner(pos, -1);
+    let node = syntaxTree(state).resolveInner(pos, -1);
     let maxPrefix = prefixes.reduce((m, p) => Math.max(m, p.length), 0);
     for (let i = 0; i < 5; i++) {
         let start = state.sliceDoc(node.from, Math.min(node.to, node.from + quoteToken.length + maxPrefix));
@@ -52275,11 +52317,11 @@ function probablyInString(state, pos, quoteToken, prefixes) {
 }
 function canStartStringAt(state, pos, prefixes) {
     let charCat = state.charCategorizer(pos);
-    if (charCat(state.sliceDoc(pos - 1, pos)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .CharCategory */ .Je.Word)
+    if (charCat(state.sliceDoc(pos - 1, pos)) != CharCategory.Word)
         return pos;
     for (let prefix of prefixes) {
         let start = pos - prefix.length;
-        if (state.sliceDoc(start, pos) == prefix && charCat(state.sliceDoc(start - 1, start)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_1__/* .CharCategory */ .Je.Word)
+        if (state.sliceDoc(start, pos) == prefix && charCat(state.sliceDoc(start - 1, start)) != CharCategory.Word)
             return start;
     }
     return -1;
@@ -61543,20 +61585,56 @@ const marks = {
 
 /***/ }),
 
-/***/ 4528:
+/***/ 3427:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Eo: () => (/* binding */ searchKeymap),
-/* harmony export */   L0: () => (/* binding */ SearchQuery),
-/* harmony export */   Ri: () => (/* binding */ setSearchQuery),
-/* harmony export */   gN: () => (/* binding */ highlightSelectionMatches),
-/* harmony export */   oW: () => (/* binding */ RegExpCursor)
-/* harmony export */ });
-/* unused harmony exports SearchCursor, closeSearchPanel, findNext, findPrevious, getSearchQuery, gotoLine, openSearchPanel, replaceAll, replaceNext, search, searchPanelOpen, selectMatches, selectNextOccurrence, selectSelectionMatches */
-/* harmony import */ var _codemirror_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6898);
-/* harmony import */ var _codemirror_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6585);
-/* harmony import */ var crelt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3748);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  oW: () => (/* binding */ RegExpCursor),
+  L0: () => (/* binding */ SearchQuery),
+  gN: () => (/* binding */ highlightSelectionMatches),
+  Eo: () => (/* binding */ searchKeymap),
+  Ri: () => (/* binding */ setSearchQuery)
+});
+
+// UNUSED EXPORTS: SearchCursor, closeSearchPanel, findNext, findPrevious, getSearchQuery, gotoLine, openSearchPanel, replaceAll, replaceNext, search, searchPanelOpen, selectMatches, selectNextOccurrence, selectSelectionMatches
+
+// EXTERNAL MODULE: ./node_modules/@codemirror/view/dist/index.js + 1 modules
+var dist = __webpack_require__(6898);
+// EXTERNAL MODULE: ./node_modules/@codemirror/state/dist/index.js
+var state_dist = __webpack_require__(6585);
+;// ./node_modules/crelt/index.js
+function crelt() {
+  var elt = arguments[0]
+  if (typeof elt == "string") elt = document.createElement(elt)
+  var i = 1, next = arguments[1]
+  if (next && typeof next == "object" && next.nodeType == null && !Array.isArray(next)) {
+    for (var name in next) if (Object.prototype.hasOwnProperty.call(next, name)) {
+      var value = next[name]
+      if (typeof value == "string") elt.setAttribute(name, value)
+      else if (value != null) elt[name] = value
+    }
+    i++
+  }
+  for (; i < arguments.length; i++) add(elt, arguments[i])
+  return elt
+}
+
+function add(elt, child) {
+  if (typeof child == "string") {
+    elt.appendChild(document.createTextNode(child))
+  } else if (child == null) {
+  } else if (child.nodeType != null) {
+    elt.appendChild(child)
+  } else if (Array.isArray(child)) {
+    for (var i = 0; i < child.length; i++) add(elt, child[i])
+  } else {
+    throw new RangeError("Unsupported child node: " + child)
+  }
+}
+
+;// ./node_modules/@codemirror/search/dist/index.js
 
 
 
@@ -61610,7 +61688,7 @@ class SearchCursor {
             this.bufferPos = 0;
             this.buffer = this.iter.value;
         }
-        return (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .codePointAt */ .vS)(this.buffer, this.bufferPos);
+        return (0,state_dist/* codePointAt */.vS)(this.buffer, this.bufferPos);
     }
     /**
     Look for the next match. Updates the iterator's
@@ -61635,8 +61713,8 @@ class SearchCursor {
                 this.done = true;
                 return this;
             }
-            let str = (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .fromCodePoint */ .MK)(next), start = this.bufferStart + this.bufferPos;
-            this.bufferPos += (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .codePointSize */ .Fh)(next);
+            let str = (0,state_dist/* fromCodePoint */.MK)(next), start = this.bufferStart + this.bufferPos;
+            this.bufferPos += (0,state_dist/* codePointSize */.Fh)(next);
             let norm = this.normalize(str);
             for (let i = 0, pos = start;; i++) {
                 let code = norm.charCodeAt(i);
@@ -61866,8 +61944,8 @@ function toCharEnd(text, pos) {
 
 function createLineDialog(view) {
     let line = String(view.state.doc.lineAt(view.state.selection.main.head).number);
-    let input = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", { class: "cm-textfield", name: "line", value: line });
-    let dom = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("form", {
+    let input = crelt("input", { class: "cm-textfield", name: "line", value: line });
+    let dom = crelt("form", {
         class: "cm-gotoLine",
         onkeydown: (event) => {
             if (event.keyCode == 27) { // Escape
@@ -61884,7 +61962,7 @@ function createLineDialog(view) {
             event.preventDefault();
             go();
         }
-    }, (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("label", view.state.phrase("Go to line"), ": ", input), " ", (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("button", { class: "cm-button", type: "submit" }, view.state.phrase("go")));
+    }, crelt("label", view.state.phrase("Go to line"), ": ", input), " ", crelt("button", { class: "cm-button", type: "submit" }, view.state.phrase("go")));
     function go() {
         let match = /^([+-])?(\d+)?(:\d+)?(%)?$/.exec(input.value);
         if (!match)
@@ -61903,17 +61981,17 @@ function createLineDialog(view) {
             line = line * (sign == "-" ? -1 : 1) + startLine.number;
         }
         let docLine = state.doc.line(Math.max(1, Math.min(state.doc.lines, line)));
-        let selection = _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.cursor(docLine.from + Math.max(0, Math.min(col, docLine.length)));
+        let selection = state_dist/* EditorSelection */.OF.cursor(docLine.from + Math.max(0, Math.min(col, docLine.length)));
         view.dispatch({
-            effects: [dialogEffect.of(false), _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.scrollIntoView(selection.from, { y: 'center' })],
+            effects: [dialogEffect.of(false), dist/* EditorView */.Lz.scrollIntoView(selection.from, { y: 'center' })],
             selection,
         });
         view.focus();
     }
     return { dom };
 }
-const dialogEffect = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateEffect */ .Pe.define();
-const dialogField = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateField */ .sU.define({
+const dialogEffect = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
+const dialogField = /*@__PURE__*/state_dist/* StateField */.sU.define({
     create() { return true; },
     update(value, tr) {
         for (let e of tr.effects)
@@ -61921,7 +61999,7 @@ const dialogField = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/
                 value = e.value;
         return value;
     },
-    provide: f => _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .showPanel */ .S7.from(f, val => val ? createLineDialog : null)
+    provide: f => dist/* showPanel */.S7.from(f, val => val ? createLineDialog : null)
 });
 /**
 Command that shows a dialog asking the user for a line number, and
@@ -61933,19 +62011,19 @@ column position by adding `:` and a second number after the line
 number.
 */
 const gotoLine = view => {
-    let panel = (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .getPanel */ .ld)(view, createLineDialog);
+    let panel = (0,dist/* getPanel */.ld)(view, createLineDialog);
     if (!panel) {
         let effects = [dialogEffect.of(true)];
         if (view.state.field(dialogField, false) == null)
-            effects.push(_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateEffect */ .Pe.appendConfig.of([dialogField, baseTheme$1]));
+            effects.push(state_dist/* StateEffect */.Pe.appendConfig.of([dialogField, baseTheme$1]));
         view.dispatch({ effects });
-        panel = (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .getPanel */ .ld)(view, createLineDialog);
+        panel = (0,dist/* getPanel */.ld)(view, createLineDialog);
     }
     if (panel)
         panel.dom.querySelector("input").select();
     return true;
 };
-const baseTheme$1 = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.baseTheme({
+const baseTheme$1 = /*@__PURE__*/dist/* EditorView */.Lz.baseTheme({
     ".cm-panel.cm-gotoLine": {
         padding: "2px 6px 4px",
         "& label": { fontSize: "80%" }
@@ -61958,9 +62036,9 @@ const defaultHighlightOptions = {
     maxMatches: 100,
     wholeWords: false
 };
-const highlightConfig = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .Facet */ .sj.define({
+const highlightConfig = /*@__PURE__*/state_dist/* Facet */.sj.define({
     combine(options) {
-        return (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .combineConfig */ .QR)(options, defaultHighlightOptions, {
+        return (0,state_dist/* combineConfig */.QR)(options, defaultHighlightOptions, {
             highlightWordAroundCursor: (a, b) => a || b,
             minSelectionLength: Math.min,
             maxMatches: Math.min
@@ -61979,19 +62057,19 @@ function highlightSelectionMatches(options) {
         ext.push(highlightConfig.of(options));
     return ext;
 }
-const matchDeco = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.mark({ class: "cm-selectionMatch" });
-const mainMatchDeco = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.mark({ class: "cm-selectionMatch cm-selectionMatch-main" });
+const matchDeco = /*@__PURE__*/dist/* Decoration */.NZ.mark({ class: "cm-selectionMatch" });
+const mainMatchDeco = /*@__PURE__*/dist/* Decoration */.NZ.mark({ class: "cm-selectionMatch cm-selectionMatch-main" });
 // Whether the characters directly outside the given positions are non-word characters
 function insideWordBoundaries(check, state, from, to) {
-    return (from == 0 || check(state.sliceDoc(from - 1, from)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word) &&
-        (to == state.doc.length || check(state.sliceDoc(to, to + 1)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word);
+    return (from == 0 || check(state.sliceDoc(from - 1, from)) != state_dist/* CharCategory */.Je.Word) &&
+        (to == state.doc.length || check(state.sliceDoc(to, to + 1)) != state_dist/* CharCategory */.Je.Word);
 }
 // Whether the characters directly at the given positions are word characters
 function insideWord(check, state, from, to) {
-    return check(state.sliceDoc(from, from + 1)) == _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word
-        && check(state.sliceDoc(to - 1, to)) == _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word;
+    return check(state.sliceDoc(from, from + 1)) == state_dist/* CharCategory */.Je.Word
+        && check(state.sliceDoc(to - 1, to)) == state_dist/* CharCategory */.Je.Word;
 }
-const matchHighlighter = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .ViewPlugin */ .Z9.fromClass(class {
+const matchHighlighter = /*@__PURE__*/dist/* ViewPlugin */.Z9.fromClass(class {
     constructor(view) {
         this.decorations = this.getDeco(view);
     }
@@ -62003,32 +62081,32 @@ const matchHighlighter = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_
         let conf = view.state.facet(highlightConfig);
         let { state } = view, sel = state.selection;
         if (sel.ranges.length > 1)
-            return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+            return dist/* Decoration */.NZ.none;
         let range = sel.main, query, check = null;
         if (range.empty) {
             if (!conf.highlightWordAroundCursor)
-                return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                return dist/* Decoration */.NZ.none;
             let word = state.wordAt(range.head);
             if (!word)
-                return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                return dist/* Decoration */.NZ.none;
             check = state.charCategorizer(range.head);
             query = state.sliceDoc(word.from, word.to);
         }
         else {
             let len = range.to - range.from;
             if (len < conf.minSelectionLength || len > 200)
-                return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                return dist/* Decoration */.NZ.none;
             if (conf.wholeWords) {
                 query = state.sliceDoc(range.from, range.to); // TODO: allow and include leading/trailing space?
                 check = state.charCategorizer(range.head);
                 if (!(insideWordBoundaries(check, state, range.from, range.to) &&
                     insideWord(check, state, range.from, range.to)))
-                    return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                    return dist/* Decoration */.NZ.none;
             }
             else {
                 query = state.sliceDoc(range.from, range.to);
                 if (!query)
-                    return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                    return dist/* Decoration */.NZ.none;
             }
         }
         let deco = [];
@@ -62042,23 +62120,23 @@ const matchHighlighter = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_
                     else if (from >= range.to || to <= range.from)
                         deco.push(matchDeco.range(from, to));
                     if (deco.length > conf.maxMatches)
-                        return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+                        return dist/* Decoration */.NZ.none;
                 }
             }
         }
-        return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.set(deco);
+        return dist/* Decoration */.NZ.set(deco);
     }
 }, {
     decorations: v => v.decorations
 });
-const defaultTheme = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.baseTheme({
+const defaultTheme = /*@__PURE__*/dist/* EditorView */.Lz.baseTheme({
     ".cm-selectionMatch": { backgroundColor: "#99ff7780" },
     ".cm-searchMatch .cm-selectionMatch": { backgroundColor: "transparent" }
 });
 // Select the words around the cursors.
 const selectWord = ({ state, dispatch }) => {
     let { selection } = state;
-    let newSel = _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.create(selection.ranges.map(range => state.wordAt(range.head) || _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.cursor(range.head)), selection.mainIndex);
+    let newSel = state_dist/* EditorSelection */.OF.create(selection.ranges.map(range => state.wordAt(range.head) || state_dist/* EditorSelection */.OF.cursor(range.head)), selection.mainIndex);
     if (newSel.eq(selection))
         return false;
     dispatch(state.update({ selection: newSel }));
@@ -62104,22 +62182,22 @@ const selectNextOccurrence = ({ state, dispatch }) => {
     if (!range)
         return false;
     dispatch(state.update({
-        selection: state.selection.addRange(_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.range(range.from, range.to), false),
-        effects: _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.scrollIntoView(range.to)
+        selection: state.selection.addRange(state_dist/* EditorSelection */.OF.range(range.from, range.to), false),
+        effects: dist/* EditorView */.Lz.scrollIntoView(range.to)
     }));
     return true;
 };
 
-const searchConfigFacet = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .Facet */ .sj.define({
+const searchConfigFacet = /*@__PURE__*/state_dist/* Facet */.sj.define({
     combine(configs) {
-        return (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .combineConfig */ .QR)(configs, {
+        return (0,state_dist/* combineConfig */.QR)(configs, {
             top: false,
             caseSensitive: false,
             literal: false,
             regexp: false,
             wholeWord: false,
             createPanel: view => new SearchPanel(view),
-            scrollToMatch: range => _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.scrollIntoView(range)
+            scrollToMatch: range => dist/* EditorView */.Lz.scrollIntoView(range)
         });
     }
 });
@@ -62175,7 +62253,7 @@ class SearchQuery {
     range in the given state.
     */
     getCursor(state, from = 0, to) {
-        let st = state.doc ? state : _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorState */ .$t.create({ doc: state });
+        let st = state.doc ? state : state_dist/* EditorState */.$t.create({ doc: state });
         if (to == null)
             to = st.doc.length;
         return this.regexp ? regexpCursor(this, st, from, to) : stringCursor(this, st, from, to);
@@ -62195,10 +62273,10 @@ function stringWordTest(doc, categorizer) {
             bufPos = Math.max(0, from - 2);
             buf = doc.sliceString(bufPos, Math.min(doc.length, to + 2));
         }
-        return (categorizer(charBefore(buf, from - bufPos)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word ||
-            categorizer(charAfter(buf, from - bufPos)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word) &&
-            (categorizer(charAfter(buf, to - bufPos)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word ||
-                categorizer(charBefore(buf, to - bufPos)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word);
+        return (categorizer(charBefore(buf, from - bufPos)) != state_dist/* CharCategory */.Je.Word ||
+            categorizer(charAfter(buf, from - bufPos)) != state_dist/* CharCategory */.Je.Word) &&
+            (categorizer(charAfter(buf, to - bufPos)) != state_dist/* CharCategory */.Je.Word ||
+                categorizer(charBefore(buf, to - bufPos)) != state_dist/* CharCategory */.Je.Word);
     };
 }
 class StringQuery extends QueryType {
@@ -62253,17 +62331,17 @@ function regexpCursor(spec, state, from, to) {
     }, from, to);
 }
 function charBefore(str, index) {
-    return str.slice((0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .findClusterBreak */ .zK)(str, index, false), index);
+    return str.slice((0,state_dist/* findClusterBreak */.zK)(str, index, false), index);
 }
 function charAfter(str, index) {
-    return str.slice(index, (0,_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .findClusterBreak */ .zK)(str, index));
+    return str.slice(index, (0,state_dist/* findClusterBreak */.zK)(str, index));
 }
 function regexpWordTest(categorizer) {
     return (_from, _to, match) => !match[0].length ||
-        (categorizer(charBefore(match.input, match.index)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word ||
-            categorizer(charAfter(match.input, match.index)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word) &&
-            (categorizer(charAfter(match.input, match.index + match[0].length)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word ||
-                categorizer(charBefore(match.input, match.index + match[0].length)) != _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .CharCategory */ .Je.Word);
+        (categorizer(charBefore(match.input, match.index)) != state_dist/* CharCategory */.Je.Word ||
+            categorizer(charAfter(match.input, match.index)) != state_dist/* CharCategory */.Je.Word) &&
+            (categorizer(charAfter(match.input, match.index + match[0].length)) != state_dist/* CharCategory */.Je.Word ||
+                categorizer(charBefore(match.input, match.index + match[0].length)) != state_dist/* CharCategory */.Je.Word);
 }
 class RegExpQuery extends QueryType {
     nextMatch(state, curFrom, curTo) {
@@ -62316,9 +62394,9 @@ this only has an effect if the search state has been initialized
 by running [`openSearchPanel`](https://codemirror.net/6/docs/ref/#search.openSearchPanel) at least
 once).
 */
-const setSearchQuery = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateEffect */ .Pe.define();
-const togglePanel = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateEffect */ .Pe.define();
-const searchState = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateField */ .sU.define({
+const setSearchQuery = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
+const togglePanel = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
+const searchState = /*@__PURE__*/state_dist/* StateField */.sU.define({
     create(state) {
         return new SearchState(defaultQuery(state).create(), null);
     },
@@ -62331,7 +62409,7 @@ const searchState = /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/
         }
         return value;
     },
-    provide: f => _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .showPanel */ .S7.from(f, val => val.panel)
+    provide: f => dist/* showPanel */.S7.from(f, val => val.panel)
 });
 /**
 Get the current search query from an editor state.
@@ -62353,8 +62431,8 @@ class SearchState {
         this.panel = panel;
     }
 }
-const matchMark = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.mark({ class: "cm-searchMatch" }), selectedMatchMark = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.mark({ class: "cm-searchMatch cm-searchMatch-selected" });
-const searchHighlighter = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .ViewPlugin */ .Z9.fromClass(class {
+const matchMark = /*@__PURE__*/dist/* Decoration */.NZ.mark({ class: "cm-searchMatch" }), selectedMatchMark = /*@__PURE__*/dist/* Decoration */.NZ.mark({ class: "cm-searchMatch cm-searchMatch-selected" });
+const searchHighlighter = /*@__PURE__*/dist/* ViewPlugin */.Z9.fromClass(class {
     constructor(view) {
         this.view = view;
         this.decorations = this.highlight(view.state.field(searchState));
@@ -62366,9 +62444,9 @@ const searchHighlighter = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE
     }
     highlight({ query, panel }) {
         if (!panel || !query.spec.valid)
-            return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .Decoration */ .NZ.none;
+            return dist/* Decoration */.NZ.none;
         let { view } = this;
-        let builder = new _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .RangeSetBuilder */ .vB();
+        let builder = new state_dist/* RangeSetBuilder */.vB();
         for (let i = 0, ranges = view.visibleRanges, l = ranges.length; i < l; i++) {
             let { from, to } = ranges[i];
             while (i < l - 1 && to > ranges[i + 1].from - 2 * 250 /* RegExp.HighlightMargin */)
@@ -62400,7 +62478,7 @@ const findNext = /*@__PURE__*/searchCommand((view, { query }) => {
     let next = query.nextMatch(view.state, to, to);
     if (!next)
         return false;
-    let selection = _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.single(next.from, next.to);
+    let selection = state_dist/* EditorSelection */.OF.single(next.from, next.to);
     let config = view.state.facet(searchConfigFacet);
     view.dispatch({
         selection,
@@ -62420,7 +62498,7 @@ const findPrevious = /*@__PURE__*/searchCommand((view, { query }) => {
     let prev = query.prevMatch(state, from, from);
     if (!prev)
         return false;
-    let selection = _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.single(prev.from, prev.to);
+    let selection = state_dist/* EditorSelection */.OF.single(prev.from, prev.to);
     let config = view.state.facet(searchConfigFacet);
     view.dispatch({
         selection,
@@ -62438,7 +62516,7 @@ const selectMatches = /*@__PURE__*/searchCommand((view, { query }) => {
     if (!ranges || !ranges.length)
         return false;
     view.dispatch({
-        selection: _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.create(ranges.map(r => _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.range(r.from, r.to))),
+        selection: state_dist/* EditorSelection */.OF.create(ranges.map(r => state_dist/* EditorSelection */.OF.range(r.from, r.to))),
         userEvent: "select.search.matches"
     });
     return true;
@@ -62457,10 +62535,10 @@ const selectSelectionMatches = ({ state, dispatch }) => {
             return false;
         if (cur.value.from == from)
             main = ranges.length;
-        ranges.push(_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.range(cur.value.from, cur.value.to));
+        ranges.push(state_dist/* EditorSelection */.OF.range(cur.value.from, cur.value.to));
     }
     dispatch(state.update({
-        selection: _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.create(ranges, main),
+        selection: state_dist/* EditorSelection */.OF.create(ranges, main),
         userEvent: "select.search.matches"
     }));
     return true;
@@ -62481,11 +62559,11 @@ const replaceNext = /*@__PURE__*/searchCommand((view, { query }) => {
         replacement = state.toText(query.getReplacement(next));
         changes.push({ from: next.from, to: next.to, insert: replacement });
         next = query.nextMatch(state, next.from, next.to);
-        effects.push(_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.announce.of(state.phrase("replaced match on line $", state.doc.lineAt(from).number) + "."));
+        effects.push(dist/* EditorView */.Lz.announce.of(state.phrase("replaced match on line $", state.doc.lineAt(from).number) + "."));
     }
     if (next) {
         let off = changes.length == 0 || changes[0].from >= next.to ? 0 : next.to - next.from - replacement.length;
-        selection = _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .EditorSelection */ .OF.single(next.from - off, next.to - off);
+        selection = state_dist/* EditorSelection */.OF.single(next.from - off, next.to - off);
         effects.push(announceMatch(view, next));
         effects.push(state.facet(searchConfigFacet).scrollToMatch(selection.main, view));
     }
@@ -62511,7 +62589,7 @@ const replaceAll = /*@__PURE__*/searchCommand((view, { query }) => {
     let announceText = view.state.phrase("replaced $ matches", changes.length) + ".";
     view.dispatch({
         changes,
-        effects: _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.announce.of(announceText),
+        effects: dist/* EditorView */.Lz.announce.of(announceText),
         userEvent: "input.replace.all"
     });
     return true;
@@ -62535,7 +62613,7 @@ function defaultQuery(state, fallback) {
     });
 }
 function getSearchInput(view) {
-    let panel = (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .getPanel */ .ld)(view, createSearchPanel);
+    let panel = (0,dist/* getPanel */.ld)(view, createSearchPanel);
     return panel && panel.dom.querySelector("[main-field]");
 }
 function selectSearchInput(view) {
@@ -62561,7 +62639,7 @@ const openSearchPanel = view => {
     else {
         view.dispatch({ effects: [
                 togglePanel.of(true),
-                state ? setSearchQuery.of(defaultQuery(view.state, state.query.spec)) : _codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .StateEffect */ .Pe.appendConfig.of(searchExtensions)
+                state ? setSearchQuery.of(defaultQuery(view.state, state.query.spec)) : state_dist/* StateEffect */.Pe.appendConfig.of(searchExtensions)
             ] });
     }
     return true;
@@ -62573,7 +62651,7 @@ const closeSearchPanel = view => {
     let state = view.state.field(searchState, false);
     if (!state || !state.panel)
         return false;
-    let panel = (0,_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .getPanel */ .ld)(view, createSearchPanel);
+    let panel = (0,dist/* getPanel */.ld)(view, createSearchPanel);
     if (panel && panel.dom.contains(view.root.activeElement))
         view.focus();
     view.dispatch({ effects: togglePanel.of(false) });
@@ -62602,7 +62680,7 @@ class SearchPanel {
         this.view = view;
         let query = this.query = view.state.field(searchState).query.spec;
         this.commit = this.commit.bind(this);
-        this.searchField = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", {
+        this.searchField = crelt("input", {
             value: query.search,
             placeholder: phrase(view, "Find"),
             "aria-label": phrase(view, "Find"),
@@ -62613,7 +62691,7 @@ class SearchPanel {
             onchange: this.commit,
             onkeyup: this.commit
         });
-        this.replaceField = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", {
+        this.replaceField = crelt("input", {
             value: query.replace,
             placeholder: phrase(view, "Replace"),
             "aria-label": phrase(view, "Replace"),
@@ -62623,21 +62701,21 @@ class SearchPanel {
             onchange: this.commit,
             onkeyup: this.commit
         });
-        this.caseField = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", {
+        this.caseField = crelt("input", {
             type: "checkbox",
             name: "case",
             form: "",
             checked: query.caseSensitive,
             onchange: this.commit
         });
-        this.reField = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", {
+        this.reField = crelt("input", {
             type: "checkbox",
             name: "re",
             form: "",
             checked: query.regexp,
             onchange: this.commit
         });
-        this.wordField = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("input", {
+        this.wordField = crelt("input", {
             type: "checkbox",
             name: "word",
             form: "",
@@ -62645,23 +62723,23 @@ class SearchPanel {
             onchange: this.commit
         });
         function button(name, onclick, content) {
-            return (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("button", { class: "cm-button", name, onclick, type: "button" }, content);
+            return crelt("button", { class: "cm-button", name, onclick, type: "button" }, content);
         }
-        this.dom = (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("div", { onkeydown: (e) => this.keydown(e), class: "cm-search" }, [
+        this.dom = crelt("div", { onkeydown: (e) => this.keydown(e), class: "cm-search" }, [
             this.searchField,
             button("next", () => findNext(view), [phrase(view, "next")]),
             button("prev", () => findPrevious(view), [phrase(view, "previous")]),
             button("select", () => selectMatches(view), [phrase(view, "all")]),
-            (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("label", null, [this.caseField, phrase(view, "match case")]),
-            (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("label", null, [this.reField, phrase(view, "regexp")]),
-            (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("label", null, [this.wordField, phrase(view, "by word")]),
+            crelt("label", null, [this.caseField, phrase(view, "match case")]),
+            crelt("label", null, [this.reField, phrase(view, "regexp")]),
+            crelt("label", null, [this.wordField, phrase(view, "by word")]),
             ...view.state.readOnly ? [] : [
-                (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("br"),
+                crelt("br"),
                 this.replaceField,
                 button("replace", () => replaceNext(view), [phrase(view, "replace")]),
                 button("replaceAll", () => replaceAll(view), [phrase(view, "replace all")])
             ],
-            (0,crelt__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)("button", {
+            crelt("button", {
                 name: "close",
                 onclick: () => closeSearchPanel(view),
                 "aria-label": phrase(view, "close"),
@@ -62683,7 +62761,7 @@ class SearchPanel {
         }
     }
     keydown(e) {
-        if ((0,_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .runScopeHandlers */ .TS)(this.view, e, "search-panel")) {
+        if ((0,dist/* runScopeHandlers */.TS)(this.view, e, "search-panel")) {
             e.preventDefault();
         }
         else if (e.keyCode == 13 && e.target == this.searchField) {
@@ -62737,9 +62815,9 @@ function announceMatch(view, { from, to }) {
                 break;
             }
     }
-    return _codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.announce.of(`${view.state.phrase("current match")}. ${text} ${view.state.phrase("on line")} ${line.number}.`);
+    return dist/* EditorView */.Lz.announce.of(`${view.state.phrase("current match")}. ${text} ${view.state.phrase("on line")} ${line.number}.`);
 }
-const baseTheme = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .EditorView */ .Lz.baseTheme({
+const baseTheme = /*@__PURE__*/dist/* EditorView */.Lz.baseTheme({
     ".cm-panel.cm-search": {
         padding: "2px 6px 4px",
         position: "relative",
@@ -62771,7 +62849,7 @@ const baseTheme = /*@__PURE__*/_codemirror_view__WEBPACK_IMPORTED_MODULE_2__/* .
 });
 const searchExtensions = [
     searchState,
-    /*@__PURE__*/_codemirror_state__WEBPACK_IMPORTED_MODULE_0__/* .Prec */ .Nb.low(searchHighlighter),
+    /*@__PURE__*/state_dist/* Prec */.Nb.low(searchHighlighter),
     baseTheme
 ];
 
@@ -66765,7 +66843,6 @@ __webpack_require__.d(__webpack_exports__, {
   dz: () => (/* binding */ highlightActiveLine),
   Wu: () => (/* binding */ highlightActiveLineGutter),
   N$: () => (/* binding */ highlightSpecialChars),
-  Ux: () => (/* binding */ hoverTooltip),
   w4: () => (/* binding */ keymap),
   $K: () => (/* binding */ lineNumbers),
   c_: () => (/* binding */ logException),
@@ -66775,7 +66852,7 @@ __webpack_require__.d(__webpack_exports__, {
   DK: () => (/* binding */ showTooltip)
 });
 
-// UNUSED EXPORTS: BidiSpan, BlockInfo, BlockType, MatchDecorator, RectangleMarker, ViewUpdate, __test, closeHoverTooltips, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightTrailingWhitespace, highlightWhitespace, layer, lineNumberMarkers, lineNumberWidgetMarker, panels, placeholder, repositionTooltips, scrollPastEnd, tooltips
+// UNUSED EXPORTS: BidiSpan, BlockInfo, BlockType, MatchDecorator, RectangleMarker, ViewUpdate, __test, closeHoverTooltips, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, layer, lineNumberMarkers, lineNumberWidgetMarker, panels, placeholder, repositionTooltips, scrollPastEnd, tooltips
 
 // EXTERNAL MODULE: ./node_modules/@codemirror/state/dist/index.js
 var state_dist = __webpack_require__(6585);
@@ -77201,8 +77278,8 @@ can be used to read the currently active tooltips produced by this
 extension.
 */
 function hoverTooltip(source, options = {}) {
-    let setHover = state_dist/* StateEffect */.Pe.define();
-    let hoverState = state_dist/* StateField */.sU.define({
+    let setHover = StateEffect.define();
+    let hoverState = StateField.define({
         create() { return []; },
         update(value, tr) {
             if (value.length) {
@@ -77213,7 +77290,7 @@ function hoverTooltip(source, options = {}) {
                 if (tr.docChanged) {
                     let mapped = [];
                     for (let tooltip of value) {
-                        let newPos = tr.changes.mapPos(tooltip.pos, -1, state_dist/* MapMode */.iR.TrackDel);
+                        let newPos = tr.changes.mapPos(tooltip.pos, -1, MapMode.TrackDel);
                         if (newPos != null) {
                             let copy = Object.assign(Object.create(null), tooltip);
                             copy.pos = newPos;
@@ -77260,7 +77337,7 @@ Returns true if any hover tooltips are currently active.
 function hasHoverTooltips(state) {
     return state.facet(showHoverTooltip).some(x => x);
 }
-const closeHoverTooltipEffect = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
+const closeHoverTooltipEffect = /*@__PURE__*/(/* unused pure expression or super */ null && (StateEffect.define()));
 /**
 Transaction effect that closes all hover tooltips.
 */
@@ -83009,7 +83086,7 @@ function getSpecializer(spec) {
 /* harmony import */ var _codemirror_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6585);
 /* harmony import */ var _codemirror_language__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5874);
 /* harmony import */ var _codemirror_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6898);
-/* harmony import */ var _codemirror_search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(4528);
+/* harmony import */ var _codemirror_search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3427);
 /* harmony import */ var _codemirror_commands__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5230);
 
 
@@ -91416,989 +91493,6 @@ function getCM(view) {
 }
 
 
-
-
-/***/ }),
-
-/***/ 6423:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  oQ: () => (/* binding */ basicSetup)
-});
-
-// UNUSED EXPORTS: EditorView, minimalSetup
-
-// EXTERNAL MODULE: ./node_modules/@codemirror/view/dist/index.js + 1 modules
-var dist = __webpack_require__(6898);
-// EXTERNAL MODULE: ./node_modules/@codemirror/state/dist/index.js
-var state_dist = __webpack_require__(6585);
-// EXTERNAL MODULE: ./node_modules/@codemirror/language/dist/index.js
-var language_dist = __webpack_require__(5874);
-// EXTERNAL MODULE: ./node_modules/@codemirror/commands/dist/index.js
-var commands_dist = __webpack_require__(5230);
-// EXTERNAL MODULE: ./node_modules/@codemirror/search/dist/index.js
-var search_dist = __webpack_require__(4528);
-// EXTERNAL MODULE: ./node_modules/@codemirror/autocomplete/dist/index.js
-var autocomplete_dist = __webpack_require__(7404);
-// EXTERNAL MODULE: ./node_modules/crelt/index.js
-var crelt = __webpack_require__(3748);
-;// ./node_modules/@codemirror/lint/dist/index.js
-
-
-
-
-class SelectedDiagnostic {
-    constructor(from, to, diagnostic) {
-        this.from = from;
-        this.to = to;
-        this.diagnostic = diagnostic;
-    }
-}
-class LintState {
-    constructor(diagnostics, panel, selected) {
-        this.diagnostics = diagnostics;
-        this.panel = panel;
-        this.selected = selected;
-    }
-    static init(diagnostics, panel, state) {
-        // Filter the list of diagnostics for which to create markers
-        let markedDiagnostics = diagnostics;
-        let diagnosticFilter = state.facet(lintConfig).markerFilter;
-        if (diagnosticFilter)
-            markedDiagnostics = diagnosticFilter(markedDiagnostics, state);
-        let ranges = dist/* Decoration */.NZ.set(markedDiagnostics.map((d) => {
-            // For zero-length ranges or ranges covering only a line break, create a widget
-            return d.from == d.to || (d.from == d.to - 1 && state.doc.lineAt(d.from).to == d.from)
-                ? dist/* Decoration */.NZ.widget({
-                    widget: new DiagnosticWidget(d),
-                    diagnostic: d
-                }).range(d.from)
-                : dist/* Decoration */.NZ.mark({
-                    attributes: { class: "cm-lintRange cm-lintRange-" + d.severity + (d.markClass ? " " + d.markClass : "") },
-                    diagnostic: d
-                }).range(d.from, d.to);
-        }), true);
-        return new LintState(ranges, panel, findDiagnostic(ranges));
-    }
-}
-function findDiagnostic(diagnostics, diagnostic = null, after = 0) {
-    let found = null;
-    diagnostics.between(after, 1e9, (from, to, { spec }) => {
-        if (diagnostic && spec.diagnostic != diagnostic)
-            return;
-        found = new SelectedDiagnostic(from, to, spec.diagnostic);
-        return false;
-    });
-    return found;
-}
-function hideTooltip(tr, tooltip) {
-    let from = tooltip.pos, to = tooltip.end || from;
-    let result = tr.state.facet(lintConfig).hideOn(tr, from, to);
-    if (result != null)
-        return result;
-    let line = tr.startState.doc.lineAt(tooltip.pos);
-    return !!(tr.effects.some(e => e.is(setDiagnosticsEffect)) || tr.changes.touchesRange(line.from, Math.max(line.to, to)));
-}
-function maybeEnableLint(state, effects) {
-    return state.field(lintState, false) ? effects : effects.concat(state_dist/* StateEffect */.Pe.appendConfig.of(lintExtensions));
-}
-/**
-Returns a transaction spec which updates the current set of
-diagnostics, and enables the lint extension if if wasn't already
-active.
-*/
-function setDiagnostics(state, diagnostics) {
-    return {
-        effects: maybeEnableLint(state, [setDiagnosticsEffect.of(diagnostics)])
-    };
-}
-/**
-The state effect that updates the set of active diagnostics. Can
-be useful when writing an extension that needs to track these.
-*/
-const setDiagnosticsEffect = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
-const togglePanel = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
-const movePanelSelection = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
-const lintState = /*@__PURE__*/state_dist/* StateField */.sU.define({
-    create() {
-        return new LintState(dist/* Decoration */.NZ.none, null, null);
-    },
-    update(value, tr) {
-        if (tr.docChanged && value.diagnostics.size) {
-            let mapped = value.diagnostics.map(tr.changes), selected = null, panel = value.panel;
-            if (value.selected) {
-                let selPos = tr.changes.mapPos(value.selected.from, 1);
-                selected = findDiagnostic(mapped, value.selected.diagnostic, selPos) || findDiagnostic(mapped, null, selPos);
-            }
-            if (!mapped.size && panel && tr.state.facet(lintConfig).autoPanel)
-                panel = null;
-            value = new LintState(mapped, panel, selected);
-        }
-        for (let effect of tr.effects) {
-            if (effect.is(setDiagnosticsEffect)) {
-                let panel = !tr.state.facet(lintConfig).autoPanel ? value.panel : effect.value.length ? LintPanel.open : null;
-                value = LintState.init(effect.value, panel, tr.state);
-            }
-            else if (effect.is(togglePanel)) {
-                value = new LintState(value.diagnostics, effect.value ? LintPanel.open : null, value.selected);
-            }
-            else if (effect.is(movePanelSelection)) {
-                value = new LintState(value.diagnostics, value.panel, effect.value);
-            }
-        }
-        return value;
-    },
-    provide: f => [dist/* showPanel */.S7.from(f, val => val.panel),
-        dist/* EditorView */.Lz.decorations.from(f, s => s.diagnostics)]
-});
-/**
-Returns the number of active lint diagnostics in the given state.
-*/
-function diagnosticCount(state) {
-    let lint = state.field(lintState, false);
-    return lint ? lint.diagnostics.size : 0;
-}
-const activeMark = /*@__PURE__*/dist/* Decoration */.NZ.mark({ class: "cm-lintRange cm-lintRange-active" });
-function lintTooltip(view, pos, side) {
-    let { diagnostics } = view.state.field(lintState);
-    let found = [], stackStart = 2e8, stackEnd = 0;
-    diagnostics.between(pos - (side < 0 ? 1 : 0), pos + (side > 0 ? 1 : 0), (from, to, { spec }) => {
-        if (pos >= from && pos <= to &&
-            (from == to || ((pos > from || side > 0) && (pos < to || side < 0)))) {
-            found.push(spec.diagnostic);
-            stackStart = Math.min(from, stackStart);
-            stackEnd = Math.max(to, stackEnd);
-        }
-    });
-    let diagnosticFilter = view.state.facet(lintConfig).tooltipFilter;
-    if (diagnosticFilter)
-        found = diagnosticFilter(found, view.state);
-    if (!found.length)
-        return null;
-    return {
-        pos: stackStart,
-        end: stackEnd,
-        above: view.state.doc.lineAt(stackStart).to < stackEnd,
-        create() {
-            return { dom: diagnosticsTooltip(view, found) };
-        }
-    };
-}
-function diagnosticsTooltip(view, diagnostics) {
-    return (0,crelt/* default */.A)("ul", { class: "cm-tooltip-lint" }, diagnostics.map(d => renderDiagnostic(view, d, false)));
-}
-/**
-Command to open and focus the lint panel.
-*/
-const openLintPanel = (view) => {
-    let field = view.state.field(lintState, false);
-    if (!field || !field.panel)
-        view.dispatch({ effects: maybeEnableLint(view.state, [togglePanel.of(true)]) });
-    let panel = (0,dist/* getPanel */.ld)(view, LintPanel.open);
-    if (panel)
-        panel.dom.querySelector(".cm-panel-lint ul").focus();
-    return true;
-};
-/**
-Command to close the lint panel, when open.
-*/
-const closeLintPanel = (view) => {
-    let field = view.state.field(lintState, false);
-    if (!field || !field.panel)
-        return false;
-    view.dispatch({ effects: togglePanel.of(false) });
-    return true;
-};
-/**
-Move the selection to the next diagnostic.
-*/
-const nextDiagnostic = (view) => {
-    let field = view.state.field(lintState, false);
-    if (!field)
-        return false;
-    let sel = view.state.selection.main, next = field.diagnostics.iter(sel.to + 1);
-    if (!next.value) {
-        next = field.diagnostics.iter(0);
-        if (!next.value || next.from == sel.from && next.to == sel.to)
-            return false;
-    }
-    view.dispatch({ selection: { anchor: next.from, head: next.to }, scrollIntoView: true });
-    return true;
-};
-/**
-Move the selection to the previous diagnostic.
-*/
-const previousDiagnostic = (view) => {
-    let { state } = view, field = state.field(lintState, false);
-    if (!field)
-        return false;
-    let sel = state.selection.main;
-    let prevFrom, prevTo, lastFrom, lastTo;
-    field.diagnostics.between(0, state.doc.length, (from, to) => {
-        if (to < sel.to && (prevFrom == null || prevFrom < from)) {
-            prevFrom = from;
-            prevTo = to;
-        }
-        if (lastFrom == null || from > lastFrom) {
-            lastFrom = from;
-            lastTo = to;
-        }
-    });
-    if (lastFrom == null || prevFrom == null && lastFrom == sel.from)
-        return false;
-    view.dispatch({ selection: { anchor: prevFrom !== null && prevFrom !== void 0 ? prevFrom : lastFrom, head: prevTo !== null && prevTo !== void 0 ? prevTo : lastTo }, scrollIntoView: true });
-    return true;
-};
-/**
-A set of default key bindings for the lint functionality.
-
-- Ctrl-Shift-m (Cmd-Shift-m on macOS): [`openLintPanel`](https://codemirror.net/6/docs/ref/#lint.openLintPanel)
-- F8: [`nextDiagnostic`](https://codemirror.net/6/docs/ref/#lint.nextDiagnostic)
-*/
-const lintKeymap = [
-    { key: "Mod-Shift-m", run: openLintPanel, preventDefault: true },
-    { key: "F8", run: nextDiagnostic }
-];
-const lintPlugin = /*@__PURE__*/(/* unused pure expression or super */ null && (ViewPlugin.fromClass(class {
-    constructor(view) {
-        this.view = view;
-        this.timeout = -1;
-        this.set = true;
-        let { delay } = view.state.facet(lintConfig);
-        this.lintTime = Date.now() + delay;
-        this.run = this.run.bind(this);
-        this.timeout = setTimeout(this.run, delay);
-    }
-    run() {
-        clearTimeout(this.timeout);
-        let now = Date.now();
-        if (now < this.lintTime - 10) {
-            this.timeout = setTimeout(this.run, this.lintTime - now);
-        }
-        else {
-            this.set = false;
-            let { state } = this.view, { sources } = state.facet(lintConfig);
-            if (sources.length)
-                batchResults(sources.map(s => Promise.resolve(s(this.view))), annotations => {
-                    if (this.view.state.doc == state.doc)
-                        this.view.dispatch(setDiagnostics(this.view.state, annotations.reduce((a, b) => a.concat(b))));
-                }, error => { logException(this.view.state, error); });
-        }
-    }
-    update(update) {
-        let config = update.state.facet(lintConfig);
-        if (update.docChanged || config != update.startState.facet(lintConfig) ||
-            config.needsRefresh && config.needsRefresh(update)) {
-            this.lintTime = Date.now() + config.delay;
-            if (!this.set) {
-                this.set = true;
-                this.timeout = setTimeout(this.run, config.delay);
-            }
-        }
-    }
-    force() {
-        if (this.set) {
-            this.lintTime = Date.now();
-            this.run();
-        }
-    }
-    destroy() {
-        clearTimeout(this.timeout);
-    }
-})));
-function batchResults(promises, sink, error) {
-    let collected = [], timeout = -1;
-    for (let p of promises)
-        p.then(value => {
-            collected.push(value);
-            clearTimeout(timeout);
-            if (collected.length == promises.length)
-                sink(collected);
-            else
-                setTimeout(() => sink(collected), 200);
-        }, error);
-}
-const lintConfig = /*@__PURE__*/state_dist/* Facet */.sj.define({
-    combine(input) {
-        return Object.assign({ sources: input.map(i => i.source).filter(x => x != null) }, (0,state_dist/* combineConfig */.QR)(input.map(i => i.config), {
-            delay: 750,
-            markerFilter: null,
-            tooltipFilter: null,
-            needsRefresh: null,
-            hideOn: () => null,
-        }, {
-            needsRefresh: (a, b) => !a ? b : !b ? a : u => a(u) || b(u)
-        }));
-    }
-});
-/**
-Given a diagnostic source, this function returns an extension that
-enables linting with that source. It will be called whenever the
-editor is idle (after its content changed). If `null` is given as
-source, this only configures the lint extension.
-*/
-function linter(source, config = {}) {
-    return [
-        lintConfig.of({ source, config }),
-        lintPlugin,
-        lintExtensions
-    ];
-}
-/**
-Forces any linters [configured](https://codemirror.net/6/docs/ref/#lint.linter) to run when the
-editor is idle to run right away.
-*/
-function forceLinting(view) {
-    let plugin = view.plugin(lintPlugin);
-    if (plugin)
-        plugin.force();
-}
-function assignKeys(actions) {
-    let assigned = [];
-    if (actions)
-        actions: for (let { name } of actions) {
-            for (let i = 0; i < name.length; i++) {
-                let ch = name[i];
-                if (/[a-zA-Z]/.test(ch) && !assigned.some(c => c.toLowerCase() == ch.toLowerCase())) {
-                    assigned.push(ch);
-                    continue actions;
-                }
-            }
-            assigned.push("");
-        }
-    return assigned;
-}
-function renderDiagnostic(view, diagnostic, inPanel) {
-    var _a;
-    let keys = inPanel ? assignKeys(diagnostic.actions) : [];
-    return (0,crelt/* default */.A)("li", { class: "cm-diagnostic cm-diagnostic-" + diagnostic.severity }, (0,crelt/* default */.A)("span", { class: "cm-diagnosticText" }, diagnostic.renderMessage ? diagnostic.renderMessage(view) : diagnostic.message), (_a = diagnostic.actions) === null || _a === void 0 ? void 0 : _a.map((action, i) => {
-        let fired = false, click = (e) => {
-            e.preventDefault();
-            if (fired)
-                return;
-            fired = true;
-            let found = findDiagnostic(view.state.field(lintState).diagnostics, diagnostic);
-            if (found)
-                action.apply(view, found.from, found.to);
-        };
-        let { name } = action, keyIndex = keys[i] ? name.indexOf(keys[i]) : -1;
-        let nameElt = keyIndex < 0 ? name : [name.slice(0, keyIndex),
-            (0,crelt/* default */.A)("u", name.slice(keyIndex, keyIndex + 1)),
-            name.slice(keyIndex + 1)];
-        return (0,crelt/* default */.A)("button", {
-            type: "button",
-            class: "cm-diagnosticAction",
-            onclick: click,
-            onmousedown: click,
-            "aria-label": ` Action: ${name}${keyIndex < 0 ? "" : ` (access key "${keys[i]})"`}.`
-        }, nameElt);
-    }), diagnostic.source && (0,crelt/* default */.A)("div", { class: "cm-diagnosticSource" }, diagnostic.source));
-}
-class DiagnosticWidget extends dist/* WidgetType */.xO {
-    constructor(diagnostic) {
-        super();
-        this.diagnostic = diagnostic;
-    }
-    eq(other) { return other.diagnostic == this.diagnostic; }
-    toDOM() {
-        return (0,crelt/* default */.A)("span", { class: "cm-lintPoint cm-lintPoint-" + this.diagnostic.severity });
-    }
-}
-class PanelItem {
-    constructor(view, diagnostic) {
-        this.diagnostic = diagnostic;
-        this.id = "item_" + Math.floor(Math.random() * 0xffffffff).toString(16);
-        this.dom = renderDiagnostic(view, diagnostic, true);
-        this.dom.id = this.id;
-        this.dom.setAttribute("role", "option");
-    }
-}
-class LintPanel {
-    constructor(view) {
-        this.view = view;
-        this.items = [];
-        let onkeydown = (event) => {
-            if (event.keyCode == 27) { // Escape
-                closeLintPanel(this.view);
-                this.view.focus();
-            }
-            else if (event.keyCode == 38 || event.keyCode == 33) { // ArrowUp, PageUp
-                this.moveSelection((this.selectedIndex - 1 + this.items.length) % this.items.length);
-            }
-            else if (event.keyCode == 40 || event.keyCode == 34) { // ArrowDown, PageDown
-                this.moveSelection((this.selectedIndex + 1) % this.items.length);
-            }
-            else if (event.keyCode == 36) { // Home
-                this.moveSelection(0);
-            }
-            else if (event.keyCode == 35) { // End
-                this.moveSelection(this.items.length - 1);
-            }
-            else if (event.keyCode == 13) { // Enter
-                this.view.focus();
-            }
-            else if (event.keyCode >= 65 && event.keyCode <= 90 && this.selectedIndex >= 0) { // A-Z
-                let { diagnostic } = this.items[this.selectedIndex], keys = assignKeys(diagnostic.actions);
-                for (let i = 0; i < keys.length; i++)
-                    if (keys[i].toUpperCase().charCodeAt(0) == event.keyCode) {
-                        let found = findDiagnostic(this.view.state.field(lintState).diagnostics, diagnostic);
-                        if (found)
-                            diagnostic.actions[i].apply(view, found.from, found.to);
-                    }
-            }
-            else {
-                return;
-            }
-            event.preventDefault();
-        };
-        let onclick = (event) => {
-            for (let i = 0; i < this.items.length; i++) {
-                if (this.items[i].dom.contains(event.target))
-                    this.moveSelection(i);
-            }
-        };
-        this.list = (0,crelt/* default */.A)("ul", {
-            tabIndex: 0,
-            role: "listbox",
-            "aria-label": this.view.state.phrase("Diagnostics"),
-            onkeydown,
-            onclick
-        });
-        this.dom = (0,crelt/* default */.A)("div", { class: "cm-panel-lint" }, this.list, (0,crelt/* default */.A)("button", {
-            type: "button",
-            name: "close",
-            "aria-label": this.view.state.phrase("close"),
-            onclick: () => closeLintPanel(this.view)
-        }, "×"));
-        this.update();
-    }
-    get selectedIndex() {
-        let selected = this.view.state.field(lintState).selected;
-        if (!selected)
-            return -1;
-        for (let i = 0; i < this.items.length; i++)
-            if (this.items[i].diagnostic == selected.diagnostic)
-                return i;
-        return -1;
-    }
-    update() {
-        let { diagnostics, selected } = this.view.state.field(lintState);
-        let i = 0, needsSync = false, newSelectedItem = null;
-        diagnostics.between(0, this.view.state.doc.length, (_start, _end, { spec }) => {
-            let found = -1, item;
-            for (let j = i; j < this.items.length; j++)
-                if (this.items[j].diagnostic == spec.diagnostic) {
-                    found = j;
-                    break;
-                }
-            if (found < 0) {
-                item = new PanelItem(this.view, spec.diagnostic);
-                this.items.splice(i, 0, item);
-                needsSync = true;
-            }
-            else {
-                item = this.items[found];
-                if (found > i) {
-                    this.items.splice(i, found - i);
-                    needsSync = true;
-                }
-            }
-            if (selected && item.diagnostic == selected.diagnostic) {
-                if (!item.dom.hasAttribute("aria-selected")) {
-                    item.dom.setAttribute("aria-selected", "true");
-                    newSelectedItem = item;
-                }
-            }
-            else if (item.dom.hasAttribute("aria-selected")) {
-                item.dom.removeAttribute("aria-selected");
-            }
-            i++;
-        });
-        while (i < this.items.length && !(this.items.length == 1 && this.items[0].diagnostic.from < 0)) {
-            needsSync = true;
-            this.items.pop();
-        }
-        if (this.items.length == 0) {
-            this.items.push(new PanelItem(this.view, {
-                from: -1, to: -1,
-                severity: "info",
-                message: this.view.state.phrase("No diagnostics")
-            }));
-            needsSync = true;
-        }
-        if (newSelectedItem) {
-            this.list.setAttribute("aria-activedescendant", newSelectedItem.id);
-            this.view.requestMeasure({
-                key: this,
-                read: () => ({ sel: newSelectedItem.dom.getBoundingClientRect(), panel: this.list.getBoundingClientRect() }),
-                write: ({ sel, panel }) => {
-                    let scaleY = panel.height / this.list.offsetHeight;
-                    if (sel.top < panel.top)
-                        this.list.scrollTop -= (panel.top - sel.top) / scaleY;
-                    else if (sel.bottom > panel.bottom)
-                        this.list.scrollTop += (sel.bottom - panel.bottom) / scaleY;
-                }
-            });
-        }
-        else if (this.selectedIndex < 0) {
-            this.list.removeAttribute("aria-activedescendant");
-        }
-        if (needsSync)
-            this.sync();
-    }
-    sync() {
-        let domPos = this.list.firstChild;
-        function rm() {
-            let prev = domPos;
-            domPos = prev.nextSibling;
-            prev.remove();
-        }
-        for (let item of this.items) {
-            if (item.dom.parentNode == this.list) {
-                while (domPos != item.dom)
-                    rm();
-                domPos = item.dom.nextSibling;
-            }
-            else {
-                this.list.insertBefore(item.dom, domPos);
-            }
-        }
-        while (domPos)
-            rm();
-    }
-    moveSelection(selectedIndex) {
-        if (this.selectedIndex < 0)
-            return;
-        let field = this.view.state.field(lintState);
-        let selection = findDiagnostic(field.diagnostics, this.items[selectedIndex].diagnostic);
-        if (!selection)
-            return;
-        this.view.dispatch({
-            selection: { anchor: selection.from, head: selection.to },
-            scrollIntoView: true,
-            effects: movePanelSelection.of(selection)
-        });
-    }
-    static open(view) { return new LintPanel(view); }
-}
-function svg(content, attrs = `viewBox="0 0 40 40"`) {
-    return `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" ${attrs}>${encodeURIComponent(content)}</svg>')`;
-}
-function underline(color) {
-    return svg(`<path d="m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0" stroke="${color}" fill="none" stroke-width=".7"/>`, `width="6" height="3"`);
-}
-const baseTheme = /*@__PURE__*/dist/* EditorView */.Lz.baseTheme({
-    ".cm-diagnostic": {
-        padding: "3px 6px 3px 8px",
-        marginLeft: "-1px",
-        display: "block",
-        whiteSpace: "pre-wrap"
-    },
-    ".cm-diagnostic-error": { borderLeft: "5px solid #d11" },
-    ".cm-diagnostic-warning": { borderLeft: "5px solid orange" },
-    ".cm-diagnostic-info": { borderLeft: "5px solid #999" },
-    ".cm-diagnostic-hint": { borderLeft: "5px solid #66d" },
-    ".cm-diagnosticAction": {
-        font: "inherit",
-        border: "none",
-        padding: "2px 4px",
-        backgroundColor: "#444",
-        color: "white",
-        borderRadius: "3px",
-        marginLeft: "8px",
-        cursor: "pointer"
-    },
-    ".cm-diagnosticSource": {
-        fontSize: "70%",
-        opacity: .7
-    },
-    ".cm-lintRange": {
-        backgroundPosition: "left bottom",
-        backgroundRepeat: "repeat-x",
-        paddingBottom: "0.7px",
-    },
-    ".cm-lintRange-error": { backgroundImage: /*@__PURE__*/underline("#d11") },
-    ".cm-lintRange-warning": { backgroundImage: /*@__PURE__*/underline("orange") },
-    ".cm-lintRange-info": { backgroundImage: /*@__PURE__*/underline("#999") },
-    ".cm-lintRange-hint": { backgroundImage: /*@__PURE__*/underline("#66d") },
-    ".cm-lintRange-active": { backgroundColor: "#ffdd9980" },
-    ".cm-tooltip-lint": {
-        padding: 0,
-        margin: 0
-    },
-    ".cm-lintPoint": {
-        position: "relative",
-        "&:after": {
-            content: '""',
-            position: "absolute",
-            bottom: 0,
-            left: "-2px",
-            borderLeft: "3px solid transparent",
-            borderRight: "3px solid transparent",
-            borderBottom: "4px solid #d11"
-        }
-    },
-    ".cm-lintPoint-warning": {
-        "&:after": { borderBottomColor: "orange" }
-    },
-    ".cm-lintPoint-info": {
-        "&:after": { borderBottomColor: "#999" }
-    },
-    ".cm-lintPoint-hint": {
-        "&:after": { borderBottomColor: "#66d" }
-    },
-    ".cm-panel.cm-panel-lint": {
-        position: "relative",
-        "& ul": {
-            maxHeight: "100px",
-            overflowY: "auto",
-            "& [aria-selected]": {
-                backgroundColor: "#ddd",
-                "& u": { textDecoration: "underline" }
-            },
-            "&:focus [aria-selected]": {
-                background_fallback: "#bdf",
-                backgroundColor: "Highlight",
-                color_fallback: "white",
-                color: "HighlightText"
-            },
-            "& u": { textDecoration: "none" },
-            padding: 0,
-            margin: 0
-        },
-        "& [name=close]": {
-            position: "absolute",
-            top: "0",
-            right: "2px",
-            background: "inherit",
-            border: "none",
-            font: "inherit",
-            padding: 0,
-            margin: 0
-        }
-    }
-});
-function severityWeight(sev) {
-    return sev == "error" ? 4 : sev == "warning" ? 3 : sev == "info" ? 2 : 1;
-}
-class LintGutterMarker extends dist/* GutterMarker */.wJ {
-    constructor(diagnostics) {
-        super();
-        this.diagnostics = diagnostics;
-        this.severity = diagnostics.reduce((max, d) => severityWeight(max) < severityWeight(d.severity) ? d.severity : max, "hint");
-    }
-    toDOM(view) {
-        let elt = document.createElement("div");
-        elt.className = "cm-lint-marker cm-lint-marker-" + this.severity;
-        let diagnostics = this.diagnostics;
-        let diagnosticsFilter = view.state.facet(lintGutterConfig).tooltipFilter;
-        if (diagnosticsFilter)
-            diagnostics = diagnosticsFilter(diagnostics, view.state);
-        if (diagnostics.length)
-            elt.onmouseover = () => gutterMarkerMouseOver(view, elt, diagnostics);
-        return elt;
-    }
-}
-function trackHoverOn(view, marker) {
-    let mousemove = (event) => {
-        let rect = marker.getBoundingClientRect();
-        if (event.clientX > rect.left - 10 /* Hover.Margin */ && event.clientX < rect.right + 10 /* Hover.Margin */ &&
-            event.clientY > rect.top - 10 /* Hover.Margin */ && event.clientY < rect.bottom + 10 /* Hover.Margin */)
-            return;
-        for (let target = event.target; target; target = target.parentNode) {
-            if (target.nodeType == 1 && target.classList.contains("cm-tooltip-lint"))
-                return;
-        }
-        window.removeEventListener("mousemove", mousemove);
-        if (view.state.field(lintGutterTooltip))
-            view.dispatch({ effects: setLintGutterTooltip.of(null) });
-    };
-    window.addEventListener("mousemove", mousemove);
-}
-function gutterMarkerMouseOver(view, marker, diagnostics) {
-    function hovered() {
-        let line = view.elementAtHeight(marker.getBoundingClientRect().top + 5 - view.documentTop);
-        const linePos = view.coordsAtPos(line.from);
-        if (linePos) {
-            view.dispatch({ effects: setLintGutterTooltip.of({
-                    pos: line.from,
-                    above: false,
-                    create() {
-                        return {
-                            dom: diagnosticsTooltip(view, diagnostics),
-                            getCoords: () => marker.getBoundingClientRect()
-                        };
-                    }
-                }) });
-        }
-        marker.onmouseout = marker.onmousemove = null;
-        trackHoverOn(view, marker);
-    }
-    let { hoverTime } = view.state.facet(lintGutterConfig);
-    let hoverTimeout = setTimeout(hovered, hoverTime);
-    marker.onmouseout = () => {
-        clearTimeout(hoverTimeout);
-        marker.onmouseout = marker.onmousemove = null;
-    };
-    marker.onmousemove = () => {
-        clearTimeout(hoverTimeout);
-        hoverTimeout = setTimeout(hovered, hoverTime);
-    };
-}
-function markersForDiagnostics(doc, diagnostics) {
-    let byLine = Object.create(null);
-    for (let diagnostic of diagnostics) {
-        let line = doc.lineAt(diagnostic.from);
-        (byLine[line.from] || (byLine[line.from] = [])).push(diagnostic);
-    }
-    let markers = [];
-    for (let line in byLine) {
-        markers.push(new LintGutterMarker(byLine[line]).range(+line));
-    }
-    return state_dist/* RangeSet */.om.of(markers, true);
-}
-const lintGutterExtension = /*@__PURE__*/(0,dist/* gutter */.cU)({
-    class: "cm-gutter-lint",
-    markers: view => view.state.field(lintGutterMarkers),
-    widgetMarker: (view, widget, block) => {
-        let diagnostics = [];
-        view.state.field(lintGutterMarkers).between(block.from, block.to, (from, to, value) => {
-            diagnostics.push(...value.diagnostics);
-        });
-        return diagnostics.length ? new LintGutterMarker(diagnostics) : null;
-    }
-});
-const lintGutterMarkers = /*@__PURE__*/state_dist/* StateField */.sU.define({
-    create() {
-        return state_dist/* RangeSet */.om.empty;
-    },
-    update(markers, tr) {
-        markers = markers.map(tr.changes);
-        let diagnosticFilter = tr.state.facet(lintGutterConfig).markerFilter;
-        for (let effect of tr.effects) {
-            if (effect.is(setDiagnosticsEffect)) {
-                let diagnostics = effect.value;
-                if (diagnosticFilter)
-                    diagnostics = diagnosticFilter(diagnostics || [], tr.state);
-                markers = markersForDiagnostics(tr.state.doc, diagnostics.slice(0));
-            }
-        }
-        return markers;
-    }
-});
-const setLintGutterTooltip = /*@__PURE__*/state_dist/* StateEffect */.Pe.define();
-const lintGutterTooltip = /*@__PURE__*/state_dist/* StateField */.sU.define({
-    create() { return null; },
-    update(tooltip, tr) {
-        if (tooltip && tr.docChanged)
-            tooltip = hideTooltip(tr, tooltip) ? null : Object.assign(Object.assign({}, tooltip), { pos: tr.changes.mapPos(tooltip.pos) });
-        return tr.effects.reduce((t, e) => e.is(setLintGutterTooltip) ? e.value : t, tooltip);
-    },
-    provide: field => dist/* showTooltip */.DK.from(field)
-});
-const lintGutterTheme = /*@__PURE__*/dist/* EditorView */.Lz.baseTheme({
-    ".cm-gutter-lint": {
-        width: "1.4em",
-        "& .cm-gutterElement": {
-            padding: ".2em"
-        }
-    },
-    ".cm-lint-marker": {
-        width: "1em",
-        height: "1em"
-    },
-    ".cm-lint-marker-info": {
-        content: /*@__PURE__*/svg(`<path fill="#aaf" stroke="#77e" stroke-width="6" stroke-linejoin="round" d="M5 5L35 5L35 35L5 35Z"/>`)
-    },
-    ".cm-lint-marker-warning": {
-        content: /*@__PURE__*/svg(`<path fill="#fe8" stroke="#fd7" stroke-width="6" stroke-linejoin="round" d="M20 6L37 35L3 35Z"/>`),
-    },
-    ".cm-lint-marker-error": {
-        content: /*@__PURE__*/svg(`<circle cx="20" cy="20" r="15" fill="#f87" stroke="#f43" stroke-width="6"/>`)
-    },
-});
-const lintExtensions = [
-    lintState,
-    /*@__PURE__*/dist/* EditorView */.Lz.decorations.compute([lintState], state => {
-        let { selected, panel } = state.field(lintState);
-        return !selected || !panel || selected.from == selected.to ? dist/* Decoration */.NZ.none : dist/* Decoration */.NZ.set([
-            activeMark.range(selected.from, selected.to)
-        ]);
-    }),
-    /*@__PURE__*/(0,dist/* hoverTooltip */.Ux)(lintTooltip, { hideOn: hideTooltip }),
-    baseTheme
-];
-const lintGutterConfig = /*@__PURE__*/state_dist/* Facet */.sj.define({
-    combine(configs) {
-        return (0,state_dist/* combineConfig */.QR)(configs, {
-            hoverTime: 300 /* Hover.Time */,
-            markerFilter: null,
-            tooltipFilter: null
-        });
-    }
-});
-/**
-Returns an extension that installs a gutter showing markers for
-each line that has diagnostics, which can be hovered over to see
-the diagnostics.
-*/
-function lintGutter(config = {}) {
-    return [lintGutterConfig.of(config), lintGutterMarkers, lintGutterExtension, lintGutterTheme, lintGutterTooltip];
-}
-/**
-Iterate over the marked diagnostics for the given editor state,
-calling `f` for each of them. Note that, if the document changed
-since the diagnostics were created, the `Diagnostic` object will
-hold the original outdated position, whereas the `to` and `from`
-arguments hold the diagnostic's current position.
-*/
-function forEachDiagnostic(state, f) {
-    let lState = state.field(lintState, false);
-    if (lState && lState.diagnostics.size)
-        for (let iter = RangeSet.iter([lState.diagnostics]); iter.value; iter.next())
-            f(iter.value.spec.diagnostic, iter.from, iter.to);
-}
-
-
-
-;// ./node_modules/codemirror/dist/index.js
-
-
-
-
-
-
-
-
-
-// (The superfluous function calls around the list of extensions work
-// around current limitations in tree-shaking software.)
-/**
-This is an extension value that just pulls together a number of
-extensions that you might want in a basic editor. It is meant as a
-convenient helper to quickly set up CodeMirror without installing
-and importing a lot of separate packages.
-
-Specifically, it includes...
-
- - [the default command bindings](https://codemirror.net/6/docs/ref/#commands.defaultKeymap)
- - [line numbers](https://codemirror.net/6/docs/ref/#view.lineNumbers)
- - [special character highlighting](https://codemirror.net/6/docs/ref/#view.highlightSpecialChars)
- - [the undo history](https://codemirror.net/6/docs/ref/#commands.history)
- - [a fold gutter](https://codemirror.net/6/docs/ref/#language.foldGutter)
- - [custom selection drawing](https://codemirror.net/6/docs/ref/#view.drawSelection)
- - [drop cursor](https://codemirror.net/6/docs/ref/#view.dropCursor)
- - [multiple selections](https://codemirror.net/6/docs/ref/#state.EditorState^allowMultipleSelections)
- - [reindentation on input](https://codemirror.net/6/docs/ref/#language.indentOnInput)
- - [the default highlight style](https://codemirror.net/6/docs/ref/#language.defaultHighlightStyle) (as fallback)
- - [bracket matching](https://codemirror.net/6/docs/ref/#language.bracketMatching)
- - [bracket closing](https://codemirror.net/6/docs/ref/#autocomplete.closeBrackets)
- - [autocompletion](https://codemirror.net/6/docs/ref/#autocomplete.autocompletion)
- - [rectangular selection](https://codemirror.net/6/docs/ref/#view.rectangularSelection) and [crosshair cursor](https://codemirror.net/6/docs/ref/#view.crosshairCursor)
- - [active line highlighting](https://codemirror.net/6/docs/ref/#view.highlightActiveLine)
- - [active line gutter highlighting](https://codemirror.net/6/docs/ref/#view.highlightActiveLineGutter)
- - [selection match highlighting](https://codemirror.net/6/docs/ref/#search.highlightSelectionMatches)
- - [search](https://codemirror.net/6/docs/ref/#search.searchKeymap)
- - [linting](https://codemirror.net/6/docs/ref/#lint.lintKeymap)
-
-(You'll probably want to add some language package to your setup
-too.)
-
-This extension does not allow customization. The idea is that,
-once you decide you want to configure your editor more precisely,
-you take this package's source (which is just a bunch of imports
-and an array literal), copy it into your own code, and adjust it
-as desired.
-*/
-const basicSetup = /*@__PURE__*/(() => [
-    (0,dist/* lineNumbers */.$K)(),
-    (0,dist/* highlightActiveLineGutter */.Wu)(),
-    (0,dist/* highlightSpecialChars */.N$)(),
-    (0,commands_dist/* history */.b6)(),
-    (0,language_dist/* foldGutter */.Lv)(),
-    (0,dist/* drawSelection */.VH)(),
-    (0,dist/* dropCursor */.A)(),
-    state_dist/* EditorState */.$t.allowMultipleSelections.of(true),
-    (0,language_dist/* indentOnInput */.WD)(),
-    (0,language_dist/* syntaxHighlighting */.y9)(language_dist/* defaultHighlightStyle */.Zt, { fallback: true }),
-    (0,language_dist/* bracketMatching */.SG)(),
-    (0,autocomplete_dist/* closeBrackets */.wm)(),
-    (0,autocomplete_dist/* autocompletion */.yU)(),
-    (0,dist/* rectangularSelection */.D4)(),
-    (0,dist/* crosshairCursor */.HJ)(),
-    (0,dist/* highlightActiveLine */.dz)(),
-    (0,search_dist/* highlightSelectionMatches */.gN)(),
-    dist/* keymap */.w4.of([
-        ...autocomplete_dist/* closeBracketsKeymap */.Bc,
-        ...commands_dist/* defaultKeymap */.pw,
-        ...search_dist/* searchKeymap */.Eo,
-        ...commands_dist/* historyKeymap */.cL,
-        ...language_dist/* foldKeymap */.f7,
-        ...autocomplete_dist/* completionKeymap */.OO,
-        ...lintKeymap
-    ])
-])();
-/**
-A minimal set of extensions to create a functional editor. Only
-includes [the default keymap](https://codemirror.net/6/docs/ref/#commands.defaultKeymap), [undo
-history](https://codemirror.net/6/docs/ref/#commands.history), [special character
-highlighting](https://codemirror.net/6/docs/ref/#view.highlightSpecialChars), [custom selection
-drawing](https://codemirror.net/6/docs/ref/#view.drawSelection), and [default highlight
-style](https://codemirror.net/6/docs/ref/#language.defaultHighlightStyle).
-*/
-const minimalSetup = /*@__PURE__*/(/* unused pure expression or super */ null && ((() => [
-    highlightSpecialChars(),
-    history(),
-    drawSelection(),
-    syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-    keymap.of([
-        ...defaultKeymap,
-        ...historyKeymap,
-    ])
-])()));
-
-
-
-
-/***/ }),
-
-/***/ 3748:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (/* binding */ crelt)
-/* harmony export */ });
-function crelt() {
-  var elt = arguments[0]
-  if (typeof elt == "string") elt = document.createElement(elt)
-  var i = 1, next = arguments[1]
-  if (next && typeof next == "object" && next.nodeType == null && !Array.isArray(next)) {
-    for (var name in next) if (Object.prototype.hasOwnProperty.call(next, name)) {
-      var value = next[name]
-      if (typeof value == "string") elt.setAttribute(name, value)
-      else if (value != null) elt[name] = value
-    }
-    i++
-  }
-  for (; i < arguments.length; i++) add(elt, arguments[i])
-  return elt
-}
-
-function add(elt, child) {
-  if (typeof child == "string") {
-    elt.appendChild(document.createTextNode(child))
-  } else if (child == null) {
-  } else if (child.nodeType != null) {
-    elt.appendChild(child)
-  } else if (Array.isArray(child)) {
-    for (var i = 0; i < child.length; i++) add(elt, child[i])
-  } else {
-    throw new RangeError("Unsupported child node: " + child)
-  }
-}
 
 
 /***/ }),
