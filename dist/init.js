@@ -11172,7 +11172,7 @@ class BqCellElement extends HTMLElement {
         const open_tag_segments = [
             `<${this.CLASS.custom_element_name}`,
         ];
-        //!!! attributes values' containing " character are incorrectly translated to \"
+        //!!! attributes values containing " character are incorrectly translated to \"
         for (const name of this.getAttributeNames()) {
             if (name !== this.CLASS.attribute__active || include_active_cell_setting) {
                 const value = this.getAttribute(name);
@@ -11565,7 +11565,7 @@ class BqManager {
         else {
             this.#start_called = true;
             if ((0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_eval */ .u1)()) {
-                this.render_cells();
+                this.inject_command('eval-all');
             }
             else {
                 this.active_cell?.scroll_into_view(true);
@@ -11984,21 +11984,21 @@ class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
         return renderer.render(ocx, cell.get_text(), options)
-            .catch(error => {
+            .then((result) => {
+            if (!ocx.keepalive) {
+                ocx.stop(); // stop anything that may have been started
+            }
+            return result;
+        }, (error) => {
             const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
             error_message_element.scrollIntoView(false);
             if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
                 cell?.set_cursor_position(error.line_number, error.column_index);
-                // return the element associated with the ocx active when the error occurred
-                //!!! return error.ocx.element;
             }
-            //!!! return ocx.element;  // just return the main element
-            throw error;
-        })
-            .finally(() => {
             if (!ocx.keepalive) {
                 ocx.stop(); // stop anything that may have been started
             }
+            throw error;
         });
     }
     /** this.#rendering_cells is set to a promise when render_cells() is active,
@@ -13863,9 +13863,7 @@ async function initialize_document() {
     catch (error) {
         show_initialization_failed(error);
     }
-    finally {
-        globalThis._uninhibit_document_display?.();
-    }
+    globalThis._uninhibit_document_display?.();
 }
 function _show_unhandled_event(event, is_unhandled_rejection) {
     globalThis._uninhibit_document_display?.();
@@ -15126,13 +15124,19 @@ class Renderer {
     get media_type() { return this.constructor.media_type; }
     static async _invoke_renderer(renderer, ocx, value, options) {
         return renderer._render(ocx, value, options)
+            .then(result => {
+            // Make sure that is the ocx is stopped that the error is registered.
+            // If nothing has yet called a function that checks if the ocx if stopped,
+            // then BqManager.prototype.render_cells() never gets the corresponding
+            // error, and therefore the BqManager.prototype.rendering_cells gets
+            // fulfilled, however the ocx is not in a usable state.  So if some cell
+            // in the document is awaiting that promise and then tries to use the ocx
+            // when it fulfills, an unhandled rejection results.
+            // This turns out to be important for document autoeval.
+            ocx.abort_if_stopped();
+            return result;
+        })
             .catch((error) => {
-            // moved to BqManager.prototype.invoke_renderer
-            //                const result = ocx.render_error(error)
-            //                    .catch((ignored_error: unknown) => {
-            //                        console.error('ignored second-level error while rendering error', ignored_error);
-            //                        // nothing
-            //                    });
             try {
                 ocx.stop(); // stop anything that may have been started
             }

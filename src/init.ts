@@ -162,9 +162,9 @@ async function initialize_document(): Promise<void> {
 
     } catch (error: unknown) {
         show_initialization_failed(error);
-    } finally {
-        (globalThis as any)._uninhibit_document_display?.();
     }
+
+    (globalThis as any)._uninhibit_document_display?.();
 }
 
 function _show_unhandled_event(event: Event, is_unhandled_rejection: boolean): void {
