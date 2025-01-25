@@ -314,9 +314,10 @@ export abstract class OutputContextLike extends ActivityManager {
         if (f instanceof AsyncFunction) {
             return async (...args: any[]): Promise<any> => {
                 this.abort_if_stopped(f.name);
-                const result = await f.apply(null, args);
-                this.abort_if_stopped(f.name);
-                return result;
+                return f.apply(null, args).then((result: any) => {
+                    this.abort_if_stopped(f.name);
+                    return result;
+                });
             };
         } else {
             return (...args: any[]): any => {

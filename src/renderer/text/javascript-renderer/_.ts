@@ -267,14 +267,14 @@ export class JavaScriptRenderer extends TextBasedRenderer {
 
         eval_loop:
         while (!eval_ocx.stopped) {
-            let value, done;
-            try {
-                ({ value, done } = await result_stream.next());
-            } catch (error) {
-                //!!! ErrorRenderer.render_sync(eval_ocx, error);
-                //!!! break eval_loop;
-                throw error;
+            let caught_error: unknown = undefined;
+            const result = await result_stream.next()
+                .catch((error: unknown) => { caught_error = error; });
+            if (caught_error) {
+                throw caught_error;
             }
+
+            const { value, done } = result;
 
             // output any non-undefined values that were received either from
             // a return or a yield statement in the code
