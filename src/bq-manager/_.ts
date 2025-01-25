@@ -146,7 +146,7 @@ export class BqManager {
             this.#start_called = true;
 
             if (get_auto_eval()) {
-                this.inject_command('eval-all');
+                this.render_cells();
             } else {
                 this.active_cell?.scroll_into_view(true);
             }

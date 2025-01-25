@@ -11565,7 +11565,7 @@ class BqManager {
         else {
             this.#start_called = true;
             if ((0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_eval */ .u1)()) {
-                this.inject_command('eval-all');
+                this.render_cells();
             }
             else {
                 this.active_cell?.scroll_into_view(true);
