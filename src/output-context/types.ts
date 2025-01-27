@@ -51,9 +51,6 @@ import {
 // The implementation in _.ts will use the async modifier, however.
 
 
-// This is a recognizable error representing a stopped condition
-export class StoppedError extends Error {};
-
 const css_class__bq_cell_output         = 'bq-cell-output';
 const attribute__data_source_element    = 'data-source-element';
 const attribute__data_source_media_type = 'data-source-media-type';
@@ -292,14 +289,12 @@ export abstract class OutputContextLike extends ActivityManager {
 
     // === ABORT IF STOPPED ===
 
-    /** abort by throwing a StoppedError if this.stopped, otherwise do nothing.
+    /** abort by throwing an Error if this.stopped, otherwise do nothing.
+     *  (implemented via this.abort_signal.throwIfAborted() where this.abort_signal
+     *  is defined by the base class ActivityManager.)
      */
-    abort_if_stopped(operation?: string): void {
-        if (this.stopped) {
-            const stopped_message = this.keepalive ? 'stopped' : 'stopped (keepalive not set)';
-            const message = operation ? `${operation}: ${stopped_message}` : stopped_message;
-            throw new StoppedError(message);
-        }
+    abort_if_stopped(): void {
+        this.abort_signal.throwIfAborted();
     }
 
     /** wrap the given function so that when it is called,
@@ -313,17 +308,17 @@ export abstract class OutputContextLike extends ActivityManager {
         const AsyncFunction = (async () => {}).constructor;
         if (f instanceof AsyncFunction) {
             return async (...args: any[]): Promise<any> => {
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 return f.apply(null, args).then((result: any) => {
-                    this.abort_if_stopped(f.name);
+                    this.abort_if_stopped();
                     return result;
                 });
             };
         } else {
             return (...args: any[]): any => {
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 const result = f.apply(null, args);
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 return result;
             };
         }

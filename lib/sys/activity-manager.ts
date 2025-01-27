@@ -3,6 +3,9 @@ import {
 } from 'lib/sys/serial-data-source';
 
 
+// This is a recognizable error representing a stopped condition
+export class StoppedError extends Error {};
+
 export type StopState = {
     activity:    Activity,
     was_stopped: boolean,
@@ -34,7 +37,8 @@ export class Activity {
      */
     stop(): void {
         const was_stopped = this.stopped;
-        this.#abort_controller.abort();
+        // note: this is the only place where this.#abort_controller.abort() is called
+        this.#abort_controller.abort(new StoppedError('activity stopped'));
         if (this.#multiple_stops) {
             this.#abort_controller = new AbortController();
         }

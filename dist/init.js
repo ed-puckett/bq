@@ -7447,11 +7447,16 @@ module.exports = styleTagTransform;
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   B: () => (/* binding */ ActivityManager),
-/* harmony export */   I: () => (/* binding */ Activity)
+/* harmony export */   BT: () => (/* binding */ ActivityManager),
+/* harmony export */   Il: () => (/* binding */ Activity),
+/* harmony export */   Ko: () => (/* binding */ StoppedError)
 /* harmony export */ });
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5428);
 
+// This is a recognizable error representing a stopped condition
+class StoppedError extends Error {
+}
+;
 class Activity {
     /** create a new object representing an Activity, i.e., something that
      *  is running and can be stopped
@@ -7476,7 +7481,8 @@ class Activity {
      */
     stop() {
         const was_stopped = this.stopped;
-        this.#abort_controller.abort();
+        // note: this is the only place where this.#abort_controller.abort() is called
+        this.#abort_controller.abort(new StoppedError('activity stopped'));
         if (this.#multiple_stops) {
             this.#abort_controller = new AbortController();
         }
@@ -8049,17 +8055,25 @@ class SerialDataSource {
     #subject = new rxjs__WEBPACK_IMPORTED_MODULE_0__/* .Subject */ .B();
     subscribe(observer, options) {
         const { abort_signal, } = (options ?? {});
-        if (abort_signal?.aborted) {
-            throw new Error('abort_signal already aborted');
-        }
+        abort_signal?.throwIfAborted();
         const subscription = this.#subject.subscribe(observer);
+        let listener_removal_controller = undefined;
         if (abort_signal) {
+            listener_removal_controller = new AbortController();
             abort_signal.addEventListener('abort', () => {
+                listener_removal_controller = undefined; // prevent future use
                 subscription.unsubscribe();
-            }, { once: true });
+            }, {
+                signal: listener_removal_controller.signal,
+                once: true,
+            });
         }
+        const unsubscribe = () => {
+            listener_removal_controller?.abort();
+            subscription.unsubscribe();
+        };
         return {
-            unsubscribe: subscription.unsubscribe.bind(subscription),
+            unsubscribe,
             abort_signal,
         };
     }
@@ -11666,7 +11680,7 @@ class BqManager {
             (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .show_initialization_failed */ .$W)(error);
         }
     }
-    #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .B(true); // true: multiple_stops
+    #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT(true); // true: multiple_stops
     #eval_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_18__/* .SerialDataSource */ .Y();
     #command_bindings;
     #key_event_manager;
@@ -12030,12 +12044,7 @@ class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
         return renderer.render(ocx, cell.get_text(), options)
-            .then((result) => {
-            if (!ocx.keepalive) {
-                ocx.stop(); // stop anything that may have been started
-            }
-            return result;
-        }, (error) => {
+            .catch((error) => {
             const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
             error_message_element.scrollIntoView(false);
             if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
@@ -12045,6 +12054,11 @@ class BqManager {
                 ocx.stop(); // stop anything that may have been started
             }
             throw error;
+        })
+            .finally(() => {
+            if (!ocx.keepalive) {
+                ocx.stop(); // stop anything that may have been started
+            }
         });
     }
     /** this.#rendering_cells is set to a promise when render_cells() is active,
@@ -14165,9 +14179,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4931);
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
-/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1327);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_2__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_2__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
+/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1327);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_3__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+
 
 
 
@@ -14303,15 +14319,15 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
         if (typeof text !== 'string') {
             text = text?.toString?.() ?? '';
         }
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .TextRenderer */ .Js().render(this, text, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .TextRenderer */ .Js().render(this, text, options);
     }
     async render_error(error, options) {
         // don't call this.abort_if_stopped() for render_error() so that errors can still be rendered
         // also, call the synchronous ErrorRenderer,render_sync() method.
-        if (error instanceof _types__WEBPACK_IMPORTED_MODULE_1__/* .StoppedError */ .K) {
+        if (error instanceof lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .StoppedError */ .Ko) {
             options = { ...(options ?? {}), abbreviated: true };
         }
-        return src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .ErrorRenderer */ .iv.render_sync(this, error, options);
+        return src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .ErrorRenderer */ .iv.render_sync(this, error, options);
     }
     async render_value(value, options) {
         this.abort_if_stopped();
@@ -14350,27 +14366,27 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     }
     async javascript(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .JavaScriptRenderer */ .ZS().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .JavaScriptRenderer */ .ZS().render(this, code, options);
     }
     async markdown(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .MarkdownRenderer */ .To().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .MarkdownRenderer */ .To().render(this, code, options);
     }
     async latex(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .LaTeXRenderer */ .MH().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .LaTeXRenderer */ .MH().render(this, code, options);
     }
     async image_data(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .ImageDataRenderer */ .bN().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .ImageDataRenderer */ .bN().render(this, code, options);
     }
     async graphviz(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .GraphvizRenderer */ .B5().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .GraphvizRenderer */ .B5().render(this, code, options);
     }
     async plotly(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_2__/* .PlotlyRenderer */ .e$().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .PlotlyRenderer */ .e$().render(this, code, options);
     }
 }
 
@@ -14384,7 +14400,6 @@ __webpack_async_result__();
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   K: () => (/* binding */ StoppedError),
 /* harmony export */   s: () => (/* binding */ OutputContextLike)
 /* harmony export */ });
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
@@ -14398,14 +14413,10 @@ lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.t
 
 // NOTE: 'async' modifier cannot be used with 'abstract' modifier.
 // The implementation in _.ts will use the async modifier, however.
-// This is a recognizable error representing a stopped condition
-class StoppedError extends Error {
-}
-;
 const css_class__bq_cell_output = 'bq-cell-output';
 const attribute__data_source_element = 'data-source-element';
 const attribute__data_source_media_type = 'data-source-media-type';
-class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .B {
+class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT {
     get CLASS() { return this.constructor; }
     static get css_class__bq_cell_output() { return css_class__bq_cell_output; }
     static get attribute__data_source_element() { return attribute__data_source_element; }
@@ -14607,14 +14618,12 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
         return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .scrollable_parent */ .z3)(element);
     }
     // === ABORT IF STOPPED ===
-    /** abort by throwing a StoppedError if this.stopped, otherwise do nothing.
+    /** abort by throwing an Error if this.stopped, otherwise do nothing.
+     *  (implemented via this.abort_signal.throwIfAborted() where this.abort_signal
+     *  is defined by the base class ActivityManager.)
      */
-    abort_if_stopped(operation) {
-        if (this.stopped) {
-            const stopped_message = this.keepalive ? 'stopped' : 'stopped (keepalive not set)';
-            const message = operation ? `${operation}: ${stopped_message}` : stopped_message;
-            throw new StoppedError(message);
-        }
+    abort_if_stopped() {
+        this.abort_signal.throwIfAborted();
     }
     /** wrap the given function so that when it is called,
      *  this.abort_if_stopped() will be called first to
@@ -14627,18 +14636,18 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
         const AsyncFunction = (async () => { }).constructor;
         if (f instanceof AsyncFunction) {
             return async (...args) => {
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 return f.apply(null, args).then((result) => {
-                    this.abort_if_stopped(f.name);
+                    this.abort_if_stopped();
                     return result;
                 });
             };
         }
         else {
             return (...args) => {
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 const result = f.apply(null, args);
-                this.abort_if_stopped(f.name);
+                this.abort_if_stopped();
                 return result;
             };
         }
@@ -15697,7 +15706,7 @@ const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript
 
 
 
-class EvalWorker extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__/* .Activity */ .I {
+class EvalWorker extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__/* .Activity */ .Il {
     get CLASS() { return this.constructor; }
     #keepalive;
     #id;
