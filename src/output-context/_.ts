@@ -4,7 +4,6 @@ import {
 
 import {
     OutputContextLike,
-    StoppedError,
 } from './types';
 
 import {
@@ -12,6 +11,7 @@ import {
 } from 'lib/sys/serial-data-source';
 
 import {
+    StoppedError,
     ActivityManager,
 } from 'lib/sys/activity-manager';
 

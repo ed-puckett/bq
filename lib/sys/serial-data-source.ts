@@ -25,17 +25,29 @@ export class SerialDataSource<T> {
             abort_signal,
         } = (options ?? {} as SerialDataSourceOptions);
 
-        if (abort_signal?.aborted) {
-            throw new Error('abort_signal already aborted');
-        }
+        abort_signal?.throwIfAborted();
+
         const subscription = this.#subject.subscribe(observer);
+
+        let listener_removal_controller: undefined|AbortController = undefined;
         if (abort_signal) {
+            listener_removal_controller = new AbortController();
             abort_signal.addEventListener('abort', () => {
+                listener_removal_controller = undefined;  // prevent future use
                 subscription.unsubscribe();
-            }, { once: true });
+            }, {
+                signal: listener_removal_controller.signal,
+                once:   true,
+            });
         }
+
+        const unsubscribe = () => {
+            listener_removal_controller?.abort();
+            subscription.unsubscribe();
+        };
+
         return {
-            unsubscribe: subscription.unsubscribe.bind(subscription),
+            unsubscribe,
             abort_signal,
         } as SerialDataSourceSubscription;
     }
