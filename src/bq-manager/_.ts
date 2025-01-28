@@ -684,6 +684,7 @@ export class BqManager {
 
             let render_error: unknown = undefined;
 
+            cell_eval_loop:
             for (const iter_cell of cells) {
                 if (stopped) {
                     this.notification_manager.add('stopped');
@@ -699,6 +700,7 @@ export class BqManager {
                 } catch (error: unknown) {
                     console.warn('stopped render_cells after error rendering cell', error, iter_cell);
                     render_error = error;
+                    break cell_eval_loop;
                 }
             }
 

@@ -12086,7 +12086,7 @@ class BqManager {
                 stopped = true;
             });
             let render_error = undefined;
-            for (const iter_cell of cells) {
+            cell_eval_loop: for (const iter_cell of cells) {
                 if (stopped) {
                     this.notification_manager.add('stopped');
                     break;
@@ -12101,6 +12101,7 @@ class BqManager {
                 catch (error) {
                     console.warn('stopped render_cells after error rendering cell', error, iter_cell);
                     render_error = error;
+                    break cell_eval_loop;
                 }
             }
             result = !render_error;
@@ -15504,6 +15505,15 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             const result = await result_stream.next()
                 .catch((error) => { caught_error = error; });
             if (caught_error) {
+                // it might be tempting to handle the error here (for example,
+                // by rendering the error to the eval_ocx) but it is important
+                // that the error be propagated out to the multi-cell eval
+                // case in BqManager, otherwise the evaluation just continues
+                // after an error occurs.  One idea is to create a special
+                // "error element" that can be recognized further up as an
+                // error, but this seems kludgey.  So (for now at least) the
+                // user is required to handle potential errors in their code.
+                // See: examples/unhandled-rejection.html
                 throw caught_error;
             }
             const { value, done } = result;
