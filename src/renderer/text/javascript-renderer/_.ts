@@ -273,6 +273,15 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             const result = await result_stream.next()
                 .catch((error: unknown) => { caught_error = error; });
             if (caught_error) {
+                // it might be tempting to handle the error here (for example,
+                // by rendering the error to the eval_ocx) but it is important
+                // that the error be propagated out to the multi-cell eval
+                // case in BqManager, otherwise the evaluation just continues
+                // after an error occurs.  One idea is to create a special
+                // "error element" that can be recognized further up as an
+                // error, but this seems kludgey.  So (for now at least) the
+                // user is required to handle potential errors in their code.
+                // See: examples/unhandled-rejection.html
                 throw caught_error;
             }
 
