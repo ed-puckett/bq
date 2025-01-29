@@ -821,14 +821,8 @@ export class BqManager {
                 if (bindings_fn) {
                     if (bindings_fn instanceof AsyncFunction) {
                         return bindings_fn(updated_command_context)
-                            .then((result: boolean) => {
-                                if (!result) {
-                                    beep();
-                                }
-                                return result;
-                            })
                             .catch((error: unknown) => {
-                                console.error('error performing command', error, updated_command_context);
+                                console.error('error performing command', updated_command_context, error);
                                 return false;
                             });
                     } else {
@@ -837,10 +831,7 @@ export class BqManager {
                 }
             }
         } catch (error: unknown) {
-            console.error('error processing command', command_context, error);
-        }
-        if (!result) {
-            beep();
+            console.error('error performing command', command_context, error);
         }
         return result;
     }
