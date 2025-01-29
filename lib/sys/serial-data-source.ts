@@ -3,9 +3,9 @@ import {
     Subscription,
 } from 'rxjs';
 
-export {
-    Subscription,
-} from 'rxjs';
+import {
+    manage_abort_signal_action,
+} from 'lib/sys/abort-signal-action';
 
 
 export type SerialDataSourceOptions = {
@@ -25,26 +25,12 @@ export class SerialDataSource<T> {
             abort_signal,
         } = (options ?? {} as SerialDataSourceOptions);
 
-        abort_signal?.throwIfAborted();
-
         const subscription = this.#subject.subscribe(observer);
+        const unsubscribe_implemention = () => { subscription.unsubscribe(); };
 
-        let listener_removal_controller: undefined|AbortController = undefined;
-        if (abort_signal) {
-            listener_removal_controller = new AbortController();
-            abort_signal.addEventListener('abort', () => {
-                listener_removal_controller = undefined;  // prevent future use
-                subscription.unsubscribe();
-            }, {
-                signal: listener_removal_controller.signal,
-                once:   true,
-            });
-        }
-
-        const unsubscribe = () => {
-            listener_removal_controller?.abort();
-            subscription.unsubscribe();
-        };
+        const unsubscribe = abort_signal
+            ? manage_abort_signal_action(abort_signal, unsubscribe_implemention).action
+            : unsubscribe_implemention;
 
         return {
             unsubscribe,
