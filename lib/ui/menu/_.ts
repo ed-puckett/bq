@@ -125,10 +125,10 @@ export class Menu<DocumentManager> {
         } = (options ?? {});
 
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         if (get_command_bindings !== null && typeof get_command_bindings !== 'undefined' && typeof get_command_bindings !== 'function') {
-            throw new Error('get_command_bindings must be null, undefined, or a function');
+            throw new TypeError('get_command_bindings must be null, undefined, or a function');
         }
 
         this.#dm = dm;
@@ -182,7 +182,7 @@ export class Menu<DocumentManager> {
     set_menu_state(command: string, state_spec: { enabled?: boolean, checked?: boolean }) {
         state_spec ??= {};
         if (typeof state_spec !== 'object') {
-            throw new Error('state_spec must be an object');
+            throw new TypeError('state_spec must be an object');
         }
         const elements = this.#menu_command_to_elements.get(command);
         if (!elements) {
@@ -226,7 +226,7 @@ export class Menu<DocumentManager> {
     #deactivate_menu(menu_element: HTMLElement): void {
         if (menu_element) {
             if (!(menu_element instanceof HTMLElement) || !menu_element.classList.contains('menu')) {
-                throw new Error('menu_element must be an HTMLElement with class "menu"');
+                throw new TypeError('menu_element must be an HTMLElement with class "menu"');
             }
             if (!menu_element.classList.contains('persistent-menu')) {  // menubar always remains active
                 menu_element.classList.remove('active');
@@ -333,7 +333,7 @@ export class Menu<DocumentManager> {
      */
     #build_menu_item_separator(parent: Element): HTMLElement {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         const element = create_element({
             parent,
@@ -353,7 +353,7 @@ export class Menu<DocumentManager> {
      */
     #build_menu(menu_spec: string|object, parent: Element, toplevel: boolean = false): HTMLElement {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         if (typeof menu_spec === 'string') {
             return this.#build_menu_item_separator(parent);
@@ -366,19 +366,19 @@ export class Menu<DocumentManager> {
         } = menu_spec as any;
 
         if (typeof label !== 'string') {
-            throw new Error('label must be specified as a string');
+            throw new TypeError('label must be specified as a string');
         }
         if (item && collection) {
-            throw new Error('item and collection must not both be specified');
+            throw new TypeError('item and collection must not both be specified');
         }
         if (collection) {
             if (!Array.isArray(collection)) {
-                throw new Error('collection must be an array');
+                throw new TypeError('collection must be an array');
             }
         }
         if (item) {
             if (typeof item !== 'object' || typeof item.command !== 'string') {
-                throw new Error('item must specify an object with a string property "command"');
+                throw new TypeError('item must specify an object with a string property "command"');
             }
         }
 

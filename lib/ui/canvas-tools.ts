@@ -14,7 +14,7 @@
  */
 export function draw_arc(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         a0               = 0,
@@ -60,7 +60,7 @@ export const default_dot_size_to_line_width_ratio = 3;
  */
 export function draw_dot(ctx: CanvasRenderingContext2D, x: number, y: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         r = (default_dot_size_to_line_width_ratio * ctx.lineWidth),
@@ -118,17 +118,17 @@ export function angle_from_heading(dx: number, dy: number) {
  */
 export function draw_line(ctx: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         label,
         label_options,
     } = (options ?? {}) as any;
     if (label && typeof label !== 'string') {
-        throw new Error('label must be undefined or a string');
+        throw new TypeError('label must be undefined or a string');
     }
     if (label_options && typeof label_options !== 'object') {
-        throw new Error('label_options must be undefined or an object');
+        throw new TypeError('label_options must be undefined or an object');
     }
     ctx.beginPath();
     ctx.moveTo(x0, y0);
@@ -160,7 +160,7 @@ export const default_tick_length_to_line_width_ratio = 8;
  */
 export function draw_tick(ctx: CanvasRenderingContext2D, x: number, y: number, hx: number, hy: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         len = (default_tick_length_to_line_width_ratio * ctx.lineWidth),
@@ -185,10 +185,10 @@ export function draw_tick(ctx: CanvasRenderingContext2D, x: number, y: number, h
  */
 export function draw_ticks(ctx: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, inc: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     if (typeof inc !== 'number' || inc <= 0) {
-        throw new Error('inc must be a positive number');
+        throw new TypeError('inc must be a positive number');
     }
     const {
         draw_initial = false,
@@ -223,7 +223,7 @@ export function draw_ticks(ctx: CanvasRenderingContext2D, x0: number, y0: number
  */
 export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         stroke_only,
@@ -234,7 +234,7 @@ export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x
         dyr,
     } = (options ?? {}) as any;
     if (!['undefined', 'number'].includes(typeof padding)) {
-        throw new Error('padding must be undefined or a number');
+        throw new TypeError('padding must be undefined or a number');
     }
     const initial_transform = ctx.getTransform();
     try {
@@ -300,7 +300,7 @@ export const default_arrowhead_length_to_line_width_ratio = 10;
  */
 export function draw_arrowhead(ctx: CanvasRenderingContext2D, x: number, y: number, hx: number, hy: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const TWOPI = 2*Math.PI;
     const {
@@ -342,7 +342,7 @@ export function draw_arrowhead(ctx: CanvasRenderingContext2D, x: number, y: numb
  */
 export function draw_arrow(ctx: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         double,

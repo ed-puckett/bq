@@ -386,7 +386,7 @@ export function get_settings() {
 export async function update_settings(new_settings: object) {
     const complaint = analyze_settings(new_settings);
     if (complaint) {
-        throw new Error(complaint);
+        throw new TypeError(complaint);
     }
     await put_settings_to_storage(new_settings);  // may throw an error
     current_settings = new_settings;

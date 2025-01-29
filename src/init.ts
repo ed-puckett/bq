@@ -102,7 +102,7 @@ async function initialize_document(): Promise<void> {
         // validate html[data-cell-view]
         const cell_view = document.documentElement.getAttribute(cell_view_attribute_name);
         if (cell_view && !_valid_cell_view_values.includes(cell_view)) {
-            throw new Error(`<html> attribute ${cell_view_attribute_name} must be unset or one of: "${_valid_cell_view_values.join('", "')}"`);
+            throw new TypeError(`<html> attribute ${cell_view_attribute_name} must be unset or one of: "${_valid_cell_view_values.join('", "')}"`);
         }
 
         // establish head element if not already present
@@ -145,7 +145,7 @@ async function initialize_document(): Promise<void> {
             const id = cell.id;
             if (id) {
                 if (cell_ids.has(id)) {
-                    throw new Error(`bq-cell element has a repeated id "${id}"`);
+                    throw new Error(`bq-cell element has an already-used id "${id}"`);
                 }
                 cell_ids.add(id);
             }
@@ -237,7 +237,7 @@ export async function save_serializer(
     } = (options as any);
 
     if (typeof cell_view !== 'undefined' && !_valid_cell_view_values.includes(cell_view)) {
-        throw new Error(`illegal cell_view value: ${cell_view}`);
+        throw new TypeError(`illegal cell_view value: ${cell_view}`);
     }
     let cell_view_from_document: null|string = document.documentElement.getAttribute(cell_view_attribute_name);
     if (cell_view_from_document && !_valid_cell_view_values.includes(cell_view_from_document)) {
@@ -384,7 +384,7 @@ function _get_bootstrap_script_src(bootstrap_script_src_choice?: string): string
     const src_alternatives = _basic_bootstrap_script_src_alternatives;
     const src = (src_alternatives as any)[bootstrap_script_src_choice];
     if (!src) {
-        throw new Error(`invalid bootstrap_script_src_choice: ${bootstrap_script_src_choice}`);
+        throw new TypeError(`invalid bootstrap_script_src_choice: ${bootstrap_script_src_choice}`);
     }
     return src;
 }
@@ -397,13 +397,13 @@ export function get_bootstrap_script_src_alternatives(): { [choice: string]: { u
     const src_alternatives = { ..._basic_bootstrap_script_src_alternatives };  // copy to protect internal structure from modification
     for (const key in src_alternatives) {
         if (!(key in _bootstrap_script_src_alternative_descriptions)) {
-            throw new Error(`unexpected: key in src_alternatives has no corresponding description: ${key}`);
+            throw new TypeError(`unexpected: key in src_alternatives has no corresponding description: ${key}`);
         }
         let label, details;
         const label_and_details = (_bootstrap_script_src_alternative_descriptions as any)[key];
         if ( !(typeof label_and_details === 'string') &&
              !(Array.isArray(label_and_details) && label_and_details.length === 2 && label_and_details.every(it => typeof it === 'string')) ) {
-            throw new Error(`unexpected: _bootstrap_script_src_alternative_descriptions["${key}"] must be a string or a two-element array of strings`);
+            throw new TypeError(`unexpected: _bootstrap_script_src_alternative_descriptions["${key}"] must be a string or a two-element array of strings`);
         }
         if (typeof label_and_details === 'string') {
             label = label_and_details;

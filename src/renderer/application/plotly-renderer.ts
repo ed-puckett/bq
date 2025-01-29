@@ -21,7 +21,7 @@ export class PlotlyRenderer extends ApplicationBasedRenderer<PlotlyRendererValue
 
     async _render(ocx: OutputContextLike, plotly_config: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
         if (typeof plotly_config !== 'object') {
-            throw new Error('plotly_config must be an object');
+            throw new TypeError('plotly_config must be an object');
         }
 
         const style = options?.style;

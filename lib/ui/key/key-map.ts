@@ -34,10 +34,10 @@ export class KeyMap {
 
     static multi_mapper(...key_maps: KeyMap[]): KeyMapMapper {
         if (key_maps.length <= 0) {
-            throw new Error('at least one KeyMap instance must be given');
+            throw new TypeError('at least one KeyMap instance must be given');
         }
         if (!key_maps.every(m => m instanceof this)) {
-            throw new Error('arguments must all be KeyMap instances');
+            throw new TypeError('arguments must all be KeyMap instances');
         }
         return key_maps.reduce<KeyMapMapper>(
             (mapper, key_map) => key_map.create_mapper(mapper),
@@ -47,13 +47,13 @@ export class KeyMap {
 
     static #create_mapping(bindings: null|KeyMapBindings): KeyMapMapping {
         if (bindings !== null && typeof bindings !== 'object') {
-            throw new Error('bindings must be null or an object');
+            throw new TypeError('bindings must be null or an object');
         }
         const mapping: KeyMapMapping = {};
         if (bindings) {
             for (const command in bindings) {
                 if (command.length <= 0) {
-                    throw new Error('bindings keys (command names) must not be empty strings');
+                    throw new TypeError('bindings keys (command names) must not be empty strings');
                 }
                 const command_bindings = bindings[command];
                 if (command_bindings) {
@@ -68,7 +68,7 @@ export class KeyMap {
                             if (typeof existing === 'string' || (typeof existing === 'object' && is_last)) {
                                 // something else already mapped here...
                                 const seq_so_far = seq_key_strings.slice(0, i+1).join(KeySpec.canonical_key_string_separator);
-                                throw new Error(`duplicate bindings specified for key sequence: ${seq_so_far}`);
+                                throw new TypeError(`duplicate bindings specified for key sequence: ${seq_so_far}`);
                             }
                             if (!is_last) {
                                 // multi-key sequence
@@ -96,16 +96,16 @@ export class KeyMapMapper {
                  recognizer:      null|KeyMapRecognizer,
                  fallback_mapper: null|KeyMapMapper = null) {
         if (mapping !== null && typeof mapping !== 'undefined' && typeof mapping !== 'object') {
-            throw new Error('mapping must be null/undefined or an object');
+            throw new TypeError('mapping must be null/undefined or an object');
         }
         if (recognizer !== null && typeof recognizer !== 'undefined' && typeof recognizer !== 'function') {
-            throw new Error('recognizer must be null/undefined or a function');
+            throw new TypeError('recognizer must be null/undefined or a function');
         }
         if (fallback_mapper !== null && typeof fallback_mapper !== 'undefined' && !(fallback_mapper instanceof KeyMapMapper)) {
-            throw new Error('fallback_mapper must be null/undefined or a KeyMap instance');
+            throw new TypeError('fallback_mapper must be null/undefined or a KeyMap instance');
         }
         if (!mapping && !fallback_mapper) {
-            throw new Error('at least one of mapping or fallback_mapper must be given');
+            throw new TypeError('at least one of mapping or fallback_mapper must be given');
         }
         this.mapping         = mapping;
         this.recognizer      = recognizer;

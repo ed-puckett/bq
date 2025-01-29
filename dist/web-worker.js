@@ -34,7 +34,7 @@ self.onmessage = async function (message) {
     }
 
     default: {
-        throw new Error(`unknown request ${request}`);
+        throw new TypeError(`unknown request ${request}`);
     }
     }
 };

@@ -5,7 +5,7 @@ export class IndexedDBInterface {
 
     constructor(database_name: string, database_store_name: string) {
         if (typeof database_name !== 'string' || typeof database_store_name !== 'string') {
-            throw new Error('database_name and database_store_name must be strings');
+            throw new TypeError('database_name and database_store_name must be strings');
         }
 
         this.database_name       = database_name;

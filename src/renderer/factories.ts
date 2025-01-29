@@ -31,15 +31,15 @@ export function get_text_renderer_factories(): RendererFactory[] {
  */
 export function set_text_renderer_factories(new_renderer_factories: RendererFactory[]): void {
     if (!Array.isArray(new_renderer_factories)) {
-        throw new Error('new_renderer_factories must be an Array');
+        throw new TypeError('new_renderer_factories must be an Array');
     }
     const types_seen = new Set();
     for (const rf of new_renderer_factories) {
         if (!is_RendererFactory(rf)) {
-            throw new Error('new_renderer_factories must be an Array of RendererFactory objects');
+            throw new TypeError('new_renderer_factories must be an Array of RendererFactory objects');
         }
         if (types_seen.has(rf.type)) {
-            throw new Error(`new_renderer_factories contains multiple entries with type "${rf.type}"`);
+            throw new TypeError(`new_renderer_factories contains multiple entries with type "${rf.type}"`);
         }
         types_seen.add(rf.type);
     }
@@ -59,7 +59,7 @@ export function reset_to_initial_text_renderer_factories(): void {  // called in
 
 export function add_text_renderer_factory(renderer_factory: RendererFactory): void {
     if (!is_RendererFactory(renderer_factory)) {
-        throw new Error('renderer_factory must be an instance of RendererFactory');
+        throw new TypeError('renderer_factory must be an instance of RendererFactory');
     }
     const new_renderer_factories = [
         renderer_factory,
