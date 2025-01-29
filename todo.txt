@@ -1,4 +1,3 @@
-BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier
 define ocx.render_tty() or something like that (?)
 in markdown, inline invocation of a renderer (especially of javascript) would be nice
 provide visual indication of a cell's show-full and show-in-presentation states
@@ -8,7 +7,7 @@ auto-eval documents cause unhandled rejection when trying to call beep() in Fire
 errors in bq-cell javascript do not indicate where the error happened in the code
 need to support (persistent) historical versions so that others can have a stable version to work against
 add command/menu to reset cell and output ids
-add export option to reset cell and output ids
+add export dialog option to reset cell and output ids
 create_child_ocx seems to modify parent ocx behavior (?)
 make help document
 update README.md
@@ -46,6 +45,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier
 * use TypeError instead of Error where appropriate
 * provide general mechanism to handle AbortSignal actions that prevents memory leaks and then use in places like KeyEventManager and SerialDataSource
 * unhandled rejection when something outputs later from a javascript block inside markdown without using keepalive(); (works as designed -- see examples/unhandled-rejection.html)
