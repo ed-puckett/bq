@@ -1,4 +1,9 @@
 import {
+    manage_abort_signal_action,
+    AbortSignalActionControl,
+} from 'lib/sys/abort-signal-action';
+
+import {
     SerialDataSource,
     SerialDataSourceSubscription,
 } from 'lib/sys/serial-data-source';
@@ -39,7 +44,7 @@ export class KeyEventManager<DocumentManager> {
      *      initial_key_maps?: Array<KeyMap>,
      *      abort_signal?:     AbortSignal,
      *  }
-     *  Note: handlers added later via this.commands.subscribe() will not be
+     *  Note: observers added later via this.commands.subscribe() will not be
      *  detached when abort_signal fires unless you pass in this.abort_signal
      *  in options to this.commands.subscribe().
      */
@@ -53,24 +58,17 @@ export class KeyEventManager<DocumentManager> {
         this.#dm               = dm;
         this.#event_target     = event_target;
         this.#command_observer = command_observer;
+        this.#abort_signal     = abort_signal;
 
         this.#commands = new SerialDataSource<CommandContext<DocumentManager>>();
         if (command_observer) {
             this.commands.subscribe(command_observer, {
-                abort_signal,
+                abort_signal: this.#abort_signal,
             });
         }
 
         // stack grows from the front, i.e., the first item is the last pushed
         this.#key_map_stack = initial_key_maps ? Array.from(initial_key_maps) : [];  // copy initial_key_maps if given
-
-        // set up handler for abort_signal
-        this.#abort_signal = abort_signal;
-        if (abort_signal) {
-            abort_signal.addEventListener('abort', () => {
-                this.#detach();
-            }, { once: true });
-        }
 
         // finish initialization
         this.#key_mapper = null;  // set iff attached (will be set by this.#rebuild())
@@ -89,9 +87,10 @@ export class KeyEventManager<DocumentManager> {
 
     #commands:                  SerialDataSource<CommandContext<DocumentManager>>;
     #key_map_stack:             Array<KeyMap>;
-    #key_mapper:                null|KeyMapMapper;                       // set iff attached
-    #key_handler:               undefined|((e: KeyboardEvent) => void);  // set iff attached
-    #listener_abort_controller: undefined|AbortController;               // set iff attached
+    #key_mapper:                null|KeyMapMapper;                         // set iff attached
+    #key_handler:               undefined|((e: KeyboardEvent) => void);    // set iff attached
+    #abort_signal_control:      undefined|AbortSignalActionControl<void>;  // set iff attached
+    #listener_abort_controller: undefined|AbortController;                 // set iff attached
 
     get commands (){ return this.#commands; }
 
@@ -180,6 +179,10 @@ export class KeyEventManager<DocumentManager> {
     // === INTERNAL ===
 
     #detach() {
+        if (this.#abort_signal_control) {
+            this.#abort_signal_control.abandon();
+            this.#abort_signal_control = undefined;
+        }
         if (this.#listener_abort_controller) {
             this.#listener_abort_controller.abort();  // remove event listeners
             this.#listener_abort_controller = undefined;
@@ -266,6 +269,7 @@ export class KeyEventManager<DocumentManager> {
                 }
             };
 
+            // set ip the event listeners
             this.#key_handler = key_handler;  // for inject_key_event()
 
             this.#listener_abort_controller = new AbortController();
@@ -275,6 +279,9 @@ export class KeyEventManager<DocumentManager> {
             };
             this.event_target.addEventListener('blur',    blur_handler as EventListener, options);
             this.event_target.addEventListener('keydown', key_handler  as EventListener, options);
+
+            // set up the abort_signal control so that this.#detach is called if abort_signal fires
+            this.#abort_signal_control = manage_abort_signal_action(this.#abort_signal, this.#detach.bind(this));
         }
     }
 }
