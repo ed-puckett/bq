@@ -4,7 +4,7 @@ import {
 } from 'rxjs';
 
 import {
-    manage_abort_signal_action,
+    AbortSignalAction,
 } from 'lib/sys/abort-signal-action';
 
 
@@ -29,12 +29,13 @@ export class SerialDataSource<T> {
 
         const subscription = this.#subject.subscribe(observer);
 
-        const {
-            action: unsubscribe,
-        } = manage_abort_signal_action(
+        const abort_signal_action = new AbortSignalAction(
             abort_signal,
             () => { subscription.unsubscribe(); },
         );
+        const unsubscribe = () => {
+            abort_signal_action.trigger();
+        };
 
         return {
             abort_signal,

@@ -7447,96 +7447,108 @@ module.exports = styleTagTransform;
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   $: () => (/* binding */ manage_abort_signal_action)
+/* harmony export */   $: () => (/* binding */ AbortSignalAction)
 /* harmony export */ });
-/** manage_abort_signal_action<R>() establishes control over an action function
- * to be associated with an AbortSignal.
- *
- * @param {undefined|null|AbortSignal} abort_signal
- * @param {Function} action function implementation
- * @throws {Error|any} reason thrown by abort_signal.throwIfAborted()
- *                     if abort_signal is already aborted
- * @return {AbortSignalActionControl<R>} control: {
- *     abort_signal?: undefined|AbortSignal,  // (null becomes undefined)
- *     action:        (() => R)               // wrapped action function,
- *     abandon:       (() => void),           // call to abandon management
- * }
- *
- * The given action function implementation is associated with an AbortSignal
- * 'abort' event.
- *
- * The action function implementation will be called at most once by this code,
- * and will be triggered by either calling the returned wrapped function or
- * if the abort_signal fires an 'abort' event.
- *
- * As a convenience, abort_signal may be undefined or null in which case there
- * is no evented trigger for calling the action function.  However, the returned
- * wrapped function can still be called, and will still call the implementation
- * at most once.
- *
- * Once the action function implementation has been called, the resources
- * associated with the listener for the 'abort' event are released.  This is in
- * contrast to simply adding an event listener to the abort_signal in which case
- * the event listener will not be removed for a long-lived abort_signal.
- *
- * The returned abandon function stops management and releases the associated
- * resources without triggering a call to the action function implementation.
- * After calling abandon, calling any of the returned functions (the wrapped
- * action function or the abandon function) will throw an error.  Also, if the
- * abort_signal fires an 'abort' event after abandon has been called, nothing
- * happens.
- *
- * Warning: calling abandon prevents triggering the action function later!
+/** AbortSignalAction() manages the association of an action function with an
+ * AbortSignal 'abort' event.
  */
-function manage_abort_signal_action(abort_signal, action_implementation) {
-    if (typeof action_implementation !== 'function') {
-        throw new TypeError('action_implementation must be a function');
-    }
-    if (typeof abort_signal !== 'undefined' && abort_signal !== null && !(abort_signal instanceof AbortSignal)) {
-        throw new TypeError('abort_signal must be undefined, null, or an instance of AbortSignal');
-    }
-    abort_signal?.throwIfAborted();
-    let listener_removal_controller = undefined;
-    const remove_listener = () => {
-        if (listener_removal_controller) {
-            listener_removal_controller.abort();
-            listener_removal_controller = undefined; // prevent future use
+class AbortSignalAction {
+    /** AbortSignalAction constructor
+     *
+     *  @param {undefined|AbortSignal} abort_signal
+     *  @param {Function} action function to be associated with abort_signal
+     *  @throws {Error|any} reason thrown by abort_signal.throwIfAborted()
+     *                      if abort_signal is already aborted
+     *
+     * The given action function will be called at most once by this code, and
+     * will be triggered by either calling this.trigger() or if abort_signal
+     * fires an 'abort' event.
+     *
+     * As a convenience, abort_signal may be undefined in which case there is
+     * no event-based trigger for calling the action function.  However,
+     * this.trigger() can still be called, and will still only call the given
+     * action function at most once.
+     *
+     * After the action function has been called, the resources associated with
+     * the listener for the 'abort' event are released.  This is in contrast to
+     * simply adding an event listener to the abort_signal in which case the
+     * event listener will not be removed for a long-lived abort_signal.
+     *
+     * Calling this.unmanage() ends management and releases the associated
+     * resources without triggering a call to the action function.  After
+     * calling unmanage(), calling this.trigger() will throw an error.  Also,
+     * if the abort_signal fires an 'abort' event after unmanage() has been
+     * called, nothing happens.
+     *
+     * Warning: calling unmanage() prevents triggering the action function later!
+     * (at least through this interface)
+     */
+    constructor(abort_signal, action) {
+        if (typeof action !== 'function') {
+            throw new TypeError('action must be a function');
         }
-    };
-    let abandoned = false;
-    const throw_if_abandoned = () => {
-        if (abandoned) {
-            throw new Error('abandoned');
+        if (typeof abort_signal !== 'undefined' && !(abort_signal instanceof AbortSignal)) {
+            throw new TypeError('abort_signal must be undefined or an instance of AbortSignal');
         }
-    };
-    let action_implementation_called = false;
-    const action = () => {
-        throw_if_abandoned();
-        remove_listener();
-        if (!action_implementation_called) {
-            action_implementation_called = true;
-            action_implementation();
+        abort_signal?.throwIfAborted();
+        this.#action = action;
+        this.#abort_signal = abort_signal;
+        if (abort_signal) {
+            this.#listener_removal_controller = new AbortController();
+            abort_signal.addEventListener('abort', () => {
+                this.#listener_removal_controller = undefined; // prevent future use (note: once is true, below)
+                this.trigger();
+            }, {
+                signal: this.#listener_removal_controller.signal,
+                once: true, // important because this.#listener_removal_controller was disabled above
+            });
         }
-    };
-    if (abort_signal) {
-        listener_removal_controller = new AbortController();
-        abort_signal.addEventListener('abort', () => {
-            listener_removal_controller = undefined; // prevent future use (note: once is true, below)
-            action();
-        }, {
-            signal: listener_removal_controller.signal,
-            once: true, // important because listener_removal_controller was disabled above
-        });
     }
-    const abandon = () => {
-        remove_listener();
-        abandoned = true;
-    };
-    return {
-        abort_signal: (abort_signal ?? undefined), // (null becomes undefined)
-        action,
-        abandon,
-    };
+    /** @return {undefined|AbortSignal} abort_signal given in the constructor
+     */
+    get abort_signal() { return this.#abort_signal; }
+    /** "manually" trigger the action function.
+     * Note that the action function will be called at most once by this code,
+     * whether as a result of the given abort_signal firing an 'abort' event
+     * or by this function being called.
+     * @throws {Error} after this.unmanage() has been called.
+     */
+    trigger() {
+        this.#throw_if_unmanaged();
+        this.#remove_listener();
+        if (!this.#action_called) {
+            this.#action_called = true; // set first just in case
+            this.#action();
+        }
+    }
+    /** end management and release associated resources.
+     */
+    unmanage() {
+        this.#remove_listener();
+        this.#unmanaged = true;
+    }
+    /** @return {Boolean} true iff this.unmanage() has been called.
+     */
+    get unmanaged() { return this.#unmanaged; }
+    // --- internal ---
+    // set in constructor:
+    #abort_signal;
+    #action;
+    // state:
+    #listener_removal_controller = undefined;
+    #action_called = false;
+    #unmanaged = false;
+    #remove_listener() {
+        if (this.#listener_removal_controller) {
+            this.#listener_removal_controller.abort();
+            this.#listener_removal_controller = undefined; // prevent future use
+        }
+    }
+    #throw_if_unmanaged() {
+        if (this.#unmanaged) {
+            throw new Error('no longer managed');
+        }
+    }
 }
 
 
@@ -8157,7 +8169,10 @@ class SerialDataSource {
         const { abort_signal, } = (options ?? {});
         abort_signal?.throwIfAborted();
         const subscription = this.#subject.subscribe(observer);
-        const { action: unsubscribe, } = (0,lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_1__/* .manage_abort_signal_action */ .$)(abort_signal, () => { subscription.unsubscribe(); });
+        const abort_signal_action = new lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_1__/* .AbortSignalAction */ .$(abort_signal, () => { subscription.unsubscribe(); });
+        const unsubscribe = () => {
+            abort_signal_action.trigger();
+        };
         return {
             abort_signal,
             unsubscribe,
@@ -10163,7 +10178,7 @@ class KeyEventManager {
     #key_map_stack;
     #key_mapper; // set iff attached
     #key_handler; // set iff attached
-    #abort_signal_control; // set iff attached
+    #abort_signal_action; // set iff attached
     #listener_abort_controller; // set iff attached
     get commands() { return this.#commands; }
     get aborted() { return this.abort_signal?.aborted ?? false; }
@@ -10242,9 +10257,9 @@ class KeyEventManager {
     }
     // === INTERNAL ===
     #detach() {
-        if (this.#abort_signal_control) {
-            this.#abort_signal_control.abandon();
-            this.#abort_signal_control = undefined;
+        if (this.#abort_signal_action) {
+            this.#abort_signal_action.unmanage(); // release management resources without triggering
+            this.#abort_signal_action = undefined;
         }
         if (this.#listener_abort_controller) {
             this.#listener_abort_controller.abort(); // remove event listeners
@@ -10334,8 +10349,8 @@ class KeyEventManager {
             };
             this.event_target.addEventListener('blur', blur_handler, options);
             this.event_target.addEventListener('keydown', key_handler, options);
-            // set up the abort_signal control so that this.#detach is called if abort_signal fires
-            this.#abort_signal_control = (0,abort_signal_action/* manage_abort_signal_action */.$)(this.#abort_signal, this.#detach.bind(this));
+            // set up the abort_signal management so that this.#detach is called if abort_signal fires
+            this.#abort_signal_action = new abort_signal_action/* AbortSignalAction */.$(this.#abort_signal, this.#detach.bind(this));
         }
     }
 }
