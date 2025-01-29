@@ -13,8 +13,8 @@ export type SerialDataSourceOptions = {
 };
 
 export type SerialDataSourceSubscription = {
-    unsubscribe:   (() => void),
     abort_signal?: AbortSignal,
+    unsubscribe:   (() => void),
 };
 
 export class SerialDataSource<T> {
@@ -25,16 +25,20 @@ export class SerialDataSource<T> {
             abort_signal,
         } = (options ?? {} as SerialDataSourceOptions);
 
-        const subscription = this.#subject.subscribe(observer);
-        const unsubscribe_implemention = () => { subscription.unsubscribe(); };
+        abort_signal?.throwIfAborted();
 
-        const unsubscribe = abort_signal
-            ? manage_abort_signal_action(abort_signal, unsubscribe_implemention).action
-            : unsubscribe_implemention;
+        const subscription = this.#subject.subscribe(observer);
+
+        const {
+            action: unsubscribe,
+        } = manage_abort_signal_action(
+            abort_signal,
+            () => { subscription.unsubscribe(); },
+        );
 
         return {
-            unsubscribe,
             abort_signal,
+            unsubscribe,
         } as SerialDataSourceSubscription;
     }
 
