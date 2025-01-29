@@ -1,6 +1,5 @@
 import {
-    manage_abort_signal_action,
-    AbortSignalActionControl,
+    AbortSignalAction,
 } from 'lib/sys/abort-signal-action';
 
 import {
@@ -87,10 +86,10 @@ export class KeyEventManager<DocumentManager> {
 
     #commands:                  SerialDataSource<CommandContext<DocumentManager>>;
     #key_map_stack:             Array<KeyMap>;
-    #key_mapper:                null|KeyMapMapper;                         // set iff attached
-    #key_handler:               undefined|((e: KeyboardEvent) => void);    // set iff attached
-    #abort_signal_control:      undefined|AbortSignalActionControl<void>;  // set iff attached
-    #listener_abort_controller: undefined|AbortController;                 // set iff attached
+    #key_mapper:                null|KeyMapMapper;                       // set iff attached
+    #key_handler:               undefined|((e: KeyboardEvent) => void);  // set iff attached
+    #abort_signal_action:       undefined|AbortSignalAction;             // set iff attached
+    #listener_abort_controller: undefined|AbortController;               // set iff attached
 
     get commands (){ return this.#commands; }
 
@@ -179,9 +178,9 @@ export class KeyEventManager<DocumentManager> {
     // === INTERNAL ===
 
     #detach() {
-        if (this.#abort_signal_control) {
-            this.#abort_signal_control.abandon();
-            this.#abort_signal_control = undefined;
+        if (this.#abort_signal_action) {
+            this.#abort_signal_action.unmanage();  // release management resources without triggering
+            this.#abort_signal_action = undefined;
         }
         if (this.#listener_abort_controller) {
             this.#listener_abort_controller.abort();  // remove event listeners
@@ -280,8 +279,8 @@ export class KeyEventManager<DocumentManager> {
             this.event_target.addEventListener('blur',    blur_handler as EventListener, options);
             this.event_target.addEventListener('keydown', key_handler  as EventListener, options);
 
-            // set up the abort_signal control so that this.#detach is called if abort_signal fires
-            this.#abort_signal_control = manage_abort_signal_action(this.#abort_signal, this.#detach.bind(this));
+            // set up the abort_signal management so that this.#detach is called if abort_signal fires
+            this.#abort_signal_action = new AbortSignalAction(this.#abort_signal, this.#detach.bind(this));
         }
     }
 }
