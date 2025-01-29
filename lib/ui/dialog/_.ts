@@ -259,7 +259,7 @@ export class ConfirmDialog extends Dialog {
  */
 export function create_control_element(parent: Node, id?: null|string, options?: object) {
     if (typeof id !== 'undefined' && id !== null && (typeof id !== 'string' || id === '')) {
-        throw new Error('id must be undefined, null, or a non-empty string');
+        throw new TypeError('id must be undefined, null, or a non-empty string');
     }
     id ??= undefined;  // null -> undefined
     const {
@@ -271,10 +271,10 @@ export function create_control_element(parent: Node, id?: null|string, options?:
     } = (options ?? {}) as any;
 
     if (label && !id) {
-        throw new Error('id must be a non-empty string if label is specified');
+        throw new TypeError('id must be a non-empty string if label is specified');
     }
     if ('id' in attrs || 'type' in attrs) {
-        throw new Error('attrs must not contain "id" or "type"');
+        throw new TypeError('attrs must not contain "id" or "type"');
     }
 
     const control_opts = {
@@ -335,7 +335,7 @@ export function create_control_element(parent: Node, id?: null|string, options?:
 export function create_select_element(parent: Node, id?: null|string, opts?: object) {
     opts = opts ?? {};
     if ('tag' in (opts as any) || 'type' in (opts as any)) {
-        throw new Error('opts must not contain "tag" or "type"');
+        throw new TypeError('opts must not contain "tag" or "type"');
     }
     const option_elements: HTMLOptionElement[] = [];
     const options = (opts as any).options;

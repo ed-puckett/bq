@@ -151,7 +151,7 @@ export class CodemirrorInterface {
 
     constructor(cell: BqCellElement) {
         if (!(cell instanceof BqCellElement)) {
-            throw new Error('cell must be an instance of BqCellElement');
+            throw new TypeError('cell must be an instance of BqCellElement');
         }
 
         const text = cell.get_text();

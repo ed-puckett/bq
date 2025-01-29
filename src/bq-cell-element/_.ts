@@ -76,7 +76,7 @@ export class BqCellElement extends HTMLElement {
      */
     _set_bq(bq: BqManager) {
         if (!(bq instanceof BqManager)) {
-            throw new Error('bq must be an instance of BqManager');
+            throw new TypeError('bq must be an instance of BqManager');
         }
         this.#bq = bq;
     }
@@ -138,7 +138,7 @@ export class BqCellElement extends HTMLElement {
 
     get_text(): string {
         if (!(this.#bq instanceof BqManager)) {
-            throw new Error('bq not set!');
+            throw new TypeError('bq not set!');
         }
         const text = this.#has_text_container()
             ? this.#codemirror?.get_text()
@@ -149,7 +149,7 @@ export class BqCellElement extends HTMLElement {
     // this works even if the cell is not editable
     set_text(text: string, set_neutral: boolean = true): void {
         if (!(this.#bq instanceof BqManager)) {
-            throw new Error('bq not set!');
+            throw new TypeError('bq not set!');
         }
         if (this.#codemirror) {
             this.#codemirror.set_text(text, set_neutral);

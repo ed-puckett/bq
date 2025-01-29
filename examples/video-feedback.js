@@ -232,12 +232,12 @@ export function run(ocx) {
 
 function convolve_canvas(out, c1, c2, mult, kw, kh, k1_data, k2_data) {
     if (!(out instanceof CanvasRenderingContext2D) || !(c1 instanceof CanvasRenderingContext2D) || !(c2 instanceof CanvasRenderingContext2D)) {
-        throw new Error('out, c1 and c2 must all be instances of CanvasRenderingContext2D');
+        throw new TypeError('out, c1 and c2 must all be instances of CanvasRenderingContext2D');
     }
     const dw = out.width;
     const dh = out.height;
     if (dw !== c1.width || dh !== c1.height || dw !== c2.width || dh !== c2.height) {
-        throw new Error('out, c1 and c2 must all have the same widths and heights');
+        throw new TypeError('out, c1 and c2 must all have the same widths and heights');
     }
     const c1_data  = c1.getImageData(0, 0, dw, dh).data;
     const c2_data  = c2.getImageData(0, 0, dw, dh).data;
@@ -248,16 +248,16 @@ function convolve_canvas(out, c1, c2, mult, kw, kh, k1_data, k2_data) {
 function convolve_data(dw, dh, out_data, data1, data2, kw, kh, k1_data, k2_data, multiplier=1) {
     if ( !(out_data instanceof Uint8ClampedArray) || !(data1 instanceof Uint8ClampedArray) || !(data2 instanceof Uint8ClampedArray) ||
          !(k1_data instanceof Uint8ClampedArray) || !(k2_data instanceof Uint8ClampedArray) ) {
-        throw new Error('out_data, data1, data2, k1_data and k2_data must all be instances of Uint8ClampedArray');
+        throw new TypeError('out_data, data1, data2, k1_data and k2_data must all be instances of Uint8ClampedArray');
     }
     if (!Number.isInteger(dw) || dw <= 0 || !Number.isInteger(dh) || dh <= 0) {
-        throw new Error('dw and dh must be positive integers');
+        throw new TypeError('dw and dh must be positive integers');
     }
     if (!Number.isInteger(kw) || kw <= 0 || (kw&1 === 0) || !Number.isInteger(kh) || kh <= 0 || (kh&1 === 0)) {
-        throw new Error('dw and dh must be positive odd integers');
+        throw new TypeError('dw and dh must be positive odd integers');
     }
     if (typeof multiplier !== 'number') {
-        throw new Error('multiplier must be a number');
+        throw new TypeError('multiplier must be a number');
     }
     const kwm = kw/2;
     const khm = kh/2;

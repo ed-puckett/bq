@@ -7623,10 +7623,10 @@ class ActivityManager extends Activity {
       */
     add_activity(activity) {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         if (activity === this) {
-            throw new Error('cannot this.add_activity() to itself');
+            throw new TypeError('cannot this.add_activity() to itself');
         }
         if (!this.#children.includes(activity)) {
             this.#children.push(activity);
@@ -7638,7 +7638,7 @@ class ActivityManager extends Activity {
      */
     remove_activity(activity) {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         const index = this.#children.indexOf(activity);
         if (index === -1) {
@@ -7661,10 +7661,10 @@ class ActivityManager extends Activity {
      */
     manage_activity(activity, stop_action) {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         if (!['undefined', 'function'].includes(typeof stop_action)) {
-            throw new Error('stop_action must be undefined or a function');
+            throw new TypeError('stop_action must be undefined or a function');
         }
         this.add_activity(activity);
         const subscription = activity.stop_states.subscribe((state) => {
@@ -8105,7 +8105,7 @@ function get_obj_path(obj, path) {
 }
 function set_obj_path(obj, path, value) {
     if (path.length < 1) {
-        throw new Error('path must contain at least one segment');
+        throw new TypeError('path must contain at least one segment');
     }
     for (const segment of path.slice(0, -1)) {
         if (typeof obj[segment] === 'undefined') {
@@ -8413,7 +8413,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function draw_arc(ctx, x, y, r, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { a0 = 0, a1 = 2 * Math.PI, counterclockwise = false, no_close_path = false, no_fill = false, no_stroke = false, } = (options ?? {});
     ctx.beginPath();
@@ -8449,7 +8449,7 @@ const default_dot_size_to_line_width_ratio = 3;
  */
 function draw_dot(ctx, x, y, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { r = (default_dot_size_to_line_width_ratio * ctx.lineWidth), } = (options ?? {});
     const old_fill_style = ctx.fillStyle;
@@ -8508,14 +8508,14 @@ function angle_from_heading(dx, dy) {
  */
 function draw_line(ctx, x0, y0, x1, y1, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { label, label_options, } = (options ?? {});
     if (label && typeof label !== 'string') {
-        throw new Error('label must be undefined or a string');
+        throw new TypeError('label must be undefined or a string');
     }
     if (label_options && typeof label_options !== 'object') {
-        throw new Error('label_options must be undefined or an object');
+        throw new TypeError('label_options must be undefined or an object');
     }
     ctx.beginPath();
     ctx.moveTo(x0, y0);
@@ -8545,7 +8545,7 @@ const default_tick_length_to_line_width_ratio = 8;
  */
 function draw_tick(ctx, x, y, hx, hy, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { len = (default_tick_length_to_line_width_ratio * ctx.lineWidth), } = (options ?? {});
     const hmag = Math.sqrt(hx * hx + hy * hy);
@@ -8567,10 +8567,10 @@ function draw_tick(ctx, x, y, hx, hy, options) {
  */
 function draw_ticks(ctx, x0, y0, x1, y1, inc, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     if (typeof inc !== 'number' || inc <= 0) {
-        throw new Error('inc must be a positive number');
+        throw new TypeError('inc must be a positive number');
     }
     const { draw_initial = false, } = (options ?? {});
     const dx = x1 - x0;
@@ -8602,11 +8602,11 @@ function draw_ticks(ctx, x0, y0, x1, y1, inc, options) {
  */
 function draw_flipped_text(ctx, text, x, y, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { stroke_only, clear, padding, angle, dxr, dyr, } = (options ?? {});
     if (!['undefined', 'number'].includes(typeof padding)) {
-        throw new Error('padding must be undefined or a number');
+        throw new TypeError('padding must be undefined or a number');
     }
     const initial_transform = ctx.getTransform();
     try {
@@ -8672,7 +8672,7 @@ const default_arrowhead_length_to_line_width_ratio = 10;
  */
 function draw_arrowhead(ctx, x, y, hx, hy, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const TWOPI = 2 * Math.PI;
     const { len = (default_arrowhead_length_to_line_width_ratio * ctx.lineWidth), reversed = false, tick = false, } = (options ?? {});
@@ -8709,7 +8709,7 @@ function draw_arrowhead(ctx, x, y, hx, hy, options) {
  */
 function draw_arrow(ctx, x0, y0, x1, y1, options) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
-        throw new Error('ctx must be an instance of CanvasRenderingContext2D');
+        throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const { double, } = (options ?? {});
     draw_line(ctx, x0, y0, x1, y1, options);
@@ -8954,15 +8954,15 @@ class ConfirmDialog extends Dialog {
  */
 function create_control_element(parent, id, options) {
     if (typeof id !== 'undefined' && id !== null && (typeof id !== 'string' || id === '')) {
-        throw new Error('id must be undefined, null, or a non-empty string');
+        throw new TypeError('id must be undefined, null, or a non-empty string');
     }
     id ??= undefined; // null -> undefined
     const { tag = 'input', type = 'text', label, label_after, attrs = {}, } = (options ?? {});
     if (label && !id) {
-        throw new Error('id must be a non-empty string if label is specified');
+        throw new TypeError('id must be a non-empty string if label is specified');
     }
     if ('id' in attrs || 'type' in attrs) {
-        throw new Error('attrs must not contain "id" or "type"');
+        throw new TypeError('attrs must not contain "id" or "type"');
     }
     const control_opts = {
         id,
@@ -9020,7 +9020,7 @@ function create_control_element(parent, id, options) {
 function create_select_element(parent, id, opts) {
     opts = opts ?? {};
     if ('tag' in opts || 'type' in opts) {
-        throw new Error('opts must not contain "tag" or "type"');
+        throw new TypeError('opts must not contain "tag" or "type"');
     }
     const option_elements = [];
     const options = opts.options;
@@ -9094,10 +9094,10 @@ async function next_micro_tick() {
  */
 function setup_textarea_auto_resize(textarea, max_height_px) {
     if (!(textarea instanceof HTMLTextAreaElement)) {
-        throw new Error('textarea must be an instance of HTMLTextAreaElement');
+        throw new TypeError('textarea must be an instance of HTMLTextAreaElement');
     }
     if (typeof max_height_px !== 'undefined' && max_height_px !== null && (typeof max_height_px !== 'number' || max_height_px <= 0)) {
-        throw new Error('max_height_px must be undefined, null, or a positive number');
+        throw new TypeError('max_height_px must be undefined, null, or a positive number');
     }
     const initial_height = (textarea.scrollHeight > 0) ? `${textarea.scrollHeight}px` : '0.5em';
     textarea.setAttribute('style', `height:${initial_height}; overflow-y:hidden;`);
@@ -9122,7 +9122,7 @@ function setup_textarea_auto_resize(textarea, max_height_px) {
  */
 function trigger_textarea_auto_resize(textarea) {
     if (!(textarea instanceof HTMLTextAreaElement)) {
-        throw new Error('textarea must be an instance of HTMLTextAreaElement');
+        throw new TypeError('textarea must be an instance of HTMLTextAreaElement');
     }
     textarea.dispatchEvent(new Event('input')); // trigger resize
 }
@@ -9159,7 +9159,7 @@ function clear_element(element) {
         }
     }
     else {
-        throw new Error('element must be an instance of Node');
+        throw new TypeError('element must be an instance of Node');
     }
 }
 /** Test if element is in DOM and visible.
@@ -9177,13 +9177,13 @@ function clear_element(element) {
  */
 function is_visible(element, vpos, hpos) {
     if (!(element instanceof Element)) {
-        throw new Error('element must be an instance of Element');
+        throw new TypeError('element must be an instance of Element');
     }
     if (typeof vpos !== 'undefined' && vpos !== null && typeof vpos !== 'number') {
-        throw new Error('vpos must be undefined, null or a number');
+        throw new TypeError('vpos must be undefined, null or a number');
     }
     if (typeof hpos !== 'undefined' && hpos !== null && typeof hpos !== 'number') {
-        throw new Error('hpos must be undefined, null or a number');
+        throw new TypeError('hpos must be undefined, null or a number');
     }
     if (!document.documentElement.contains(element)) {
         return false;
@@ -9239,7 +9239,7 @@ function scrollable_parent(element) {
 function set_element_attrs(element, attrs) {
     if (attrs) {
         if ('id' in attrs && document.getElementById(attrs.id ?? '')) {
-            throw new Error(`element already exists with id ${attrs.id}`);
+            throw new TypeError(`element already exists with id ${attrs.id}`);
         }
         for (const k in attrs) {
             const v = attrs[k];
@@ -9299,15 +9299,15 @@ function validate_parent_and_before_from_options(options, required_parent_class)
     const { parent: parent_from_options = null, before = null, } = (options ?? {});
     let parent = parent_from_options;
     if (before && !(before instanceof Node)) {
-        throw new Error('before must be null, undefined, or an instance of Node');
+        throw new TypeError('before must be null, undefined, or an instance of Node');
     }
     if (before && !before.parentNode) {
-        throw new Error('before must have a parent');
+        throw new TypeError('before must have a parent');
     }
     // resolve parent and before
     if (parent) {
         if (before && before.parentElement !== parent) {
-            throw new Error('inconsistent parent and before nodes specified');
+            throw new TypeError('inconsistent parent and before nodes specified');
         }
     }
     else {
@@ -9316,7 +9316,7 @@ function validate_parent_and_before_from_options(options, required_parent_class)
         }
     }
     if (parent && required_parent_class && !(parent instanceof required_parent_class)) {
-        throw new Error(`parent must be null, undefined, or an instance of ${required_parent_class.name}`);
+        throw new TypeError(`parent must be null, undefined, or an instance of ${required_parent_class.name}`);
     }
     return { parent, before };
 }
@@ -9364,20 +9364,20 @@ const mapping_default_key = 'default';
 function create_element_or_mapping(options, return_mapping = false) {
     options ??= {};
     if (typeof options !== 'object') {
-        throw new Error('options must be null, undefined, or an object');
+        throw new TypeError('options must be null, undefined, or an object');
     }
     const { _key, tag = 'div', namespace, attrs, style, set_id, children, innerText, innerHTML, } = options;
     const { parent, before, } = validate_parent_and_before_from_options(options);
     if (typeof children !== 'undefined' && children !== null) {
         if (!Array.isArray(children) || !children.every(child => ['object', 'string'].includes(typeof child))) {
-            throw new Error('children must be an array of objects and/or strings');
+            throw new TypeError('children must be an array of objects and/or strings');
         }
         if (typeof innerText !== 'undefined' || typeof innerHTML !== 'undefined') {
-            throw new Error('"innerText" or "innerHTML" may not be specified if "children" is specified');
+            throw new TypeError('"innerText" or "innerHTML" may not be specified if "children" is specified');
         }
     }
     if (typeof innerText !== 'undefined' && typeof innerHTML !== 'undefined') {
-        throw new Error('"innerText" or "innerHTML" must not both be specified');
+        throw new TypeError('"innerText" or "innerHTML" must not both be specified');
     }
     const element = namespace
         ? document.createElementNS(namespace, tag)
@@ -9388,7 +9388,7 @@ function create_element_or_mapping(options, return_mapping = false) {
             let v = attrs[k];
             if (k === 'class' && Array.isArray(v)) {
                 if (!v.every(c => !c.match(/\s/))) {
-                    throw new Error('attrs.class must be a string or an array of strings not containing whitespace');
+                    throw new TypeError('attrs.class must be a string or an array of strings not containing whitespace');
                 }
                 v = v.join(' ');
             }
@@ -9434,7 +9434,7 @@ function create_element_or_mapping(options, return_mapping = false) {
     ]) {
         if (typeof value !== 'undefined') {
             if (!(element instanceof HTMLElement)) {
-                throw new Error(`${setter_name} specified for Element but must be HTMLElement`);
+                throw new TypeError(`${setter_name} specified for Element but must be HTMLElement`);
             }
             setter(element, value);
         }
@@ -9468,11 +9468,11 @@ function create_element_mapping(options) {
  */
 function move_node(node, options) {
     if (!(node instanceof Node)) {
-        throw new Error('node must be an instance of Node');
+        throw new TypeError('node must be an instance of Node');
     }
     const { parent, before, } = validate_parent_and_before_from_options(options);
     if (!parent) {
-        throw new Error('options must specify either "parent" or "before"');
+        throw new TypeError('options must specify either "parent" or "before"');
     }
     parent.insertBefore(node, before);
 }
@@ -9485,11 +9485,11 @@ function move_node(node, options) {
  */
 function create_stylesheet_link(parent, stylesheet_url, attrs, permit_duplication = false) {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     attrs = attrs ?? {};
     if ('rel' in attrs || 'href' in attrs) {
-        throw new Error('attrs must not contain "rel" or "href"');
+        throw new TypeError('attrs must not contain "rel" or "href"');
     }
     let link_element;
     if (!permit_duplication) {
@@ -9518,7 +9518,7 @@ function create_stylesheet_link(parent, stylesheet_url, attrs, permit_duplicatio
  */
 function create_inline_stylesheet(parent, stylesheet_text, attrs) {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     const style_el = create_element({
         tag: 'style',
@@ -9537,11 +9537,11 @@ function create_inline_stylesheet(parent, stylesheet_text, attrs) {
  */
 function create_script(parent, script_url, attrs, permit_duplication = false) {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     attrs = attrs ?? {};
     if ('src' in attrs) {
-        throw new Error('attrs must not contain "src"');
+        throw new TypeError('attrs must not contain "src"');
     }
     let script_element;
     if (!permit_duplication) {
@@ -9569,10 +9569,10 @@ function create_script(parent, script_url, attrs, permit_duplication = false) {
  */
 function create_inline_script(parent, script_text, attrs) {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     if (attrs && 'src' in attrs) {
-        throw new Error('attrs must not contain "src"');
+        throw new TypeError('attrs must not contain "src"');
     }
     const script_el = create_element({
         tag: 'script',
@@ -9761,7 +9761,7 @@ class KeySpec {
     static alt_flag;
     constructor(key_string, context = null) {
         if (typeof key_string !== 'string' || key_string.length <= 0) {
-            throw new Error('key_string must be a non-empty string');
+            throw new TypeError('key_string must be a non-empty string');
         }
         this.key_string = key_string;
         this.context = context;
@@ -9779,7 +9779,7 @@ class KeySpec {
                 modifiers[modifiers.length - 1] = this.key_string[this.key_string.length - 1];
             }
             else {
-                throw new Error(`invalid key_string ${this.key_string}`);
+                throw new TypeError(`invalid key_string ${this.key_string}`);
             }
         }
         let key = modifiers.at(-1) ?? ''; // note: not converted to lowercase
@@ -9796,10 +9796,10 @@ class KeySpec {
         for (const modifier of modifiers) {
             const desc = KeySpec.#key_string_modifier_to_desc(modifier);
             if (!desc) {
-                throw new Error(`invalid modifier "${modifier}" in key_string ${this.key_string}`);
+                throw new TypeError(`invalid modifier "${modifier}" in key_string ${this.key_string}`);
             }
             if (desc.code in modifier_descs) { //!!! incorrect comparison
-                throw new Error(`redundant modifier "${modifier}" in key_string ${this.key_string}`);
+                throw new TypeError(`redundant modifier "${modifier}" in key_string ${this.key_string}`);
             }
             modifier_descs.push(desc);
         }
@@ -9959,30 +9959,30 @@ class KeySpec {
             const disallowed_modifier_codes = ('+-' + this.canonical_key_modifier_separator + this.canonical_key_string_separator);
             const keys = Object.keys(this.#basic_modifier_desc_map);
             if (keys.some(k => k !== k.toLowerCase())) {
-                throw new Error('KeySpec.#basic_modifier_desc_map keys must be lowercase');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map keys must be lowercase');
             }
             const all_alternates = keys.map(k => this.#basic_modifier_desc_map[k].alternates).reduce((acc, a) => [...acc, ...a]);
             if (all_alternates.some(k => k !== k.toLowerCase())) {
-                throw new Error('KeySpec.#basic_modifier_desc_map alternates must be lowercase');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map alternates must be lowercase');
             }
             if (new Set([...keys, ...all_alternates]).size !== (keys.length + all_alternates.length)) {
-                throw new Error('KeySpec.#basic_modifier_desc_map keys and alternates must all be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map keys and alternates must all be distinct');
             }
             const codes = keys.map(k => this.#basic_modifier_desc_map[k].code);
             for (const code of codes) {
                 if (code.length !== 1) {
-                    throw new Error('KeySpec.#basic_modifier_desc_map codes must be single characters');
+                    throw new TypeError('KeySpec.#basic_modifier_desc_map codes must be single characters');
                 }
                 if (disallowed_modifier_codes.includes(code)) {
-                    throw new Error(`KeySpec.#basic_modifier_desc_map codes are not allowed to be any of following: ${disallowed_modifier_codes}`);
+                    throw new TypeError(`KeySpec.#basic_modifier_desc_map codes are not allowed to be any of following: ${disallowed_modifier_codes}`);
                 }
             }
             if (new Set(codes).size !== codes.length) {
-                throw new Error('KeySpec.#basic_modifier_desc_map code values must be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map code values must be distinct');
             }
             const props = keys.map(k => this.#basic_modifier_desc_map[k].event_prop);
             if (new Set(props).size !== props.length) {
-                throw new Error('KeySpec.#basic_modifier_desc_map event_prop values must be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map event_prop values must be distinct');
             }
         }
         // validation passed; build the map
@@ -10024,22 +10024,22 @@ class KeyMap {
     }
     static multi_mapper(...key_maps) {
         if (key_maps.length <= 0) {
-            throw new Error('at least one KeyMap instance must be given');
+            throw new TypeError('at least one KeyMap instance must be given');
         }
         if (!key_maps.every(m => m instanceof this)) {
-            throw new Error('arguments must all be KeyMap instances');
+            throw new TypeError('arguments must all be KeyMap instances');
         }
         return key_maps.reduce((mapper, key_map) => key_map.create_mapper(mapper), null);
     }
     static #create_mapping(bindings) {
         if (bindings !== null && typeof bindings !== 'object') {
-            throw new Error('bindings must be null or an object');
+            throw new TypeError('bindings must be null or an object');
         }
         const mapping = {};
         if (bindings) {
             for (const command in bindings) {
                 if (command.length <= 0) {
-                    throw new Error('bindings keys (command names) must not be empty strings');
+                    throw new TypeError('bindings keys (command names) must not be empty strings');
                 }
                 const command_bindings = bindings[command];
                 if (command_bindings) {
@@ -10054,7 +10054,7 @@ class KeyMap {
                             if (typeof existing === 'string' || (typeof existing === 'object' && is_last)) {
                                 // something else already mapped here...
                                 const seq_so_far = seq_key_strings.slice(0, i + 1).join(KeySpec.canonical_key_string_separator);
-                                throw new Error(`duplicate bindings specified for key sequence: ${seq_so_far}`);
+                                throw new TypeError(`duplicate bindings specified for key sequence: ${seq_so_far}`);
                             }
                             if (!is_last) {
                                 // multi-key sequence
@@ -10078,16 +10078,16 @@ class KeyMapMapper {
     fallback_mapper;
     constructor(mapping, recognizer, fallback_mapper = null) {
         if (mapping !== null && typeof mapping !== 'undefined' && typeof mapping !== 'object') {
-            throw new Error('mapping must be null/undefined or an object');
+            throw new TypeError('mapping must be null/undefined or an object');
         }
         if (recognizer !== null && typeof recognizer !== 'undefined' && typeof recognizer !== 'function') {
-            throw new Error('recognizer must be null/undefined or a function');
+            throw new TypeError('recognizer must be null/undefined or a function');
         }
         if (fallback_mapper !== null && typeof fallback_mapper !== 'undefined' && !(fallback_mapper instanceof KeyMapMapper)) {
-            throw new Error('fallback_mapper must be null/undefined or a KeyMap instance');
+            throw new TypeError('fallback_mapper must be null/undefined or a KeyMap instance');
         }
         if (!mapping && !fallback_mapper) {
-            throw new Error('at least one of mapping or fallback_mapper must be given');
+            throw new TypeError('at least one of mapping or fallback_mapper must be given');
         }
         this.mapping = mapping;
         this.recognizer = recognizer;
@@ -10194,10 +10194,10 @@ class KeyEventManager {
     }
     push_key_map(key_map) {
         if (!(key_map instanceof KeyMap)) {
-            throw new Error('key_map must be an instance of KeyMap');
+            throw new TypeError('key_map must be an instance of KeyMap');
         }
         if (this.#key_map_stack.indexOf(key_map) !== -1) {
-            throw new Error('key_map already exists in stack');
+            throw new TypeError('key_map already exists in stack');
         }
         this.#key_map_stack.unshift(key_map);
         this.#rebuild();
@@ -10237,10 +10237,10 @@ class KeyEventManager {
      */
     static clone_key_event_with_alternate_target(key_event, replacement_target) {
         if (!(key_event instanceof KeyboardEvent)) {
-            throw new Error('key_event must be an instance of KeyboardEvent');
+            throw new TypeError('key_event must be an instance of KeyboardEvent');
         }
         if (!(replacement_target instanceof Node)) {
-            throw new Error('replacement_target must be an instance of Node');
+            throw new TypeError('replacement_target must be an instance of Node');
         }
         return {
             ...key_event, // captures almost nothing, e.g., just the "isTrusted" property
@@ -10442,10 +10442,10 @@ class Menu {
     constructor(dm, parent, toplevel_menu_spec, options) {
         const { get_command_bindings = () => ({}), } = (options ?? {});
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         if (get_command_bindings !== null && typeof get_command_bindings !== 'undefined' && typeof get_command_bindings !== 'function') {
-            throw new Error('get_command_bindings must be null, undefined, or a function');
+            throw new TypeError('get_command_bindings must be null, undefined, or a function');
         }
         this.#dm = dm;
         this.#get_command_bindings = get_command_bindings;
@@ -10493,7 +10493,7 @@ class Menu {
     set_menu_state(command, state_spec) {
         state_spec ??= {};
         if (typeof state_spec !== 'object') {
-            throw new Error('state_spec must be an object');
+            throw new TypeError('state_spec must be an object');
         }
         const elements = this.#menu_command_to_elements.get(command);
         if (!elements) {
@@ -10537,7 +10537,7 @@ class Menu {
     #deactivate_menu(menu_element) {
         if (menu_element) {
             if (!(menu_element instanceof HTMLElement) || !menu_element.classList.contains('menu')) {
-                throw new Error('menu_element must be an HTMLElement with class "menu"');
+                throw new TypeError('menu_element must be an HTMLElement with class "menu"');
             }
             if (!menu_element.classList.contains('persistent-menu')) { // menubar always remains active
                 menu_element.classList.remove('active');
@@ -10637,7 +10637,7 @@ class Menu {
      */
     #build_menu_item_separator(parent) {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         const element = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
             parent,
@@ -10656,26 +10656,26 @@ class Menu {
      */
     #build_menu(menu_spec, parent, toplevel = false) {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         if (typeof menu_spec === 'string') {
             return this.#build_menu_item_separator(parent);
         }
         const { label, collection, item, } = menu_spec;
         if (typeof label !== 'string') {
-            throw new Error('label must be specified as a string');
+            throw new TypeError('label must be specified as a string');
         }
         if (item && collection) {
-            throw new Error('item and collection must not both be specified');
+            throw new TypeError('item and collection must not both be specified');
         }
         if (collection) {
             if (!Array.isArray(collection)) {
-                throw new Error('collection must be an array');
+                throw new TypeError('collection must be an array');
             }
         }
         if (item) {
             if (typeof item !== 'object' || typeof item.command !== 'string') {
-                throw new Error('item must specify an object with a string property "command"');
+                throw new TypeError('item must specify an object with a string property "command"');
             }
         }
         // both items and collections are menuitem elements, but the collection also has children...
@@ -10972,7 +10972,7 @@ class NotificationManager {
      */
     constructor(parent = document.body) {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         this.#parent = parent;
     }
@@ -10980,10 +10980,10 @@ class NotificationManager {
     #area_id;
     add(message, timeout = this.CLASS.notification_message_default_timeout_ms) {
         if (typeof message !== 'string') {
-            throw new Error('message must be an instance of string');
+            throw new TypeError('message must be an instance of string');
         }
         if (typeof timeout !== 'number' || timeout <= 0) {
-            throw new Error('timeout must be a positive number');
+            throw new TypeError('timeout must be a positive number');
         }
         const area = this.#establish_area();
         const notification = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
@@ -11082,7 +11082,7 @@ class BqCellElement extends HTMLElement {
      */
     _set_bq(bq) {
         if (!(bq instanceof src_bq_manager___WEBPACK_IMPORTED_MODULE_0__/* .BqManager */ .N)) {
-            throw new Error('bq must be an instance of BqManager');
+            throw new TypeError('bq must be an instance of BqManager');
         }
         this.#bq = bq;
     }
@@ -11132,7 +11132,7 @@ class BqCellElement extends HTMLElement {
     // === TEXT CONTENT ===
     get_text() {
         if (!(this.#bq instanceof src_bq_manager___WEBPACK_IMPORTED_MODULE_0__/* .BqManager */ .N)) {
-            throw new Error('bq not set!');
+            throw new TypeError('bq not set!');
         }
         const text = this.#has_text_container()
             ? this.#codemirror?.get_text()
@@ -11142,7 +11142,7 @@ class BqCellElement extends HTMLElement {
     // this works even if the cell is not editable
     set_text(text, set_neutral = true) {
         if (!(this.#bq instanceof src_bq_manager___WEBPACK_IMPORTED_MODULE_0__/* .BqManager */ .N)) {
-            throw new Error('bq not set!');
+            throw new TypeError('bq not set!');
         }
         if (this.#codemirror) {
             this.#codemirror.set_text(text, set_neutral);
@@ -11485,7 +11485,7 @@ class CodemirrorInterface {
     get view() { return this.#view; }
     constructor(cell) {
         if (!(cell instanceof ___WEBPACK_IMPORTED_MODULE_2__/* .BqCellElement */ .c)) {
-            throw new Error('cell must be an instance of BqCellElement');
+            throw new TypeError('cell must be an instance of BqCellElement');
         }
         const text = cell.get_text();
         this.#keymap_compartment = new _codemirror_state__WEBPACK_IMPORTED_MODULE_6__/* .Compartment */ .xx();
@@ -12099,22 +12099,22 @@ class BqManager {
     // === RENDER INTERFACE ===
     async invoke_renderer_for_type(type = 'plain', options, cell, output_element) {
         if (cell && cell.bq !== this) {
-            throw new Error('unexpected: cell has a different bq');
+            throw new TypeError('unexpected: cell has a different bq');
         }
         type ??= 'plain';
         const renderer = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.renderer_for_type(type);
         if (!renderer) {
-            throw new Error('no renderer found for type "${type}"');
+            throw new TypeError('no renderer found for type "${type}"');
         }
         return this.invoke_renderer(renderer, options, cell, output_element);
     }
     async invoke_renderer(renderer, options, cell, output_element) {
         cell ??= this.active_cell;
         if (!cell) {
-            throw new Error('cell not specified and no active_cell');
+            throw new TypeError('cell not specified and no active_cell');
         }
         if (cell.bq !== this) {
-            throw new Error('unexpected: cell has a different bq');
+            throw new TypeError('unexpected: cell has a different bq');
         }
         cell.ensure_id();
         const cell_id = cell.id;
@@ -12300,13 +12300,13 @@ class BqManager {
      */
     async #perform_command(command_context) {
         if (typeof command_context !== 'object') {
-            throw new Error('command_context must be an object');
+            throw new TypeError('command_context must be an object');
         }
         if (command_context.dm !== this) {
-            throw new Error('command_context.dm does not match this BqManager instance');
+            throw new TypeError('command_context.dm does not match this BqManager instance');
         }
         if (typeof command_context.command !== 'string' || command_context.command.length <= 0) {
-            throw new Error('command_context.command must be a non-empty string');
+            throw new TypeError('command_context.command must be a non-empty string');
         }
         let result = false; // for now...
         try {
@@ -12448,7 +12448,7 @@ class BqManager {
      */
     adjacent_cell(reference, forward = false, include_non_shown = false) {
         if (reference && reference.bq !== this) {
-            throw new Error('unexpected: reference cell has a different bq');
+            throw new TypeError('unexpected: reference cell has a different bq');
         }
         else {
             const cells = include_non_shown
@@ -13980,7 +13980,7 @@ async function initialize_document() {
         // validate html[data-cell-view]
         const cell_view = document.documentElement.getAttribute(cell_view_attribute_name);
         if (cell_view && !_valid_cell_view_values.includes(cell_view)) {
-            throw new Error(`<html> attribute ${cell_view_attribute_name} must be unset or one of: "${_valid_cell_view_values.join('", "')}"`);
+            throw new TypeError(`<html> attribute ${cell_view_attribute_name} must be unset or one of: "${_valid_cell_view_values.join('", "')}"`);
         }
         // establish head element if not already present
         if (!document.head) {
@@ -14017,7 +14017,7 @@ async function initialize_document() {
             const id = cell.id;
             if (id) {
                 if (cell_ids.has(id)) {
-                    throw new Error(`bq-cell element has a repeated id "${id}"`);
+                    throw new Error(`bq-cell element has an already-used id "${id}"`);
                 }
                 cell_ids.add(id);
             }
@@ -14090,7 +14090,7 @@ async function save_serializer(bootstrap_script_src_choice, options) {
     let { cell_view, } = options;
     const { auto_eval = false, active_cell = false, } = options;
     if (typeof cell_view !== 'undefined' && !_valid_cell_view_values.includes(cell_view)) {
-        throw new Error(`illegal cell_view value: ${cell_view}`);
+        throw new TypeError(`illegal cell_view value: ${cell_view}`);
     }
     let cell_view_from_document = document.documentElement.getAttribute(cell_view_attribute_name);
     if (cell_view_from_document && !_valid_cell_view_values.includes(cell_view_from_document)) {
@@ -14237,7 +14237,7 @@ function _get_bootstrap_script_src(bootstrap_script_src_choice) {
     const src_alternatives = _basic_bootstrap_script_src_alternatives;
     const src = src_alternatives[bootstrap_script_src_choice];
     if (!src) {
-        throw new Error(`invalid bootstrap_script_src_choice: ${bootstrap_script_src_choice}`);
+        throw new TypeError(`invalid bootstrap_script_src_choice: ${bootstrap_script_src_choice}`);
     }
     return src;
 }
@@ -14249,13 +14249,13 @@ function get_bootstrap_script_src_alternatives() {
     const src_alternatives = { ..._basic_bootstrap_script_src_alternatives }; // copy to protect internal structure from modification
     for (const key in src_alternatives) {
         if (!(key in _bootstrap_script_src_alternative_descriptions)) {
-            throw new Error(`unexpected: key in src_alternatives has no corresponding description: ${key}`);
+            throw new TypeError(`unexpected: key in src_alternatives has no corresponding description: ${key}`);
         }
         let label, details;
         const label_and_details = _bootstrap_script_src_alternative_descriptions[key];
         if (!(typeof label_and_details === 'string') &&
             !(Array.isArray(label_and_details) && label_and_details.length === 2 && label_and_details.every(it => typeof it === 'string'))) {
-            throw new Error(`unexpected: _bootstrap_script_src_alternative_descriptions["${key}"] must be a string or a two-element array of strings`);
+            throw new TypeError(`unexpected: _bootstrap_script_src_alternative_descriptions["${key}"] must be a string or a two-element array of strings`);
         }
         if (typeof label_and_details === 'string') {
             label = label_and_details;
@@ -14315,13 +14315,13 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     constructor(bq, element, parent) {
         super();
         if (!(bq instanceof src_bq_manager___WEBPACK_IMPORTED_MODULE_0__/* .BqManager */ .N)) {
-            throw new Error('bq must be an instance of BqManager');
+            throw new TypeError('bq must be an instance of BqManager');
         }
         if (!(element instanceof Element)) {
-            throw new Error('element must be an instance of Element');
+            throw new TypeError('element must be an instance of Element');
         }
         if (parent && parent.bq !== bq) {
-            throw new Error('parent has a different BqManager');
+            throw new TypeError('parent has a different BqManager');
         }
         this.#bq = bq;
         this.#element = element;
@@ -14347,7 +14347,7 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     update_style(spec) {
         this.abort_if_stopped();
         if (!(this.element instanceof HTMLElement)) {
-            throw new Error('this.element must be an instance of HTMLElement');
+            throw new TypeError('this.element must be an instance of HTMLElement');
         }
         this.CLASS.update_element_style(this.element, spec);
     }
@@ -14384,7 +14384,7 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     create_new_ocx(element, parent) {
         this.abort_if_stopped();
         if (parent && parent.bq !== this.bq) {
-            throw new Error('parent has a different BqManager');
+            throw new TypeError('parent has a different BqManager');
         }
         return new OutputContext(this.bq, element, parent);
     }
@@ -14573,7 +14573,7 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
      */
     static create_cell_output(cell, source_media_type) {
         if (!cell.id) {
-            throw new Error('cell must have an id');
+            throw new TypeError('cell must have an id');
         }
         return this.create_element({
             tag: 'output',
@@ -14738,7 +14738,7 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
      */
     AIS(f) {
         if (typeof f !== 'function') {
-            throw new Error('f must be a function');
+            throw new TypeError('f must be a function');
         }
         const AsyncFunction = (async () => { }).constructor;
         if (f instanceof AsyncFunction) {
@@ -15119,7 +15119,7 @@ class PlotlyRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/
     static get type() { return 'plotly'; }
     async _render(ocx, plotly_config, options) {
         if (typeof plotly_config !== 'object') {
-            throw new Error('plotly_config must be an object');
+            throw new TypeError('plotly_config must be an object');
         }
         const style = options?.style;
         let data;
@@ -15222,15 +15222,15 @@ function get_text_renderer_factories() {
  */
 function set_text_renderer_factories(new_renderer_factories) {
     if (!Array.isArray(new_renderer_factories)) {
-        throw new Error('new_renderer_factories must be an Array');
+        throw new TypeError('new_renderer_factories must be an Array');
     }
     const types_seen = new Set();
     for (const rf of new_renderer_factories) {
         if (!(0,_renderer__WEBPACK_IMPORTED_MODULE_0__/* .is_RendererFactory */ .Ve)(rf)) {
-            throw new Error('new_renderer_factories must be an Array of RendererFactory objects');
+            throw new TypeError('new_renderer_factories must be an Array of RendererFactory objects');
         }
         if (types_seen.has(rf.type)) {
-            throw new Error(`new_renderer_factories contains multiple entries with type "${rf.type}"`);
+            throw new TypeError(`new_renderer_factories contains multiple entries with type "${rf.type}"`);
         }
         types_seen.add(rf.type);
     }
@@ -15246,7 +15246,7 @@ function reset_to_initial_text_renderer_factories() {
 }
 function add_text_renderer_factory(renderer_factory) {
     if (!(0,_renderer__WEBPACK_IMPORTED_MODULE_0__/* .is_RendererFactory */ .Ve)(renderer_factory)) {
-        throw new Error('renderer_factory must be an instance of RendererFactory');
+        throw new TypeError('renderer_factory must be an instance of RendererFactory');
     }
     const new_renderer_factories = [
         renderer_factory,
@@ -15662,7 +15662,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
                     promise = (async () => thunk())();
                 }
                 else {
-                    throw new Error('thunk must be a function or an async function');
+                    throw new TypeError('thunk must be a function or an async function');
                 }
                 // it is important to catch errors here to prevent unhandled rejections
                 return promise?.catch(error_handler);
@@ -34802,11 +34802,11 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
                         try {
                             const { text = '', source_type, show = false, } = token;
                             if (!source_type) {
-                                throw new Error('no source_type given');
+                                throw new TypeError('no source_type given');
                             }
                             renderer_factory = src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9.factory_for_type(source_type);
                             if (!renderer_factory) {
-                                throw new Error(`cannot find renderer for source type "${source_type}"`);
+                                throw new TypeError(`cannot find renderer for source type "${source_type}"`);
                             }
                             const markup_segments = [];
                             function add_segment(renderer_factory, text_to_render, css_class) {
@@ -35436,7 +35436,7 @@ function get_settings() {
 async function update_settings(new_settings) {
     const complaint = analyze_settings(new_settings);
     if (complaint) {
-        throw new Error(complaint);
+        throw new TypeError(complaint);
     }
     await put_settings_to_storage(new_settings); // may throw an error
     current_settings = new_settings;
@@ -35468,7 +35468,7 @@ class IndexedDBInterface {
     _startup_promise;
     constructor(database_name, database_store_name) {
         if (typeof database_name !== 'string' || typeof database_store_name !== 'string') {
-            throw new Error('database_name and database_store_name must be strings');
+            throw new TypeError('database_name and database_store_name must be strings');
         }
         this.database_name = database_name;
         this.database_store_name = database_store_name;
@@ -35708,7 +35708,7 @@ function copy_themes_settings(themes_settings) {
  */
 function equivalent_themes(theme1, theme2) {
     if (typeof theme1 !== 'object' || typeof theme2 !== 'object') {
-        throw new Error('specified themes must be objects');
+        throw new TypeError('specified themes must be objects');
     }
     if (theme1 === theme2) {
         return true;
@@ -35753,13 +35753,13 @@ const themes_style_element_id = `themes-${(0,lib_sys_uuid__WEBPACK_IMPORTED_MODU
 function get_themes_style_element() {
     const style_element = document.getElementById(themes_style_element_id);
     if (style_element && !(style_element instanceof HTMLStyleElement)) {
-        throw new Error(`configuration error: themes_style_element_id="${themes_style_element_id}" does not refer to an HTMLStyleElement`);
+        throw new TypeError(`configuration error: themes_style_element_id="${themes_style_element_id}" does not refer to an HTMLStyleElement`);
     }
     return style_element;
 }
 function create_themes_style_element() {
     if (get_themes_style_element()) {
-        throw new Error(`element with id ${themes_style_element_id} already exists`);
+        throw new TypeError(`element with id ${themes_style_element_id} already exists`);
     }
     if (!document.head) {
         throw new Error('document.head missing');
@@ -35780,32 +35780,32 @@ function validate_theme_props(theme_props) {
                 !!k.match(theme_prop_name_validation_re) &&
                 typeof (v) === 'string');
         })) {
-        throw new Error('theme_props must have valid CSS property names starting with --theme- and with string values');
+        throw new TypeError('theme_props must have valid CSS property names starting with --theme- and with string values');
     }
 }
 function validate_theme(theme) {
     const { name, props } = theme;
     if (name === _settings__WEBPACK_IMPORTED_MODULE_2__/* .theme_system */ .km) {
-        throw new Error(`"${_settings__WEBPACK_IMPORTED_MODULE_2__/* .theme_system */ .km}" is a reserved theme name`);
+        throw new TypeError(`"${_settings__WEBPACK_IMPORTED_MODULE_2__/* .theme_system */ .km}" is a reserved theme name`);
     }
     if (typeof name !== 'string' || !name.match(theme_name_validation_re)) {
-        throw new Error('invalid theme name');
+        throw new TypeError('invalid theme name');
     }
     validate_theme_props(props);
     for (const prop_name of standard_theme_prop_names) {
         if (!(prop_name in props)) {
-            throw new Error('theme is missing expected properties');
+            throw new TypeError('theme is missing expected properties');
         }
     }
 }
 function validate_themes_array(themes) {
     if (!Array.isArray(themes)) {
-        throw new Error('themes must be an array of valid themes');
+        throw new TypeError('themes must be an array of valid themes');
     }
     const names = new Set();
     for (const theme of themes) {
         if (names.has(theme.name)) {
-            throw new Error('themes must not contain entries with duplicated names');
+            throw new TypeError('themes must not contain entries with duplicated names');
         }
         names.add(theme.name);
         validate_theme(theme);
@@ -35830,7 +35830,7 @@ function adjust_theme(theme) {
 }
 function adjust_themes_array(themes) {
     if (!Array.isArray(themes) || themes.length <= 0) {
-        throw new Error('themes must be an array of valid themes with at least one element');
+        throw new TypeError('themes must be an array of valid themes with at least one element');
     }
     let adjustment_made = false;
     const adjusted_themes = themes.map((theme) => {
@@ -35865,7 +35865,7 @@ ${Object.entries(props)
 async function write_themes_to_style_element(themes, themes_style_element) {
     validate_themes_array(themes);
     if (!(themes_style_element instanceof HTMLElement) || themes_style_element.tagName?.toLowerCase() !== 'style') {
-        throw new Error('invalid themes_style_element');
+        throw new TypeError('invalid themes_style_element');
     }
     const sections = [];
     sections.push(theme_property_name_documentation);

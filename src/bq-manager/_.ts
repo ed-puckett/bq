@@ -573,12 +573,12 @@ export class BqManager {
                                     cell?:           null|BqCellElement,
                                     output_element?: Element ): Promise<Element> {
         if (cell && cell.bq !== this) {
-            throw new Error('unexpected: cell has a different bq');
+            throw new TypeError('unexpected: cell has a different bq');
         }
         type ??= 'plain';
         const renderer = TextBasedRenderer.renderer_for_type(type);
         if (!renderer) {
-            throw new Error('no renderer found for type "${type}"');
+            throw new TypeError('no renderer found for type "${type}"');
         }
         return this.invoke_renderer(renderer, options, cell, output_element);
     }
@@ -589,10 +589,10 @@ export class BqManager {
                            output_element?: Element ): Promise<Element> {
         cell ??= this.active_cell;
         if (!cell) {
-            throw new Error('cell not specified and no active_cell');
+            throw new TypeError('cell not specified and no active_cell');
         }
         if (cell.bq !== this) {
-            throw new Error('unexpected: cell has a different bq');
+            throw new TypeError('unexpected: cell has a different bq');
         }
 
         cell.ensure_id();
@@ -801,13 +801,13 @@ export class BqManager {
      */
     async #perform_command(command_context: CommandContext<BqManager>): Promise<boolean> {
         if (typeof command_context !== 'object') {
-            throw new Error('command_context must be an object');
+            throw new TypeError('command_context must be an object');
         }
         if (command_context.dm !== this) {
-            throw new Error('command_context.dm does not match this BqManager instance');
+            throw new TypeError('command_context.dm does not match this BqManager instance');
         }
         if (typeof command_context.command !== 'string' || command_context.command.length <= 0) {
-            throw new Error('command_context.command must be a non-empty string');
+            throw new TypeError('command_context.command must be a non-empty string');
         }
         let result: boolean = false;  // for now...
         try {
@@ -980,7 +980,7 @@ export class BqManager {
      */
     adjacent_cell(reference?: BqCellElement, forward: boolean = false, include_non_shown: boolean = false): undefined|BqCellElement {
         if (reference && reference.bq !== this) {
-            throw new Error('unexpected: reference cell has a different bq');
+            throw new TypeError('unexpected: reference cell has a different bq');
         } else {
             const cells = include_non_shown
                 ? this.get_cells()

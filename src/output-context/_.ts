@@ -64,13 +64,13 @@ export class OutputContext extends OutputContextLike {
     constructor(bq: BqManager, element: Element, parent?: OutputContextLike) {
         super();
         if (!(bq instanceof BqManager)) {
-            throw new Error('bq must be an instance of BqManager');
+            throw new TypeError('bq must be an instance of BqManager');
         }
         if (!(element instanceof Element)) {
-            throw new Error('element must be an instance of Element');
+            throw new TypeError('element must be an instance of Element');
         }
         if (parent && parent.bq !== bq) {
-            throw new Error('parent has a different BqManager');
+            throw new TypeError('parent has a different BqManager');
         }
         this.#bq      = bq;
         this.#element = element;
@@ -102,7 +102,7 @@ export class OutputContext extends OutputContextLike {
     update_style(spec: { [prop: string]: undefined|null|string }): void {
         this.abort_if_stopped();
         if (! (this.element instanceof HTMLElement)) {
-            throw new Error('this.element must be an instance of HTMLElement');
+            throw new TypeError('this.element must be an instance of HTMLElement');
         }
         this.CLASS.update_element_style((this.element as HTMLElement), spec);
     }
@@ -143,7 +143,7 @@ export class OutputContext extends OutputContextLike {
     create_new_ocx(element: Element, parent?: OutputContextLike): OutputContext {  // multiple_stops = false
         this.abort_if_stopped();
         if (parent && parent.bq !== this.bq) {
-            throw new Error('parent has a different BqManager');
+            throw new TypeError('parent has a different BqManager');
         }
         return new OutputContext(this.bq, element, parent);
     }

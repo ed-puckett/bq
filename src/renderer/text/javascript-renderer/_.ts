@@ -332,7 +332,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
                 } else if (thunk instanceof Function) {
                     promise = (async () => thunk())();
                 } else {
-                    throw new Error('thunk must be a function or an async function');
+                    throw new TypeError('thunk must be a function or an async function');
                 }
                 // it is important to catch errors here to prevent unhandled rejections
                 return promise?.catch(error_handler);

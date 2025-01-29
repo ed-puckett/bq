@@ -30,7 +30,7 @@ export class NotificationManager {
      */
     constructor(parent: Element = document.body) {
         if (!(parent instanceof Element)) {
-            throw new Error('parent must be an instance of Element');
+            throw new TypeError('parent must be an instance of Element');
         }
         this.#parent = parent;
     }
@@ -40,10 +40,10 @@ export class NotificationManager {
 
     add(message: string, timeout: number = this.CLASS.notification_message_default_timeout_ms) {
         if (typeof message !== 'string') {
-            throw new Error('message must be an instance of string');
+            throw new TypeError('message must be an instance of string');
         }
         if (typeof timeout !== 'number' || timeout <= 0) {
-            throw new Error('timeout must be a positive number');
+            throw new TypeError('timeout must be a positive number');
         }
         const area = this.#establish_area();
         const notification = create_element({

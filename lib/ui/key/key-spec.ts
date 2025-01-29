@@ -42,7 +42,7 @@ export class KeySpec {
 
     constructor(key_string: string, context: any = null) {
         if (typeof key_string !== 'string' || key_string.length <= 0) {
-            throw new Error('key_string must be a non-empty string');
+            throw new TypeError('key_string must be a non-empty string');
         }
         this.key_string = key_string;
         this.context    = context;
@@ -59,7 +59,7 @@ export class KeySpec {
                 // change new last (empty) string to the '+' or '-' that was specified:
                 modifiers[modifiers.length-1] = this.key_string[this.key_string.length-1];
             } else {
-                throw new Error(`invalid key_string ${this.key_string}`);
+                throw new TypeError(`invalid key_string ${this.key_string}`);
             }
         }
         let key = modifiers.at(-1) ?? '';  // note: not converted to lowercase
@@ -76,10 +76,10 @@ export class KeySpec {
         for (const modifier of modifiers) {
             const desc = KeySpec.#key_string_modifier_to_desc(modifier);
             if (!desc) {
-                throw new Error(`invalid modifier "${modifier}" in key_string ${this.key_string}`);
+                throw new TypeError(`invalid modifier "${modifier}" in key_string ${this.key_string}`);
             }
             if (desc.code in modifier_descs) {//!!! incorrect comparison
-                throw new Error(`redundant modifier "${modifier}" in key_string ${this.key_string}`);
+                throw new TypeError(`redundant modifier "${modifier}" in key_string ${this.key_string}`);
             }
             modifier_descs.push(desc);
         }
@@ -275,30 +275,30 @@ export class KeySpec {
 
             const keys = Object.keys(this.#basic_modifier_desc_map);
             if (keys.some(k => k !== k.toLowerCase())) {
-                throw new Error('KeySpec.#basic_modifier_desc_map keys must be lowercase');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map keys must be lowercase');
             }
             const all_alternates = keys.map(k => this.#basic_modifier_desc_map[k].alternates).reduce((acc, a) => [...acc, ...a]);
             if (all_alternates.some(k => k !== k.toLowerCase())) {
-                throw new Error('KeySpec.#basic_modifier_desc_map alternates must be lowercase');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map alternates must be lowercase');
             }
             if (new Set([...keys, ...all_alternates]).size !== (keys.length + all_alternates.length)) {
-                throw new Error('KeySpec.#basic_modifier_desc_map keys and alternates must all be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map keys and alternates must all be distinct');
             }
             const codes = keys.map(k => this.#basic_modifier_desc_map[k].code);
             for (const code of codes) {
                 if (code.length !== 1) {
-                    throw new Error('KeySpec.#basic_modifier_desc_map codes must be single characters');
+                    throw new TypeError('KeySpec.#basic_modifier_desc_map codes must be single characters');
                 }
                 if (disallowed_modifier_codes.includes(code)) {
-                    throw new Error(`KeySpec.#basic_modifier_desc_map codes are not allowed to be any of following: ${disallowed_modifier_codes}`);
+                    throw new TypeError(`KeySpec.#basic_modifier_desc_map codes are not allowed to be any of following: ${disallowed_modifier_codes}`);
                 }
             }
             if (new Set(codes).size !== codes.length) {
-                throw new Error('KeySpec.#basic_modifier_desc_map code values must be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map code values must be distinct');
             }
             const props = keys.map(k => this.#basic_modifier_desc_map[k].event_prop);
             if (new Set(props).size !== props.length) {
-                throw new Error('KeySpec.#basic_modifier_desc_map event_prop values must be distinct');
+                throw new TypeError('KeySpec.#basic_modifier_desc_map event_prop values must be distinct');
             }
         }
         // validation passed; build the map

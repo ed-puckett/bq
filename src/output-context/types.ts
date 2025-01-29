@@ -123,7 +123,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     static create_cell_output(cell: BqCellElement, source_media_type: string): HTMLOutputElement {
         if (!cell.id) {
-            throw new Error('cell must have an id');
+            throw new TypeError('cell must have an id');
         }
         return this.create_element({
             tag: 'output',
@@ -303,7 +303,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     AIS(f: Function): Function {
         if (typeof f !== 'function') {
-            throw new Error('f must be a function');
+            throw new TypeError('f must be a function');
         }
         const AsyncFunction = (async () => {}).constructor;
         if (f instanceof AsyncFunction) {

@@ -7,7 +7,7 @@ export function get_obj_path(obj: object, path: string[]): object {
 
 export function set_obj_path(obj: object, path: string[], value: any): void {
     if (path.length < 1) {
-        throw new Error('path must contain at least one segment');
+        throw new TypeError('path must contain at least one segment');
     }
     for (const segment of path.slice(0, -1)) {
         if (typeof (obj as any)[segment] === 'undefined') {

@@ -36,10 +36,10 @@ export async function next_micro_tick(): Promise<void> {
  */
 export function setup_textarea_auto_resize(textarea: HTMLTextAreaElement, max_height_px?: number): void {
     if (!(textarea instanceof HTMLTextAreaElement)) {
-        throw new Error('textarea must be an instance of HTMLTextAreaElement');
+        throw new TypeError('textarea must be an instance of HTMLTextAreaElement');
     }
     if (typeof max_height_px !== 'undefined' && max_height_px !== null && (typeof max_height_px !== 'number' || max_height_px <= 0)) {
-        throw new Error('max_height_px must be undefined, null, or a positive number');
+        throw new TypeError('max_height_px must be undefined, null, or a positive number');
     }
     const initial_height = (textarea.scrollHeight > 0) ? `${textarea.scrollHeight}px` : '0.5em';
     textarea.setAttribute('style', `height:${initial_height}; overflow-y:hidden;`);
@@ -64,7 +64,7 @@ export function setup_textarea_auto_resize(textarea: HTMLTextAreaElement, max_he
  */
 export function trigger_textarea_auto_resize(textarea: HTMLTextAreaElement): void {
     if (!(textarea instanceof HTMLTextAreaElement)) {
-        throw new Error('textarea must be an instance of HTMLTextAreaElement');
+        throw new TypeError('textarea must be an instance of HTMLTextAreaElement');
     }
     textarea.dispatchEvent(new Event('input'));  // trigger resize
 }
@@ -101,7 +101,7 @@ export function clear_element(element: Node): void {
             element.removeChild(element.firstChild);
         }
     } else {
-        throw new Error('element must be an instance of Node');
+        throw new TypeError('element must be an instance of Node');
     }
 }
 
@@ -120,13 +120,13 @@ export function clear_element(element: Node): void {
  */
 export function is_visible(element: Element, vpos: undefined|null|number, hpos: undefined|null|number): boolean {
     if (!(element instanceof Element)) {
-        throw new Error('element must be an instance of Element');
+        throw new TypeError('element must be an instance of Element');
     }
     if (typeof vpos !== 'undefined' && vpos !== null && typeof vpos !== 'number') {
-        throw new Error('vpos must be undefined, null or a number');
+        throw new TypeError('vpos must be undefined, null or a number');
     }
     if (typeof hpos !== 'undefined' && hpos !== null && typeof hpos !== 'number') {
-        throw new Error('hpos must be undefined, null or a number');
+        throw new TypeError('hpos must be undefined, null or a number');
     }
 
     if (!document.documentElement.contains(element)) {
@@ -192,7 +192,7 @@ export function scrollable_parent(element: Element): null|Element {
 export function set_element_attrs(element: Element, attrs: { [attr: string]: undefined|null|string }): void {
     if (attrs) {
         if ('id' in attrs && document.getElementById(attrs.id ?? '')) {
-            throw new Error(`element already exists with id ${attrs.id}`);
+            throw new TypeError(`element already exists with id ${attrs.id}`);
         }
         for (const k in attrs) {
             const v = attrs[k];
@@ -259,17 +259,17 @@ export function validate_parent_and_before_from_options( options: { parent?: any
 
     let parent = parent_from_options;
     if (before && !(before instanceof Node)) {
-        throw new Error('before must be null, undefined, or an instance of Node');
+        throw new TypeError('before must be null, undefined, or an instance of Node');
     }
 
     if (before && !before.parentNode) {
-        throw new Error('before must have a parent');
+        throw new TypeError('before must have a parent');
     }
 
     // resolve parent and before
     if (parent) {
         if (before && before.parentElement !== parent) {
-            throw new Error('inconsistent parent and before nodes specified');
+            throw new TypeError('inconsistent parent and before nodes specified');
         }
     } else {
         if (before) {
@@ -278,7 +278,7 @@ export function validate_parent_and_before_from_options( options: { parent?: any
     }
 
     if (parent && required_parent_class && !(parent instanceof required_parent_class)) {
-        throw new Error(`parent must be null, undefined, or an instance of ${required_parent_class.name}`);
+        throw new TypeError(`parent must be null, undefined, or an instance of ${required_parent_class.name}`);
     }
 
     return { parent, before };
@@ -329,7 +329,7 @@ export const mapping_default_key = 'default';
 export function create_element_or_mapping(options?: object, return_mapping: boolean = false): Element|object {
     options ??= {};
     if (typeof options !== 'object') {
-        throw new Error('options must be null, undefined, or an object');
+        throw new TypeError('options must be null, undefined, or an object');
     }
     const {
         _key,
@@ -350,14 +350,14 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
 
     if (typeof children !== 'undefined' && children !== null) {
         if (!Array.isArray(children) || !children.every(child => ['object', 'string' ].includes(typeof child))) {
-            throw new Error('children must be an array of objects and/or strings');
+            throw new TypeError('children must be an array of objects and/or strings');
         }
         if (typeof innerText !== 'undefined' || typeof innerHTML !== 'undefined') {
-            throw new Error('"innerText" or "innerHTML" may not be specified if "children" is specified');
+            throw new TypeError('"innerText" or "innerHTML" may not be specified if "children" is specified');
         }
     }
     if (typeof innerText !== 'undefined' && typeof innerHTML !== 'undefined') {
-        throw new Error('"innerText" or "innerHTML" must not both be specified');
+        throw new TypeError('"innerText" or "innerHTML" must not both be specified');
     }
 
     const element = namespace
@@ -370,7 +370,7 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
             let v = attrs[k];
             if (k === 'class' && Array.isArray(v)) {
                 if (!v.every(c => !c.match(/\s/))) {
-                    throw new Error('attrs.class must be a string or an array of strings not containing whitespace');
+                    throw new TypeError('attrs.class must be a string or an array of strings not containing whitespace');
                 }
                 v = v.join(' ');
             }
@@ -420,7 +420,7 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
     ]) {
         if (typeof value !== 'undefined') {
             if (! (element instanceof HTMLElement)) {
-                throw new Error(`${setter_name} specified for Element but must be HTMLElement`);
+                throw new TypeError(`${setter_name} specified for Element but must be HTMLElement`);
             }
             setter(element, value);
         }
@@ -460,14 +460,14 @@ export function create_element_mapping(options?: object): object {
  */
 export function move_node(node: Node, options: { parent?: any, before?: any }): void {
     if (!(node instanceof Node)) {
-        throw new Error('node must be an instance of Node');
+        throw new TypeError('node must be an instance of Node');
     }
     const {
         parent,
         before,
     } = validate_parent_and_before_from_options(options);
     if (!parent) {
-        throw new Error('options must specify either "parent" or "before"');
+        throw new TypeError('options must specify either "parent" or "before"');
     }
     parent.insertBefore(node, before);
 }
@@ -481,11 +481,11 @@ export function move_node(node: Node, options: { parent?: any, before?: any }): 
  */
 export function create_stylesheet_link(parent: Element, stylesheet_url: URL|string, attrs?: object, permit_duplication: boolean = false): Element {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     attrs = attrs ?? {};
     if ('rel' in attrs || 'href' in attrs) {
-        throw new Error('attrs must not contain "rel" or "href"');
+        throw new TypeError('attrs must not contain "rel" or "href"');
     }
     let link_element;
     if (!permit_duplication) {
@@ -515,7 +515,7 @@ export function create_stylesheet_link(parent: Element, stylesheet_url: URL|stri
  */
 export function create_inline_stylesheet(parent: Element, stylesheet_text: string, attrs?: object) {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     const style_el = create_element({
         tag: 'style',
@@ -535,11 +535,11 @@ export function create_inline_stylesheet(parent: Element, stylesheet_text: strin
  */
 export function create_script(parent: Element, script_url: URL|string, attrs?: object, permit_duplication: boolean = false): Element {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     attrs = attrs ?? {};
     if ('src' in attrs) {
-        throw new Error('attrs must not contain "src"');
+        throw new TypeError('attrs must not contain "src"');
     }
     let script_element;
     if (!permit_duplication) {
@@ -568,10 +568,10 @@ export function create_script(parent: Element, script_url: URL|string, attrs?: o
  */
 export function create_inline_script(parent: Element, script_text: string, attrs?: object): Element {
     if (!(parent instanceof Element)) {
-        throw new Error('parent must be an Element');
+        throw new TypeError('parent must be an Element');
     }
     if (attrs && 'src' in attrs) {
-        throw new Error('attrs must not contain "src"');
+        throw new TypeError('attrs must not contain "src"');
     }
     const script_el = create_element({
         tag: 'script',

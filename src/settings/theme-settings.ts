@@ -206,7 +206,7 @@ function copy_themes_settings(themes_settings: object[]): object[] {
  */
 function equivalent_themes(theme1: object, theme2: object): boolean {
     if (typeof theme1 !== 'object' || typeof theme2 !== 'object') {
-        throw new Error('specified themes must be objects');
+        throw new TypeError('specified themes must be objects');
     }
     if (theme1 === theme2) {
         return true;
@@ -258,14 +258,14 @@ export const themes_style_element_id = `themes-${generate_uuid()}`;
 function get_themes_style_element(): null|HTMLStyleElement {
     const style_element = document.getElementById(themes_style_element_id);
     if (style_element && !(style_element instanceof HTMLStyleElement)) {
-        throw new Error(`configuration error: themes_style_element_id="${themes_style_element_id}" does not refer to an HTMLStyleElement`);
+        throw new TypeError(`configuration error: themes_style_element_id="${themes_style_element_id}" does not refer to an HTMLStyleElement`);
     }
     return style_element;
 }
 
 function create_themes_style_element(): HTMLStyleElement {
     if (get_themes_style_element()) {
-        throw new Error(`element with id ${themes_style_element_id} already exists`);
+        throw new TypeError(`element with id ${themes_style_element_id} already exists`);
     }
     if (!document.head) {
         throw new Error('document.head missing');
@@ -290,34 +290,34 @@ function validate_theme_props(theme_props: object): void {
                       typeof(v) === 'string' );
          })
        ) {
-        throw new Error('theme_props must have valid CSS property names starting with --theme- and with string values');
+        throw new TypeError('theme_props must have valid CSS property names starting with --theme- and with string values');
     }
 }
 
 function validate_theme(theme: object): void {
     const { name, props } = (theme as any);
     if (name === theme_system) {
-        throw new Error(`"${theme_system}" is a reserved theme name`);
+        throw new TypeError(`"${theme_system}" is a reserved theme name`);
     }
     if (typeof name !== 'string' || !name.match(theme_name_validation_re)) {
-        throw new Error('invalid theme name');
+        throw new TypeError('invalid theme name');
     }
     validate_theme_props(props);
     for (const prop_name of standard_theme_prop_names) {
         if (!(prop_name in props)) {
-            throw new Error('theme is missing expected properties');
+            throw new TypeError('theme is missing expected properties');
         }
     }
 }
 
 function validate_themes_array(themes: object[]): void {
     if (!Array.isArray(themes)) {
-        throw new Error('themes must be an array of valid themes');
+        throw new TypeError('themes must be an array of valid themes');
     }
     const names = new Set();
     for (const theme of themes) {
         if (names.has((theme as any).name)) {
-            throw new Error('themes must not contain entries with duplicated names');
+            throw new TypeError('themes must not contain entries with duplicated names');
         }
         names.add((theme as any).name);
         validate_theme(theme);
@@ -346,7 +346,7 @@ function adjust_theme(theme: object): undefined|{ name: string, props: object } 
 
 function adjust_themes_array(themes: object[]): undefined|object[] {
     if (!Array.isArray(themes) || themes.length <= 0) {
-        throw new Error('themes must be an array of valid themes with at least one element');
+        throw new TypeError('themes must be an array of valid themes with at least one element');
     }
     let adjustment_made = false;
     const adjusted_themes = themes.map((theme) => {
@@ -382,7 +382,7 @@ ${ Object.entries(props)
 async function write_themes_to_style_element(themes: object[], themes_style_element: HTMLElement): Promise<void> {
     validate_themes_array(themes);
     if (!(themes_style_element instanceof HTMLElement) || themes_style_element.tagName?.toLowerCase() !== 'style') {
-        throw new Error('invalid themes_style_element');
+        throw new TypeError('invalid themes_style_element');
     }
     const sections = [];
     sections.push(theme_property_name_documentation);

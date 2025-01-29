@@ -258,61 +258,61 @@ function setup(ocx, the_equation_def) {
 
     function validate_f(f) {
         if (typeof f !== 'function') {
-            throw new Error('f must be a function');
+            throw new TypeError('f must be a function');
         }
     }
     function validate_integrator(integrator) {
         if (typeof integrator !== 'function') {
-            throw new Error('integrator must be a function');
+            throw new TypeError('integrator must be a function');
         }
     }
     function validate_point_cloud(point_cloud) {
         if ( typeof point_cloud !== 'object') {
-            throw new Error('point_cloud must be an object')
+            throw new TypeError('point_cloud must be an object')
         }
         const { n, c, r, dt, steps } = point_cloud;
         if (typeof n === 'undefined') {
-            throw new Error('point_cloud.n must be defined');
+            throw new TypeError('point_cloud.n must be defined');
         } else if (!Number.isInteger(n) || n &lt;= 0) {
-            throw new Error('point_cloud.n must be a positive integer');
+            throw new TypeError('point_cloud.n must be a positive integer');
         }
         if (typeof c === 'undefined') {
-            throw new Error('point_cloud.c must be defined');
+            throw new TypeError('point_cloud.c must be defined');
         } else if (!Array.isArray(c) || c.length &lt;= 0 || c.some(e =&gt; (typeof e !== 'number'))) {
-            throw new Error(`point_cloud.c must be a non-empty array of numbers`);
+            throw new TypeError(`point_cloud.c must be a non-empty array of numbers`);
         }
         if (typeof r === 'undefined') {
-            throw new Error('point_cloud.r must be defined');
+            throw new TypeError('point_cloud.r must be defined');
         } else if (typeof r !== 'number' || r &lt;= 0) {
-            throw new Error('point_cloud.r must be a positive number');
+            throw new TypeError('point_cloud.r must be a positive number');
         }
         if (typeof dt !== 'undefined' && (typeof dt !== 'number' || dt &lt;= 0)) {
-            throw new Error(`point_cloud.dt must be a positive number`);
+            throw new TypeError(`point_cloud.dt must be a positive number`);
         }
         if (typeof steps !== 'undefined' && (!Number.isInteger(steps) || steps &lt; 0)) {
-            throw new Error('steps point_cloudmust be a non-negative integer');
+            throw new TypeError('steps point_cloudmust be a non-negative integer');
         }
     }
     function validate_config(config, structure_name='config') {
         if ( typeof config !== 'object') {
-            throw new Error(`${structure_name} must be an object`)
+            throw new TypeError(`${structure_name} must be an object`)
         }
         const { integrator, dt, x0, skip, steps, point_cloud } = config;  // params is unrestricted
         if (integrator) {
             validate_integrator(integrator);
         }
         if (typeof dt !== 'undefined' && (typeof dt !== 'number' || dt &lt;= 0)) {
-            throw new Error(`${structure_name}.dt must be a positive number`);
+            throw new TypeError(`${structure_name}.dt must be a positive number`);
         }
         if (typeof x0 !== 'undefined' &&
              (!Array.isArray(x0) || x0.length &lt;= 0 || x0.some(e =&gt; (typeof e !== 'number'))) ) {
-            throw new Error(`${structure_name}.x0 must be a non-empty array of numbers`);
+            throw new TypeError(`${structure_name}.x0 must be a non-empty array of numbers`);
         }
         if (typeof skip !== 'undefined' && (!Number.isInteger(skip) || skip &lt; 0)) {
-            throw new Error(`${structure_name}.skip must be a non-negative integer`);
+            throw new TypeError(`${structure_name}.skip must be a non-negative integer`);
         }
         if (typeof steps !== 'undefined' && (!Number.isInteger(steps) || steps &lt; 0)) {
-            throw new Error(`${structure_name}.steps must be a non-negative integer`);
+            throw new TypeError(`${structure_name}.steps must be a non-negative integer`);
         }
         if (point_cloud) {
             validate_point_cloud(point_cloud);
@@ -320,25 +320,25 @@ function setup(ocx, the_equation_def) {
     }
     function validate_equation_def(equation_def) {
         if ( typeof equation_def !== 'object') {
-            throw new Error('equation definition must be an object')
+            throw new TypeError('equation definition must be an object')
         }
         validate_config(equation_def, 'equation_def');  // equation_def is a subclass of config
         const { title, f, iter, iter_delay } = equation_def;
         if (typeof title !== 'undefined' && typeof title !== 'string') {
-            throw new Error('equation_def.title must be a string');
+            throw new TypeError('equation_def.title must be a string');
         }
         if (iter) {
             const iterator_fn = iter[Symbol.iterator];
             if ( (typeof iterator_fn !== 'undefined' && typeof iterator_fn !== 'function') &&
                  !(iter instanceof Generator) ) {
-                throw new Error('equation_def.iter must be an iterable or a generator function');
+                throw new TypeError('equation_def.iter must be an iterable or a generator function');
             }
         }
         if (typeof iter_delay !== 'undefined' && (typeof iter_delay !== 'number' || iter_delay &lt; 0)) {
-            throw new Error('equation_def.iter_delay must be a non-negative number');
+            throw new TypeError('equation_def.iter_delay must be a non-negative number');
         }
         if (typeof f === 'undefined') {
-            throw new Error('equation_def.f must be defined');
+            throw new TypeError('equation_def.f must be defined');
         } else {
             validate_f(f);
         }
@@ -486,13 +486,13 @@ function setup(ocx, the_equation_def) {
 
                         const { integrator, dt, x0, params, skip=0, steps=Infinity, point_cloud } = merged_config;
                         if (typeof integrator === 'undefined') {
-                            throw new Error('integrator was not specified');
+                            throw new TypeError('integrator was not specified');
                         }
                         if (typeof dt === 'undefined') {
-                            throw new Error('dt was not specified');
+                            throw new TypeError('dt was not specified');
                         }
                         if (typeof x0 === 'undefined') {
-                            throw new Error('x0 was not specified');
+                            throw new TypeError('x0 was not specified');
                         }
 
                         display_config(merged_config);

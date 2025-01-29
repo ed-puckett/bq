@@ -142,11 +142,11 @@ export class MarkdownRenderer extends TextBasedRenderer {
                                 show = false,
                             } = token;
                             if (!source_type) {
-                                throw new Error('no source_type given');
+                                throw new TypeError('no source_type given');
                             }
                             renderer_factory = TextBasedRenderer.factory_for_type(source_type);
                             if (!renderer_factory) {
-                                throw new Error(`cannot find renderer for source type "${source_type}"`);
+                                throw new TypeError(`cannot find renderer for source type "${source_type}"`);
                             }
                             const markup_segments: string[] = [];
                             function add_segment(renderer_factory: RendererFactory, text_to_render: string, css_class?: string) {

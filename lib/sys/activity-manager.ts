@@ -74,10 +74,10 @@ export class ActivityManager extends Activity {
      */
     add_activity(activity: Activity): void {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         if (activity === this) {
-            throw new Error('cannot this.add_activity() to itself');
+            throw new TypeError('cannot this.add_activity() to itself');
         }
         if (!this.#children.includes(activity)) {
             this.#children.push(activity);
@@ -90,7 +90,7 @@ export class ActivityManager extends Activity {
      */
     remove_activity(activity: Activity): boolean {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         const index = this.#children.indexOf(activity);
         if (index === -1) {
@@ -113,10 +113,10 @@ export class ActivityManager extends Activity {
      */
     manage_activity(activity: Activity, stop_action?: () => void): void {
         if (!(activity instanceof Activity)) {
-            throw new Error('activity must be an instance of Activity');
+            throw new TypeError('activity must be an instance of Activity');
         }
         if (!['undefined', 'function'].includes(typeof stop_action)) {
-            throw new Error('stop_action must be undefined or a function');
+            throw new TypeError('stop_action must be undefined or a function');
         }
         this.add_activity(activity);
         const subscription = activity.stop_states.subscribe((state: StopState) => {

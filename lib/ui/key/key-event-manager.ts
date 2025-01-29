@@ -108,10 +108,10 @@ export class KeyEventManager<DocumentManager> {
     }
     push_key_map(key_map: KeyMap): void {
         if (!(key_map instanceof KeyMap)) {
-            throw new Error('key_map must be an instance of KeyMap');
+            throw new TypeError('key_map must be an instance of KeyMap');
         }
         if (this.#key_map_stack.indexOf(key_map) !== -1) {
-            throw new Error('key_map already exists in stack');
+            throw new TypeError('key_map already exists in stack');
         }
         this.#key_map_stack.unshift(key_map);
         this.#rebuild();
@@ -152,10 +152,10 @@ export class KeyEventManager<DocumentManager> {
      */
     static clone_key_event_with_alternate_target(key_event: KeyboardEvent, replacement_target: Node) {
         if (!(key_event instanceof KeyboardEvent)) {
-            throw new Error('key_event must be an instance of KeyboardEvent');
+            throw new TypeError('key_event must be an instance of KeyboardEvent');
         }
         if (!(replacement_target instanceof Node)) {
-            throw new Error('replacement_target must be an instance of Node');
+            throw new TypeError('replacement_target must be an instance of Node');
         }
         return {
             ...key_event,  // captures almost nothing, e.g., just the "isTrusted" property
