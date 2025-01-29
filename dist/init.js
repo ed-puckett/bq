@@ -7451,7 +7451,7 @@ module.exports = styleTagTransform;
 /* harmony export */   Il: () => (/* binding */ Activity),
 /* harmony export */   Ko: () => (/* binding */ StoppedError)
 /* harmony export */ });
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9205);
 
 // This is a recognizable error representing a stopped condition
 class StoppedError extends Error {
@@ -8042,36 +8042,74 @@ class OpenPromise {
 
 /***/ }),
 
-/***/ 5428:
+/***/ 9205:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Y: () => (/* binding */ SerialDataSource)
-/* harmony export */ });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3752);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  Y: () => (/* binding */ SerialDataSource)
+});
+
+// EXTERNAL MODULE: ./node_modules/rxjs/dist/esm5/internal/Subject.js
+var Subject = __webpack_require__(3752);
+;// ./lib/sys/abort-signal-action.ts
+// manage_abort_signal_action() establishes control over an action function
+// where when an AbortSignal instances fires an 'abort' event, the given
+// action function will be called.  Also, a new function wrapping the action
+// function will be returned.  The result is that the given action function
+// will be called when either the wrapped action function is called or the
+// AbortSignal 'abort' event is fired.  In either case, the resources
+// associated with this arrangement will be released.
+//
+// This is in contrast to simply adding an event listener to the abort_signal
+// in which case the event listener will not be removed for a long-lived
+// abort_signal.
+//
+// Note that the given action function should not be called, but instead the
+// returned wrapped function should be called if direct control (i.e., not
+// evented control) is desired.
+//
+// Note that the action function may get called multiple times....
+function manage_abort_signal_action(abort_signal, action_implementation) {
+    if (typeof action_implementation !== 'function') {
+        throw new TypeError('action_implementation must be a function');
+    }
+    if (!(abort_signal instanceof AbortSignal)) {
+        throw new TypeError('abort_signal must be an instance of AbortSignal');
+    }
+    abort_signal.throwIfAborted();
+    let listener_removal_controller = new AbortController();
+    abort_signal.addEventListener('abort', () => {
+        listener_removal_controller = undefined; // prevent future use
+        action_implementation();
+    }, {
+        signal: listener_removal_controller.signal,
+        once: true,
+    });
+    const action = () => {
+        listener_removal_controller?.abort();
+        listener_removal_controller = undefined; // prevent future use
+        action_implementation();
+    };
+    return {
+        action,
+        abort_signal,
+    };
+}
+
+;// ./lib/sys/serial-data-source.ts
 
 
 class SerialDataSource {
-    #subject = new rxjs__WEBPACK_IMPORTED_MODULE_0__/* .Subject */ .B();
+    #subject = new Subject/* Subject */.B();
     subscribe(observer, options) {
         const { abort_signal, } = (options ?? {});
-        abort_signal?.throwIfAborted();
         const subscription = this.#subject.subscribe(observer);
-        let listener_removal_controller = undefined;
-        if (abort_signal) {
-            listener_removal_controller = new AbortController();
-            abort_signal.addEventListener('abort', () => {
-                listener_removal_controller = undefined; // prevent future use
-                subscription.unsubscribe();
-            }, {
-                signal: listener_removal_controller.signal,
-                once: true,
-            });
-        }
-        const unsubscribe = () => {
-            listener_removal_controller?.abort();
-            subscription.unsubscribe();
-        };
+        const unsubscribe_implemention = () => { subscription.unsubscribe(); };
+        const unsubscribe = abort_signal
+            ? manage_abort_signal_action(abort_signal, unsubscribe_implemention).action
+            : unsubscribe_implemention;
         return {
             unsubscribe,
             abort_signal,
@@ -10021,8 +10059,8 @@ class KeyMapMapper {
     }
 }
 
-// EXTERNAL MODULE: ./lib/sys/serial-data-source.ts
-var serial_data_source = __webpack_require__(5428);
+// EXTERNAL MODULE: ./lib/sys/serial-data-source.ts + 1 modules
+var serial_data_source = __webpack_require__(9205);
 // EXTERNAL MODULE: ./lib/ui/beep.ts
 var beep = __webpack_require__(5934);
 ;// ./lib/ui/key/key-event-manager.ts
@@ -10266,7 +10304,7 @@ class KeyEventManager {
 /* harmony export */ });
 /* unused harmony export load_stylesheet */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9205);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8890);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/lib/ui/menu/_.ts")); // save for later
@@ -11542,7 +11580,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(742);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(9205);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
@@ -15301,7 +15339,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9799);
 /* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8067);
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(9205);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1576);
@@ -34979,7 +35017,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* unused harmony exports validate_numeric, analyze_contained, analyze_editor_options, analyze_formatting_options, analyze_render_options, analyze_settings, _reset_settings */
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9205);
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1602);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__]);
 src_init__WEBPACK_IMPORTED_MODULE_0__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
@@ -35435,7 +35473,7 @@ const storage_db = new IndexedDBInterface(database_name, database_store_name);
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* unused harmony exports root_element_theme_attribute, default_theme_name, get_standard_theme_names, get_standard_theme_prop_names, themes_style_element_id, themes_settings_updated_events, get_themes_settings, update_themes_settings, reset_to_standard_themes_settings */
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9205);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3141);
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1602);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
