@@ -1,5 +1,5 @@
-/** AbortSignalAction() manages the association of an action function with an
- * AbortSignal 'abort' event.
+/** AbortSignalAction instances manage the association of an one-shot action
+ * function with an AbortSignal 'abort' event and ensure resource cleanup.
  */
 export class AbortSignalAction {
     /** AbortSignalAction constructor
@@ -10,13 +10,13 @@ export class AbortSignalAction {
      *                      if abort_signal is already aborted
      *
      * The given action function will be called at most once by this code, and
-     * will be triggered by either calling this.trigger() or if abort_signal
+     * will be triggered by either calling this.trigger() or when abort_signal
      * fires an 'abort' event.
      *
      * As a convenience, abort_signal may be undefined in which case there is
-     * no event-based trigger for calling the action function.  However,
-     * this.trigger() can still be called, and will still only call the given
-     * action function at most once.
+     * no event-based trigger for the action function.  However, this.trigger()
+     * can still be called, and will still only call the given action function
+     * at most once.
      *
      * After the action function has been called, the resources associated with
      * the listener for the 'abort' event are released.  This is in contrast to
@@ -29,8 +29,8 @@ export class AbortSignalAction {
      * if the abort_signal fires an 'abort' event after unmanage() has been
      * called, nothing happens.
      *
-     * Warning: calling unmanage() prevents triggering the action function later!
-     * (at least through this interface)
+     * Warning: calling unmanage() prevents triggering the action function
+     * later! (at least through this interface)
      */
     constructor(
         abort_signal: undefined|AbortSignal,
@@ -71,7 +71,7 @@ export class AbortSignalAction {
      * @throws {Error} after this.unmanage() has been called.
      */
     trigger() {
-        this.#throw_if_unmanaged();
+        this.throw_if_unmanaged();
         this.#remove_listener();
         if (!this.#action_called) {
             this.#action_called = true;  // set first just in case
@@ -89,6 +89,12 @@ export class AbortSignalAction {
     /** @return {Boolean} true iff this.unmanage() has been called.
      */
     get unmanaged (){ return this.#unmanaged; }
+
+    throw_if_unmanaged() {
+        if (this.#unmanaged) {
+            throw new Error('no longer managed');
+        }
+    }
 
 
     // --- internal ---
@@ -108,11 +114,4 @@ export class AbortSignalAction {
             this.#listener_removal_controller = undefined;  // prevent future use
         }
     }
-
-    #throw_if_unmanaged() {
-        if (this.#unmanaged) {
-            throw new Error('no longer managed');
-        }
-    }
-
 }

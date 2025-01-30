@@ -7449,8 +7449,8 @@ module.exports = styleTagTransform;
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   $: () => (/* binding */ AbortSignalAction)
 /* harmony export */ });
-/** AbortSignalAction() manages the association of an action function with an
- * AbortSignal 'abort' event.
+/** AbortSignalAction instances manage the association of an one-shot action
+ * function with an AbortSignal 'abort' event and ensure resource cleanup.
  */
 class AbortSignalAction {
     /** AbortSignalAction constructor
@@ -7461,13 +7461,13 @@ class AbortSignalAction {
      *                      if abort_signal is already aborted
      *
      * The given action function will be called at most once by this code, and
-     * will be triggered by either calling this.trigger() or if abort_signal
+     * will be triggered by either calling this.trigger() or when abort_signal
      * fires an 'abort' event.
      *
      * As a convenience, abort_signal may be undefined in which case there is
-     * no event-based trigger for calling the action function.  However,
-     * this.trigger() can still be called, and will still only call the given
-     * action function at most once.
+     * no event-based trigger for the action function.  However, this.trigger()
+     * can still be called, and will still only call the given action function
+     * at most once.
      *
      * After the action function has been called, the resources associated with
      * the listener for the 'abort' event are released.  This is in contrast to
@@ -7480,8 +7480,8 @@ class AbortSignalAction {
      * if the abort_signal fires an 'abort' event after unmanage() has been
      * called, nothing happens.
      *
-     * Warning: calling unmanage() prevents triggering the action function later!
-     * (at least through this interface)
+     * Warning: calling unmanage() prevents triggering the action function
+     * later! (at least through this interface)
      */
     constructor(abort_signal, action) {
         if (typeof action !== 'function') {
@@ -7514,7 +7514,7 @@ class AbortSignalAction {
      * @throws {Error} after this.unmanage() has been called.
      */
     trigger() {
-        this.#throw_if_unmanaged();
+        this.throw_if_unmanaged();
         this.#remove_listener();
         if (!this.#action_called) {
             this.#action_called = true; // set first just in case
@@ -7530,6 +7530,11 @@ class AbortSignalAction {
     /** @return {Boolean} true iff this.unmanage() has been called.
      */
     get unmanaged() { return this.#unmanaged; }
+    throw_if_unmanaged() {
+        if (this.#unmanaged) {
+            throw new Error('no longer managed');
+        }
+    }
     // --- internal ---
     // set in constructor:
     #abort_signal;
@@ -7542,11 +7547,6 @@ class AbortSignalAction {
         if (this.#listener_removal_controller) {
             this.#listener_removal_controller.abort();
             this.#listener_removal_controller = undefined; // prevent future use
-        }
-    }
-    #throw_if_unmanaged() {
-        if (this.#unmanaged) {
-            throw new Error('no longer managed');
         }
     }
 }
@@ -15398,12 +15398,14 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9799);
 /* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8067);
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3141);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1576);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(1688);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1688);
 /* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9015);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__]);
 ([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
@@ -15458,7 +15460,9 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
+//     AbortSignalAction
 //     SerialDataSource
+//     uuidv4
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -15498,6 +15502,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).constructor;
+
+
 
 
 
@@ -15749,11 +15755,13 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9,
             ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .ApplicationBasedRenderer */ .rK,
             OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__/* .OpenPromise */ .q,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_10__/* .SerialDataSource */ .Y,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_10__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_11__/* .SerialDataSource */ .Y,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_12__/* .uuidv4 */ .gZ),
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__/* .load_Algebrite */ .B,
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_11__,
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_13__,
             // utility functions defined above
             is_stopped, // no abort_if_stopped()....
             keepalive: ocx.AIS(keepalive),
@@ -15785,7 +15793,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_12__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_14__,
         };
         eval_environment.env_vars = Object.keys(eval_environment);
         return eval_environment;
