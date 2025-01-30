@@ -56,7 +56,9 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
+//     AbortSignalAction
 //     SerialDataSource
+//     uuidv4
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -138,8 +140,16 @@ import {
 } from 'lib/sys/open-promise';
 
 import {
+    AbortSignalAction,
+} from 'lib/sys/abort-signal-action';
+
+import {
     SerialDataSource,
 } from 'lib/sys/serial-data-source';
+
+import {
+    uuidv4,
+} from 'lib/sys/uuid';
 
 import {
     load_d3,
@@ -430,7 +440,10 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             ApplicationBasedRenderer,
 
             OpenPromise,
+            AbortSignalAction,
             SerialDataSource,
+
+            uuidv4:          ocx.AIS(uuidv4),
 
             d3,  // for use with Plotly
             load_Plotly,
