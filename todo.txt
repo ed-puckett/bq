@@ -1,7 +1,7 @@
 define ocx.render_tty() or something like that (?)
 in markdown, inline invocation of a renderer (especially of javascript) would be nice
 provide visual indication of a cell's show-full and show-in-presentation states
-Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js sometimes... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
+Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 sometimes after refresh document hangs with a blank page...
 auto-eval documents cause unhandled rejection when trying to call beep() in Firefox
 errors in bq-cell javascript do not indicate where the error happened in the code

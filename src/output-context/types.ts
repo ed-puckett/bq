@@ -33,6 +33,7 @@ import {
 
 import {
     TextBasedRendererOptionsType,
+    is_compatible_with_options,
 } from 'src/renderer/text/types';
 
 import {
@@ -135,6 +136,65 @@ export abstract class OutputContextLike extends ActivityManager {
                 [this.attribute__data_source_media_type]: source_media_type,
             },
         }) as HTMLOutputElement;
+    }
+
+    /** Validate options (throwing an Error if validation does not pass), and
+     * return undefined if element is already compatible, otherwise return an
+     * object that reflects options that is suitable to use for create_element().
+     * If always_return_options is true, then return the creation options
+     * regardless of element compatibility.
+     * @param {Element} element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_return_options (default: false)
+     * @return {undefined|Object} transformed options
+     * @throws {Error} error if options does not pass validation
+     */
+    static is_compatible_with_options(element: Element, options?: null|TextBasedRendererOptionsType, always_return_options: Boolean = false): undefined|Object {
+        if (!(element instanceof Element)) {
+            throw new TypeError('element must be an instance of Element');
+        }
+        return is_compatible_with_options(element, options, always_return_options);
+    }
+
+    /** Return an element that is compatible with options.  The returned
+     * element will be base_element if base_element is already compatible,
+     * otherwise it will be a child element of base_element.
+     * If always_create_child is true, then always return a child.
+     * Note that if a new element is returned it is either a <div> or a <span>
+     * and is therefore an HTMLElement.
+     * @param {OutputContextLike} base_element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {Element} element compatible with options (may be base_element)
+     * @throws {Error} error if options does not pass validation
+     */
+    static element_for_options(base_element: Element, options?: null|TextBasedRendererOptionsType, always_create_child: Boolean = false): Element {
+        const creation_options = this.is_compatible_with_options(base_element, options, always_create_child);
+        if (!creation_options) {
+            return base_element;
+        } else {
+            (creation_options as any).parent = base_element;
+            return this.create_element(creation_options);
+        }
+    }
+
+    /** Return an ocx whose element is compatible with options.  The returned
+     * ocx will be base_ocx if base_ocx is already compatible, otherwise it
+     * will be a child ocx of base_ocx.
+     * If always_create_child is true, then always return a child.
+     * @param {OutputContextLike} base_ocx
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {OutputContextLike} ocx compatible with options (may be base_ocx)
+     * @throws {Error} error if options does not pass validation
+     */
+    static ocx_for_options(base_ocx: OutputContextLike, options?: null|TextBasedRendererOptionsType, always_create_child: Boolean = false): OutputContextLike {
+        const creation_options = this.is_compatible_with_options(base_ocx.element, options, always_create_child);
+        if (!creation_options) {
+            return base_ocx;
+        } else {
+            return base_ocx.create_child_ocx(creation_options);
+        }
     }
 
     /** remove all child elements and nodes of element

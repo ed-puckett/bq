@@ -587,6 +587,12 @@ export class BqManager {
                            options?:        null|TextBasedRendererOptionsType,
                            cell?:           null|BqCellElement,
                            output_element?: Element ): Promise<Element> {
+        if (!(renderer instanceof TextBasedRenderer)) {
+            throw new TypeError('renderer must be an instance of TextBasedRenderer');
+        }
+        if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
+            throw new TypeError('options must be undefined, null, or an object');
+        }
         cell ??= this.active_cell;
         if (!cell) {
             throw new TypeError('cell not specified and no active_cell');
@@ -594,14 +600,16 @@ export class BqManager {
         if (cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
         }
+        if (typeof output_element !== 'undefined' && !(output_element instanceof Element)) {
+            throw new TypeError('output_element must be undefined or an instance of Element');
+        }
 
         cell.ensure_id();
         const cell_id = cell.id;
 
-        options ??= {};
-        if (!options.global_state) {
+        if (!options?.global_state) {
             options = {
-                ...options,
+                ...(options ?? {}),
                 global_state: this.global_state,
             };
         }

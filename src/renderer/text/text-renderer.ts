@@ -24,19 +24,9 @@ export class TextRenderer extends TextBasedRenderer {
     }
 
     async _render(ocx: OutputContextLike, text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        const {
-            style,
-            inline,
-        } = (options ?? {});
-
-        const element = ocx.create_child({
-            tag: inline ? 'span' : 'div',
-            attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
-                class: 'plain-text',  // see 'src/style.css'
-            },
-            style,
-        }) as HTMLElement;
+        const element = ocx.CLASS.element_for_options(ocx.element, options, true) as HTMLElement;
+        element.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
+        element.classList.add('bq-plain-text');
         element.innerText = text;  // innerText sanitizes text
         return element;
     }

@@ -58,7 +58,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     OpenPromise
 //     AbortSignalAction
 //     SerialDataSource
-//     uuidv4
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -69,6 +68,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     end_bg
 //     make_check_tick
 //     range
+//     uuidv4
 //     create_worker
 //     import_local
 //     vars
@@ -200,32 +200,16 @@ export class JavaScriptRenderer extends TextBasedRenderer {
     /** Render by evaluating the given code and outputting to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} code,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx: OutputContextLike, code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        const {
-            style,
-            inline,
-            global_state = ocx.bq.global_state,
-        } = (options ?? {});
+        const global_state = options?.global_state ?? ocx.bq.global_state;
 
         const eval_context = ((global_state as any)[this.type] ??= {});
 
-        let eval_ocx = ocx;
-
-        // if !style && inline, then use the given ocx,
-        // otherwise, if style || !inline, create a new ocx
-        if (style || !inline) {
-            eval_ocx = ocx.create_child_ocx({
-                tag: inline ? 'span' : 'div',
-                attrs: {
-                    [OutputContextLike.attribute__data_source_media_type]: this.media_type,
-                },
-                style,
-            });
-        }
+        const eval_ocx = ocx.CLASS.ocx_for_options(ocx, options);
 
         const eval_environment = await this.#create_eval_environment(eval_context, eval_ocx, code);
         const eval_environment_entries = Object.entries(eval_environment);
@@ -443,8 +427,6 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             AbortSignalAction,
             SerialDataSource,
 
-            uuidv4:          ocx.AIS(uuidv4),
-
             d3,  // for use with Plotly
             load_Plotly,
             load_Algebrite,
@@ -459,6 +441,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             make_check_tick: ocx.AIS(make_check_tick),
 
             range,
+            uuidv4:          ocx.AIS(uuidv4),
 
             create_worker:   ocx.AIS(create_worker),
             import_local:    ocx.AIS(import_local),

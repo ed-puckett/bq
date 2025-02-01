@@ -199,7 +199,7 @@ export function show_initialization_failed(reason: unknown) {
     const error_h1 = document.createElement('h1');
     error_h1.innerText = error.message ?? 'Initialization Failed';
     const error_pre = document.createElement('pre');
-    error_pre.classList.add('error-message');
+    error_pre.classList.add('bq-error-message');
     error_pre.innerText = error.stack ?? 'INITIALIZATION ERROR';
     document.body.appendChild(error_h1);
     document.body.appendChild(error_pre);

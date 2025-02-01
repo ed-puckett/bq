@@ -10,7 +10,7 @@
 // promise that will fulfill when (and if) the multi-cell eval completes without error.
 keepalive();
 ocx.bq.rendering_cells?.then(() => {
-    ocx.println('Render complete!');
+    ocx.markdown('# Render complete!');
     cell.scroll_into_view(true);
 });
 </bq-cell>

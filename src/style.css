@@ -78,9 +78,14 @@ header:has(menu.menubar) ~ main {  /* main preceded by header containing classic
     margin: 1rem 0;
 }
 
-.plain-text {
+.bq-plain-text {
     white-space: pre-wrap;  /* display white-space properly */
     line-height: 125%;
+}
+.bq-monospace-text {
+    white-space: pre-wrap;  /* properly display white-space */
+    line-height: 125%;
+    font-family: monospace;
 }
 
 bq-cell {
@@ -184,7 +189,7 @@ bq-cell {
     }
 }
 
-.markdown-code-source {
+.bq-markdown-code-source {
     max-width: fit-content;
     padding: 0.25em;
     margin-block-start: 1em;
@@ -265,7 +270,7 @@ bq-cell.show-full .cm-scroller {
 
 /* === error messages === */
 
-.error-message {
+.bq-error-message {
     display: block;
     white-space: break-spaces;
     margin: 1.75em;
@@ -503,10 +508,10 @@ dialog .dialog-text {
     width: 5em;
 }
 
-.settings-dialog .error-message {
+.settings-dialog .bq-error-message {
     display: none;
 }
-.settings-dialog .error-message.active {
+.settings-dialog .bq-error-message.active {
     display: block;
 }
 

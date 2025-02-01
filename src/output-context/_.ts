@@ -237,7 +237,8 @@ export class OutputContext extends OutputContextLike {
 
     async print__(options?: TextBasedRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
-        return this.create_child({ tag: 'hr' });
+        return this.CLASS.ocx_for_options(this, options)
+            .create_child({ tag: 'hr' });
     }
 
     async javascript(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
