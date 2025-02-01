@@ -109,7 +109,7 @@ export abstract class TextBasedRenderer extends Renderer {
     /** render the given value
      * @param {OutputContextLike} ocx,
      * @param {string} value,  // value to be rendered
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */

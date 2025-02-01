@@ -172,7 +172,7 @@ export class SettingsDialog extends Dialog {
             const error_div = create_element({
                 parent: section_div,
                 attrs: {
-                    class: [ 'error-message' ],
+                    class: [ 'bq-error-message' ],
                 },
             }) as HTMLElement;
 

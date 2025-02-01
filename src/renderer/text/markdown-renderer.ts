@@ -71,7 +71,7 @@ const eval_code_match_re_tilde     = make_eval_code_match_re('~');
 const eval_code_match_re_backquote = make_eval_code_match_re('`');
 
 const eval_code_source_type_default = JavaScriptRenderer.type;
-const eval_code_source_css_class = 'markdown-code-source';
+const eval_code_source_css_class = 'bq-markdown-code-source';
 
 
 type walkTokens_token_type = {
@@ -95,26 +95,17 @@ export class MarkdownRenderer extends TextBasedRenderer {
     /** Render by evaluating the given markdown and outputting to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} markdown,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx: OutputContextLike, markdown: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         markdown ??= '';
 
-        const {
-            style,
-            inline,
-            global_state = ocx.bq.global_state,
-        } = (options ?? {});
+        const global_state = options?.global_state ?? ocx.bq.global_state;
 
-        const parent = ocx.create_child({
-            tag: inline ? 'span' : 'div',
-            attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
-            },
-            style,
-        });
+        const parent = ocx.CLASS.element_for_options(ocx.element, options, true);
+        parent.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
 
         let deferred_evaluations: {
             output_element_id: string,

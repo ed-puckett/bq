@@ -36,33 +36,25 @@ export class LaTeXRenderer extends TextBasedRenderer {
     /** Render the given LaTeX source to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} latex,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx: OutputContextLike, latex: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         latex ??= '';
 
-        const {
-            style,
-            inline,
-            global_state = ocx.bq.global_state ?? {},
-        } = (options ?? {});
+        const global_state = options?.global_state ?? ocx.bq.global_state;
 
         const markup = this.CLASS.render_to_string(latex, global_state, {
-            displayMode:  !inline,
+            displayMode:  !options?.inline,
             throwOnError: false,
         });
 
-        const parent = ocx.create_child({
-            attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
-            },
-            style,
-        });
-        parent.innerHTML = markup;
+        const element = ocx.CLASS.element_for_options(ocx.element, options, true);
+        element.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
+        element.innerHTML = markup;
 
-        return parent;
+        return element;
     }
 
     static render_to_string(latex: string, global_state: any, katex_options?: object): string {

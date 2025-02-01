@@ -305,9 +305,14 @@ header:has(menu.menubar) ~ main {  /* main preceded by header containing classic
     margin: 1rem 0;
 }
 
-.plain-text {
+.bq-plain-text {
     white-space: pre-wrap;  /* display white-space properly */
     line-height: 125%;
+}
+.bq-monospace-text {
+    white-space: pre-wrap;  /* properly display white-space */
+    line-height: 125%;
+    font-family: monospace;
 }
 
 bq-cell {
@@ -411,7 +416,7 @@ bq-cell {
     }
 }
 
-.markdown-code-source {
+.bq-markdown-code-source {
     max-width: fit-content;
     padding: 0.25em;
     margin-block-start: 1em;
@@ -492,7 +497,7 @@ bq-cell.show-full .cm-scroller {
 
 /* === error messages === */
 
-.error-message {
+.bq-error-message {
     display: block;
     white-space: break-spaces;
     margin: 1.75em;
@@ -730,10 +735,10 @@ dialog .dialog-text {
     width: 5em;
 }
 
-.settings-dialog .error-message {
+.settings-dialog .bq-error-message {
     display: none;
 }
-.settings-dialog .error-message.active {
+.settings-dialog .bq-error-message.active {
     display: block;
 }
 
@@ -827,7 +832,7 @@ dialog.export-options-dialog {
     }
 
 }
-`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/* all other stylesheets have been incorporated into this one */\n\n/* var(--theme-*, hotpink) computed values use hotpink defaults to make omissions evident */\n\n/* See settings/theme-settings.ts for definition of --theme-* properties */\n\n/*\n  To determine current user preference for \"prefers dark mode\",\n  it is sufficient to test the presence (indicating \"dark\")\n  or absence (indicating \"light\", the default) of the attribute\n  \"data-theme\" on the :root element.  When present, the attribute\n  \"data-theme\" will have the value \"dark\".  This works whether the\n  user has set a global system-wide preference or if the user has\n  set a specific preference in the current document.  The document\n  setting overrides the system-wide preference.\n  See settings/theme-settings.ts.\n*/\n\n:root {\n    --cell-max-height-scrolling: 33dvh;\n\n    --header-height: 1.5rem;\n}\n\nbody {\n    overflow: hidden;  /* inhibit scrolling for body */\n    margin: 0;\n    color:            var(--theme-ui-fg, hotpink);\n    background-color: var(--theme-ui-bg, hotpink);\n}\n\nheader {\n    /* header without classic menubar menu */\n    /* (just default settings */\n\n    &:has(menu.menubar) {  /* header containing classic menubar menu */\n        display: flex;\n        align-items: flex-end;\n        justify-content: flex-start;\n\n        height: var(--header-height);\n        background-color: var(--theme-si-bg, hotpink);\n\n        border: 0px solid var(--theme-si-rc, hotpink);\n        border-bottom-width: 1px;\n    }\n}\n\nmain {\n    /* enable scrolling for main element */\n    overflow: auto;\n    max-height: 100dvh;\n    max-width:  100dvw;\n    scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */\n}\nheader:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */\n    max-height: calc(100dvh - var(--header-height));\n}\n\n.bq-cell-output {\n    display: block;\n    overflow: auto;  /* enable h/v scrolling */\n    height: fit-content;\n    padding: 0 1em 0 1em;\n    color:            var(--theme-ou-fg, hotpink);\n    background-color: var(--theme-ou-bg, hotpink);\n}\n.bq-cell-output:empty,\n.bq-cell-output:not(:has(> *:not(:empty))) {\n    display: none;\n}\n.bq-cell-output .katex-display {\n    /* eliminate spacing for empty output case */\n    margin: 0;\n}\n.bq-cell-output .katex-display .katex-html:not(:empty) {\n    /* add spacing back to more interior element for \"display\" output */\n    margin: 1rem 0;\n}\n\n.plain-text {\n    white-space: pre-wrap;  /* display white-space properly */\n    line-height: 125%;\n}\n\nbq-cell {\n    --content-color: lightgrey;\n\n    display: block;\n    overflow: hidden;\n\n    margin: 0 0 0.25em 0;\n    padding: 0;\n    max-height: fit-content;\n\n    border: 1px solid var(--content-color);\n    border-radius: 0.5em;\n\n    caret-color: red;\n    /*outline: 0px solid transparent;*/  /* disable default contenteditable outline */\n\n    white-space: pre-wrap;  /* properly display white-space */\n    font-family: monospace;\n\n    color: var(--theme-ui-fg, hotpink);\n    background-image: linear-gradient(90deg, var(--content-color), transparent);\n    /* background-color: var(--content-color); */\n\n    &::before {\n        content: \"markdown\";  /* markdown is the default */\n        display: inline-block;\n        padding: 0 0 0 0.5em;\n        max-width: fit-content;\n    }\n\n    &[data-type][data-active]::before {\n        font-weight: bold;\n    }\n\n    & > * {\n        /* make sure --content-color is restricted to border and padding,\n         * and does not bleed through transparent children\n         */\n        background-color: var(--theme-ui-bg, hotpink);\n    }\n\n    /* data-type handling */\n\n    &[data-type]::before {\n        content: attr(data-type);\n    }\n\n    &,  /* markdown is the default */\n    &[data-type=\"markdown\"] {\n        --content-color: var(--theme-ty-markdown, hotpink);\n    }\n    &[data-type=\"plain\"] {\n        --content-color: var(--theme-ty-plain, hotpink);\n    }\n    &[data-type=\"latex\"] {\n        --content-color: var(--theme-ty-latex, hotpink);\n    }\n    &[data-type=\"javascript\"] {\n        --content-color: var(--theme-ty-javascript, hotpink);\n    }\n\n    /* data-cell-view handling */\n\n    /* html[data-cell-view]: none|hide|normal|full|presentation\n     * - none:         cells are not displayed\n     * - hide:         cells auto-hide; active cell scrolls, all others are minimized\n     * - normal:       all cells scroll (default)\n     * - full:         all cells shown completely\n     * - presentation: like none, but also the header element is hidden and no document close warning is issued\n     *   -- in presentation view, cells with css class \"show-in-presentation\" will be shown as in \"normal\" view\n     */\n\n    html[data-cell-view=\"none\"] & {\n        display: none;\n    }\n\n    html[data-cell-view=\"hide\"] &:not([data-active]) {\n        display: block;\n        max-height: 0.2rem;\n        padding: 0;\n        margin: 0.2rem;\n        border-width: 1px;\n        border-color: transparent;\n    }\n\n    html[data-cell-view=\"presentation\"] & {\n        display: none;\n    }\n\n    &,\n    html[data-cell-view=\"presentation\"] &.show-in-presentation {\n        display: block;\n        max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */\n        transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);\n\n        &.show-full {\n            max-height: fit-content;\n        }\n    }\n}\n\n.markdown-code-source {\n    max-width: fit-content;\n    padding: 0.25em;\n    margin-block-start: 1em;\n    margin-block-end:   0.5em;\n    border: 1px solid var(--theme-ui-rc, hotpink);\n\n    & pre {\n        margin: 0;\n    }\n}\n\n\n/* === codemirror === */\n\n/* scroll long content unless html[data-cell-view=\"full\"] */\n/* see: https://discuss.codemirror.net/t/code-editor-with-automatic-height-that-has-a-minimum-and-maximum-height/4015 */\n.cm-editor {\n    max-height: var(--cell-max-height-scrolling);\n}\n.cm-scroller {\n    overflow-y: auto;\n}\n\n/* tone down bright gutter color for active line */\n:root[data-theme=\"dark\"] .cm-activeLineGutter {\n    background-color: hsl(170deg 25% 55% / 40%);\n}\n\n/* show full content if html[data-cell-view=\"full\"] or if bq-cell has class \"show-full\" */\nhtml[data-cell-view=\"full\"] bq-cell,\nhtml[data-cell-view=\"full\"] .cm-editor,\nhtml[data-cell-view=\"full\"] .cm-scroller,\nbq-cell.show-full .cm-editor,\nbq-cell.show-full .cm-scroller {\n    overflow-y: hidden;\n    max-height: unset;\n    height: 100%;\n}\n\n/* line number switch */\n.codemirror-hide-line-numbers .cm-lineNumbers {\n    display: none !important;  /* must use !important to override codemirror's setting */\n}\n\n/* patch too-bright light-mode .activeLine color */\n:root:not([data-theme=\"dark\"]) .cm-activeLine {  /* :root:not(---) for specificity */\n    background-color: hsl(200deg 100% 93% / 27%) !important;  /* otherwise overly light */  /* must use !important to override codemirror's setting */\n}\n\n/* patches for CodeMirror colors in dark mode */\n:root[data-theme=\"dark\"] .cm-gutters {\n    background-color: revert !important;  /* otherwise glaringly light */  /* must use !important to override codemirror's setting */\n}\n:root[data-theme=\"dark\"] .cm-activeLine {\n    background-color: hsl(200deg 100% 12% / 27%);  /* otherwise glaringly light */\n}\n:root[data-theme=\"dark\"] .cm-editor .cm-cursor {\n    border-left-color: orange;  /* too dim */  /* see: https://discuss.codemirror.net/t/caret-color-css-seems-locked/7011/5 */\n}\n\n\n/* === theme-aware graphics === */\n\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([fill=\"none\"]) {\n    fill: var(--theme-gr-bg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([stroke=\"none\"]) {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg path,\n[data-source-media-type=\"application/graphviz\"] svg ellipse {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg text {\n    fill: var(--theme-gr-fg, hotpink);\n}\n\n\n/* === error messages === */\n\n.error-message {\n    display: block;\n    white-space: break-spaces;\n    margin: 1.75em;\n    padding: 0.5em;\n    border-radius: 3pt;\n    border: 1px solid var(--theme-si-ef, hotpink);  /* use error foreground color for border color */\n    color:            var(--theme-si-ef, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === menu === */\n\n.menubar {\n    user-select: none;\n    margin: 0;\n    padding: 0.1rem 0 0.1rem 0;\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.menubar div {\n    display: inline;\n}\n\n.menubar > li {\n    user-select: none;\n    display: inline;  /* horizontal orientation for top-level items of menubar */\n    padding: 0 0.5rem 0 0.5rem;\n}\n\n.menuitem {\n    user-select: none;\n    list-style-type: none;\n    min-width: max-content;\n}\n\n.menuitem * {\n    user-select: none;\n}\n\n.menuitem .menuitem-label {\n    font-family: sans-serif;\n    font-size: 90%;\n}\n\n.menuitem.checked::before {\n    content: \"\\2713\";  /* unicode check mark */\n    position: absolute;\n    left: 0.5em;\n}\n\n.menuitem {\n    color: var(--theme-si-fg, hotpink);\n}\n.menuitem.disabled {\n    color: var(--theme-si-df, hotpink);\n}\n.menuitem.selected {\n    background-color: var(--theme-si-hb, hotpink);\n}\n\n.menu:not(.active) {\n    display: none;\n}\n\n.menu:not(.menubar) {\n    position: absolute;\n    z-index: 999;\n    background-color: var(--theme-si-bg, hotpink);\n    padding: 0.25rem 0 0.25rem 0;  /* override standard ul/li padding */\n    border-radius: 0.25rem;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n\n    /* eliminate default styling for menu elements */\n    margin-block-start:   0;\n    margin-block-end:     0;\n    margin-inline-start:  0;\n    margin-inline-end:    0;\n    padding-inline-start: 0;\n}\n.menu:not(.menubar).toplevel-menu {\n    inset: unset;\n    right: 1rem;\n    padding-left:  0.5em;\n    padding-right: 0.5em;\n}\n\n.menu:not(.menubar) li.menuitem {  /* .menu selector selects .menu items but not .menubar items */\n    display: flex;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem:not(.menuitem-separator) {\n    padding: 0 0.5rem 0 1.5rem;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem.menuitem-separator {\n    margin: 0.2rem 0 0.2rem 0;\n    height: 0px;\n    color: transparent;\n    border-bottom: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.menu:not(.menubar) .menuitem .menuitem-annotation {\n    margin-left: auto;   /* right justify */\n    padding-left: 1rem;  /* add a little extra space between menu command and keyboard shortcut */\n}\n\n.menu:not(.menubar) .menuitem kbd {\n    margin: 0 0 0 0.5rem;\n}\n\n\n/* === notification === */\n\n.notification-area {\n    pointer-events: none;\n    position: absolute;\n    inset: 0;\n    overflow-y: auto;  /* enable scrollbars */\n    display: flex;\n    flex-direction:  column;\n    justify-content: flex-start;\n    align-items:     flex-end;\n    margin-right: 0.75rem;\n}\n\n.notification-area {  /* with ellipsis menu */\n    padding-top: 1.75rem;\n}\nheader:has(menu.menubar) ~ .notification-area {  /* .notification-area preceded by header containing classic menubar */\n    padding-top: calc(var(--header-height) + 0.25rem);\n}\n\n.notification-message {\n    max-width: fit-content;\n    padding: 0.5em;\n    margin:  0.25rem;\n    white-space: pre-wrap;\n    border: 1px solid black;\n    border-radius: 0.25rem;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === dialog === */\n\ndialog {\n    border-radius: 0.5em;\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\ndialog .dialog-form-terminals {\n    display: flex;\n    justify-content: flex-end;\n    margin: 1.5em 0 0 0;\n}\n\ndialog .dialog-form-terminals button,\ndialog .dialog-form-terminals input[type=\"button\"] {\n    margin: 0 0 0 0;\n}\n\ndialog .dialog-form-terminals .dialog-accept,\ndialog .dialog-form-terminals .dialog-decline {\n    display: inline;\n    margin: 0 0 0 0.5em;\n    padding: 0.25em 2em;\n}\n\ndialog .dialog-message-text {\n    font-weight: bold;\n    font-size: larger;\n}\n\ndialog .dialog-text {\n}\n\n\n/* === settings-dialog === */\n\n.settings-dialog {\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog .dialog-text {\n    font-style: italic;\n}\n\n.settings-dialog [data-section] {\n    position: relative;\n    display: grid;\n    grid-template-columns: min-content min-content;\n    min-width: max-content;\n    margin: 1.75em 0 0 0;\n    padding: 1em 0.5em 0.5em;\n    border-radius: 8px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.settings-dialog [data-section]::before {  /* named section heading */\n    position: absolute;\n    content: attr(data-section);\n    left: 0.8em;\n    top: -0.7em;\n    padding: 0 1em;\n    border-radius: 4px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n    font-style: italic;\n}\n\n.settings-dialog [data-section] label {\n    align-self: center;\n    justify-self: end;\n    white-space: nowrap;\n    user-select: none;\n}\n\n.settings-dialog [data-section] input,\n.settings-dialog [data-section] select {\n    align-self: center;\n    justify-self: start;\n    margin: 0.25em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog [data-section] input[type=\"text\"] {\n    width: 5em;\n}\n\n.settings-dialog .error-message {\n    display: none;\n}\n.settings-dialog .error-message.active {\n    display: block;\n}\n\n\n/* === dialog === */\n\ndialog.export-options-dialog {\n    max-width: min(85dvw, 75ch);\n\n    & .dialog-form-content {\n        display: flex;\n        flex-direction: column;\n        gap: 1em;\n\n        & .export-cell-view-description {\n            font-size: smaller;\n            font-style: italic;\n        }\n    }\n\n    & form select {\n        padding: 0 0.5em;\n        color:            var(--theme-si-fg, hotpink);\n        background-color: var(--theme-si-bg, hotpink);\n    }\n\n    & fieldset {\n        display: flex;\n        flex-direction: column;\n        gap:    0.25em;\n        margin: 1em 0 0 0;\n        border-radius: 0.5em;\n\n        & label {\n            display: grid;\n            grid-template-columns: min-content 1fr;\n            align-items: center;\n            gap: 0.5em;\n            padding: 0.5em;\n            border: 1px solid var(--theme-si-rc, hotpink);\n            border-radius: 0.5em;\n            background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);\n            user-select: none;\n\n            & .export-radio-label {\n                font-weight: bold;\n            }\n\n            & .export-radio-label-aux {\n                padding-left: 1ch;\n                font-style: italic;\n                word-break: break-all;  /* prevent long url displayed here from causing overflows */\n                user-select: text;\n            }\n\n            & .export-radio-details {\n                margin-top: 0.25em;\n                font-size: smaller;\n            }\n        }\n\n        & input[type=\"radio\"] {\n            height: 1em;  /* prevent button from stretching in height on chromium, affecting \"active\" outline */\n        }\n\n        & label:has(input[type=\"radio\"]:checked) {\n            outline: 1px solid var(--theme-si-fg, hotpink);\n        }\n    }\n}\n\n\n/* === print media queries === */\n\n@media not print {\n    /* nothing for now */\n}\n\n@media print {\n\n    header {\n        display: none;\n    }\n\n    .notification-area {\n        display: none;\n    }\n\n    main {\n        overflow: visible;\n    }\n\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/style.css"],"names":[],"mappings":"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","sourcesContent":["/* all other stylesheets have been incorporated into this one */\n\n/* var(--theme-*, hotpink) computed values use hotpink defaults to make omissions evident */\n\n/* See settings/theme-settings.ts for definition of --theme-* properties */\n\n/*\n  To determine current user preference for \"prefers dark mode\",\n  it is sufficient to test the presence (indicating \"dark\")\n  or absence (indicating \"light\", the default) of the attribute\n  \"data-theme\" on the :root element.  When present, the attribute\n  \"data-theme\" will have the value \"dark\".  This works whether the\n  user has set a global system-wide preference or if the user has\n  set a specific preference in the current document.  The document\n  setting overrides the system-wide preference.\n  See settings/theme-settings.ts.\n*/\n\n:root {\n    --cell-max-height-scrolling: 33dvh;\n\n    --header-height: 1.5rem;\n}\n\nbody {\n    overflow: hidden;  /* inhibit scrolling for body */\n    margin: 0;\n    color:            var(--theme-ui-fg, hotpink);\n    background-color: var(--theme-ui-bg, hotpink);\n}\n\nheader {\n    /* header without classic menubar menu */\n    /* (just default settings */\n\n    &:has(menu.menubar) {  /* header containing classic menubar menu */\n        display: flex;\n        align-items: flex-end;\n        justify-content: flex-start;\n\n        height: var(--header-height);\n        background-color: var(--theme-si-bg, hotpink);\n\n        border: 0px solid var(--theme-si-rc, hotpink);\n        border-bottom-width: 1px;\n    }\n}\n\nmain {\n    /* enable scrolling for main element */\n    overflow: auto;\n    max-height: 100dvh;\n    max-width:  100dvw;\n    scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */\n}\nheader:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */\n    max-height: calc(100dvh - var(--header-height));\n}\n\n.bq-cell-output {\n    display: block;\n    overflow: auto;  /* enable h/v scrolling */\n    height: fit-content;\n    padding: 0 1em 0 1em;\n    color:            var(--theme-ou-fg, hotpink);\n    background-color: var(--theme-ou-bg, hotpink);\n}\n.bq-cell-output:empty,\n.bq-cell-output:not(:has(> *:not(:empty))) {\n    display: none;\n}\n.bq-cell-output .katex-display {\n    /* eliminate spacing for empty output case */\n    margin: 0;\n}\n.bq-cell-output .katex-display .katex-html:not(:empty) {\n    /* add spacing back to more interior element for \"display\" output */\n    margin: 1rem 0;\n}\n\n.bq-plain-text {\n    white-space: pre-wrap;  /* display white-space properly */\n    line-height: 125%;\n}\n.bq-monospace-text {\n    white-space: pre-wrap;  /* properly display white-space */\n    line-height: 125%;\n    font-family: monospace;\n}\n\nbq-cell {\n    --content-color: lightgrey;\n\n    display: block;\n    overflow: hidden;\n\n    margin: 0 0 0.25em 0;\n    padding: 0;\n    max-height: fit-content;\n\n    border: 1px solid var(--content-color);\n    border-radius: 0.5em;\n\n    caret-color: red;\n    /*outline: 0px solid transparent;*/  /* disable default contenteditable outline */\n\n    white-space: pre-wrap;  /* properly display white-space */\n    font-family: monospace;\n\n    color: var(--theme-ui-fg, hotpink);\n    background-image: linear-gradient(90deg, var(--content-color), transparent);\n    /* background-color: var(--content-color); */\n\n    &::before {\n        content: \"markdown\";  /* markdown is the default */\n        display: inline-block;\n        padding: 0 0 0 0.5em;\n        max-width: fit-content;\n    }\n\n    &[data-type][data-active]::before {\n        font-weight: bold;\n    }\n\n    & > * {\n        /* make sure --content-color is restricted to border and padding,\n         * and does not bleed through transparent children\n         */\n        background-color: var(--theme-ui-bg, hotpink);\n    }\n\n    /* data-type handling */\n\n    &[data-type]::before {\n        content: attr(data-type);\n    }\n\n    &,  /* markdown is the default */\n    &[data-type=\"markdown\"] {\n        --content-color: var(--theme-ty-markdown, hotpink);\n    }\n    &[data-type=\"plain\"] {\n        --content-color: var(--theme-ty-plain, hotpink);\n    }\n    &[data-type=\"latex\"] {\n        --content-color: var(--theme-ty-latex, hotpink);\n    }\n    &[data-type=\"javascript\"] {\n        --content-color: var(--theme-ty-javascript, hotpink);\n    }\n\n    /* data-cell-view handling */\n\n    /* html[data-cell-view]: none|hide|normal|full|presentation\n     * - none:         cells are not displayed\n     * - hide:         cells auto-hide; active cell scrolls, all others are minimized\n     * - normal:       all cells scroll (default)\n     * - full:         all cells shown completely\n     * - presentation: like none, but also the header element is hidden and no document close warning is issued\n     *   -- in presentation view, cells with css class \"show-in-presentation\" will be shown as in \"normal\" view\n     */\n\n    html[data-cell-view=\"none\"] & {\n        display: none;\n    }\n\n    html[data-cell-view=\"hide\"] &:not([data-active]) {\n        display: block;\n        max-height: 0.2rem;\n        padding: 0;\n        margin: 0.2rem;\n        border-width: 1px;\n        border-color: transparent;\n    }\n\n    html[data-cell-view=\"presentation\"] & {\n        display: none;\n    }\n\n    &,\n    html[data-cell-view=\"presentation\"] &.show-in-presentation {\n        display: block;\n        max-height: calc(var(--cell-max-height-scrolling) + 2rem);  /* pad for margin, etc */\n        transition: max-height 0.5s cubic-bezier(.68,-0.55,.27,1.55);\n\n        &.show-full {\n            max-height: fit-content;\n        }\n    }\n}\n\n.bq-markdown-code-source {\n    max-width: fit-content;\n    padding: 0.25em;\n    margin-block-start: 1em;\n    margin-block-end:   0.5em;\n    border: 1px solid var(--theme-ui-rc, hotpink);\n\n    & pre {\n        margin: 0;\n    }\n}\n\n\n/* === codemirror === */\n\n/* scroll long content unless html[data-cell-view=\"full\"] */\n/* see: https://discuss.codemirror.net/t/code-editor-with-automatic-height-that-has-a-minimum-and-maximum-height/4015 */\n.cm-editor {\n    max-height: var(--cell-max-height-scrolling);\n}\n.cm-scroller {\n    overflow-y: auto;\n}\n\n/* tone down bright gutter color for active line */\n:root[data-theme=\"dark\"] .cm-activeLineGutter {\n    background-color: hsl(170deg 25% 55% / 40%);\n}\n\n/* show full content if html[data-cell-view=\"full\"] or if bq-cell has class \"show-full\" */\nhtml[data-cell-view=\"full\"] bq-cell,\nhtml[data-cell-view=\"full\"] .cm-editor,\nhtml[data-cell-view=\"full\"] .cm-scroller,\nbq-cell.show-full .cm-editor,\nbq-cell.show-full .cm-scroller {\n    overflow-y: hidden;\n    max-height: unset;\n    height: 100%;\n}\n\n/* line number switch */\n.codemirror-hide-line-numbers .cm-lineNumbers {\n    display: none !important;  /* must use !important to override codemirror's setting */\n}\n\n/* patch too-bright light-mode .activeLine color */\n:root:not([data-theme=\"dark\"]) .cm-activeLine {  /* :root:not(---) for specificity */\n    background-color: hsl(200deg 100% 93% / 27%) !important;  /* otherwise overly light */  /* must use !important to override codemirror's setting */\n}\n\n/* patches for CodeMirror colors in dark mode */\n:root[data-theme=\"dark\"] .cm-gutters {\n    background-color: revert !important;  /* otherwise glaringly light */  /* must use !important to override codemirror's setting */\n}\n:root[data-theme=\"dark\"] .cm-activeLine {\n    background-color: hsl(200deg 100% 12% / 27%);  /* otherwise glaringly light */\n}\n:root[data-theme=\"dark\"] .cm-editor .cm-cursor {\n    border-left-color: orange;  /* too dim */  /* see: https://discuss.codemirror.net/t/caret-color-css-seems-locked/7011/5 */\n}\n\n\n/* === theme-aware graphics === */\n\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([fill=\"none\"]) {\n    fill: var(--theme-gr-bg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg polygon:not([stroke=\"none\"]) {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg path,\n[data-source-media-type=\"application/graphviz\"] svg ellipse {\n    stroke: var(--theme-gr-fg, hotpink);\n}\n[data-source-media-type=\"application/graphviz\"] svg text {\n    fill: var(--theme-gr-fg, hotpink);\n}\n\n\n/* === error messages === */\n\n.bq-error-message {\n    display: block;\n    white-space: break-spaces;\n    margin: 1.75em;\n    padding: 0.5em;\n    border-radius: 3pt;\n    border: 1px solid var(--theme-si-ef, hotpink);  /* use error foreground color for border color */\n    color:            var(--theme-si-ef, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === menu === */\n\n.menubar {\n    user-select: none;\n    margin: 0;\n    padding: 0.1rem 0 0.1rem 0;\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.menubar div {\n    display: inline;\n}\n\n.menubar > li {\n    user-select: none;\n    display: inline;  /* horizontal orientation for top-level items of menubar */\n    padding: 0 0.5rem 0 0.5rem;\n}\n\n.menuitem {\n    user-select: none;\n    list-style-type: none;\n    min-width: max-content;\n}\n\n.menuitem * {\n    user-select: none;\n}\n\n.menuitem .menuitem-label {\n    font-family: sans-serif;\n    font-size: 90%;\n}\n\n.menuitem.checked::before {\n    content: \"\\2713\";  /* unicode check mark */\n    position: absolute;\n    left: 0.5em;\n}\n\n.menuitem {\n    color: var(--theme-si-fg, hotpink);\n}\n.menuitem.disabled {\n    color: var(--theme-si-df, hotpink);\n}\n.menuitem.selected {\n    background-color: var(--theme-si-hb, hotpink);\n}\n\n.menu:not(.active) {\n    display: none;\n}\n\n.menu:not(.menubar) {\n    position: absolute;\n    z-index: 999;\n    background-color: var(--theme-si-bg, hotpink);\n    padding: 0.25rem 0 0.25rem 0;  /* override standard ul/li padding */\n    border-radius: 0.25rem;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n\n    /* eliminate default styling for menu elements */\n    margin-block-start:   0;\n    margin-block-end:     0;\n    margin-inline-start:  0;\n    margin-inline-end:    0;\n    padding-inline-start: 0;\n}\n.menu:not(.menubar).toplevel-menu {\n    inset: unset;\n    right: 1rem;\n    padding-left:  0.5em;\n    padding-right: 0.5em;\n}\n\n.menu:not(.menubar) li.menuitem {  /* .menu selector selects .menu items but not .menubar items */\n    display: flex;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem:not(.menuitem-separator) {\n    padding: 0 0.5rem 0 1.5rem;\n}\n\n.menu:not(.menubar):not(.toplevel-menu) .menuitem.menuitem-separator {\n    margin: 0.2rem 0 0.2rem 0;\n    height: 0px;\n    color: transparent;\n    border-bottom: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.menu:not(.menubar) .menuitem .menuitem-annotation {\n    margin-left: auto;   /* right justify */\n    padding-left: 1rem;  /* add a little extra space between menu command and keyboard shortcut */\n}\n\n.menu:not(.menubar) .menuitem kbd {\n    margin: 0 0 0 0.5rem;\n}\n\n\n/* === notification === */\n\n.notification-area {\n    pointer-events: none;\n    position: absolute;\n    inset: 0;\n    overflow-y: auto;  /* enable scrollbars */\n    display: flex;\n    flex-direction:  column;\n    justify-content: flex-start;\n    align-items:     flex-end;\n    margin-right: 0.75rem;\n}\n\n.notification-area {  /* with ellipsis menu */\n    padding-top: 1.75rem;\n}\nheader:has(menu.menubar) ~ .notification-area {  /* .notification-area preceded by header containing classic menubar */\n    padding-top: calc(var(--header-height) + 0.25rem);\n}\n\n.notification-message {\n    max-width: fit-content;\n    padding: 0.5em;\n    margin:  0.25rem;\n    white-space: pre-wrap;\n    border: 1px solid black;\n    border-radius: 0.25rem;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n\n/* === dialog === */\n\ndialog {\n    border-radius: 0.5em;\n    box-shadow: 3px 3px 16px var(--theme-si-sc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\ndialog .dialog-form-terminals {\n    display: flex;\n    justify-content: flex-end;\n    margin: 1.5em 0 0 0;\n}\n\ndialog .dialog-form-terminals button,\ndialog .dialog-form-terminals input[type=\"button\"] {\n    margin: 0 0 0 0;\n}\n\ndialog .dialog-form-terminals .dialog-accept,\ndialog .dialog-form-terminals .dialog-decline {\n    display: inline;\n    margin: 0 0 0 0.5em;\n    padding: 0.25em 2em;\n}\n\ndialog .dialog-message-text {\n    font-weight: bold;\n    font-size: larger;\n}\n\ndialog .dialog-text {\n}\n\n\n/* === settings-dialog === */\n\n.settings-dialog {\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog .dialog-text {\n    font-style: italic;\n}\n\n.settings-dialog [data-section] {\n    position: relative;\n    display: grid;\n    grid-template-columns: min-content min-content;\n    min-width: max-content;\n    margin: 1.75em 0 0 0;\n    padding: 1em 0.5em 0.5em;\n    border-radius: 8px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n}\n\n.settings-dialog [data-section]::before {  /* named section heading */\n    position: absolute;\n    content: attr(data-section);\n    left: 0.8em;\n    top: -0.7em;\n    padding: 0 1em;\n    border-radius: 4px;\n    border: 1px solid var(--theme-si-rc, hotpink);\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n    font-style: italic;\n}\n\n.settings-dialog [data-section] label {\n    align-self: center;\n    justify-self: end;\n    white-space: nowrap;\n    user-select: none;\n}\n\n.settings-dialog [data-section] input,\n.settings-dialog [data-section] select {\n    align-self: center;\n    justify-self: start;\n    margin: 0.25em;\n    color:            var(--theme-si-fg, hotpink);\n    background-color: var(--theme-si-bg, hotpink);\n}\n\n.settings-dialog [data-section] input[type=\"text\"] {\n    width: 5em;\n}\n\n.settings-dialog .bq-error-message {\n    display: none;\n}\n.settings-dialog .bq-error-message.active {\n    display: block;\n}\n\n\n/* === dialog === */\n\ndialog.export-options-dialog {\n    max-width: min(85dvw, 75ch);\n\n    & .dialog-form-content {\n        display: flex;\n        flex-direction: column;\n        gap: 1em;\n\n        & .export-cell-view-description {\n            font-size: smaller;\n            font-style: italic;\n        }\n    }\n\n    & form select {\n        padding: 0 0.5em;\n        color:            var(--theme-si-fg, hotpink);\n        background-color: var(--theme-si-bg, hotpink);\n    }\n\n    & fieldset {\n        display: flex;\n        flex-direction: column;\n        gap:    0.25em;\n        margin: 1em 0 0 0;\n        border-radius: 0.5em;\n\n        & label {\n            display: grid;\n            grid-template-columns: min-content 1fr;\n            align-items: center;\n            gap: 0.5em;\n            padding: 0.5em;\n            border: 1px solid var(--theme-si-rc, hotpink);\n            border-radius: 0.5em;\n            background-color: color-mix(in hsl, var(--theme-si-bg, hotpink), black 10%);\n            user-select: none;\n\n            & .export-radio-label {\n                font-weight: bold;\n            }\n\n            & .export-radio-label-aux {\n                padding-left: 1ch;\n                font-style: italic;\n                word-break: break-all;  /* prevent long url displayed here from causing overflows */\n                user-select: text;\n            }\n\n            & .export-radio-details {\n                margin-top: 0.25em;\n                font-size: smaller;\n            }\n        }\n\n        & input[type=\"radio\"] {\n            height: 1em;  /* prevent button from stretching in height on chromium, affecting \"active\" outline */\n        }\n\n        & label:has(input[type=\"radio\"]:checked) {\n            outline: 1px solid var(--theme-si-fg, hotpink);\n        }\n    }\n}\n\n\n/* === print media queries === */\n\n@media not print {\n    /* nothing for now */\n}\n\n@media print {\n\n    header {\n        display: none;\n    }\n\n    .notification-area {\n        display: none;\n    }\n\n    main {\n        overflow: visible;\n    }\n\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12109,6 +12114,12 @@ class BqManager {
         return this.invoke_renderer(renderer, options, cell, output_element);
     }
     async invoke_renderer(renderer, options, cell, output_element) {
+        if (!(renderer instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9)) {
+            throw new TypeError('renderer must be an instance of TextBasedRenderer');
+        }
+        if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
+            throw new TypeError('options must be undefined, null, or an object');
+        }
         cell ??= this.active_cell;
         if (!cell) {
             throw new TypeError('cell not specified and no active_cell');
@@ -12116,12 +12127,14 @@ class BqManager {
         if (cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
         }
+        if (typeof output_element !== 'undefined' && !(output_element instanceof Element)) {
+            throw new TypeError('output_element must be undefined or an instance of Element');
+        }
         cell.ensure_id();
         const cell_id = cell.id;
-        options ??= {};
-        if (!options.global_state) {
+        if (!options?.global_state) {
             options = {
-                ...options,
+                ...(options ?? {}),
                 global_state: this.global_state,
             };
         }
@@ -13793,7 +13806,7 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
             const error_div = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
                 parent: section_div,
                 attrs: {
-                    class: ['error-message'],
+                    class: ['bq-error-message'],
                 },
             });
             for (const setting of settings) {
@@ -14053,7 +14066,7 @@ function show_initialization_failed(reason) {
     const error_h1 = document.createElement('h1');
     error_h1.innerText = error.message ?? 'Initialization Failed';
     const error_pre = document.createElement('pre');
-    error_pre.classList.add('error-message');
+    error_pre.classList.add('bq-error-message');
     error_pre.innerText = error.stack ?? 'INITIALIZATION ERROR';
     document.body.appendChild(error_h1);
     document.body.appendChild(error_pre);
@@ -14460,7 +14473,8 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     }
     async print__(options) {
         this.abort_if_stopped();
-        return this.create_child({ tag: 'hr' });
+        return this.CLASS.ocx_for_options(this, options)
+            .create_child({ tag: 'hr' });
     }
     async javascript(code, options) {
         this.abort_if_stopped();
@@ -14503,9 +14517,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9521);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
+/* harmony import */ var src_renderer_text_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2993);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__]);
 lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 // subordinate types for circularly-dependent Renderer and OutputContext types
+
 
 
 
@@ -14576,6 +14592,64 @@ class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODUL
                 [this.attribute__data_source_media_type]: source_media_type,
             },
         });
+    }
+    /** Validate options (throwing an Error if validation does not pass), and
+     * return undefined if element is already compatible, otherwise return an
+     * object that reflects options that is suitable to use for create_element().
+     * If always_return_options is true, then return the creation options
+     * regardless of element compatibility.
+     * @param {Element} element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_return_options (default: false)
+     * @return {undefined|Object} transformed options
+     * @throws {Error} error if options does not pass validation
+     */
+    static is_compatible_with_options(element, options, always_return_options = false) {
+        if (!(element instanceof Element)) {
+            throw new TypeError('element must be an instance of Element');
+        }
+        return (0,src_renderer_text_types__WEBPACK_IMPORTED_MODULE_3__/* .is_compatible_with_options */ .G)(element, options, always_return_options);
+    }
+    /** Return an element that is compatible with options.  The returned
+     * element will be base_element if base_element is already compatible,
+     * otherwise it will be a child element of base_element.
+     * If always_create_child is true, then always return a child.
+     * Note that if a new element is returned it is either a <div> or a <span>
+     * and is therefore an HTMLElement.
+     * @param {OutputContextLike} base_element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {Element} element compatible with options (may be base_element)
+     * @throws {Error} error if options does not pass validation
+     */
+    static element_for_options(base_element, options, always_create_child = false) {
+        const creation_options = this.is_compatible_with_options(base_element, options, always_create_child);
+        if (!creation_options) {
+            return base_element;
+        }
+        else {
+            creation_options.parent = base_element;
+            return this.create_element(creation_options);
+        }
+    }
+    /** Return an ocx whose element is compatible with options.  The returned
+     * ocx will be base_ocx if base_ocx is already compatible, otherwise it
+     * will be a child ocx of base_ocx.
+     * If always_create_child is true, then always return a child.
+     * @param {OutputContextLike} base_ocx
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {OutputContextLike} ocx compatible with options (may be base_ocx)
+     * @throws {Error} error if options does not pass validation
+     */
+    static ocx_for_options(base_ocx, options, always_create_child = false) {
+        const creation_options = this.is_compatible_with_options(base_ocx.element, options, always_create_child);
+        if (!creation_options) {
+            return base_ocx;
+        }
+        else {
+            return base_ocx.create_child_ocx(creation_options);
+        }
     }
     /** remove all child elements and nodes of element
      *  @param {Node} element
@@ -14880,7 +14954,7 @@ src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_depende
 class ErrorRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* .ApplicationBasedRenderer */ .rK {
     get CLASS() { return this.constructor; }
     static get type() { return 'error'; }
-    static error_element_class = 'error-message';
+    static error_element_class = 'bq-error-message';
     /** Render the given error_object to ocx.
      * @param {OutputContextLike} ocx,
      * @param {Error|String} error_object,
@@ -15341,7 +15415,7 @@ class TextBasedRenderer extends Renderer {
     /** render the given value
      * @param {OutputContextLike} ocx,
      * @param {string} value,  // value to be rendered
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
@@ -15400,11 +15474,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7575);
 /* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8669);
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3141);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1576);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3428);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3428);
 /* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1688);
 /* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9015);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_3__, _eval_worker___WEBPACK_IMPORTED_MODULE_4__]);
@@ -15462,7 +15536,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     OpenPromise
 //     AbortSignalAction
 //     SerialDataSource
-//     uuidv4
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -15473,6 +15546,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     end_bg
 //     make_check_tick
 //     range
+//     uuidv4
 //     create_worker
 //     import_local
 //     vars
@@ -15535,25 +15609,14 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
     /** Render by evaluating the given code and outputting to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} code,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx, code, options) {
-        const { style, inline, global_state = ocx.bq.global_state, } = (options ?? {});
+        const global_state = options?.global_state ?? ocx.bq.global_state;
         const eval_context = (global_state[this.type] ??= {});
-        let eval_ocx = ocx;
-        // if !style && inline, then use the given ocx,
-        // otherwise, if style || !inline, create a new ocx
-        if (style || !inline) {
-            eval_ocx = ocx.create_child_ocx({
-                tag: inline ? 'span' : 'div',
-                attrs: {
-                    [src_output_context_types__WEBPACK_IMPORTED_MODULE_3__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-                },
-                style,
-            });
-        }
+        const eval_ocx = ocx.CLASS.ocx_for_options(ocx, options);
         const eval_environment = await this.#create_eval_environment(eval_context, eval_ocx, code);
         const eval_environment_entries = Object.entries(eval_environment);
         // create an async generator with the given code as the heart of its
@@ -15757,11 +15820,10 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_9__/* .OpenPromise */ .q,
             AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_10__/* .AbortSignalAction */ .$,
             SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_11__/* .SerialDataSource */ .Y,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_12__/* .uuidv4 */ .gZ),
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_6__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_7__/* .load_Algebrite */ .B,
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_13__,
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_12__,
             // utility functions defined above
             is_stopped, // no abort_if_stopped()....
             keepalive: ocx.AIS(keepalive),
@@ -15769,6 +15831,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             end_bg, // don't wrap with AIS because that will cause an error
             make_check_tick: ocx.AIS(make_check_tick),
             range,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_13__/* .uuidv4 */ .gZ),
             create_worker: ocx.AIS(create_worker),
             import_local: ocx.AIS(import_local),
             vars: ocx.AIS(vars),
@@ -34748,25 +34811,21 @@ class LaTeXRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
     /** Render the given LaTeX source to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} latex,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx, latex, options) {
         latex ??= '';
-        const { style, inline, global_state = ocx.bq.global_state ?? {}, } = (options ?? {});
+        const global_state = options?.global_state ?? ocx.bq.global_state;
         const markup = this.CLASS.render_to_string(latex, global_state, {
-            displayMode: !inline,
+            displayMode: !options?.inline,
             throwOnError: false,
         });
-        const parent = ocx.create_child({
-            attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-            },
-            style,
-        });
-        parent.innerHTML = markup;
-        return parent;
+        const element = ocx.CLASS.element_for_options(ocx.element, options, true);
+        element.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
+        element.innerHTML = markup;
+        return element;
     }
     static render_to_string(latex, global_state, katex_options) {
         latex ??= '';
@@ -34839,7 +34898,7 @@ const eval_code_start_re_backquote = make_eval_code_start_re('`');
 const eval_code_match_re_tilde = make_eval_code_match_re('~');
 const eval_code_match_re_backquote = make_eval_code_match_re('`');
 const eval_code_source_type_default = src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__/* .JavaScriptRenderer */ .Z.type;
-const eval_code_source_css_class = 'markdown-code-source';
+const eval_code_source_css_class = 'bq-markdown-code-source';
 class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9 {
     static get type() { return 'markdown'; }
     static {
@@ -34849,20 +34908,15 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
     /** Render by evaluating the given markdown and outputting to ocx.
      * @param {OutputContextLike} ocx,
      * @param {String} markdown,
-     * @param {TextBasedRendererOptionsType|undefined} options,
+     * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
     async _render(ocx, markdown, options) {
         markdown ??= '';
-        const { style, inline, global_state = ocx.bq.global_state, } = (options ?? {});
-        const parent = ocx.create_child({
-            tag: inline ? 'span' : 'div',
-            attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-            },
-            style,
-        });
+        const global_state = options?.global_state ?? ocx.bq.global_state;
+        const parent = ocx.CLASS.element_for_options(ocx.element, options, true);
+        parent.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
         let deferred_evaluations = [];
         const marked_options = {
             walkTokens(token) {
@@ -35077,15 +35131,9 @@ class TextRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* 
         src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__/* ._initial_text_renderer_factories */ .$W.push(this);
     }
     async _render(ocx, text, options) {
-        const { style, inline, } = (options ?? {});
-        const element = ocx.create_child({
-            tag: inline ? 'span' : 'div',
-            attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
-                class: 'plain-text', // see 'src/style.css'
-            },
-            style,
-        });
+        const element = ocx.CLASS.element_for_options(ocx.element, options, true);
+        element.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
+        element.classList.add('bq-plain-text');
         element.innerText = text; // innerText sanitizes text
         return element;
     }
@@ -35093,6 +35141,75 @@ class TextRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* 
 
 __webpack_async_result__();
 } catch(e) { __webpack_async_result__(e); } });
+
+/***/ }),
+
+/***/ 2993:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   G: () => (/* binding */ is_compatible_with_options)
+/* harmony export */ });
+// subordinate types for circularly-dependent Renderer and OutputContext types
+/** Validate options (throwing an Error if validation does not pass), and
+ * return undefined if element is already compatible, otherwise return an
+ * object that reflects options that is suitable to use for create_element().
+ * If always_return_options is true, then return the creation options
+ * regardless of element compatibility.
+ * @param {Element} element
+ * @param {undefined|null|TextBasedRendererOptionsType} options
+ * @param {Boolean} always_return_options (default: false)
+ * @return {undefined|Object} transformed options
+ * @throws {Error} error if options does not pass validation
+ */
+function is_compatible_with_options(element, options, always_return_options = false) {
+    let compatible = false;
+    let class_string = undefined;
+    if (!always_return_options && (typeof options === 'undefined' || options === null)) {
+        compatible = true; // no options
+    }
+    else {
+        if (options) { // options may be undefined or null if always_return_options
+            if (typeof options !== 'object') {
+                throw new TypeError('if given, options must be an object');
+            }
+            if (typeof options.style !== 'undefined' && typeof options.style !== 'object') {
+                throw new TypeError('if given, options.style must be an object');
+            }
+            if (options.class) {
+                if (typeof options.class === 'string') {
+                    class_string = options.class.split(' ').filter(cs => (cs.length > 0)).join(' ');
+                }
+                else if (Array.isArray(options.class) &&
+                    options.class.every(item => (typeof item === 'string' && !item.includes(' ')))) {
+                    class_string = options.class.filter(cs => (cs.length > 0)).join(' ');
+                }
+                else {
+                    throw new TypeError('if given, options.class must be a string or an array of strings not containing spaces');
+                }
+            }
+            const empty_style = !options.style || Object.entries(options.style).every(([key, val]) => (!key || typeof val === 'undefined'));
+            const empty_class = !class_string || class_string.length <= 0;
+            //!!! bug: if element is non-block display type and !options.inline and no other style class changes are specified, then creation_options are returned
+            if (empty_style && empty_class && !options.inline) {
+                compatible = true; // inconsequential options
+            }
+        }
+    }
+    if (compatible && !always_return_options) {
+        return undefined;
+    }
+    else {
+        return {
+            tag: options?.inline ? 'span' : 'div',
+            style: options?.style,
+            attrs: {
+                class: class_string,
+            },
+        };
+    }
+}
+
 
 /***/ }),
 

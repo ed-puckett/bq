@@ -21,7 +21,7 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
 
     static get type (){ return 'error'; }
 
-    static error_element_class = 'error-message';
+    static error_element_class = 'bq-error-message';
 
     /** Render the given error_object to ocx.
      * @param {OutputContextLike} ocx,
