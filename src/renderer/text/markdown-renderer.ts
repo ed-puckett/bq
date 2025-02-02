@@ -49,16 +49,22 @@ import {
 //      --- ! indicates that the source should be rendered (executed) and output
 // - the source type, $ and ! can be separated by any amount of whitespace, or none
 
-const extension_name__inline_latex = 'inline-latex';
-const extension_name__block_latex  = 'block-latex';
-const extension_name__eval_code    = 'eval-code';
+const extension_name__inline_latex     = 'inline-latex';
+const extension_name__block_latex      = 'block-latex';
+const extension_name__inline_eval_code = 'inline-eval-code';
+const extension_name__eval_code        = 'eval-code';
 
-const inline_latex_match_re = /^\$+([^$]+?)\$+/;
+const inline_latex_start_re = /\$[^$!]/;
+const block_latex_start_re  = /\$\$/;
 
-const block_latex_match_re = /^\$\$([^$]+?)\$\$/;
+const inline_latex_match_re = /^\$((?:\\.|[^\\$!])(?:\\.|[^\\$])*?)\$/;  // note: unlike block... below, do not match empty contents ($$)
+const block_latex_match_re  = /^\$\$((?:\\.|\$[^$]|[^\\$])*?)\$\$/;
+
+const inline_eval_code_start_re = /\$[!]/;
+const inline_eval_code_match_re = /^\$[!]((?:\\.|[^\\$])+?)\$/;
 
 function make_eval_code_start_re(introducer_char: string) {
-    return new RegExp(String.raw`^[${introducer_char}]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]`);
+    return new RegExp(String.raw`[${introducer_char}]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]`);
 }
 function make_eval_code_match_re(introducer_char: string) {
     return new RegExp(String.raw`^[${introducer_char}]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[${introducer_char}]{3}`, 's');
@@ -79,9 +85,10 @@ type walkTokens_token_type = {
     raw?:          string,
     text?:         string,
     markup?:       string,
+    inline?:       boolean,
     source_type?:  string,
     show?:         boolean,
-    global_state?: object,  // used only by extension_name__inline_latex and extension_name__block_latex
+    global_state?: object,  // used only by extension_name__inline_latex and extension_name__block_latex (for macros)
 };
 
 export class MarkdownRenderer extends TextBasedRenderer {
@@ -123,12 +130,14 @@ export class MarkdownRenderer extends TextBasedRenderer {
                         break;
                     }
 
+                    case extension_name__inline_eval_code:
                     case extension_name__eval_code: {
                         let renderer_factory: undefined|RendererFactory = undefined;
                         try {
 
                             const {
                                 text = '',
+                                inline,
                                 source_type,
                                 show = false,
                             } = token;
@@ -147,11 +156,13 @@ export class MarkdownRenderer extends TextBasedRenderer {
                                     text: text_to_render,
                                     renderer: new renderer_factory() as TextBasedRenderer,
                                     renderer_options: {
+                                        inline,
                                         global_state,
                                     },
                                 });
                                 // this is the element we will render to from deferred_evaluations:
-                                markup_segments.push(`<div id="${output_element_id}"${css_class ? ` class="${css_class}"` : ''}></div>`);
+                                const markup_segment_tag_name = inline ? 'span' : 'div';
+                                markup_segments.push(`<${markup_segment_tag_name} id="${output_element_id}"${css_class ? ` class="${css_class}"` : ''}></${markup_segment_tag_name}>`);
                             }
                             if (show && text) {
                                 // render the source text without executing
@@ -208,7 +219,26 @@ marked.use({
         {
             name: extension_name__inline_latex,
             level: 'inline',
-            start(src: string) { return src.indexOf('$'); },
+            start(src: string) {
+                // must make sure we're not matching a $ in an "eval code" block
+                const eval_code_match = src.match(eval_code_start_re_tilde) || src.match(eval_code_start_re_backquote);
+                const match = src.match(inline_latex_start_re);
+                if (!eval_code_match) {
+                    // "eval code" did not match
+                    return match?.index;
+                } else if (match) {
+                    // both matched
+                    // (shenanigans because typescript doesn't know match.index and eval_code_match.index are not undefined)
+                    if ((match.index??0) < (eval_code_match.index??Infinity)) {
+                        return match.index;  // matched sooner that "eval code"
+                    } else {
+                        return undefined;
+                    }
+                } else {
+                    // no match
+                    return undefined;
+                }
+            },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
                 const match = src.match(inline_latex_match_re);
                 if (!match) {
@@ -232,7 +262,10 @@ marked.use({
         {
             name: extension_name__block_latex,
             level: 'block',
-            start(src: string) { return src.indexOf('$$'); },
+            start(src: string) {
+                const match = src.match(block_latex_start_re);
+                return match?.index;
+            },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
                 const match = src.match(block_latex_match_re);
                 if (!match) {
@@ -255,6 +288,38 @@ marked.use({
             },
         },
         {
+            name: extension_name__inline_eval_code,
+            level: 'inline',
+            start(src: string) {
+                const match = src.match(inline_eval_code_start_re);
+                return match?.index;
+            },
+            tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
+                const match = src.match(inline_eval_code_match_re);
+                if (!match) {
+                    return undefined;
+                } else {
+                    const inline = true;
+                    const source_type = JavaScriptRenderer.type;
+                    const code = match[1];
+                    const show = false;
+
+                    return {
+                        type: extension_name__inline_eval_code,
+                        raw: match[0],
+                        text: code,
+                        inline,
+                        source_type,
+                        show,
+                        markup: undefined,  // filled in later by walkTokens
+                    };
+                }
+            },
+            renderer(token: walkTokens_token_type) {
+                return token.markup;  // now already filled in by walkTokens
+            },
+        },
+        {
             name: extension_name__eval_code,
             level: 'block',
             start(src: string) {
@@ -266,6 +331,7 @@ marked.use({
                 if (!match) {
                     return undefined;
                 } else {
+                    const inline = false;
                     const source_type = (match.groups?.source_type?.trim() ?? '') || eval_code_source_type_default;
                     const code = match.groups?.code ?? '';
                     const show = !!(match.groups?.flags_show_exec || match.groups?.flags_exec_show);
@@ -274,6 +340,7 @@ marked.use({
                         type: extension_name__eval_code,
                         raw: match[0],
                         text: code,
+                        inline,
                         source_type,
                         show,
                         markup: undefined,  // filled in later by walkTokens
