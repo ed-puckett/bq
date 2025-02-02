@@ -284,11 +284,6 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             // output any non-undefined values that were received either from
             // a return or a yield statement in the code
             if (typeof value !== 'undefined') {
-                if (done) {
-                    // this was the return value, so precede with a special demarcation
-                    await eval_environment.render_text('\n>>> ', { inline: true });
-                }
-
                 await eval_environment.render_value(value, { inline: true });
             }
 
