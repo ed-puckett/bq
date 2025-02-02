@@ -65,8 +65,7 @@ header:has(menu.menubar) ~ main {  /* main preceded by header containing classic
     color:            var(--theme-ou-fg, hotpink);
     background-color: var(--theme-ou-bg, hotpink);
 }
-.bq-cell-output:empty,
-.bq-cell-output:not(:has(> *:not(:empty))) {
+.bq-cell-output:empty {
     display: none;
 }
 .bq-cell-output .katex-display {
