@@ -8,7 +8,7 @@ export {
 } from './renderer';
 
 export { TextRenderer       } from './text/text-renderer';
-export { MarkdownRenderer   } from './text/markdown-renderer';
+export { MarkdownRenderer   } from './text/markdown-renderer/_';
 export { LaTeXRenderer      } from './text/latex-renderer';
 export { JavaScriptRenderer } from './text/javascript-renderer/_';
 
