@@ -20,7 +20,7 @@ $$
 x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
 $$
 *... with code:*
-``` javascript !$
+```!$ javascript
 let s = 0;
 for (let i = 1; i < 10_000_000; i++) {
     s += 1/(i*i);
@@ -71,13 +71,13 @@ class ListItemRenderer extends TextBasedRenderer {
 }
 TextBasedRenderer.add_renderer_factory(ListItemRenderer);</bq-cell>
 <bq-cell id="id-9b45bea7-d291-44e4-a98a-a4c77c42e30a">### Custom Renderer Example
-``` list-item!
+```! list-item
 abc
 ```
-``` list-item!
+```! list-item
 def
 ```
-``` list-item!
+```! list-item
 ghi
 ```</bq-cell>
 <bq-cell data-type="javascript" id="id-ccb6c725-b405-408f-9076-cb542113d287">const worker = await create_worker({ keepalive: true });
@@ -94,7 +94,7 @@ $$
 $$
 x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
 $$
-``` javascript!
+```! javascript
     await markdown(`## Seconds since 1 Jan 1970: ${Date.now()/1000}`);
     function test(x) { return `--- ${x} ---`; }
     await print__();
