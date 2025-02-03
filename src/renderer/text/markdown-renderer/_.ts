@@ -63,11 +63,21 @@ const block_latex_match_re  = /^\$\$((?:\\.|\$[^$]|[^\\$])*?)\$\$/;
 const inline_eval_code_start_re = /\$[!]/;
 const inline_eval_code_match_re = /^\$[!]((?:\\.|[^\\$])+?)\$/;
 
+// code block beginnings:
+//     ```[\s]*[<flags>][\s]*[<language>]
+//     ~~~[\s]*[<flags>][\s]*[<language>]
+//
+// [<language>]: optional language/renderer (default: javascript)
+// [<flags>] optional flags:
+//     (none)  // display normally according to markdown
+//     !       // execute code block and render output
+//     !$      // display code block and then execute and render output
+//     $       // optional abbreviated version of !$
 function make_eval_code_start_re(introducer_char: string) {
-    return new RegExp(String.raw`[${introducer_char}]{3}[\s]*[^!$\s\n]*[\s!$]*[\n]`);
+    return new RegExp(String.raw`[${introducer_char}]{3}[\s!$]*[\s]*[^!$\n]*[\n]`);
 }
 function make_eval_code_match_re(introducer_char: string) {
-    return new RegExp(String.raw`^[${introducer_char}]{3}[\s]*(?<source_type>[^!$\s\n]*)[\s]*((?<flags_exec>[!])|(?<flags_show_exec>[$][\s]*[!])|(?<flags_exec_show>[!][\s]*[$]))[\s]*[\n](?<code>.*?)[${introducer_char}]{3}`, 's');
+    return new RegExp(String.raw`^[${introducer_char}]{3}(?<flags_exec>[\s]*[!])?(?<flags_show>[\s]*[$])?[^\n]*?(?:[\n]|(?<source_type>[^\s\n]+)[^\n]*[\n])(?<code>.*?)[${introducer_char}]{3}`, 's');
 }
 
 const eval_code_start_re_tilde     = make_eval_code_start_re('~');
@@ -331,20 +341,24 @@ marked.use({
                 if (!match) {
                     return undefined;
                 } else {
-                    const inline = false;
-                    const source_type = (match.groups?.source_type?.trim() ?? '') || eval_code_source_type_default;
-                    const code = match.groups?.code ?? '';
-                    const show = !!(match.groups?.flags_show_exec || match.groups?.flags_exec_show);
+                    if (!(match.groups?.flags_exec || match.groups?.flags_show)) {  // flags_show implies flags_exec
+                        return undefined;  // renderer according to normal markdown
+                    } else {
+                        const inline = false;
+                        const source_type = (match.groups?.source_type?.trim() ?? '') || eval_code_source_type_default;
+                        const code = match.groups?.code ?? '';
+                        const show = !!(match.groups?.flags_show);
 
-                    return {
-                        type: extension_name__eval_code,
-                        raw: match[0],
-                        text: code,
-                        inline,
-                        source_type,
-                        show,
-                        markup: undefined,  // filled in later by walkTokens
-                    };
+                        return {
+                            type: extension_name__eval_code,
+                            raw: match[0],
+                            text: code,
+                            inline,
+                            source_type,
+                            show,
+                            markup: undefined,  // filled in later by walkTokens
+                        };
+                    }
                 }
             },
             renderer(token: walkTokens_token_type) {
