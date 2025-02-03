@@ -14876,7 +14876,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   BU: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_0__.BU),
 /* harmony export */   Js: () => (/* reexport safe */ _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__.J),
 /* harmony export */   MH: () => (/* reexport safe */ _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__.M),
-/* harmony export */   To: () => (/* reexport safe */ _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__.T),
+/* harmony export */   To: () => (/* reexport safe */ _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__.T),
 /* harmony export */   ZS: () => (/* reexport safe */ _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__.Z),
 /* harmony export */   bN: () => (/* reexport safe */ _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__.b),
 /* harmony export */   e$: () => (/* reexport safe */ _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__.e),
@@ -14885,7 +14885,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var _renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
 /* harmony import */ var _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2221);
-/* harmony import */ var _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4699);
+/* harmony import */ var _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9433);
 /* harmony import */ var _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9406);
 /* harmony import */ var _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
 /* harmony import */ var _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3161);
@@ -14893,8 +14893,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1560);
 /* harmony import */ var _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(39);
 /* harmony import */ var _factories__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(1024);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__]);
-([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer__WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__]);
+([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 // === RE-EXPORTS ===
 
 
@@ -34842,7 +34842,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 4699:
+/***/ 9433:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
@@ -34855,7 +34855,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9406);
 /* harmony import */ var src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
-/* harmony import */ var _marked__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8150);
+/* harmony import */ var _marked__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(138);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3141);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
 ([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
@@ -35151,7 +35151,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 8150:
+/***/ 138:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
@@ -35160,10 +35160,10 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
-const current_script_url = "file:///home/ed/code/bq/src/renderer/text/marked.ts"; // save for later
+const current_script_url = "file:///home/ed/code/bq/src/renderer/text/markdown-renderer/marked.ts"; // save for later
 
 
-await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL('../../../dist/marked.min.js', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
+await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL('../../../../dist/marked.min.js', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
 const marked = globalThis.marked;
 
 __webpack_async_result__();
