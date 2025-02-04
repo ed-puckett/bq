@@ -723,9 +723,9 @@ export class BqManager {
             // unusable and trying to do something with it will just cause
             // more errors....
             if (!render_error) {
-                // use queueMicrotask to allow async operations to settle before
+                // use setTimeout to allow async operations to settle before
                 // calling resolve_rendering_cells().
-                queueMicrotask(() => {
+                setTimeout(() => {
                     try {
                         // typescript cannot determine that resolve_rendering_cells
                         // is not undefined...
