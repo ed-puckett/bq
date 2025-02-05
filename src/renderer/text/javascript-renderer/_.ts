@@ -53,6 +53,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     ocx
 //     source_code
 //     cell
+//     ui_classes,  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
@@ -136,6 +137,21 @@ import {
 } from './eval-worker/_';
 
 import {
+    Dialog,
+} from 'lib/ui/dialog/_';
+
+import {
+    Menu,
+} from 'lib/ui/menu/_';
+
+import {
+    KeyEventManager,
+    KeyMap,
+    KeyMapMapper,
+    KeySpec,
+} from 'lib/ui/key/_';
+
+import {
     OpenPromise,
 } from 'lib/sys/open-promise';
 
@@ -187,6 +203,16 @@ export class JavaScriptParseError extends LocatedError {
 
     get babel_parse_error_object (){ return this.#babel_parse_error_object; }
 }
+
+
+const ui_classes = {  // included in eval_environment
+    Dialog,
+    Menu,
+    KeyEventManager,
+    KeyMap,
+    KeyMapMapper,
+    KeySpec,
+};
 
 
 export class JavaScriptRenderer extends TextBasedRenderer {
@@ -414,10 +440,10 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             source_code,  // this evaluation's source code
             cell,         // this evaluation's associated cell or undefined if no associated cell
 
-            // Renderer, etc classes
+            // ui, Renderer, etc classes
+            ui_classes,
             TextBasedRenderer,
             ApplicationBasedRenderer,
-
             OpenPromise,
             AbortSignalAction,
             SerialDataSource,
