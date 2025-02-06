@@ -1,8 +1,5 @@
 const current_script_url = import.meta.url;  // save for later
 
-// @ts-ignore  // types not available for the imported module
-import { version_dir } from 'dist/version-dir';
-
 import {
     load_d3,
 } from './d3';
@@ -21,8 +18,9 @@ async function load_modules() {
     const d3 = await load_d3();
     if (!loaded) {
         const server_url = assets_server_url(current_script_url);
-        await load_script(document.head, new URL(`../../../dist/${version_dir}/graphviz.umd.js`,    server_url));
-        await load_script(document.head, new URL(`../../../dist/${version_dir}/d3-graphviz.min.js`, server_url));
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        await load_script(document.head, new URL(`../../../graphviz.umd.js`,    server_url));
+        await load_script(document.head, new URL(`../../../d3-graphviz.min.js`, server_url));
         loaded = true;
     }
     return d3;

@@ -54,6 +54,7 @@ declare -a DIRECTORIES_TO_COPY=(
 #   ---directory---                --- destination--- <<< (pairs of entries)
     'node_modules/katex/dist'      'katex-dist'
     'help/help-pages'              'help-pages'
+    'examples'                     'examples'
 )
 
 declare -a LICENSES_TO_GATHER=(
@@ -75,7 +76,7 @@ if [[ -z "${copy_only}" ]]; then
 fi
 mkdir -p "${DIST_DIR}"
 ( cd "${DIST_VERSIONS_DIR}" && ln -sfT "${version_dir}" current )
-( cd "${DIST_DIR}" && echo "export const version_dir = '${version_dir}';" >version-dir.js )
+# no longer used: ( cd "${DIST_DIR}" && echo "export const version_dir = '${version_dir}';" >version-dir.js )
 
 #!!!/usr/bin/env node -e 'require("fs/promises").readFile("README.md").then(t => console.log(`<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n</head>\n<body>\n$${require("marked").marked(t.toString())}\n</body>\n</html>`))' > "${DIST_DIR}/help.html"
 

@@ -2,6 +2,9 @@ const current_script_url = import.meta.url;  // save for later
 
 const local_server_root = new URL('../..', current_script_url);  // assumes this script is located two directory levels below server root
 
+// This code assumes that the first script in the <head> section is the
+// bootstrap script and that that script is in the "root" directory of
+// the bq distribution.
 const assets_server_script = document.querySelector('head script') as null|HTMLScriptElement;
 let assets_server_root: undefined|URL = undefined;
 
@@ -15,8 +18,10 @@ function _setup_assets_server_root() {
             throw new Error('no script for assets server found in document');
         }
         // the following assumes that the script that src points to is
-        // two directory levels below the server root (e.g., <root>/dist/current/<script>)
-        assets_server_root = new URL('../..', assets_server_script.src);
+        // at the same level as the server "root".  Note that the server
+        // "root" here is not synonymous with "/", but instead is the
+        // root of this distribution on the server.
+        assets_server_root = new URL('.', assets_server_script.src);
 
         // We assume that assets_server_root and local_server_root URLs end in '/'.
         // This is important for testing that URL prefixes match and concatenation below.

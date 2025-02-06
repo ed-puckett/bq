@@ -66,9 +66,10 @@ test:
 # kill the server by performing a GET on /QUIT
 # uses Linux commands: lsof, grep, cut
 # server uses python (version 3)
+# start the server in the directory $(DIST_VERSIONS_DIR)
 .PHONY: server
 server: $(DIST_DIR)
-	( python ./build-tools/server.py $(SERVER_ADDRESS) $(SERVER_PORT) 2>&1 | tee >(grep -q -m1 '"GET /QUIT'; echo QUITTING; sleep 0.1; kill $$(lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN -Fp | grep ^p | cut -c2-)) )
+	( cd "$(DIST_VERSIONS_DIR)" && python ../build-tools/server.py $(SERVER_ADDRESS) $(SERVER_PORT) 2>&1 | tee >(grep -q -m1 '"GET /QUIT'; echo QUITTING; sleep 0.1; kill $$(lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN -Fp | grep ^p | cut -c2-)) )
 
 # uses curl
 .PHONY: kill-server
@@ -81,7 +82,7 @@ dev-server:
 
 .PHONY: client
 client:
-	chromium --new-window http://$(SERVER_ADDRESS):$(SERVER_PORT)/src/index.html &
+	chromium --new-window http://$(SERVER_ADDRESS):$(SERVER_PORT)/current/index.html &
 
 .PHONY: start
 start: $(DIST_DIR)

@@ -1,8 +1,5 @@
 const current_script_url = import.meta.url;  // save for later
 
-// @ts-ignore  // types not available for the imported module
-import { version_dir } from 'dist/version-dir';
-
 import {
     assets_server_url,
 } from 'lib/sys/assets-server-url';
@@ -119,7 +116,8 @@ async function initialize_document(): Promise<void> {
         if (!document.querySelector('link[rel="icon"]')) {
             const link_element = document.createElement('link');
             link_element.rel  = 'icon';
-            link_element.href = new URL(`../dist/${version_dir}/favicon.ico`, assets_server_url(current_script_url)).toString();
+            // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+            link_element.href = new URL(`../favicon.ico`, assets_server_url(current_script_url)).toString();
             document.head.appendChild(link_element);
         }
 

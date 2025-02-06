@@ -7734,18 +7734,16 @@ class ActivityManager extends Activity {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   B: () => (/* binding */ load_Algebrite)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2222);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/lib/sys/algebrite.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 let script_loaded = false;
 async function load_Algebrite() {
     if (!script_loaded) {
-        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_2__/* .version_dir */ .X}/algebrite.bundle-for-browser.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../algebrite.bundle-for-browser.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
         script_loaded = true;
     }
     return globalThis.Algebrite;
@@ -7762,6 +7760,9 @@ async function load_Algebrite() {
 /* harmony export */ });
 const current_script_url = "file:///home/ed/code/bq/lib/sys/assets-server-url.ts"; // save for later
 const local_server_root = new URL('../..', current_script_url); // assumes this script is located two directory levels below server root
+// This code assumes that the first script in the <head> section is the
+// bootstrap script and that that script is in the "root" directory of
+// the bq distribution.
 const assets_server_script = document.querySelector('head script');
 let assets_server_root = undefined;
 function _setup_assets_server_root() {
@@ -7774,8 +7775,10 @@ function _setup_assets_server_root() {
             throw new Error('no script for assets server found in document');
         }
         // the following assumes that the script that src points to is
-        // two directory levels below the server root (e.g., <root>/dist/current/<script>)
-        assets_server_root = new URL('../..', assets_server_script.src);
+        // at the same level as the server "root".  Note that the server
+        // "root" here is not synonymous with "/", but instead is the
+        // root of this distribution on the server.
+        assets_server_root = new URL('.', assets_server_script.src);
         // We assume that assets_server_root and local_server_root URLs end in '/'.
         // This is important for testing that URL prefixes match and concatenation below.
         if (assets_server_root.href.slice(-1) !== '/') {
@@ -8202,15 +8205,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   n: () => (/* binding */ sprintf)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2222);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/lib/sys/sprintf.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
 
 
-
-await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_2__/* .version_dir */ .X}/sprintf.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
+// the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../sprintf.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
 const sprintf = globalThis.sprintf;
 
 __webpack_async_result__();
@@ -13358,14 +13359,12 @@ __webpack_async_result__();
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   S: () => (/* binding */ open_help_window)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2222);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/bq-manager/help-window.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 function open_help_window() {
-    window.open(new URL(`../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_1__/* .version_dir */ .X}/help.html`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
+    // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+    window.open(new URL(`../../help.html`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
 }
 
 
@@ -13910,17 +13909,14 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   wG: () => (/* binding */ set_auto_eval)
 /* harmony export */ });
 /* unused harmony export auto_eval_attribute_name */
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2222);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-/* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1496);
+/* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1496);
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4931);
 /* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2023);
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1024);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__]);
 ([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/init.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 
@@ -14008,7 +14004,8 @@ async function initialize_document() {
         if (!document.querySelector('link[rel="icon"]')) {
             const link_element = document.createElement('link');
             link_element.rel = 'icon';
-            link_element.href = new URL(`../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_4__/* .version_dir */ .X}/favicon.ico`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)).toString();
+            // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+            link_element.href = new URL(`../favicon.ico`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)).toString();
             document.head.appendChild(link_element);
         }
         // establish <meta name="viewport" content="width=device-width, initial-scale=1"> if not already present
@@ -14160,7 +14157,7 @@ async function save_serializer(bootstrap_script_src_choice, options) {
 <html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_eval ? ` ${auto_eval_attribute_name}` : ''}>
 <head>
     <meta charset="utf-8">
-    <script src=${(0,lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_5__/* .make_string_literal */ .xA)(bootstrap_script_src, true)}></script>
+    <script src=${(0,lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_4__/* .make_string_literal */ .xA)(bootstrap_script_src, true)}></script>
 ${title_markup}</head>
 <body>${contents}</body>
 </html>
@@ -14931,18 +14928,16 @@ __webpack_async_result__();
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   l: () => (/* binding */ load_d3)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2222);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/application/d3.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 let d3 = undefined;
 async function load_d3() {
     if (!d3) {
-        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_2__/* .version_dir */ .X}/d3.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url))); // defines globalThis.d3
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../d3.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url))); // defines globalThis.d3
         d3 = globalThis.d3;
     }
     return d3;
@@ -15082,13 +15077,10 @@ __webpack_async_result__();
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   X: () => (/* binding */ render)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2222);
 /* harmony import */ var _d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5462);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/application/graphviz.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 
@@ -15097,8 +15089,9 @@ async function load_modules() {
     const d3 = await (0,_d3__WEBPACK_IMPORTED_MODULE_0__/* .load_d3 */ .l)();
     if (!loaded) {
         const server_url = (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_2__/* .assets_server_url */ .U)(current_script_url);
-        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .load_script */ .du)(document.head, new URL(`../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_3__/* .version_dir */ .X}/graphviz.umd.js`, server_url));
-        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .load_script */ .du)(document.head, new URL(`../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_3__/* .version_dir */ .X}/d3-graphviz.min.js`, server_url));
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .load_script */ .du)(document.head, new URL(`../../../graphviz.umd.js`, server_url));
+        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .load_script */ .du)(document.head, new URL(`../../../d3-graphviz.min.js`, server_url));
         loaded = true;
     }
     return d3;
@@ -15253,12 +15246,9 @@ __webpack_async_result__();
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   O: () => (/* binding */ load_Plotly)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2222);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/application/plotly.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 let Plotly = undefined; // loaded on demand
@@ -15266,7 +15256,8 @@ let Plotly = undefined; // loaded on demand
  */
 async function load_Plotly() {
     if (!Plotly) {
-        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_2__/* .version_dir */ .X}/plotly.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url))); // defines globalThis.Plotly
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../plotly.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url))); // defines globalThis.Plotly
         Plotly = globalThis.Plotly;
     }
     return Plotly;
@@ -15908,14 +15899,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   V: () => (/* binding */ EvalWorker)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2222);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9888);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3141);
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7575);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/eval-worker/_.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
-
 
 
 
@@ -16136,7 +16124,8 @@ class EvalWorker extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__/*
         // create a data: URI for the web worker code so that we avoid cross-origin access errors
         // see: https://stackoverflow.com/questions/23953543/cross-domain-web-workers
         // and: https://github.com/CezaryDanielNowak/CrossOriginWorker/blob/main/index.js
-        const worker_url = new URL(`../../../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_4__/* .version_dir */ .X}/web-worker.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)); // ./web-worker.js is copied to `dist/${version_dir}` dir by build process
+        // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+        const worker_url = new URL(`../../../../../web-worker.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url));
         return fetch(worker_url)
             .then(res => res.text())
             .catch(error => {
@@ -34790,14 +34779,10 @@ var style_update = injectStylesIntoStyleTag_default()(style/* default */.A, styl
 
 ;// ./src/renderer/text/katex/_.ts
 // @ts-ignore  // types not available for the imported module
-
- // webpack implementation
+ // (resolved by webpack using "dist" module alias)
+ // webpack implementation (using "dist" module alias)
  // webpack implementation
 /* --- OLD DYNAMIC IMPORT WAY ---
-//import {
-//    version_dir,
-//} from 'dist/version-dir';
-//
 // import {
 //     assets_server_url,
 // } from 'lib/sys/assets-server-url';
@@ -34806,13 +34791,13 @@ var style_update = injectStylesIntoStyleTag_default()(style/* default */.A, styl
 //     create_stylesheet_link,
 // } from 'lib/ui/dom-tools';
 export async function load_stylesheet() {
-    // create_stylesheet_link(document.head, new URL(`../../../../dist/${version_dir}/katex/dist/katex.min.css`, assets_server_url(current_script_url)));
+    // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+    // create_stylesheet_link(document.head, new URL(`../../../../katex/dist/katex.min.css`, assets_server_url(current_script_url)));
     // create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 
-    // @ts-ignore  // types not available for the imported module
-    await import(`../../../../dist/${version_dir}/katex/dist/katex.min.css`);  // webpack implementation
+    // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+    await import(`../../../../katex/dist/katex.min.css`);  // webpack implementation
 
-    // @ts-ignore  // types not available for the imported module
     await import('./style.css');  // webpack implementation
 }
 await load_stylesheet();  // load stylesheet now
@@ -35218,15 +35203,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   x: () => (/* binding */ marked)
 /* harmony export */ });
-/* harmony import */ var dist_version_dir__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2222);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/markdown-renderer/marked.ts"; // save for later
-// @ts-ignore  // types not available for the imported module
 
 
-
-await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../../dist/${dist_version_dir__WEBPACK_IMPORTED_MODULE_2__/* .version_dir */ .X}/marked.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
+// the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
+await (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .load_script */ .du)(document.head, new URL(`../../../../marked.min.js`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__/* .assets_server_url */ .U)(current_script_url)));
 const marked = globalThis.marked;
 
 __webpack_async_result__();
@@ -50766,17 +50749,6 @@ exports.qg = parse;
 exports.YK = parseExpression;
 exports.Y_ = tokTypes;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 2222:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   X: () => (/* binding */ version_dir)
-/* harmony export */ });
-const version_dir = 'v0.2';
 
 
 /***/ }),

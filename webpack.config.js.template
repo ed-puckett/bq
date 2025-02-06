@@ -54,6 +54,13 @@ const webpack_config = {
     plugins: [
         new LicenseWebpackPlugin(),
     ],
+
+    performance: {
+        hints: 'warning',
+        // the bundle is being created large intentionally:
+        maxEntrypointSize: 5e6,
+        maxAssetSize:      5e6
+    },
 };
 
 export default webpack_config;
