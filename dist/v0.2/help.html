@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-cell-view="presentation" data-auto-eval>
+<head>
+    <meta charset="utf-8">
+    <script src="../dist/current/bq-bootstrap.js"></script>
+    <!--
+        These help files are intended to be located in a fixed relative location
+        from the dist directory on the server on which they reside, and the
+        bootstrap code is loaded from a relative url.  This makes the help files
+        independent of the server on which they are actually located.
+        The top-level help directory is at the same level as the dist directory.
+      -->
+</head>
+<body>
+<bq-cell id="id-d54b874e-16db-49b5-8946-97a6af438abb" data-type="markdown">
+# bq help
+
+***(sorry, this document a barely-started work in progress)***
+
+*bq* is a versatile notebook that can become a variety of things: a web page, a report, a technical document or even an interactive application!
+
+All this within a Web-standards-based platform.
+
+See the source code here: https://github.com/ed-puckett/bq
+
+### Goals
+- zero install
+- portable
+- durable
+- typeset mathematics and other technical markup
+- programmatic content
+- standalone documents (with static server)
+
+---
+
+[Page](./help-pages/index.html)
+
+---
+
+## Notebook Structure
+
+## Renderer Types
+
+### Javascript Renderer
+
+### LaTeX Renderer
+
+### Plain Text Renderer
+
+### Markdown Renderer
+
+- cell element
+  - associated with bq: BqManager
+  - attributes: data-type, data-active
+- output element
+  - created by OutputContext.create_cell_output()
+  - attributes: data-source-media-type, data-source-element
+  - css class: bq-cell-output
+- OutputContext (ocx)
+  - associated with bq: BqManager
+  - associated with element: Element
+- BqManager.singleton
+  - controls data-cell-view attribute on document.documentElement (:root)
+  - invoke_renderer() and invoke_renderer_for_type() methods
+</bq-cell>
+</body>
+</html>

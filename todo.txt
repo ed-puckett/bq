@@ -4,7 +4,6 @@ Firefox (and sometimes Chromium) reports "unreachable code after return" in init
 sometimes after refresh document hangs with a blank page...
 auto-eval documents cause unhandled rejection when trying to call beep() in Firefox
 errors in bq-cell javascript do not indicate where the error happened in the code
-need to support (persistent) historical versions so that others can have a stable version to work against
 add command/menu to reset cell and output ids
 add export dialog option to reset cell and output ids
 create_child_ocx seems to modify parent ocx behavior (?)
@@ -44,6 +43,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* need to support (persistent) historical versions so that others can have a stable version to work against
 * in markdown, inline invocation of a javascript renderer would be nice
 * BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier
 * use TypeError instead of Error where appropriate

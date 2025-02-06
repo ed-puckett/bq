@@ -5,6 +5,10 @@ import 'dist/katex-dist/katex.min.css';  // webpack implementation
 import './style.css';  // webpack implementation
 
 /* --- OLD DYNAMIC IMPORT WAY ---
+//import {
+//    version_dir,
+//} from 'dist/version-dir';
+//
 // import {
 //     assets_server_url,
 // } from 'lib/sys/assets-server-url';
@@ -13,11 +17,11 @@ import './style.css';  // webpack implementation
 //     create_stylesheet_link,
 // } from 'lib/ui/dom-tools';
 export async function load_stylesheet() {
-    // create_stylesheet_link(document.head, new URL('dist/katex/dist/katex.min.css', assets_server_url(current_script_url)));
+    // create_stylesheet_link(document.head, new URL(`../../../../dist/${version_dir}/katex/dist/katex.min.css`, assets_server_url(current_script_url)));
     // create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 
     // @ts-ignore  // types not available for the imported module
-    await import('dist/katex/dist/katex.min.css');  // webpack implementation
+    await import(`../../../../dist/${version_dir}/katex/dist/katex.min.css`);  // webpack implementation
 
     // @ts-ignore  // types not available for the imported module
     await import('./style.css');  // webpack implementation

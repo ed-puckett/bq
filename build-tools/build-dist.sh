@@ -5,13 +5,19 @@ declare THIS_FILE_DIR=$([[ -z "${BASH_SOURCE%/*}" ]] && echo '' || { cd "${BASH_
 
 declare COPY_ONLY_KEYWORD=copy-only
 
-if [[ $# -gt 1 || ( $# == 1 && "$1" != "${COPY_ONLY_KEYWORD}" ) ]]; then
-    echo 1>&2 "usage: ${THIS_FILE} [ ${COPY_ONLY_KEYWORD} ]"
+if [[ $# -gt 2 || ( $# == 2 && "$2" != "${COPY_ONLY_KEYWORD}" ) ]]; then
+    echo 1>&2 "usage: ${THIS_FILE} {version_dir} [ ${COPY_ONLY_KEYWORD} ]"
+    exit 1
+fi
+
+declare version_dir=$1
+if [[ "${version_dir}" =~ [/:@*[:space:]] ]]; then
+    echo 1>&2 "** version_dir contains illegal characters"
     exit 1
 fi
 
 declare copy_only=
-if [[ "$1" == "${COPY_ONLY_KEYWORD}" ]]; then
+if [[ "$2" == "${COPY_ONLY_KEYWORD}" ]]; then
    copy_only=true
 fi
 
@@ -21,7 +27,8 @@ declare THIS_FILE=${BASH_SOURCE##*/}
 declare THIS_FILE_DIR=$([[ -z "${BASH_SOURCE%/*}" ]] && echo '' || { cd "${BASH_SOURCE%/*}"; pwd; })
 
 declare ROOT_DIR="${THIS_FILE_DIR}/.."
-declare DIST_DIR="${ROOT_DIR}/dist"
+declare DIST_VERSIONS_DIR="${ROOT_DIR}/dist"
+declare DIST_DIR="${DIST_VERSIONS_DIR}/${version_dir}"
 
 declare -a FILES_TO_COPY=(
     'LICENSE'
@@ -64,9 +71,11 @@ declare -a LICENSES_TO_GATHER=(
 cd "${ROOT_DIR}"
 
 if [[ -z "${copy_only}" ]]; then
-    \rm -fr "dist"
+    \rm -fr "${DIST_DIR}"
 fi
-mkdir -p "dist"
+mkdir -p "${DIST_DIR}"
+( cd "${DIST_VERSIONS_DIR}" && ln -sfT "${version_dir}" current )
+( cd "${DIST_DIR}" && echo "export const version_dir = '${version_dir}';" >version-dir.js )
 
 #!!!/usr/bin/env node -e 'require("fs/promises").readFile("README.md").then(t => console.log(`<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n</head>\n<body>\n$${require("marked").marked(t.toString())}\n</body>\n</html>`))' > "${DIST_DIR}/help.html"
 

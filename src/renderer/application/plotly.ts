@@ -1,5 +1,8 @@
 const current_script_url = import.meta.url;  // save for later
 
+// @ts-ignore  // types not available for the imported module
+import { version_dir } from 'dist/version-dir';
+
 import {
     load_script,
 } from 'lib/ui/dom-tools';
@@ -19,7 +22,7 @@ declare global {
  */
 export async function load_Plotly() {
     if (!Plotly) {
-        await load_script(document.head, new URL('../../../dist/plotly.js', assets_server_url(current_script_url)));  // defines globalThis.Plotly
+        await load_script(document.head, new URL(`../../../dist/${version_dir}/plotly.js`, assets_server_url(current_script_url)));  // defines globalThis.Plotly
         Plotly = globalThis.Plotly;
     }
     return Plotly;

@@ -13,7 +13,7 @@ Bq is supported on popular Web browsers including Firefox and Chromium and requi
 ## Availability
 
 * [Examples](https://ed-puckett.github.io/bq/examples/index.html)
-* [Blank notebook](https://ed-puckett.github.io/bq/dist/index.html)
+* [Blank notebook](https://ed-puckett.github.io/bq/dist/current/index.html)
 * [Source code](https://github.com/ed-puckett/bq)
 
 ## Goals
@@ -27,4 +27,4 @@ Bq is supported on popular Web browsers including Firefox and Chromium and requi
 
 ## More Information
 
-* [Help Document](https://ed-puckett.github.io/bq/dist/help.html)
+* [Help Document](https://ed-puckett.github.io/bq/dist/current/help.html)

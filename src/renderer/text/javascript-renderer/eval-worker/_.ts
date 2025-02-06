@@ -1,5 +1,8 @@
 const current_script_url = import.meta.url;  // save for later
 
+// @ts-ignore  // types not available for the imported module
+import { version_dir } from 'dist/version-dir';
+
 import {
     Activity,
 } from 'lib/sys/activity-manager';
@@ -264,7 +267,7 @@ export class EvalWorker extends Activity {
         // create a data: URI for the web worker code so that we avoid cross-origin access errors
         // see: https://stackoverflow.com/questions/23953543/cross-domain-web-workers
         // and: https://github.com/CezaryDanielNowak/CrossOriginWorker/blob/main/index.js
-        const worker_url = new URL('../../../../../dist/web-worker.js', assets_server_url(current_script_url));  // ./web-worker.js is copied to dist/ dir by build process
+        const worker_url = new URL(`../../../../../dist/${version_dir}/web-worker.js`, assets_server_url(current_script_url));  // ./web-worker.js is copied to `dist/${version_dir}` dir by build process
         return fetch(worker_url)
             .then(res => res.text())
             .catch(error => {

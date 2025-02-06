@@ -14,7 +14,9 @@ function _setup_assets_server_root() {
         if (!assets_server_script || !assets_server_script.src) {
             throw new Error('no script for assets server found in document');
         }
-        assets_server_root = new URL('..', assets_server_script.src);  // assumes script src points to is one directory level below the server root
+        // the following assumes that the script that src points to is
+        // two directory levels below the server root (e.g., <root>/dist/current/<script>)
+        assets_server_root = new URL('../..', assets_server_script.src);
 
         // We assume that assets_server_root and local_server_root URLs end in '/'.
         // This is important for testing that URL prefixes match and concatenation below.

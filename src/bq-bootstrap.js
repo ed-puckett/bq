@@ -56,5 +56,8 @@ globalThis._uninhibit_document_display = function _uninhibit_document_display() 
 // finally, import the rest of the application
 // the rest of the application is taken relative to the bootstrap_script (and not necessarily this document location)
 const bootstrap_script = document.querySelector('head script');
-const init_url = new URL('../dist/init.js', bootstrap_script?.src);
+if (!bootstrap_script) {
+    throw new Error('ABORT: cannot find bootstrap script');
+}
+const init_url = new URL(`./init.js`, bootstrap_script.src);
 import(init_url).catch(show_bootstrap_failed);

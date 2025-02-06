@@ -1,5 +1,8 @@
 const current_script_url = import.meta.url;  // save for later
 
+// @ts-ignore  // types not available for the imported module
+import { version_dir } from 'dist/version-dir';
+
 import {
     assets_server_url,
 } from 'lib/sys/assets-server-url';
@@ -43,7 +46,7 @@ const _bootstrap_script_src_alternative_descriptions = {  // these items may be 
 };
 export const bootstrap_script_src_alternatives_default = 'original';
 
-const _external_bootstrap_link = 'https://ed-puckett.github.io/bq/dist/bq-bootstrap.js';
+const _external_bootstrap_link = 'https://ed-puckett.github.io/bq/dist/current/bq-bootstrap.js';
 
 // see also below: get_bootstrap_script_src_alternatives()
 
@@ -116,7 +119,7 @@ async function initialize_document(): Promise<void> {
         if (!document.querySelector('link[rel="icon"]')) {
             const link_element = document.createElement('link');
             link_element.rel  = 'icon';
-            link_element.href = new URL('../dist/favicon.ico', assets_server_url(current_script_url)).toString();
+            link_element.href = new URL(`../dist/${version_dir}/favicon.ico`, assets_server_url(current_script_url)).toString();
             document.head.appendChild(link_element);
         }
 
