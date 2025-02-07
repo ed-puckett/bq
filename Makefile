@@ -40,7 +40,7 @@ install: ./node_modules $(DIST_DIR)
 lint: ./node_modules
 #!!!	./node_modules/.bin/eslint --config .eslintrc.cjs src lib
 
-$(DIST_DIR): ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./help ./help/* ./help/*/* ./node_modules README.md Makefile package.json webpack.config.js
+$(DIST_DIR): ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md Makefile package.json webpack.config.js
 	@make check-version
 	./build-tools/build-dist.sh $(VERSION_DIR)
 #!!!	make lint && ./build-tools/build-dist.sh $(VERSION_DIR)

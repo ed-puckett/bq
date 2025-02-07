@@ -27,4 +27,4 @@ Bq is supported on popular Web browsers including Firefox and Chromium and requi
 
 ## More Information
 
-* [Help Document](https://ed-puckett.github.io/bq/dist/current/help.html)
+* [Help Document](https://ed-puckett.github.io/bq/dist/current/help/help.html)

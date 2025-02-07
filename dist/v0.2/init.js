@@ -13364,7 +13364,7 @@ const current_script_url = "file:///home/ed/code/bq/src/bq-manager/help-window.t
 
 function open_help_window() {
     // the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root:
-    window.open(new URL(`../../help.html`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
+    window.open(new URL(`../../help/help.html`, (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url)));
 }
 
 

@@ -47,14 +47,13 @@ declare -a FILES_TO_COPY=(
     'node_modules/@hpcc-js/wasm/dist/graphviz.umd.js'
     'node_modules/d3-graphviz/build/d3-graphviz.min.js'
     'node_modules/algebrite/dist/algebrite.bundle-for-browser.js'
-    'help/help.html'
 )
 
 declare -a DIRECTORIES_TO_COPY=(
 #   ---directory---                --- destination--- <<< (pairs of entries)
     'node_modules/katex/dist'      'katex-dist'
-    'help/help-pages'              'help-pages'
-    'examples'                     'examples'
+    'src/help'                     'help'
+    'src/examples'                 'examples'
 )
 
 declare -a LICENSES_TO_GATHER=(
