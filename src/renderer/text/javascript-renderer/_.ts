@@ -49,16 +49,20 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
+//     eval_environment,
 //     env_vars
 //     ocx
 //     source_code
 //     cell
-//     ui_classes,  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
+//     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
 //     AbortSignalAction
 //     SerialDataSource
+//     babel_parse
+//     JavaScriptParseError
+//     LocatedError
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -432,7 +436,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         }
 
         const eval_environment = {
-            env_vars: [] as string[],  // updated below to be an array of all the keys in eval_environment
+            eval_environment: undefined as any,       // updated below to be a direct self reference
+            env_vars:         []        as string[],  // updated below to be an array of all the keys in eval_environment
 
             bqe: eval_context,  // the evalulation context, and a synonym for "this" in the running code
 
@@ -447,6 +452,11 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             OpenPromise,
             AbortSignalAction,
             SerialDataSource,
+
+            // parse support
+            babel_parse,
+            JavaScriptParseError,
+            LocatedError,
 
             d3,  // for use with Plotly
             load_Plotly,
@@ -495,6 +505,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             canvas_tools,
         };
 
+        eval_environment.eval_environment = eval_environment;
         eval_environment.env_vars = Object.keys(eval_environment);
 
         return eval_environment;

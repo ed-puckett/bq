@@ -15542,16 +15542,20 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
+//     eval_environment,
 //     env_vars
 //     ocx
 //     source_code
 //     cell
-//     ui_classes,  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
+//     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
 //     AbortSignalAction
 //     SerialDataSource
+//     babel_parse
+//     JavaScriptParseError
+//     LocatedError
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -15832,6 +15836,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             return objects;
         }
         const eval_environment = {
+            eval_environment: undefined, // updated below to be a direct self reference
             env_vars: [], // updated below to be an array of all the keys in eval_environment
             bqe: eval_context, // the evalulation context, and a synonym for "this" in the running code
             ocx,
@@ -15844,6 +15849,10 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_12__/* .OpenPromise */ .q,
             AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_13__/* .AbortSignalAction */ .$,
             SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_14__/* .SerialDataSource */ .Y,
+            // parse support
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_11__/* .parse */ .qg,
+            JavaScriptParseError,
+            LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .LocatedError */ .BU,
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_9__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_10__/* .load_Algebrite */ .B,
@@ -15882,6 +15891,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             plotly: ocx.plotly.bind(ocx),
             canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__,
         };
+        eval_environment.eval_environment = eval_environment;
         eval_environment.env_vars = Object.keys(eval_environment);
         return eval_environment;
     }
