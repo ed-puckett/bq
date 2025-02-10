@@ -50,11 +50,12 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     create_worker: create a new EvalWorker instance
 //!!!
 //     eval_environment,
-//     env_vars
 //     ocx
 //     source_code
 //     cell
 //     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
+//     BqManager
+//     BqCellElement
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
@@ -104,6 +105,10 @@ const dynamic_import = new Function('path', 'return import(path);');
 
 const AsyncFunction          = Object.getPrototypeOf(async function () {}).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () {}).constructor;
+
+import {
+    BqManager,
+} from 'src/bq-manager/_';
 
 import {
     BqCellElement,
@@ -436,8 +441,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         }
 
         const eval_environment = {
-            eval_environment: undefined as any,       // updated below to be a direct self reference
-            env_vars:         []        as string[],  // updated below to be an array of all the keys in eval_environment
+            eval_environment: undefined as any,  // updated below to be a direct self reference
 
             bqe: eval_context,  // the evalulation context, and a synonym for "this" in the running code
 
@@ -447,6 +451,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
 
             // ui, Renderer, etc classes
             ui_classes,
+            BqManager,
+            BqCellElement,
             TextBasedRenderer,
             ApplicationBasedRenderer,
             OpenPromise,
@@ -506,7 +512,6 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         };
 
         eval_environment.eval_environment = eval_environment;
-        eval_environment.env_vars = Object.keys(eval_environment);
 
         return eval_environment;
     }

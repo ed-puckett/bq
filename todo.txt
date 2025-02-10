@@ -13,7 +13,6 @@ make help document
 update README.md
 extending from Error might be problematic and should maybe be replaced by using the cause property and providing recognizers for the new kind of error
 obj-path should probably be phased out....
-fix deprecation warnings when compiling (inflight and glob packages)
 documentation: explain the dangers of < characters in the body of bq-cell elements
 documentation: tell Firefox users about "Always ask you where to save files" setting
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
@@ -45,6 +44,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* fix deprecation warnings when compiling (inflight and glob packages) (these were dependencies of mocha)
 * need to support (persistent) historical versions so that others can have a stable version to work against
 * in markdown, inline invocation of a javascript renderer would be nice
 * BqManager.singleton.#perform_command_for_ui calls beep for an error but BqManager.singleton.#perform_command already called beep earlier

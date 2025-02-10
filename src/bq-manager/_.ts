@@ -1,5 +1,8 @@
 const current_script_url = import.meta.url;  // save for later
 
+// @ts-ignore  // types not available for the imported module
+import { version_string } from 'dist/version-info';
+
 import {
     show_initialization_failed,
     save_serializer,
@@ -153,6 +156,9 @@ export class BqManager {
         }
     }
     #start_called = false;
+
+    static get version_string (): string { return version_string; }
+
 
     constructor() {
         this.#eval_states.subscribe(this.#eval_states_observer.bind(this));  //!!! never unsubscribed

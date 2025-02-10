@@ -46,3 +46,10 @@ if ( (package_json_version_match.groups.major !== version_match.groups.major) ||
      (package_json_version_match.groups.minor !== version_match.groups.minor)    ) {
     fail_exit(`version "${version_match.groups.major}.${version_match.groups.minor}" does not match package.json version "${package_json_version_match.groups.major}.${package_json_version_match.groups.minor}"`);
 }
+
+const {
+    major,
+    minor,
+    revision = 0,
+} = package_json_version_match.groups;
+console.log(`${major}.${minor}.${revision ?? '0'}`);

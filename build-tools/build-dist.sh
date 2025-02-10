@@ -5,19 +5,25 @@ declare THIS_FILE_DIR=$([[ -z "${BASH_SOURCE%/*}" ]] && echo '' || { cd "${BASH_
 
 declare COPY_ONLY_KEYWORD=copy-only
 
-if [[ $# -gt 2 || ( $# == 2 && "$2" != "${COPY_ONLY_KEYWORD}" ) ]]; then
-    echo 1>&2 "usage: ${THIS_FILE} {version_dir} [ ${COPY_ONLY_KEYWORD} ]"
+if [[ $# -lt 2 || $# -gt 3 || ( $# == 3 && "$3" != "${COPY_ONLY_KEYWORD}" ) ]]; then
+    echo 1>&2 "usage: ${THIS_FILE} {version_string} {version_dir} [ ${COPY_ONLY_KEYWORD} ]"
     exit 1
 fi
 
-declare version_dir=$1
-if [[ "${version_dir}" =~ [/:@*[:space:]] ]]; then
+declare version_string=$1
+if [[ "${version_string}" =~ ^[0-9]+[.][0-9]+(?:[.][0-9]+)? ]]; then
+    echo 1>&2 "** version_string has illegal format"
+    exit 1
+fi
+
+declare version_dir=$2
+if [[ version_dir =~ [/:@*[:space:]] ]]; then
     echo 1>&2 "** version_dir contains illegal characters"
     exit 1
 fi
 
 declare copy_only=
-if [[ "$2" == "${COPY_ONLY_KEYWORD}" ]]; then
+if [[ "$3" == "${COPY_ONLY_KEYWORD}" ]]; then
    copy_only=true
 fi
 
@@ -75,7 +81,13 @@ if [[ -z "${copy_only}" ]]; then
 fi
 mkdir -p "${DIST_DIR}"
 ( cd "${DIST_VERSIONS_DIR}" && ln -sfT "${version_dir}" current )
-# no longer used: ( cd "${DIST_DIR}" && echo "export const version_dir = '${version_dir}';" >version-dir.js )
+(
+    cd "${DIST_DIR}" &&
+        >version-info.js &&
+        echo "// === AUTOMATICALLY GENERATED ==="                 >>version-info.js &&
+        echo "export const version_string = '${version_string}';" >>version-info.js &&
+        echo "export const version_dir = '${version_dir}';"       >>version-info.js
+)
 
 #!!!/usr/bin/env node -e 'require("fs/promises").readFile("README.md").then(t => console.log(`<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n</head>\n<body>\n$${require("marked").marked(t.toString())}\n</body>\n</html>`))' > "${DIST_DIR}/help.html"
 
