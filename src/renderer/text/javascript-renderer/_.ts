@@ -21,7 +21,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // derived from the global_state property of the options passed to the
 // eval() method.
 //
-// vars(...objects) assigns new properties to "bqe", the evaluation
+// vars(...objects) assigns new properties to "bqx", the evaluation
 // context, within the code.  The return value is the array of the
 // given arguments (unmodified).
 //
@@ -39,7 +39,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
-//     bqe:           the global eval environment (synonym for "this" on entry)
+//     bqx:           the global eval environment (synonym for "this" on entry)
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
@@ -49,13 +49,16 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
-//     eval_environment,
+//     eval_environment
+//     bqx
 //     ocx
 //     source_code
 //     cell
 //     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
 //     BqManager
 //     BqCellElement
+//     OutputContext
+//     Renderer
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
 //     OpenPromise
@@ -115,8 +118,9 @@ import {
 } from 'src/bq-cell-element/_';
 
 import {
-    ApplicationBasedRenderer,
+    Renderer,
     TextBasedRenderer,
+    ApplicationBasedRenderer,
     LocatedError,
 } from 'src/renderer/renderer';
 
@@ -140,6 +144,10 @@ import {
 import {
     OutputContextLike,
 } from 'src/output-context/types';
+
+import {
+    OutputContext,
+} from 'src/output-context/_';
 
 import {
     EvalWorker,
@@ -443,7 +451,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         const eval_environment = {
             eval_environment: undefined as any,  // updated below to be a direct self reference
 
-            bqe: eval_context,  // the evalulation context, and a synonym for "this" in the running code
+            bqx: eval_context,  // the evalulation context, and a synonym for "this" in the running code
 
             ocx,
             source_code,  // this evaluation's source code
@@ -453,6 +461,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             ui_classes,
             BqManager,
             BqCellElement,
+            OutputContext,
+            Renderer,
             TextBasedRenderer,
             ApplicationBasedRenderer,
             OpenPromise,
