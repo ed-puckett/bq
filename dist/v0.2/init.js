@@ -8258,7 +8258,7 @@ function make_string_literal(s, enclose_in_double_quotes = false) {
 
 /***/ }),
 
-/***/ 3141:
+/***/ 9241:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 
@@ -8271,92 +8271,87 @@ __webpack_require__.d(__webpack_exports__, {
 
 ;// ./node_modules/uuid/dist/esm-browser/native.js
 const randomUUID = typeof crypto !== 'undefined' && crypto.randomUUID && crypto.randomUUID.bind(crypto);
-/* harmony default export */ const esm_browser_native = ({
-  randomUUID
-});
+/* harmony default export */ const esm_browser_native = ({ randomUUID });
+
 ;// ./node_modules/uuid/dist/esm-browser/rng.js
-// Unique ID creation requires a high quality random # generator. In the browser we therefore
-// require the crypto API and do not support built-in fallback to lower quality random number
-// generators (like Math.random()).
 let getRandomValues;
 const rnds8 = new Uint8Array(16);
 function rng() {
-  // lazy load so that environments that need to polyfill have a chance to do so
-  if (!getRandomValues) {
-    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
-    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
-
     if (!getRandomValues) {
-      throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+        if (typeof crypto === 'undefined' || !crypto.getRandomValues) {
+            throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+        }
+        getRandomValues = crypto.getRandomValues.bind(crypto);
     }
-  }
-
-  return getRandomValues(rnds8);
+    return getRandomValues(rnds8);
 }
+
 ;// ./node_modules/uuid/dist/esm-browser/stringify.js
 
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-
 const byteToHex = [];
-
 for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).slice(1));
+    byteToHex.push((i + 0x100).toString(16).slice(1));
 }
-
 function unsafeStringify(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
+    return (byteToHex[arr[offset + 0]] +
+        byteToHex[arr[offset + 1]] +
+        byteToHex[arr[offset + 2]] +
+        byteToHex[arr[offset + 3]] +
+        '-' +
+        byteToHex[arr[offset + 4]] +
+        byteToHex[arr[offset + 5]] +
+        '-' +
+        byteToHex[arr[offset + 6]] +
+        byteToHex[arr[offset + 7]] +
+        '-' +
+        byteToHex[arr[offset + 8]] +
+        byteToHex[arr[offset + 9]] +
+        '-' +
+        byteToHex[arr[offset + 10]] +
+        byteToHex[arr[offset + 11]] +
+        byteToHex[arr[offset + 12]] +
+        byteToHex[arr[offset + 13]] +
+        byteToHex[arr[offset + 14]] +
+        byteToHex[arr[offset + 15]]).toLowerCase();
 }
-
 function stringify(arr, offset = 0) {
-  const uuid = unsafeStringify(arr, offset); // Consistency check for valid UUID.  If this throws, it's likely due to one
-  // of the following:
-  // - One or more input array values don't map to a hex octet (leading to
-  // "undefined" in the uuid)
-  // - Invalid input values for the RFC `version` or `variant` fields
-
-  if (!validate(uuid)) {
-    throw TypeError('Stringified UUID is invalid');
-  }
-
-  return uuid;
+    const uuid = unsafeStringify(arr, offset);
+    if (!validate(uuid)) {
+        throw TypeError('Stringified UUID is invalid');
+    }
+    return uuid;
 }
-
 /* harmony default export */ const esm_browser_stringify = ((/* unused pure expression or super */ null && (stringify)));
+
 ;// ./node_modules/uuid/dist/esm-browser/v4.js
 
 
 
-
 function v4(options, buf, offset) {
-  if (esm_browser_native.randomUUID && !buf && !options) {
-    return esm_browser_native.randomUUID();
-  }
-
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-
-  rnds[6] = rnds[6] & 0x0f | 0x40;
-  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
-
-  if (buf) {
-    offset = offset || 0;
-
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
+    if (esm_browser_native.randomUUID && !buf && !options) {
+        return esm_browser_native.randomUUID();
     }
-
-    return buf;
-  }
-
-  return unsafeStringify(rnds);
+    options = options || {};
+    const rnds = options.random ?? options.rng?.() ?? rng();
+    if (rnds.length < 16) {
+        throw new Error('Random bytes length must be >= 16');
+    }
+    rnds[6] = (rnds[6] & 0x0f) | 0x40;
+    rnds[8] = (rnds[8] & 0x3f) | 0x80;
+    if (buf) {
+        offset = offset || 0;
+        if (offset < 0 || offset + 16 > buf.length) {
+            throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
+        }
+        for (let i = 0; i < 16; ++i) {
+            buf[offset + i] = rnds[i];
+        }
+        return buf;
+    }
+    return unsafeStringify(rnds);
 }
-
 /* harmony default export */ const esm_browser_v4 = (v4);
+
 ;// ./lib/sys/uuid.ts
 // @ts-ignore  // types not available for the imported module
 
@@ -8750,7 +8745,7 @@ function draw_arrow(ctx, x0, y0, x1, y1, options) {
 /* unused harmony export load_stylesheet */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var _dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9241);
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7575);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/lib/ui/dialog/_.ts")); // save for later
 
@@ -9086,7 +9081,7 @@ function create_select_element(parent, id, opts) {
 /* harmony export */ });
 /* unused harmony exports setup_textarea_auto_resize, trigger_textarea_auto_resize, find_matching_ancestor, safe_setAttributeNS, validate_parent_and_before_from_options, mapping_default_key, create_stylesheet_link, create_inline_stylesheet, create_script, create_inline_script, load_script_and_wait_for_condition, find_child_offset */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9241);
 const current_script_url = "file:///home/ed/code/bq/lib/ui/dom-tools.ts"; // save for later
 
 
@@ -11054,7 +11049,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1496);
 /* harmony import */ var _codemirror__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8046);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9241);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9432);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__]);
 ([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
@@ -15497,7 +15492,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(7575);
 /* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(8669);
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(9241);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
@@ -15934,7 +15929,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   V: () => (/* binding */ EvalWorker)
 /* harmony export */ });
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9888);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9241);
 /* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7575);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/eval-worker/_.ts"; // save for later
@@ -34920,7 +34915,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
 /* harmony import */ var _marked__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(138);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(9241);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
 ([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 
@@ -35900,7 +35895,7 @@ const storage_db = new IndexedDBInterface(database_name, database_store_name);
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* unused harmony exports root_element_theme_attribute, default_theme_name, get_standard_theme_names, get_standard_theme_prop_names, themes_style_element_id, themes_settings_updated_events, get_themes_settings, update_themes_settings, reset_to_standard_themes_settings */
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3141);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9241);
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1602);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
 /* harmony import */ var _settings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1059);
