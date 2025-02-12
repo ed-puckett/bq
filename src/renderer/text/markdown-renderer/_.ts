@@ -224,6 +224,30 @@ export class MarkdownRenderer extends TextBasedRenderer {
     }
 }
 
+// This following implementation of custom heading id is taken from
+// https://github.com/markedjs/marked-custom-heading-id instead of
+// including another npm package.  This is necessary because the
+// current marked implementation uses the entire text of the heading
+// plus the custom id as the element id (probably a bug).  The code
+// is copied/adapted here instead of using the npm package because the
+// code is pretty simple and is MIT licensed.
+marked.use({
+    useNewRenderer: true,
+    renderer: {
+        heading(options: object) {
+            const { text, depth } = (options as any);
+            const match_re = /(?: +|^)\{#([a-z][\w-]*)\}(?: +|$)/i;
+            const match = text.match(match_re);
+            if (!match) {
+                // fallback to original heading renderer
+                return false;
+            } else {
+                return `<h${depth} id="${match[1]}">${text.replace(match_re, '')}</h${depth}>\n`;
+            }
+        },
+    },
+});
+
 marked.use({
     extensions: [
         {

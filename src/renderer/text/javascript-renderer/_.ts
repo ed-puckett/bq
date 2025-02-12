@@ -43,49 +43,30 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
-//     import_local:  import other libraries from the lib/ directory
+//     import_local:  import other libraries from local directories
 //     vars:          export new "global" properties
 //     is_stopped:    determine if the evaluation has been stopped
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
 //     eval_environment
+//     vars
 //     bqx
 //     ocx
 //     source_code
 //     cell
-//     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
-//     BqManager
-//     BqCellElement
-//     OutputContext
-//     Renderer
-//     TextBasedRenderer
-//     ApplicationBasedRenderer
-//     OpenPromise
-//     AbortSignalAction
-//     SerialDataSource
-//     babel_parse
-//     JavaScriptParseError
-//     LocatedError
-//     d3
-//     load_Plotly
-//     load_Algebrite
-//     rxjs
 //     is_stopped
 //     keepalive
 //     bg
 //     end_bg
 //     make_check_tick
-//     range
-//     uuidv4
 //     create_worker
 //     import_local
-//     vars
-//     sprintf
 //     sleep
 //     delay_ms
 //     next_tick
 //     next_micro_tick
+//     sprintf
 //     render_text
 //     render_error
 //     render_value
@@ -99,6 +80,33 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     graphviz
 //     plotly
 //     canvas_tools
+//     d3
+//     load_Plotly
+//     load_Algebrite
+//     range
+//     uuidv4
+//     rxjs
+//     babel_parse
+//     JavaScriptParseError
+//     LocatedError
+//     BqManager
+//     BqCellElement
+//     OutputContextLike
+//     OutputContext
+//     Renderer
+//     TextBasedRenderer
+//     ApplicationBasedRenderer
+//     Activity,
+//     ActivityManager,
+//     Dialog
+//     Menu
+//     KeyEventManager
+//     KeyMap
+//     KeyMapMapper
+//     KeySpec
+//     OpenPromise
+//     AbortSignalAction
+//     SerialDataSource
 //!!!
 //
 // These all continue to be available even after the evaluation has
@@ -148,6 +156,11 @@ import {
 import {
     OutputContext,
 } from 'src/output-context/_';
+
+import {
+    Activity,
+    ActivityManager,
+} from 'lib/sys/activity-manager'
 
 import {
     EvalWorker,
@@ -220,16 +233,6 @@ export class JavaScriptParseError extends LocatedError {
 
     get babel_parse_error_object (){ return this.#babel_parse_error_object; }
 }
-
-
-const ui_classes = {  // included in eval_environment
-    Dialog,
-    Menu,
-    KeyEventManager,
-    KeyMap,
-    KeyMapMapper,
-    KeySpec,
-};
 
 
 export class JavaScriptRenderer extends TextBasedRenderer {
@@ -433,6 +436,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
                 yield i;
             }
         }
+
         async function create_worker(options?: object) {
             const worker = new EvalWorker(options);  // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
@@ -451,74 +455,78 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         const eval_environment = {
             eval_environment: undefined as any,  // updated below to be a direct self reference
 
-            bqx: eval_context,  // the evalulation context, and a synonym for "this" in the running code
-
+            vars:             ocx.AIS(vars),
+            bqx:              eval_context,  // the evalulation context, and a synonym for "this" in the running code
             ocx,
-            source_code,  // this evaluation's source code
-            cell,         // this evaluation's associated cell or undefined if no associated cell
+            source_code,      // this evaluation's source code
+            cell,             // this evaluation's associated cell or undefined if no associated cell
 
-            // ui, Renderer, etc classes
-            ui_classes,
-            BqManager,
-            BqCellElement,
-            OutputContext,
-            Renderer,
-            TextBasedRenderer,
-            ApplicationBasedRenderer,
-            OpenPromise,
-            AbortSignalAction,
-            SerialDataSource,
+            is_stopped,       // no abort_if_stopped()....
+            keepalive:        ocx.AIS(keepalive),
+            bg,               // don't wrap with AIS because that will cause an unhandled rejection if stopped
+            end_bg,           // don't wrap with AIS because that will cause an error
+
+            make_check_tick:  ocx.AIS(make_check_tick),
+
+            create_worker:    ocx.AIS(create_worker),
+            import_local:     ocx.AIS(import_local),
+
+            // sleep, etc
+            sleep:            ocx.sleep.bind(ocx),
+            delay_ms:         ocx.delay_ms.bind(ocx),
+            next_tick:        ocx.next_tick.bind(ocx),
+            next_micro_tick:  ocx.next_micro_tick.bind(ocx),
+
+            // output functions defined by ocx
+            sprintf:          ocx.sprintf.bind(ocx),
+            render_text:      ocx.render_text.bind(ocx),
+            render_error:     ocx.render_error.bind(ocx),
+            render_value:     ocx.render_value.bind(ocx),
+            println:          ocx.println.bind(ocx),
+            printf:           ocx.printf.bind(ocx),
+            print__:          ocx.print__.bind(ocx),
+
+            // code and graphics rendering defined by ocx
+            javascript:       ocx.javascript.bind(ocx),
+            markdown:         ocx.markdown.bind(ocx),
+            latex:            ocx.latex.bind(ocx),
+            image_data:       ocx.image_data.bind(ocx),
+            graphviz:         ocx.graphviz.bind(ocx),
+            plotly:           ocx.plotly.bind(ocx),
+            canvas_tools,
+
+            d3,  // for use with Plotly
+            load_Plotly,
+            load_Algebrite,
+
+            range,
+            uuidv4:           ocx.AIS(uuidv4),
+            rxjs,
 
             // parse support
             babel_parse,
             JavaScriptParseError,
             LocatedError,
 
-            d3,  // for use with Plotly
-            load_Plotly,
-            load_Algebrite,
-            rxjs,
-
-            // utility functions defined above
-            is_stopped,      // no abort_if_stopped()....
-            keepalive:       ocx.AIS(keepalive),
-            bg,              // don't wrap with AIS because that will cause an unhandled rejection if stopped
-            end_bg,          // don't wrap with AIS because that will cause an error
-
-            make_check_tick: ocx.AIS(make_check_tick),
-
-            range,
-            uuidv4:          ocx.AIS(uuidv4),
-
-            create_worker:   ocx.AIS(create_worker),
-            import_local:    ocx.AIS(import_local),
-            vars:            ocx.AIS(vars),
-
-            // external
-            sprintf:         ocx.sprintf.bind(ocx),
-
-            // sleep, etc
-            sleep:           ocx.sleep.bind(ocx),
-            delay_ms:        ocx.delay_ms.bind(ocx),
-            next_tick:       ocx.next_tick.bind(ocx),
-            next_micro_tick: ocx.next_micro_tick.bind(ocx),
-
-            // output functions defined by ocx
-            render_text:     ocx.render_text.bind(ocx),
-            render_error:    ocx.render_error.bind(ocx),
-            render_value:    ocx.render_value.bind(ocx),
-            println:         ocx.println.bind(ocx),
-            printf:          ocx.printf.bind(ocx),
-            print__:         ocx.print__.bind(ocx),
-
-            // code and graphics rendering defined by ocx
-            javascript:      ocx.javascript.bind(ocx),
-            markdown:        ocx.markdown.bind(ocx),
-            latex:           ocx.latex.bind(ocx),
-            image_data:      ocx.image_data.bind(ocx),
-            graphviz:        ocx.graphviz.bind(ocx),
-            plotly:          ocx.plotly.bind(ocx),
-            canvas_tools,
+            // ui, Renderer, etc classes
+            BqManager,
+            BqCellElement,
+            OutputContextLike,
+            OutputContext,
+            Renderer,
+            TextBasedRenderer,
+            ApplicationBasedRenderer,
+            Activity,
+            ActivityManager,
+            Dialog,
+            Menu,
+            KeyEventManager,
+            KeyMap,
+            KeyMapMapper,
+            KeySpec,
+            OpenPromise,
+            AbortSignalAction,
+            SerialDataSource,
         };
 
         eval_environment.eval_environment = eval_environment;

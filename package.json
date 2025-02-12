@@ -29,7 +29,7 @@
     "d3": "^7.6.1",
     "d3-graphviz": "^5.0.2",
     "katex": "^0.16.9",
-    "marked": "^4.3.0",
+    "marked": "^15.0.7",
     "plotly.js-dist": "^2.7.0",
     "rxjs": "^7.8.0",
     "sprintf-js": "^1.1.2",

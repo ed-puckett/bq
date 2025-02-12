@@ -15489,22 +15489,23 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1024);
 /* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
 /* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9779);
-/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8067);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8380);
-/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4395);
-/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8890);
-/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(8669);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3141);
-/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(5462);
-/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4723);
-/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(1576);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(9888);
+/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8067);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(8380);
+/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
+/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8890);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(3141);
+/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
+/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
+/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(1688);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(9015);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(1688);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(9015);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
 
 const lib_dir_path = '../../../lib/';
@@ -15543,49 +15544,30 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
-//     import_local:  import other libraries from the lib/ directory
+//     import_local:  import other libraries from local directories
 //     vars:          export new "global" properties
 //     is_stopped:    determine if the evaluation has been stopped
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
 //     eval_environment
+//     vars
 //     bqx
 //     ocx
 //     source_code
 //     cell
-//     ui_classes  // { Dialog, Menu, KeyEventManager, KeyMap, KeyMapMapper, KeySpec }
-//     BqManager
-//     BqCellElement
-//     OutputContext
-//     Renderer
-//     TextBasedRenderer
-//     ApplicationBasedRenderer
-//     OpenPromise
-//     AbortSignalAction
-//     SerialDataSource
-//     babel_parse
-//     JavaScriptParseError
-//     LocatedError
-//     d3
-//     load_Plotly
-//     load_Algebrite
-//     rxjs
 //     is_stopped
 //     keepalive
 //     bg
 //     end_bg
 //     make_check_tick
-//     range
-//     uuidv4
 //     create_worker
 //     import_local
-//     vars
-//     sprintf
 //     sleep
 //     delay_ms
 //     next_tick
 //     next_micro_tick
+//     sprintf
 //     render_text
 //     render_error
 //     render_value
@@ -15599,6 +15581,33 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     graphviz
 //     plotly
 //     canvas_tools
+//     d3
+//     load_Plotly
+//     load_Algebrite
+//     range
+//     uuidv4
+//     rxjs
+//     babel_parse
+//     JavaScriptParseError
+//     LocatedError
+//     BqManager
+//     BqCellElement
+//     OutputContextLike
+//     OutputContext
+//     Renderer
+//     TextBasedRenderer
+//     ApplicationBasedRenderer
+//     Activity,
+//     ActivityManager,
+//     Dialog
+//     Menu
+//     KeyEventManager
+//     KeyMap
+//     KeyMapMapper
+//     KeySpec
+//     OpenPromise
+//     AbortSignalAction
+//     SerialDataSource
 //!!!
 //
 // These all continue to be available even after the evaluation has
@@ -15607,6 +15616,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).constructor;
+
 
 
 
@@ -15637,14 +15647,6 @@ class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODUL
     #babel_parse_error_object;
     get babel_parse_error_object() { return this.#babel_parse_error_object; }
 }
-const ui_classes = {
-    Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__/* .Dialog */ .lG,
-    Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__/* .Menu */ .W,
-    KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyEventManager */ .jC,
-    KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMap */ .QA,
-    KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMapMapper */ .Xm,
-    KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeySpec */ .Zp,
-};
 class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TextBasedRenderer */ .m9 {
     static get type() { return 'javascript'; }
     static {
@@ -15684,7 +15686,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         catch (parse_error) {
             let updated_parse_error = parse_error;
             try {
-                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_14__/* .parse */ .qg)(code_to_run, {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg)(code_to_run, {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
@@ -15742,7 +15744,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
     async #create_eval_environment(eval_context, ocx, source_code) {
         const cell_id = ocx.element.closest(`[${src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_element}]`)?.getAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
-        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__/* .load_d3 */ .l)();
+        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__/* .load_d3 */ .l)();
         function is_stopped() {
             return ocx.stopped;
         }
@@ -15838,7 +15840,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             }
         }
         async function create_worker(options) {
-            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_7__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
+            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_8__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
             return worker;
         }
@@ -15851,48 +15853,25 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         }
         const eval_environment = {
             eval_environment: undefined, // updated below to be a direct self reference
+            vars: ocx.AIS(vars),
             bqx: eval_context, // the evalulation context, and a synonym for "this" in the running code
             ocx,
             source_code, // this evaluation's source code
             cell, // this evaluation's associated cell or undefined if no associated cell
-            // ui, Renderer, etc classes
-            ui_classes,
-            BqManager: src_bq_manager___WEBPACK_IMPORTED_MODULE_1__/* .BqManager */ .N,
-            BqCellElement: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__/* .BqCellElement */ .c,
-            OutputContext: src_output_context___WEBPACK_IMPORTED_MODULE_6__/* .OutputContext */ .H,
-            Renderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .Renderer */ .A4,
-            TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TextBasedRenderer */ .m9,
-            ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .ApplicationBasedRenderer */ .rK,
-            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_15__/* .OpenPromise */ .q,
-            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_16__/* .AbortSignalAction */ .$,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_17__/* .SerialDataSource */ .Y,
-            // parse support
-            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_14__/* .parse */ .qg,
-            JavaScriptParseError,
-            LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU,
-            d3, // for use with Plotly
-            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__/* .load_Plotly */ .O,
-            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__/* .load_Algebrite */ .B,
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_18__,
-            // utility functions defined above
             is_stopped, // no abort_if_stopped()....
             keepalive: ocx.AIS(keepalive),
             bg, // don't wrap with AIS because that will cause an unhandled rejection if stopped
             end_bg, // don't wrap with AIS because that will cause an error
             make_check_tick: ocx.AIS(make_check_tick),
-            range,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_19__/* .uuidv4 */ .gZ),
             create_worker: ocx.AIS(create_worker),
             import_local: ocx.AIS(import_local),
-            vars: ocx.AIS(vars),
-            // external
-            sprintf: ocx.sprintf.bind(ocx),
             // sleep, etc
             sleep: ocx.sleep.bind(ocx),
             delay_ms: ocx.delay_ms.bind(ocx),
             next_tick: ocx.next_tick.bind(ocx),
             next_micro_tick: ocx.next_micro_tick.bind(ocx),
             // output functions defined by ocx
+            sprintf: ocx.sprintf.bind(ocx),
             render_text: ocx.render_text.bind(ocx),
             render_error: ocx.render_error.bind(ocx),
             render_value: ocx.render_value.bind(ocx),
@@ -15906,7 +15885,36 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_20__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__,
+            d3, // for use with Plotly
+            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__/* .load_Plotly */ .O,
+            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__/* .load_Algebrite */ .B,
+            range,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__/* .uuidv4 */ .gZ),
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_18__,
+            // parse support
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg,
+            JavaScriptParseError,
+            LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU,
+            // ui, Renderer, etc classes
+            BqManager: src_bq_manager___WEBPACK_IMPORTED_MODULE_1__/* .BqManager */ .N,
+            BqCellElement: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__/* .BqCellElement */ .c,
+            OutputContextLike: src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s,
+            OutputContext: src_output_context___WEBPACK_IMPORTED_MODULE_6__/* .OutputContext */ .H,
+            Renderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .Renderer */ .A4,
+            TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TextBasedRenderer */ .m9,
+            ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .ApplicationBasedRenderer */ .rK,
+            Activity: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__/* .Activity */ .Il,
+            ActivityManager: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__/* .ActivityManager */ .BT,
+            Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_9__/* .Dialog */ .lG,
+            Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__/* .Menu */ .W,
+            KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyEventManager */ .jC,
+            KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMap */ .QA,
+            KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMapMapper */ .Xm,
+            KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeySpec */ .Zp,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__/* .OpenPromise */ .q,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__/* .SerialDataSource */ .Y,
         };
         eval_environment.eval_environment = eval_environment;
         return eval_environment;
@@ -35067,6 +35075,30 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
         return parent;
     }
 }
+// This following implementation of custom heading id is taken from
+// https://github.com/markedjs/marked-custom-heading-id instead of
+// including another npm package.  This is necessary because the
+// current marked implementation uses the entire text of the heading
+// plus the custom id as the element id (probably a bug).  The code
+// is copied/adapted here instead of using the npm package because the
+// code is pretty simple and is MIT licensed.
+_marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
+    useNewRenderer: true,
+    renderer: {
+        heading(options) {
+            const { text, depth } = options;
+            const match_re = /(?: +|^)\{#([a-z][\w-]*)\}(?: +|$)/i;
+            const match = text.match(match_re);
+            if (!match) {
+                // fallback to original heading renderer
+                return false;
+            }
+            else {
+                return `<h${depth} id="${match[1]}">${text.replace(match_re, '')}</h${depth}>\n`;
+            }
+        },
+    },
+});
 _marked__WEBPACK_IMPORTED_MODULE_6__/* .marked */ .x.use({
     extensions: [
         {
