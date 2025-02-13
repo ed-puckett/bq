@@ -14,49 +14,18 @@
 </head>
 <body>
 <bq-cell data-type="markdown" class="show-full">
-&lt;style>
-.help-container {
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-}
-.help-sidebar {
-    color: red;
-    padding-right: 1em;
-    min-width: fit-content;
-    max-height: 20em;
-    overflow: auto;
-}
-.help-content {
-    padding-right: 1em;
-    min-width: fit-content;
-    max-height: 20em;
-    overflow: auto;
-}
-&lt;/style>
-&lt;div class="help-content">
+&lt;div class="bq-help-content">
 
 # Content
 
 &lt;/div>
 
-```! javascript
-const content = document.querySelector('.help-content');
-const container = ocx.CLASS.create_element({
-    before: content,
-    attrs: {
-        class: 'help-container',
-    },
-    children: [{
-        attrs: {
-            class: 'help-sidebar',
-        },
-        children: Array.from('abcdefg').flatMap(char => [ char, { tag: 'br' } ]),
-    }],
-});
-container.appendChild(content);
-container.scrollIntoView();
-```
+~~~! javascript
+const { create_navigation_container } = await import_local('../navigation-container.js');
+const content_element = ocx.element.parentElement.querySelector('.bq-help-content');
+const container_element = create_navigation_container(ocx, content_element);
+container_element.scrollIntoView();
+~~~
 </bq-cell>
 </body>
 </html>
