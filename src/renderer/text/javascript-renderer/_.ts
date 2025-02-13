@@ -86,6 +86,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     range
 //     uuidv4
 //     rxjs
+//     get_settings
+//     get_themes_settings
 //     babel_parse
 //     JavaScriptParseError
 //     LocatedError
@@ -208,6 +210,11 @@ import {
 import {
     load_Algebrite,
 } from 'lib/sys/algebrite';
+
+import {
+    get_settings,
+    get_themes_settings,
+} from 'src/settings/_';
 
 import * as rxjs from 'rxjs';
 
@@ -502,6 +509,9 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             range,
             uuidv4:           ocx.AIS(uuidv4),
             rxjs,
+
+            get_settings,
+            get_themes_settings,
 
             // parse support
             babel_parse,

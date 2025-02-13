@@ -15512,18 +15512,19 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(8380);
 /* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8890);
-/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(8669);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(9241);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(9241);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(1688);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(9015);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(3593);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(1688);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(9015);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__, src_settings___WEBPACK_IMPORTED_MODULE_15__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__, src_settings___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
 
 const lib_dir_path = '../../../lib/';
@@ -15605,6 +15606,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     range
 //     uuidv4
 //     rxjs
+//     get_settings
+//     get_themes_settings
 //     babel_parse
 //     JavaScriptParseError
 //     LocatedError
@@ -15634,6 +15637,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).constructor;
+
 
 
 
@@ -15704,7 +15708,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         catch (parse_error) {
             let updated_parse_error = parse_error;
             try {
-                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg)(code_to_run, {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg)(code_to_run, {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
@@ -15903,15 +15907,17 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__,
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__/* .load_Algebrite */ .B,
             range,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__/* .uuidv4 */ .gZ),
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_18__,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__/* .uuidv4 */ .gZ),
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_19__,
+            get_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_settings */ .TJ,
+            get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_themes_settings */ .kQ,
             // parse support
-            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg,
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg,
             JavaScriptParseError,
             LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU,
             // ui, Renderer, etc classes
@@ -15930,9 +15936,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMap */ .QA,
             KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMapMapper */ .Xm,
             KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeySpec */ .Zp,
-            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__/* .OpenPromise */ .q,
-            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__/* .AbortSignalAction */ .$,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__/* .SerialDataSource */ .Y,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__/* .OpenPromise */ .q,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__/* .SerialDataSource */ .Y,
         };
         eval_environment.eval_environment = eval_environment;
         return eval_environment;
@@ -35413,6 +35419,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   Uc: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.Uc),
 /* harmony export */   dx: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.dx),
 /* harmony export */   eq: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.eq),
+/* harmony export */   kQ: () => (/* reexport safe */ _theme_settings__WEBPACK_IMPORTED_MODULE_1__.kQ),
 /* harmony export */   o3: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.o3),
 /* harmony export */   qO: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.qO),
 /* harmony export */   ql: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.ql),
@@ -35916,7 +35923,10 @@ const storage_db = new IndexedDBInterface(database_name, database_store_name);
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* unused harmony exports root_element_theme_attribute, default_theme_name, get_standard_theme_names, get_standard_theme_prop_names, themes_style_element_id, themes_settings_updated_events, get_themes_settings, update_themes_settings, reset_to_standard_themes_settings */
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   kQ: () => (/* binding */ get_themes_settings)
+/* harmony export */ });
+/* unused harmony exports root_element_theme_attribute, default_theme_name, get_standard_theme_names, get_standard_theme_prop_names, themes_style_element_id, themes_settings_updated_events, update_themes_settings, reset_to_standard_themes_settings */
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5428);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9241);
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1602);
