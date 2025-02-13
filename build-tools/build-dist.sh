@@ -95,13 +95,14 @@ mkdir -p "${DIST_DIR}"
 echo "copying files..."
 for file_index in "${!FILES_TO_COPY[@]}"; do
     declare file="${FILES_TO_COPY[file_index]}"
-    cp -a "${file}" "${DIST_DIR}"
+    \cp -a "${file}" "${DIST_DIR}"
 done
 
 for (( i = 0; i < ${#DIRECTORIES_TO_COPY[@]}; i += 2 )); do
     declare directory="${DIRECTORIES_TO_COPY[i]}"
     declare destination="${DIRECTORIES_TO_COPY[i+1]}"
-    cp -a "${directory}" "${DIST_DIR}/${destination}"
+    \rm -fr "${DIST_DIR}/${destination}"
+    \cp -a "${directory}" "${DIST_DIR}/${destination}"
 done
 
 declare GATHERED_LICENSES_FILE="${DIST_DIR}/additional-licenses.txt"

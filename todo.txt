@@ -1,3 +1,4 @@
+markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)
 update revision in version number in package.json when building
 store version number (including revision) in dist/<version_dir> when building
 define ocx.render_tty() or something like that (?)
