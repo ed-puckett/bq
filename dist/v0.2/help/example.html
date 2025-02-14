@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-auto-eval>
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+    <!--
+        These help files are intended to be located in a fixed relative location
+        from the dist directory on the server on which they reside, and the
+        bootstrap code is loaded from a relative url.  This makes the help files
+        independent of the server on which they are actually located.
+        The top-level help directory is a direct subdirectory of dist/<version_dir>.
+      -->
+</head>
+<body>
+<bq-cell data-type="markdown" class="show-full">
+&lt;div class="bq-help-content">
+
+# Content
+
+## One {#nav-one}
+### Two {#nav-two}
+### Three {#nav-three}
+# Four
+## Five {#nav-five}
+
+&lt;/div>
+
+~~~! javascript
+const { establish_navigation_container } = await import_local('./establish-navigation-container.js');
+const container_element = establish_navigation_container(ocx, { heading: 'XYZZY' });
+~~~
+</bq-cell>
+</body>
+</html>
