@@ -67,8 +67,15 @@
 &lt;/div>
 
 ~~~! javascript
-const { establish_navigation_container } = await import_local('./establish-navigation-container.js');
-const container_element = establish_navigation_container(ocx, { heading: 'XYZZY' });
+(await import_local('./establish-navigation-container.js')).default(ocx, {
+    nav_trail_heading: '>>>',
+    nav_trail: [
+        [ 'x', 'http://x' ],
+        [ 'y', 'http://y' ],
+        [ 'z', 'http://z' ],
+    ],
+    heading: 'XYZZY',
+ });
 ~~~
 </bq-cell>
 </body>
