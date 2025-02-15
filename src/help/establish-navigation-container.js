@@ -67,7 +67,7 @@ export default function establish_navigation_container(ocx, options=null) {
     grid-column: nav-trail-start / nav-trail-end;
     align-content: center;
     border: var(--help-nav-trail-element-border-width) solid transparent;
-    border-bottom-color: black;/*!!!*/
+    border-bottom-color: var(--theme-ui-rc);
 }
 .help-nav-trail-heading {
     display: inline-block;
@@ -76,13 +76,13 @@ export default function establish_navigation_container(ocx, options=null) {
 .help-nav-trail-item {
     display: inline-block;
     padding: 0 0.5em;
-    border: 1px solid black;/*!!!*/
+    border: 1px solid var(--theme-ui-rc);
 }
 .help-sidebar,
 .help-content {
     overflow: auto;
-    max-height: calc(100dvh - var(--header-dynamic-height) - var(--help-nav-trail-element-dynamic-height));
-    padding: 0 1em;
+    max-height: calc(100dvh - calc(var(--header-dynamic-height) + var(--help-nav-trail-element-dynamic-height)));
+    padding: 0 1.5em;
     min-width: fit-content;
 }
 .help-sidebar {
