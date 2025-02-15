@@ -20,6 +20,7 @@
     --cell-max-height-scrolling: 33dvh;
 
     --header-height: 1.5rem;
+
 }
 
 body {
@@ -27,6 +28,11 @@ body {
     margin: 0;
     color:            var(--theme-ui-fg, hotpink);
     background-color: var(--theme-ui-bg, hotpink);
+
+    --header-dynamic-height: 0rem;
+    &:has(menu.menubar) {
+        --header-dynamic-height: var(--header-height);
+    }
 }
 
 header {
@@ -38,7 +44,7 @@ header {
         align-items: flex-end;
         justify-content: flex-start;
 
-        height: var(--header-height);
+        height: var(--header-dynamic-height);
         background-color: var(--theme-si-bg, hotpink);
 
         border: 0px solid var(--theme-si-rc, hotpink);
@@ -49,19 +55,16 @@ header {
 main {
     /* enable scrolling for main element */
     overflow: auto;
-    max-height: 100dvh;
-    max-width:  100dvw;
     scroll-padding: 2rem;  /* mostly useful to make sure a little output is shown when scrolling to a cell */
-}
-header:has(menu.menubar) ~ main {  /* main preceded by header containing classic menubar */
-    max-height: calc(100dvh - var(--header-height));
+    max-width:  100dvw;
+    max-height: calc(100dvh - var(--header-dynamic-height));
 }
 
 .bq-cell-output {
     display: block;
     overflow: auto;  /* enable h/v scrolling */
     height: fit-content;
-    padding: 0 1em 0 1em;
+    padding: 0 1em;
     color:            var(--theme-ou-fg, hotpink);
     background-color: var(--theme-ou-bg, hotpink);
 }
@@ -265,29 +268,6 @@ bq-cell.show-full .cm-scroller {
 [data-source-media-type="application/graphviz"] svg text {
     fill: var(--theme-gr-fg, hotpink);
 }
-
-
-/* === help === */
-
-.bq-help-container {
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-}
-.bq-help-sidebar {
-    color: red;
-    padding-right: 1em;
-    min-width: fit-content;
-    max-height: 20em;
-    overflow: auto;
-}
-.bq-help-content {
-    padding-right: 1em;
-    min-width: fit-content;
-    max-height: 20em;
-    overflow: auto;
-}
-
 
 
 /* === error messages === */

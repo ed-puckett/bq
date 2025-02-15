@@ -1,14 +1,55 @@
 export function establish_navigation_container(ocx, options=null) {
     const {
-        selector = '.bq-help-content',
+        selector = '.help-content',
         heading,
         no_scroll,
     } = (options ?? {});
 
-    const content_element = ocx.element.closest('output[class="bq-cell-output"]')?.querySelector(selector);
-    if (!content_element) {
-        throw new Error('content_element not found');
+    const enclosing_output_element = ocx.element.closest('output[class="bq-cell-output"]');
+    if (!enclosing_output_element) {
+        throw new Error('unexpected: no enclosing output element found');
     }
+    if (!enclosing_output_element.id) {
+        enclosing_output_element.id = `enclosing-output-element-${Date.now()}`;
+    }
+
+    const content_element = enclosing_output_element.querySelector(selector);
+    if (!content_element) {
+        throw new TypeError(`content_element not found for selector: ${selector}`);
+    }
+
+    ocx.CLASS.create_element({
+        parent: document.head,
+        tag: 'style',
+        innerText: `
+#${enclosing_output_element.id} {
+    padding: 0;
+    margin: 0;
+}
+.help-container {
+    display: flex;
+    flex-direction: row;
+}
+.help-sidebar,
+.help-content {
+    overflow: auto;
+    max-height: calc(100dvh - var(--header-dynamic-height));
+    padding: 0 1em;
+    min-width: fit-content;
+}
+.help-sidebar {
+    flex-grow: 0;
+
+    & a {
+        display: inline-block;
+        margin: 0.25em 0;
+    }
+}
+.help-content {
+    flex-grow: 1;
+}
+`,
+    });
 
     const sidebar_children = [];
     if (heading) {
@@ -38,11 +79,11 @@ export function establish_navigation_container(ocx, options=null) {
     const container_element = ocx.CLASS.create_element({
         before: content_element,
         attrs: {
-            class: 'bq-help-container',
+            class: 'help-container',
         },
         children: [{
             attrs: {
-                class: 'bq-help-sidebar',
+                class: 'help-sidebar',
             },
             children: sidebar_children,
         }],
