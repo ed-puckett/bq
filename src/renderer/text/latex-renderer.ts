@@ -11,8 +11,8 @@ import {
 } from 'src/renderer/text/types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 import {
     get_settings,
@@ -34,13 +34,13 @@ export class LaTeXRenderer extends TextBasedRenderer {
     }
 
     /** Render the given LaTeX source to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} latex,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async _render(ocx: OutputContextLike, latex: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, latex: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         latex ??= '';
 
         const global_state = options?.global_state ?? ocx.bq.global_state;
@@ -51,7 +51,7 @@ export class LaTeXRenderer extends TextBasedRenderer {
         });
 
         const element = ocx.CLASS.element_for_options(ocx.element, options, true);
-        element.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
+        element.setAttribute(OutputContext.attribute__data_source_media_type, this.media_type);
         element.innerHTML = markup;
 
         return element;

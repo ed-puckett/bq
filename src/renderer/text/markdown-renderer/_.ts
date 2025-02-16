@@ -24,8 +24,8 @@ import {
 } from 'src/renderer/text/javascript-renderer/_';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 import {
     marked,
@@ -110,19 +110,19 @@ export class MarkdownRenderer extends TextBasedRenderer {
     }
 
     /** Render by evaluating the given markdown and outputting to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} markdown,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async _render(ocx: OutputContextLike, markdown: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, markdown: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         markdown ??= '';
 
         const global_state = options?.global_state ?? ocx.bq.global_state;
 
         const parent = ocx.CLASS.element_for_options(ocx.element, options, true);
-        parent.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
+        parent.setAttribute(OutputContext.attribute__data_source_media_type, this.media_type);
 
         let deferred_evaluations: {
             output_element_id: string,

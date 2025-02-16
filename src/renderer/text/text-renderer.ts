@@ -11,8 +11,8 @@ import {
 } from 'src/renderer/text/types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 
 export class TextRenderer extends TextBasedRenderer {
@@ -23,9 +23,9 @@ export class TextRenderer extends TextBasedRenderer {
         _initial_text_renderer_factories.push(this);
     }
 
-    async _render(ocx: OutputContextLike, text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         const element = ocx.CLASS.element_for_options(ocx.element, options, true) as HTMLElement;
-        element.setAttribute(OutputContextLike.attribute__data_source_media_type, this.media_type);
+        element.setAttribute(OutputContext.attribute__data_source_media_type, this.media_type);
         element.classList.add('bq-plain-text');
         element.innerText = text;  // innerText sanitizes text
         return element;

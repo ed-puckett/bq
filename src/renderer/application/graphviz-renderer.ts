@@ -8,8 +8,8 @@ import {
 } from './types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 import {
     render as graphviz_render,
@@ -19,12 +19,12 @@ import {
 export class GraphvizRenderer extends ApplicationBasedRenderer<GraphvizRendererValueType, GraphvizRendererOptionsType> {
     static get type (){ return 'graphviz'; }
 
-    async _render(ocx: OutputContextLike, graphviz_config: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, graphviz_config: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element> {
         const style = options?.style;
 
         const element = ocx.create_child({
             attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
+                [OutputContext.attribute__data_source_media_type]: this.media_type,
             },
             style,
             set_id: true,  // required for selector below

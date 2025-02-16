@@ -1,5 +1,3 @@
-// subordinate types for circularly-dependent Renderer and OutputContext types
-
 import {
     BqManager,
 } from 'src/bq-manager/_';
@@ -28,48 +26,50 @@ import {
 } from 'lib/sys/sprintf';
 
 import {
+    SerialDataSource,
+} from 'lib/sys/serial-data-source';
+
+import {
+    StoppedError,
     ActivityManager,
 } from 'lib/sys/activity-manager';
 
 import {
-    TextBasedRendererOptionsType,
     is_compatible_with_options,
 } from 'src/renderer/text/types';
 
 import {
+    ErrorRenderer,
     ErrorRendererValueType,
     ErrorRendererOptionsType,
+    ImageDataRenderer,
     ImageDataRendererValueType,
     ImageDataRendererOptionsType,
+    GraphvizRenderer,
     GraphvizRendererValueType,
     GraphvizRendererOptionsType,
+    PlotlyRenderer,
     PlotlyRendererValueType,
     PlotlyRendererOptionsType,
-} from 'src/renderer/application/types';
-
-
-// NOTE: 'async' modifier cannot be used with 'abstract' modifier.
-// The implementation in _.ts will use the async modifier, however.
+    TextBasedRenderer,
+    TextBasedRendererOptionsType,
+    TextRenderer,
+    MarkdownRenderer,
+    LaTeXRenderer,
+    JavaScriptRenderer,
+} from 'src/renderer/_';
 
 
 const css_class__bq_cell_output         = 'bq-cell-output';
 const attribute__data_source_element    = 'data-source-element';
 const attribute__data_source_media_type = 'data-source-media-type';
 
-export abstract class OutputContextLike extends ActivityManager {
-    get CLASS (){ return this.constructor as typeof OutputContextLike; }
+export class OutputContext extends ActivityManager {
+    get CLASS (){ return this.constructor as typeof OutputContext; }
 
     static get css_class__bq_cell_output         (){ return css_class__bq_cell_output; }
     static get attribute__data_source_element    (){ return attribute__data_source_element; }
     static get attribute__data_source_media_type (){ return attribute__data_source_media_type; }
-
-    constructor() {
-        super(false);  // ActivityManager base class; multiple_stops = false
-    }
-
-    abstract get bq      (): BqManager;
-    abstract get element (): Element;
-    abstract get parent  (): undefined|OutputContextLike;
 
     #keepalive: boolean = false;
     get keepalive (){ return this.#keepalive; }
@@ -162,7 +162,7 @@ export abstract class OutputContextLike extends ActivityManager {
      * If always_create_child is true, then always return a child.
      * Note that if a new element is returned it is either a <div> or a <span>
      * and is therefore an HTMLElement.
-     * @param {OutputContextLike} base_element
+     * @param {OutputContext} base_element
      * @param {undefined|null|TextBasedRendererOptionsType} options
      * @param {Boolean} always_create_child (default: false)
      * @return {Element} element compatible with options (may be base_element)
@@ -182,13 +182,13 @@ export abstract class OutputContextLike extends ActivityManager {
      * ocx will be base_ocx if base_ocx is already compatible, otherwise it
      * will be a child ocx of base_ocx.
      * If always_create_child is true, then always return a child.
-     * @param {OutputContextLike} base_ocx
+     * @param {OutputContext} base_ocx
      * @param {undefined|null|TextBasedRendererOptionsType} options
      * @param {Boolean} always_create_child (default: false)
-     * @return {OutputContextLike} ocx compatible with options (may be base_ocx)
+     * @return {OutputContext} ocx compatible with options (may be base_ocx)
      * @throws {Error} error if options does not pass validation
      */
-    static ocx_for_options(base_ocx: OutputContextLike, options?: null|TextBasedRendererOptionsType, always_create_child: Boolean = false): OutputContextLike {
+    static ocx_for_options(base_ocx: OutputContext, options?: null|TextBasedRendererOptionsType, always_create_child: Boolean = false): OutputContext {
         const creation_options = this.is_compatible_with_options(base_ocx.element, options, always_create_child);
         if (!creation_options) {
             return base_ocx;
@@ -393,7 +393,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     sprintf(format: string, ...args: any[]): string {
         this.abort_if_stopped();
-        return OutputContextLike.sprintf(format, ...args);
+        return OutputContext.sprintf(format, ...args);
     }
 
     /** @param {Number} s delay in seconds
@@ -401,7 +401,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     async sleep(s: number): Promise<void> {
         this.abort_if_stopped();
-        return OutputContextLike.delay_ms(1000*s);
+        return OutputContext.delay_ms(1000*s);
     }
 
     /** @param {Number} ms delay in milliseconds
@@ -409,7 +409,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     async delay_ms(ms: number): Promise<void> {
         this.abort_if_stopped();
-        return OutputContextLike.delay_ms(ms);
+        return OutputContext.delay_ms(ms);
     }
 
     /** @return {Promise} promise which will resolve after next "tick"
@@ -417,7 +417,7 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     async next_tick(): Promise<void> {
         this.abort_if_stopped();
-        return OutputContextLike.next_tick();
+        return OutputContext.next_tick();
     }
 
     /** @return {Promise} promise which will resolve after next "tick"
@@ -425,37 +425,235 @@ export abstract class OutputContextLike extends ActivityManager {
      */
     async next_micro_tick(): Promise<void> {
         this.abort_if_stopped();
-        return OutputContextLike.next_micro_tick();
+        return OutputContext.next_micro_tick();
     }
 
 
     // === BASIC OPERATIONS ===
 
-    abstract clear(): void;
-    abstract set_attrs(attrs: { [attr: string]: undefined|null|string }): void;
-    abstract update_style(spec: { [prop: string]: undefined|null|string }): void;
-    abstract create_child_or_mapping(options?: object, return_mapping?: boolean): Element|object;
-    abstract create_child(options?: object): Element;
-    abstract create_child_mapping(options?: object): object;
-    abstract create_new_ocx(element: Element, parent?: OutputContextLike): OutputContextLike;
-    abstract create_child_ocx(options?: object): OutputContextLike;
-    abstract is_visible(element: Element, vpos: undefined|null|number, hpos: undefined|null|number): boolean;
-    abstract is_scrollable(): boolean;
-    abstract scrollable_parent(): null|Element;
+    readonly #bq:      BqManager;
+    readonly #element: Element;
+    readonly #parent:  undefined|OutputContext;
+
+    get bq      (){ return this.#bq; }
+    get element (){ return this.#element; }
+    get parent  (){ return this.#parent; }
+
+    /** construct a new OutputContext for the given element and with an optional parent.
+     *  @param {Element} element controlled by this new OutputContext
+     *  @param {undefined|OutputContext} parent for this new OutputContext
+     *  @return {OutputContext}
+     * If parent is given, then this new OutputContext is managed by it by
+     * calling parent.manage_activity(this).
+     */
+    constructor(bq: BqManager, element: Element, parent?: OutputContext) {
+        super(false);  // ActivityManager base class; multiple_stops = false
+
+        if (!(bq instanceof BqManager)) {
+            throw new TypeError('bq must be an instance of BqManager');
+        }
+        if (!(element instanceof Element)) {
+            throw new TypeError('element must be an instance of Element');
+        }
+        if (parent && parent.bq !== bq) {
+            throw new TypeError('parent has a different BqManager');
+        }
+        this.#bq      = bq;
+        this.#element = element;
+        this.#parent  = parent;
+
+        parent?.manage_activity(this);
+    }
+
+
+    // === BASIC OPERATIONS ===
+
+    /** remove all child elements and nodes of this.element via this.CLASS.clear_element()
+     */
+    clear(): void {
+        this.abort_if_stopped();
+        this.CLASS.clear_element(this.element);
+    }
+
+    /** set attributes on an element which are taken from an object, via this.CLASS.set_element_attrs()
+     */
+    set_attrs(attrs: { [attr: string]: undefined|null|string }): void {
+        this.abort_if_stopped();
+        this.CLASS.set_element_attrs(this.element, attrs);
+    }
+
+    /** add/remove style properties on this.element via this.CLASS.update_element_style()
+     * Throws an error if this.element is not an instance of HTMLElement.  //!!!
+     */
+    update_style(spec: { [prop: string]: undefined|null|string }): void {
+        this.abort_if_stopped();
+        if (! (this.element instanceof HTMLElement)) {
+            throw new TypeError('this.element must be an instance of HTMLElement');
+        }
+        this.CLASS.update_element_style((this.element as HTMLElement), spec);
+    }
+
+    /** create a new child element of this.element via this.CLASS.create_element_child()
+     *  See this.CLASS.create_element() for a description of options.
+     *  @return {Element|object} the new child element or a mapping if return_mapping.
+     */
+    create_child_or_mapping(options?: object, return_mapping?: boolean): Element|object {
+        this.abort_if_stopped();
+        return this.CLASS.create_element_child_or_mapping(this.element, options, !!return_mapping);
+    }
+
+    /** create a new child element of this.element via this.CLASS.create_element_child()
+     *  See this.CLASS.create_element() for a description of options.
+     *  @return {Element|object} the new child element or a mapping if return_mapping.
+     */
+    create_child(options?: object): Element {
+        this.abort_if_stopped();
+        return this.CLASS.create_element_child(this.element, options);
+    }
+
+    /** create a new child element of this.element via this.CLASS.create_element_child_mapping() and return a mapping.
+     *  See this.CLASS.create_element() for a description of options.
+     *  @return {Element|object} the new child element or a mapping if return_mapping.
+     */
+    create_child_mapping(options?: object): object {
+        this.abort_if_stopped();
+        return this.create_child_or_mapping(options, true);
+    }
+
+    /** create a new OutputContext from the given element
+     *  @param {Element} element the target element
+     *  @param {undefined|OutputContext} parent
+     *  @return {OutputContext} the new OutputContext object
+     * The new ocx will have multiple_stops = false.
+     */
+    create_new_ocx(element: Element, parent?: OutputContext): OutputContext {  // multiple_stops = false
+        this.abort_if_stopped();
+        if (parent && parent.bq !== this.bq) {
+            throw new TypeError('parent has a different BqManager');
+        }
+        return new OutputContext(this.bq, element, parent);
+    }
+
+    /** create a new OutputContext from a new child element of this.element created via this.create_child()
+     *  @param {undefined|object} options to be passed to create_element()
+     *  @return {OutputContext} the new child OutputContext
+     * the new ocx will be managed by this ocx. The new ocx will have
+     * multiple_stops = false.
+     */
+    create_child_ocx(options?: object): OutputContext {  // multiple_stops = false
+        this.abort_if_stopped();
+        options ??= {};
+        const element_style_attr = this.element.getAttribute('style');
+        if (element_style_attr) {
+            (options as any).attrs = {
+                ...((options as any).attrs ?? {}),
+                style: element_style_attr,  // inherit element's style attribute (vs style)
+            };
+        }
+        const child_ocx = new OutputContext(this.bq, this.create_child(options), this);
+        return child_ocx;
+    }
+
+    is_visible(element: Element, vpos: undefined|null|number, hpos: undefined|null|number): boolean {
+        this.abort_if_stopped();
+        return this.CLASS.element_is_visible(this.element, vpos, hpos);
+    }
+
+    is_scrollable(): boolean {
+        this.abort_if_stopped();
+        return this.CLASS.element_is_scrollable(this.element);
+    }
+
+    scrollable_parent(): null|Element {
+        this.abort_if_stopped();
+        return this.CLASS.element_scrollable_parent(this.element);
+    }
 
 
     // === ADVANCED OPERATIONS ===
 
-    abstract /*async*/ render_text(text: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ render_error(error: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element>;
-    abstract /*async*/ render_value(value: any, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ println(text: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ printf(format: string, ...args: any[]): Promise<Element>;
-    abstract /*async*/ print__(options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ javascript(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ markdown(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ latex(code: string, options?: TextBasedRendererOptionsType): Promise<Element>;
-    abstract /*async*/ image_data(code: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element>;
-    abstract /*async*/ graphviz(code: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element>;
-    abstract /*async*/ plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element>;
+    async render_text(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        text ??= '';
+        if (typeof text !== 'string') {
+            text = (text as any)?.toString?.() ?? '';
+        }
+        return new TextRenderer().render(this, text, options);
+    }
+
+    async render_error(error: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element> {
+        // don't call this.abort_if_stopped() for render_error() so that errors can still be rendered
+        // also, call the synchronous ErrorRenderer,render_sync() method.
+        if (error instanceof StoppedError) {
+            options = { ...(options ?? {}), abbreviated: true };
+        }
+        return ErrorRenderer.render_sync(this, error, options);
+    }
+
+    async render_value(value: any, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        // transform value to text and then render as text
+        let text: string;
+        if (typeof value === 'undefined') {
+            text = '[undefined]';
+        } else if (typeof value?.toString === 'function') {
+            text = value.toString();
+        } else {
+            text = '[unprintable value]';
+        }
+        return this.render_text(text, options);
+    }
+
+    async println(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        return this.render_text((text ?? '') + '\n', options);
+    }
+
+    async printf(format: string, ...args: any[]): Promise<Element> {
+        let text: string;
+        if (typeof format === 'undefined' || format === null) {
+            text = '';
+        } else {
+            if (typeof format !== 'string' && typeof (format as any).toString === 'function') {
+                format = (format as any).toString();
+            }
+            text = this.CLASS.sprintf(format, ...args);
+        }
+        return this.render_text(text, { inline: true });
+    }
+
+    async print__(options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return this.CLASS.ocx_for_options(this, options)
+            .create_child({ tag: 'hr' });
+    }
+
+    async javascript(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new JavaScriptRenderer().render(this, code, options);
+    }
+
+    async markdown(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new MarkdownRenderer().render(this, code, options);
+    }
+
+    async latex(code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new LaTeXRenderer().render(this, code, options);
+    }
+
+    async image_data(code: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new ImageDataRenderer().render(this, code, options);
+    }
+
+    async graphviz(code: GraphvizRendererValueType, options?: GraphvizRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new GraphvizRenderer().render(this, code, options);
+    }
+
+    async plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        return new PlotlyRenderer().render(this, code, options);
+    }
 }

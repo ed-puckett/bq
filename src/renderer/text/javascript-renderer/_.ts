@@ -35,7 +35,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // During evaluation, a number of other values are available "globally",
 // though these values do not persist after the particular evaluation
 // (except for references from async code started during the evaluation).
-// These values include ocx (an instance of OutputContextLike which provides
+// These values include ocx (an instance of OutputContext which provides
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
@@ -93,7 +93,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     LocatedError
 //     BqManager
 //     BqCellElement
-//     OutputContextLike
 //     OutputContext
 //     Renderer
 //     TextBasedRenderer
@@ -152,12 +151,8 @@ import {
 } from 'src/renderer/application/error-renderer';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
-
-import {
     OutputContext,
-} from 'src/output-context/_';
+} from 'src/output-context';
 
 import {
     Activity,
@@ -226,7 +221,7 @@ import {
 
 
 export class JavaScriptParseError extends LocatedError {
-    constructor(babel_parse_error_object: any, underlying_error: unknown, ocx: OutputContextLike) {
+    constructor(babel_parse_error_object: any, underlying_error: unknown, ocx: OutputContext) {
         super( babel_parse_error_object.toString(),
                babel_parse_error_object.loc.line,
                babel_parse_error_object.loc.column,
@@ -251,13 +246,13 @@ export class JavaScriptRenderer extends TextBasedRenderer {
     }
 
     /** Render by evaluating the given code and outputting to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} code,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async _render(ocx: OutputContextLike, code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         const global_state = options?.global_state ?? ocx.bq.global_state;
 
         const eval_context = ((global_state as any)[this.type] ??= {});
@@ -348,8 +343,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         return eval_ocx.element;
     }
 
-    async #create_eval_environment(eval_context: object, ocx: OutputContextLike, source_code: string) {
-        const cell_id = ocx.element.closest(`[${OutputContextLike.attribute__data_source_element}]`)?.getAttribute(OutputContextLike.attribute__data_source_element);
+    async #create_eval_environment(eval_context: object, ocx: OutputContext, source_code: string) {
+        const cell_id = ocx.element.closest(`[${OutputContext.attribute__data_source_element}]`)?.getAttribute(OutputContext.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
 
         const d3 = await load_d3();
@@ -521,7 +516,6 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             // ui, Renderer, etc classes
             BqManager,
             BqCellElement,
-            OutputContextLike,
             OutputContext,
             Renderer,
             TextBasedRenderer,

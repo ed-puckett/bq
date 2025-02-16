@@ -5,12 +5,8 @@ import {
 } from 'src/bq-manager/_';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
-
-import {
     OutputContext,
-} from 'src/output-context/_';
+} from 'src/output-context';
 
 import {
     clear_element,
@@ -278,7 +274,7 @@ export class BqCellElement extends HTMLElement {
 
     // === DOM ===
 
-    get_output_element_selector() { return `[${OutputContextLike.attribute__data_source_element}="${this.id}"]`; }
+    get_output_element_selector() { return `[${OutputContext.attribute__data_source_element}="${this.id}"]`; }
 
     /** reset the cell, removing all associated output elements
      */

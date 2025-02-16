@@ -8,8 +8,8 @@ import {
 } from './types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 import {
     create_element,
@@ -24,7 +24,7 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
     static error_element_class = 'bq-error-message';
 
     /** Render the given error_object to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {Error|String} error_object,
      * @param {Object|undefined|null} options: {
      *     style?: Object,  // css style to be applied to output element
@@ -32,7 +32,7 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async _render(ocx: OutputContextLike, error_object: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, error_object: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element> {
         return this.CLASS.render_sync(ocx, error_object, options);
     }
 
@@ -40,7 +40,7 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
      *  Also used by MarkdownRenderer.
      *  No ocx methods are called to avoid tripping over an abort_if_stopped error.
      */
-    static render_sync(ocx: OutputContextLike, error_object: ErrorRendererValueType, options?: ErrorRendererOptionsType): Element {
+    static render_sync(ocx: OutputContext, error_object: ErrorRendererValueType, options?: ErrorRendererOptionsType): Element {
         const {
             style,
             abbreviated,
@@ -64,7 +64,7 @@ export class ErrorRenderer extends ApplicationBasedRenderer<ErrorRendererValueTy
             tag: 'pre',
             attrs: {
                 class: this.error_element_class,
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
+                [OutputContext.attribute__data_source_media_type]: this.media_type,
             },
             style,
         }) as HTMLElement;

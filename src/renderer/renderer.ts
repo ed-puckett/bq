@@ -12,8 +12,8 @@ import {
 } from './text/types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 
 export interface RendererFactory {
@@ -43,11 +43,11 @@ export class Renderer {
     get media_type (){ return (this.constructor as typeof Renderer).media_type; }
 
     static async _invoke_renderer<ValueType, OptionsType>(
-        renderer: { /*async*/ _render( ocx:      OutputContextLike,
+        renderer: { /*async*/ _render( ocx:      OutputContext,
                                        value:    ValueType,
                                        options?: OptionsType ): Promise<Element>,
                   },
-        ocx:      OutputContextLike,
+        ocx:      OutputContext,
         value:    ValueType,
         options?: OptionsType ): Promise<Element>
     {
@@ -107,19 +107,19 @@ export abstract class TextBasedRenderer extends Renderer {
     }
 
     /** render the given value
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {string} value,  // value to be rendered
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async render(ocx: OutputContextLike, value: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+    async render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         return Renderer._invoke_renderer(this, ocx, value, options);
     }
 
     /** to be implemented by subclasses
      */
-    abstract /*async*/ _render(ocx: OutputContextLike, value: string, options?: TextBasedRendererOptionsType): Promise<Element>;
+    abstract /*async*/ _render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element>;
 }
 
 
@@ -127,7 +127,7 @@ export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends R
     static get media_type (){ return `application/${this.type}`; }
 
     /** render the given value
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {ValueType} value,  // value appropriate to type (determined by subclass)
      * @param {OptionsType} options?: {
      *     style?:        Object,   // css style to be applied to output element
@@ -137,13 +137,13 @@ export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends R
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
      */
-    async render(ocx: OutputContextLike, value: ValueType, options?: OptionsType): Promise<Element> {
+    async render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element> {
         return Renderer._invoke_renderer(this, ocx, value, options);
     }
 
     /** to be implemented by subclasses
      */
-    abstract /*async*/ _render(ocx: OutputContextLike, value: ValueType, options?: OptionsType): Promise<Element>;
+    abstract /*async*/ _render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element>;
 }
 
 
@@ -151,7 +151,7 @@ export class LocatedError extends Error {
     constructor( message:      string,
                  line_number:  number,
                  column_index: number,
-                 ocx:          OutputContextLike,
+                 ocx:          OutputContext,
                  options?:     { cause?: unknown } ) {
         super(message, options);
         this.#ocx = ocx;
@@ -160,7 +160,7 @@ export class LocatedError extends Error {
     }
     #line_number:  number;
     #column_index: number;
-    #ocx:          OutputContextLike;
+    #ocx:          OutputContext;
 
     get line_number  (){ return this.#line_number; }
     get column_index (){ return this.#column_index; }

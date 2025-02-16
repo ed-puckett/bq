@@ -11048,14 +11048,14 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* unused harmony export load_stylesheet */
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4931);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7957);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3854);
 /* harmony import */ var lib_sys_string_tools__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1496);
 /* harmony import */ var _codemirror__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8046);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9241);
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9432);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context_types__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, src_output_context__WEBPACK_IMPORTED_MODULE_1__, _codemirror__WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-cell-element/_.ts")); // save for later
 
 
@@ -11263,7 +11263,7 @@ class BqCellElement extends HTMLElement {
         this.#codemirror?.set_language_from_type(this.type);
     }
     // === DOM ===
-    get_output_element_selector() { return `[${src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_element}="${this.id}"]`; }
+    get_output_element_selector() { return `[${src_output_context__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext */ .H.attribute__data_source_element}="${this.id}"]`; }
     /** reset the cell, removing all associated output elements
      */
     reset() {
@@ -11667,7 +11667,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4568);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3854);
 /* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1327);
-/* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(9779);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7957);
 /* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
 /* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(2023);
 /* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4641);
@@ -11677,8 +11677,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context___WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
 
@@ -12151,7 +12151,7 @@ class BqManager {
         if (!output_element && this.#reset_before_render) {
             cell.reset();
         }
-        output_element ??= src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
+        output_element ??= src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
         // resources to be cleaned up, too.
@@ -12166,7 +12166,7 @@ class BqManager {
         };
         output_element.addEventListener('focus', event_listener, { capture: true });
         output_element.addEventListener('click', event_listener, { capture: true });
-        const ocx = new src_output_context___WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
+        const ocx = new src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
         this.activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
@@ -14292,7 +14292,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 9779:
+/***/ 7957:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
@@ -14300,20 +14300,351 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   H: () => (/* binding */ OutputContext)
 /* harmony export */ });
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4931);
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
-/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
-/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1327);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_3__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, _types__WEBPACK_IMPORTED_MODULE_1__, src_renderer___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
+/* harmony import */ var lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9521);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9888);
+/* harmony import */ var src_renderer_text_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(2993);
+/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1327);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_2__, src_renderer___WEBPACK_IMPORTED_MODULE_4__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_0__, lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_2__, src_renderer___WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 
 
 
 
-class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s {
-    // static utility methods are defined in OutputContextLike
-    // get/set keepalive are defined in OutputContextLike
-    // abort_if_stopped() and AIS() are defined in OutputContextLike
-    // sprintf(), sleep(), delay_ms(), next_tick(), next_micro_tick() are defined in OutputContextLike
+
+
+const css_class__bq_cell_output = 'bq-cell-output';
+const attribute__data_source_element = 'data-source-element';
+const attribute__data_source_media_type = 'data-source-media-type';
+class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__/* .ActivityManager */ .BT {
+    get CLASS() { return this.constructor; }
+    static get css_class__bq_cell_output() { return css_class__bq_cell_output; }
+    static get attribute__data_source_element() { return attribute__data_source_element; }
+    static get attribute__data_source_media_type() { return attribute__data_source_media_type; }
+    #keepalive = false;
+    get keepalive() { return this.#keepalive; }
+    set keepalive(new_state) {
+        new_state = !!new_state;
+        // set for this ocx and all ancestors
+        this.#keepalive = new_state;
+        if (this.parent && new_state) {
+            // if setting to true, recusively set for all ancestors
+            this.parent.keepalive = new_state;
+        }
+    }
+    // === STATIC UTILITY ===
+    static sprintf(format, ...args) {
+        return (0,lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_2__/* .sprintf */ .n)(format, ...args);
+    }
+    static async sleep(s) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .delay_ms */ .v9)(1000 * s);
+    }
+    static async delay_ms(ms) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .delay_ms */ .v9)(ms);
+    }
+    static async next_tick() {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .next_tick */ .Al)();
+    }
+    static async next_micro_tick() {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .next_micro_tick */ .L1)();
+    }
+    // === STATIC METHODS ===
+    static get_svg_string(svg_node) {
+        const serializer = new XMLSerializer();
+        let svg_string = serializer.serializeToString(svg_node);
+        svg_string = svg_string.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // fix root xlink without namespace
+        svg_string = svg_string.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+        return svg_string;
+    }
+    /** create an output element for the given cell and source media type
+     * @param {BqCellElement} cell
+     * @param {string} source_media_type
+     * @return {HTMLOutputElement} output element
+     */
+    static create_cell_output(cell, source_media_type) {
+        if (!cell.id) {
+            throw new TypeError('cell must have an id');
+        }
+        return this.create_element({
+            tag: 'output',
+            parent: cell.parentElement,
+            before: cell.nextSibling,
+            attrs: {
+                class: this.css_class__bq_cell_output,
+                [this.attribute__data_source_element]: cell.id,
+                [this.attribute__data_source_media_type]: source_media_type,
+            },
+        });
+    }
+    /** Validate options (throwing an Error if validation does not pass), and
+     * return undefined if element is already compatible, otherwise return an
+     * object that reflects options that is suitable to use for create_element().
+     * If always_return_options is true, then return the creation options
+     * regardless of element compatibility.
+     * @param {Element} element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_return_options (default: false)
+     * @return {undefined|Object} transformed options
+     * @throws {Error} error if options does not pass validation
+     */
+    static is_compatible_with_options(element, options, always_return_options = false) {
+        if (!(element instanceof Element)) {
+            throw new TypeError('element must be an instance of Element');
+        }
+        return (0,src_renderer_text_types__WEBPACK_IMPORTED_MODULE_5__/* .is_compatible_with_options */ .G)(element, options, always_return_options);
+    }
+    /** Return an element that is compatible with options.  The returned
+     * element will be base_element if base_element is already compatible,
+     * otherwise it will be a child element of base_element.
+     * If always_create_child is true, then always return a child.
+     * Note that if a new element is returned it is either a <div> or a <span>
+     * and is therefore an HTMLElement.
+     * @param {OutputContext} base_element
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {Element} element compatible with options (may be base_element)
+     * @throws {Error} error if options does not pass validation
+     */
+    static element_for_options(base_element, options, always_create_child = false) {
+        const creation_options = this.is_compatible_with_options(base_element, options, always_create_child);
+        if (!creation_options) {
+            return base_element;
+        }
+        else {
+            creation_options.parent = base_element;
+            return this.create_element(creation_options);
+        }
+    }
+    /** Return an ocx whose element is compatible with options.  The returned
+     * ocx will be base_ocx if base_ocx is already compatible, otherwise it
+     * will be a child ocx of base_ocx.
+     * If always_create_child is true, then always return a child.
+     * @param {OutputContext} base_ocx
+     * @param {undefined|null|TextBasedRendererOptionsType} options
+     * @param {Boolean} always_create_child (default: false)
+     * @return {OutputContext} ocx compatible with options (may be base_ocx)
+     * @throws {Error} error if options does not pass validation
+     */
+    static ocx_for_options(base_ocx, options, always_create_child = false) {
+        const creation_options = this.is_compatible_with_options(base_ocx.element, options, always_create_child);
+        if (!creation_options) {
+            return base_ocx;
+        }
+        else {
+            return base_ocx.create_child_ocx(creation_options);
+        }
+    }
+    /** remove all child elements and nodes of element
+     *  @param {Node} element
+     *  @return {Node} element
+     */
+    static clear_element(element) {
+        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .clear_element */ .ho)(element);
+    }
+    /** set attributes on an element which are taken from an object.
+     *  @param {Element} element
+     *  @param {Object|undefined|null} attrs
+     *  @return {Element} element
+     *  Attribute values obtained by calling toString() on the values in attrs
+     *  except that values which are undefined are translated to ''.
+     */
+    static set_element_attrs(element, attrs) {
+        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .set_element_attrs */ .Vv)(element, attrs);
+    }
+    /** add/remove style properties on element
+     *  @param {HTMLElement} element
+     *  @param {Object} spec collection of properties to add or remove.
+     *                  If the value of an entry is null or undefined, then
+     *                  the corresponding property is removed.  If the value
+     *                  of an entry is null, then the property is removed.
+     *                  If the value of an entry is undefined, then that
+     *                  entry is ignored.  Otherwise, the value of the
+     *                  corresponding property is set.
+     *  @return {HTMLElement} element
+     */
+    static update_element_style(element, spec) {
+        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .update_element_style */ .Je)(element, spec);
+    }
+    /** create_element_or_mapping(options?: object, return_mapping=false)
+     *  create a new element with the given characteristics
+     *  @param {Object|undefined|null} options: {
+     *      _key?:      String,     // if return_mapping, associate the created element with this value as the key
+     *      parent?:    Node|null,  // parent element, null or undefined for none; may be simply an Element if style not specified
+     *      before?:    Node|null,  // sibling node before which to insert; append if null or undefined
+     *      tag?:       string,     // tag name for new element; default: 'div'
+     *      namespace?: string,     // namespace for new element creation
+     *      attrs?:     object,     // attributes to set on new element
+     *      style?:     object,     // style properties for new element
+     *      set_id?:    Boolean     // if true, allocate and set an id for the element (if id not specified in attrs)
+     *      children?:  ELDEF[],    // array of children to create (recursive)
+     *      innerText?: string,     // innerText to set on element (invalid if "children" or "innerHTML" specified)
+     *      innerHTML?: string,     // innerHTML to set on element (invalid if "children" or "innerText" specified)
+     *  }
+     *  @param {Boolean} return_mapping (default false)
+     *  @return {Element|Object} the new element or the element mapping object
+     *
+     * A unique id will be assigned to the element unless that element already has
+     * an id attribute specified (in attrs).
+     * Attributes specified in attrs with a value of undefined are ignored.
+     * The before node, if specified, must have a parent that must match parent if
+     * parent is specified.
+     * If neither parent nor before is specified, the new element will have no parent.
+     * Warning: '!important' in style specifications does not work!  (Should use priority method.)
+     * The definitions in "children", if specified, should not contain "parent" or "before".
+     * attrs may contain a "class" property, and this should be a string or an array of strings,
+     * each of which must not contain whitespace.
+     *
+     * If return_mapping, then return a mapping object from keys found in "_key" properties
+     * in the options.  Each of these keys will be mapped to the corresponding object, and
+     * mapping_default_key is mapped to the top-level object.  Note that duplicate keys or
+     * keys that specify the same value as mapping_default_key will overwrite earlier values.
+     * Elements specified in options are created in a post-order traversal of options.children.
+     * This means that a _key specified in options as mapping_default_key will not be returned
+     * because mapping_default_key is set after traversiing the children.
+     */
+    static create_element_or_mapping(options, return_mapping = false) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element_or_mapping */ .pt)(options, return_mapping);
+    }
+    static create_element(options) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)(options);
+    }
+    /** create a element with the given characteristics and return a mapping.
+     *  See this.create_element() for a description of options.
+     */
+    static create_element_mapping(options) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element_mapping */ .rE)(options);
+    }
+    /** create a new child element of the given element with the given characteristics
+     *  See this.create_element_or_mapping() for a description of options.
+     */
+    static create_element_child_or_mapping(element, options, return_mapping = false) {
+        if (typeof options?.parent !== 'undefined' || typeof options?.before !== 'undefined') {
+            console.warn('options.parent and/or options.before override element argument');
+        }
+        else {
+            options = {
+                ...(options ?? {}),
+                parent: element,
+                before: null,
+            };
+        }
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element_or_mapping */ .pt)(options, return_mapping);
+    }
+    /** create a new child element of the given element with the given characteristics and return a mapping.
+     *  See create_element_mapping() for a description of options.
+     */
+    static create_element_child(element, options) {
+        return this.create_element_child_or_mapping(element, options);
+    }
+    /** create a new child element of the given element with the given characteristics and return a mapping.
+     *  See create_element_mapping() for a description of options.
+     */
+    static create_element_child_mapping(element, options) {
+        return this.create_element_child_or_mapping(element, options, true);
+    }
+    /** Test if element is in DOM and visible.
+     * @param {Element} element
+     * @param {undefined|null|number} vpos
+     * @param {undefined|null|number} hpos
+     * @return {Boolean} visible with respect to vpos and hpos
+     * vpos and hpos specify which point in the element should be tested
+     * where null specifies not checking that direction (v or h) at all,
+     * undefined (or parameter omitted) specifies checking that the element
+     * is fully visible, and a number specifies a fraction used to check that
+     * a single point is visible where the point the fraction of the length in
+     * that dimension.  For example, hpos === 0 means check at the beginning,
+     * hpos === 1 means check at the end, and hpos === 0.5 means check the middle.
+     */
+    static element_is_visible(element, vpos, hpos) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .is_visible */ .gN)(element, vpos, hpos);
+    }
+    /** return a boolean indicating whether the given element is scrollable or not
+     * @param {Element} element
+     * @return {Boolean} element is scrollable
+     */
+    static element_is_scrollable(element) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .is_scrollable */ .NN)(element);
+    }
+    /** return the first scollable parent of element
+     * @param {Element} element
+     * @return {null|Element} first parent element that is scrollable, or null if none
+     */
+    static element_scrollable_parent(element) {
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .scrollable_parent */ .z3)(element);
+    }
+    // === ABORT IF STOPPED ===
+    /** abort by throwing an Error if this.stopped, otherwise do nothing.
+     *  (implemented via this.abort_signal.throwIfAborted() where this.abort_signal
+     *  is defined by the base class ActivityManager.)
+     */
+    abort_if_stopped() {
+        this.abort_signal.throwIfAborted();
+    }
+    /** wrap the given function so that when it is called,
+     *  this.abort_if_stopped() will be called first to
+     *  terminate rendering if necessary.
+     */
+    AIS(f) {
+        if (typeof f !== 'function') {
+            throw new TypeError('f must be a function');
+        }
+        const AsyncFunction = (async () => { }).constructor;
+        if (f instanceof AsyncFunction) {
+            return async (...args) => {
+                this.abort_if_stopped();
+                return f.apply(null, args).then((result) => {
+                    this.abort_if_stopped();
+                    return result;
+                });
+            };
+        }
+        else {
+            return (...args) => {
+                this.abort_if_stopped();
+                const result = f.apply(null, args);
+                this.abort_if_stopped();
+                return result;
+            };
+        }
+    }
+    // === UTILITY ===
+    /** @param {String} format
+     *  @param {any[]} args
+     *  @return {String} formatted string
+     */
+    sprintf(format, ...args) {
+        this.abort_if_stopped();
+        return OutputContext.sprintf(format, ...args);
+    }
+    /** @param {Number} s delay in seconds
+     *  @return {Promise} promise which will resolve after s seconds
+     */
+    async sleep(s) {
+        this.abort_if_stopped();
+        return OutputContext.delay_ms(1000 * s);
+    }
+    /** @param {Number} ms delay in milliseconds
+     *  @return {Promise} promise which will resolve after ms milliseconds
+     */
+    async delay_ms(ms) {
+        this.abort_if_stopped();
+        return OutputContext.delay_ms(ms);
+    }
+    /** @return {Promise} promise which will resolve after next "tick"
+     * setTimeout() is used.
+     */
+    async next_tick() {
+        this.abort_if_stopped();
+        return OutputContext.next_tick();
+    }
+    /** @return {Promise} promise which will resolve after next "tick"
+     * queueMicrotask() is used.
+     */
+    async next_micro_tick() {
+        this.abort_if_stopped();
+        return OutputContext.next_micro_tick();
+    }
+    // === BASIC OPERATIONS ===
     #bq;
     #element;
     #parent;
@@ -14322,13 +14653,13 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     get parent() { return this.#parent; }
     /** construct a new OutputContext for the given element and with an optional parent.
      *  @param {Element} element controlled by this new OutputContext
-     *  @param {undefined|OutputContextLike} parent for this new OutputContext
+     *  @param {undefined|OutputContext} parent for this new OutputContext
      *  @return {OutputContext}
      * If parent is given, then this new OutputContext is managed by it by
      * calling parent.manage_activity(this).
      */
     constructor(bq, element, parent) {
-        super();
+        super(false); // ActivityManager base class; multiple_stops = false
         if (!(bq instanceof src_bq_manager___WEBPACK_IMPORTED_MODULE_0__/* .BqManager */ .N)) {
             throw new TypeError('bq must be an instance of BqManager');
         }
@@ -14392,7 +14723,7 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     }
     /** create a new OutputContext from the given element
      *  @param {Element} element the target element
-     *  @param {undefined|OutputContextLike} parent
+     *  @param {undefined|OutputContext} parent
      *  @return {OutputContext} the new OutputContext object
      * The new ocx will have multiple_stops = false.
      */
@@ -14405,7 +14736,7 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     }
     /** create a new OutputContext from a new child element of this.element created via this.create_child()
      *  @param {undefined|object} options to be passed to create_element()
-     *  @return {OutputContextLike} the new child OutputContext
+     *  @return {OutputContext} the new child OutputContext
      * the new ocx will be managed by this ocx. The new ocx will have
      * multiple_stops = false.
      */
@@ -14441,15 +14772,15 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
         if (typeof text !== 'string') {
             text = text?.toString?.() ?? '';
         }
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .TextRenderer */ .Js().render(this, text, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .TextRenderer */ .Js().render(this, text, options);
     }
     async render_error(error, options) {
         // don't call this.abort_if_stopped() for render_error() so that errors can still be rendered
         // also, call the synchronous ErrorRenderer,render_sync() method.
-        if (error instanceof lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .StoppedError */ .Ko) {
+        if (error instanceof lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__/* .StoppedError */ .Ko) {
             options = { ...(options ?? {}), abbreviated: true };
         }
-        return src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .ErrorRenderer */ .iv.render_sync(this, error, options);
+        return src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .ErrorRenderer */ .iv.render_sync(this, error, options);
     }
     async render_value(value, options) {
         this.abort_if_stopped();
@@ -14489,388 +14820,27 @@ class OutputContext extends _types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext
     }
     async javascript(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .JavaScriptRenderer */ .ZS().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .JavaScriptRenderer */ .ZS().render(this, code, options);
     }
     async markdown(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .MarkdownRenderer */ .To().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .MarkdownRenderer */ .To().render(this, code, options);
     }
     async latex(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .LaTeXRenderer */ .MH().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .LaTeXRenderer */ .MH().render(this, code, options);
     }
     async image_data(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .ImageDataRenderer */ .bN().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .ImageDataRenderer */ .bN().render(this, code, options);
     }
     async graphviz(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .GraphvizRenderer */ .B5().render(this, code, options);
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .GraphvizRenderer */ .B5().render(this, code, options);
     }
     async plotly(code, options) {
         this.abort_if_stopped();
-        return new src_renderer___WEBPACK_IMPORTED_MODULE_3__/* .PlotlyRenderer */ .e$().render(this, code, options);
-    }
-}
-
-__webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } });
-
-/***/ }),
-
-/***/ 9799:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   s: () => (/* binding */ OutputContextLike)
-/* harmony export */ });
-/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
-/* harmony import */ var lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9521);
-/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
-/* harmony import */ var src_renderer_text_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2993);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__]);
-lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
-// subordinate types for circularly-dependent Renderer and OutputContext types
-
-
-
-
-// NOTE: 'async' modifier cannot be used with 'abstract' modifier.
-// The implementation in _.ts will use the async modifier, however.
-const css_class__bq_cell_output = 'bq-cell-output';
-const attribute__data_source_element = 'data-source-element';
-const attribute__data_source_media_type = 'data-source-media-type';
-class OutputContextLike extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT {
-    get CLASS() { return this.constructor; }
-    static get css_class__bq_cell_output() { return css_class__bq_cell_output; }
-    static get attribute__data_source_element() { return attribute__data_source_element; }
-    static get attribute__data_source_media_type() { return attribute__data_source_media_type; }
-    constructor() {
-        super(false); // ActivityManager base class; multiple_stops = false
-    }
-    #keepalive = false;
-    get keepalive() { return this.#keepalive; }
-    set keepalive(new_state) {
-        new_state = !!new_state;
-        // set for this ocx and all ancestors
-        this.#keepalive = new_state;
-        if (this.parent && new_state) {
-            // if setting to true, recusively set for all ancestors
-            this.parent.keepalive = new_state;
-        }
-    }
-    // === STATIC UTILITY ===
-    static sprintf(format, ...args) {
-        return (0,lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_1__/* .sprintf */ .n)(format, ...args);
-    }
-    static async sleep(s) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .delay_ms */ .v9)(1000 * s);
-    }
-    static async delay_ms(ms) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .delay_ms */ .v9)(ms);
-    }
-    static async next_tick() {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .next_tick */ .Al)();
-    }
-    static async next_micro_tick() {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .next_micro_tick */ .L1)();
-    }
-    // === STATIC METHODS ===
-    static get_svg_string(svg_node) {
-        const serializer = new XMLSerializer();
-        let svg_string = serializer.serializeToString(svg_node);
-        svg_string = svg_string.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // fix root xlink without namespace
-        svg_string = svg_string.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
-        return svg_string;
-    }
-    /** create an output element for the given cell and source media type
-     * @param {BqCellElement} cell
-     * @param {string} source_media_type
-     * @return {HTMLOutputElement} output element
-     */
-    static create_cell_output(cell, source_media_type) {
-        if (!cell.id) {
-            throw new TypeError('cell must have an id');
-        }
-        return this.create_element({
-            tag: 'output',
-            parent: cell.parentElement,
-            before: cell.nextSibling,
-            attrs: {
-                class: this.css_class__bq_cell_output,
-                [this.attribute__data_source_element]: cell.id,
-                [this.attribute__data_source_media_type]: source_media_type,
-            },
-        });
-    }
-    /** Validate options (throwing an Error if validation does not pass), and
-     * return undefined if element is already compatible, otherwise return an
-     * object that reflects options that is suitable to use for create_element().
-     * If always_return_options is true, then return the creation options
-     * regardless of element compatibility.
-     * @param {Element} element
-     * @param {undefined|null|TextBasedRendererOptionsType} options
-     * @param {Boolean} always_return_options (default: false)
-     * @return {undefined|Object} transformed options
-     * @throws {Error} error if options does not pass validation
-     */
-    static is_compatible_with_options(element, options, always_return_options = false) {
-        if (!(element instanceof Element)) {
-            throw new TypeError('element must be an instance of Element');
-        }
-        return (0,src_renderer_text_types__WEBPACK_IMPORTED_MODULE_3__/* .is_compatible_with_options */ .G)(element, options, always_return_options);
-    }
-    /** Return an element that is compatible with options.  The returned
-     * element will be base_element if base_element is already compatible,
-     * otherwise it will be a child element of base_element.
-     * If always_create_child is true, then always return a child.
-     * Note that if a new element is returned it is either a <div> or a <span>
-     * and is therefore an HTMLElement.
-     * @param {OutputContextLike} base_element
-     * @param {undefined|null|TextBasedRendererOptionsType} options
-     * @param {Boolean} always_create_child (default: false)
-     * @return {Element} element compatible with options (may be base_element)
-     * @throws {Error} error if options does not pass validation
-     */
-    static element_for_options(base_element, options, always_create_child = false) {
-        const creation_options = this.is_compatible_with_options(base_element, options, always_create_child);
-        if (!creation_options) {
-            return base_element;
-        }
-        else {
-            creation_options.parent = base_element;
-            return this.create_element(creation_options);
-        }
-    }
-    /** Return an ocx whose element is compatible with options.  The returned
-     * ocx will be base_ocx if base_ocx is already compatible, otherwise it
-     * will be a child ocx of base_ocx.
-     * If always_create_child is true, then always return a child.
-     * @param {OutputContextLike} base_ocx
-     * @param {undefined|null|TextBasedRendererOptionsType} options
-     * @param {Boolean} always_create_child (default: false)
-     * @return {OutputContextLike} ocx compatible with options (may be base_ocx)
-     * @throws {Error} error if options does not pass validation
-     */
-    static ocx_for_options(base_ocx, options, always_create_child = false) {
-        const creation_options = this.is_compatible_with_options(base_ocx.element, options, always_create_child);
-        if (!creation_options) {
-            return base_ocx;
-        }
-        else {
-            return base_ocx.create_child_ocx(creation_options);
-        }
-    }
-    /** remove all child elements and nodes of element
-     *  @param {Node} element
-     *  @return {Node} element
-     */
-    static clear_element(element) {
-        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .clear_element */ .ho)(element);
-    }
-    /** set attributes on an element which are taken from an object.
-     *  @param {Element} element
-     *  @param {Object|undefined|null} attrs
-     *  @return {Element} element
-     *  Attribute values obtained by calling toString() on the values in attrs
-     *  except that values which are undefined are translated to ''.
-     */
-    static set_element_attrs(element, attrs) {
-        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .set_element_attrs */ .Vv)(element, attrs);
-    }
-    /** add/remove style properties on element
-     *  @param {HTMLElement} element
-     *  @param {Object} spec collection of properties to add or remove.
-     *                  If the value of an entry is null or undefined, then
-     *                  the corresponding property is removed.  If the value
-     *                  of an entry is null, then the property is removed.
-     *                  If the value of an entry is undefined, then that
-     *                  entry is ignored.  Otherwise, the value of the
-     *                  corresponding property is set.
-     *  @return {HTMLElement} element
-     */
-    static update_element_style(element, spec) {
-        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .update_element_style */ .Je)(element, spec);
-    }
-    /** create_element_or_mapping(options?: object, return_mapping=false)
-     *  create a new element with the given characteristics
-     *  @param {Object|undefined|null} options: {
-     *      _key?:      String,     // if return_mapping, associate the created element with this value as the key
-     *      parent?:    Node|null,  // parent element, null or undefined for none; may be simply an Element if style not specified
-     *      before?:    Node|null,  // sibling node before which to insert; append if null or undefined
-     *      tag?:       string,     // tag name for new element; default: 'div'
-     *      namespace?: string,     // namespace for new element creation
-     *      attrs?:     object,     // attributes to set on new element
-     *      style?:     object,     // style properties for new element
-     *      set_id?:    Boolean     // if true, allocate and set an id for the element (if id not specified in attrs)
-     *      children?:  ELDEF[],    // array of children to create (recursive)
-     *      innerText?: string,     // innerText to set on element (invalid if "children" or "innerHTML" specified)
-     *      innerHTML?: string,     // innerHTML to set on element (invalid if "children" or "innerText" specified)
-     *  }
-     *  @param {Boolean} return_mapping (default false)
-     *  @return {Element|Object} the new element or the element mapping object
-     *
-     * A unique id will be assigned to the element unless that element already has
-     * an id attribute specified (in attrs).
-     * Attributes specified in attrs with a value of undefined are ignored.
-     * The before node, if specified, must have a parent that must match parent if
-     * parent is specified.
-     * If neither parent nor before is specified, the new element will have no parent.
-     * Warning: '!important' in style specifications does not work!  (Should use priority method.)
-     * The definitions in "children", if specified, should not contain "parent" or "before".
-     * attrs may contain a "class" property, and this should be a string or an array of strings,
-     * each of which must not contain whitespace.
-     *
-     * If return_mapping, then return a mapping object from keys found in "_key" properties
-     * in the options.  Each of these keys will be mapped to the corresponding object, and
-     * mapping_default_key is mapped to the top-level object.  Note that duplicate keys or
-     * keys that specify the same value as mapping_default_key will overwrite earlier values.
-     * Elements specified in options are created in a post-order traversal of options.children.
-     * This means that a _key specified in options as mapping_default_key will not be returned
-     * because mapping_default_key is set after traversiing the children.
-     */
-    static create_element_or_mapping(options, return_mapping = false) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element_or_mapping */ .pt)(options, return_mapping);
-    }
-    static create_element(options) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)(options);
-    }
-    /** create a element with the given characteristics and return a mapping.
-     *  See this.create_element() for a description of options.
-     */
-    static create_element_mapping(options) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element_mapping */ .rE)(options);
-    }
-    /** create a new child element of the given element with the given characteristics
-     *  See this.create_element_or_mapping() for a description of options.
-     */
-    static create_element_child_or_mapping(element, options, return_mapping = false) {
-        if (typeof options?.parent !== 'undefined' || typeof options?.before !== 'undefined') {
-            console.warn('options.parent and/or options.before override element argument');
-        }
-        else {
-            options = {
-                ...(options ?? {}),
-                parent: element,
-                before: null,
-            };
-        }
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element_or_mapping */ .pt)(options, return_mapping);
-    }
-    /** create a new child element of the given element with the given characteristics and return a mapping.
-     *  See create_element_mapping() for a description of options.
-     */
-    static create_element_child(element, options) {
-        return this.create_element_child_or_mapping(element, options);
-    }
-    /** create a new child element of the given element with the given characteristics and return a mapping.
-     *  See create_element_mapping() for a description of options.
-     */
-    static create_element_child_mapping(element, options) {
-        return this.create_element_child_or_mapping(element, options, true);
-    }
-    /** Test if element is in DOM and visible.
-     * @param {Element} element
-     * @param {undefined|null|number} vpos
-     * @param {undefined|null|number} hpos
-     * @return {Boolean} visible with respect to vpos and hpos
-     * vpos and hpos specify which point in the element should be tested
-     * where null specifies not checking that direction (v or h) at all,
-     * undefined (or parameter omitted) specifies checking that the element
-     * is fully visible, and a number specifies a fraction used to check that
-     * a single point is visible where the point the fraction of the length in
-     * that dimension.  For example, hpos === 0 means check at the beginning,
-     * hpos === 1 means check at the end, and hpos === 0.5 means check the middle.
-     */
-    static element_is_visible(element, vpos, hpos) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .is_visible */ .gN)(element, vpos, hpos);
-    }
-    /** return a boolean indicating whether the given element is scrollable or not
-     * @param {Element} element
-     * @return {Boolean} element is scrollable
-     */
-    static element_is_scrollable(element) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .is_scrollable */ .NN)(element);
-    }
-    /** return the first scollable parent of element
-     * @param {Element} element
-     * @return {null|Element} first parent element that is scrollable, or null if none
-     */
-    static element_scrollable_parent(element) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .scrollable_parent */ .z3)(element);
-    }
-    // === ABORT IF STOPPED ===
-    /** abort by throwing an Error if this.stopped, otherwise do nothing.
-     *  (implemented via this.abort_signal.throwIfAborted() where this.abort_signal
-     *  is defined by the base class ActivityManager.)
-     */
-    abort_if_stopped() {
-        this.abort_signal.throwIfAborted();
-    }
-    /** wrap the given function so that when it is called,
-     *  this.abort_if_stopped() will be called first to
-     *  terminate rendering if necessary.
-     */
-    AIS(f) {
-        if (typeof f !== 'function') {
-            throw new TypeError('f must be a function');
-        }
-        const AsyncFunction = (async () => { }).constructor;
-        if (f instanceof AsyncFunction) {
-            return async (...args) => {
-                this.abort_if_stopped();
-                return f.apply(null, args).then((result) => {
-                    this.abort_if_stopped();
-                    return result;
-                });
-            };
-        }
-        else {
-            return (...args) => {
-                this.abort_if_stopped();
-                const result = f.apply(null, args);
-                this.abort_if_stopped();
-                return result;
-            };
-        }
-    }
-    // === UTILITY ===
-    /** @param {String} format
-     *  @param {any[]} args
-     *  @return {String} formatted string
-     */
-    sprintf(format, ...args) {
-        this.abort_if_stopped();
-        return OutputContextLike.sprintf(format, ...args);
-    }
-    /** @param {Number} s delay in seconds
-     *  @return {Promise} promise which will resolve after s seconds
-     */
-    async sleep(s) {
-        this.abort_if_stopped();
-        return OutputContextLike.delay_ms(1000 * s);
-    }
-    /** @param {Number} ms delay in milliseconds
-     *  @return {Promise} promise which will resolve after ms milliseconds
-     */
-    async delay_ms(ms) {
-        this.abort_if_stopped();
-        return OutputContextLike.delay_ms(ms);
-    }
-    /** @return {Promise} promise which will resolve after next "tick"
-     * setTimeout() is used.
-     */
-    async next_tick() {
-        this.abort_if_stopped();
-        return OutputContextLike.next_tick();
-    }
-    /** @return {Promise} promise which will resolve after next "tick"
-     * queueMicrotask() is used.
-     */
-    async next_micro_tick() {
-        this.abort_if_stopped();
-        return OutputContextLike.next_micro_tick();
+        return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .PlotlyRenderer */ .e$().render(this, code, options);
     }
 }
 
@@ -14956,10 +14926,10 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   i: () => (/* binding */ ErrorRenderer)
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7957);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3854);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_1__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_1__]);
+src_output_context__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 
@@ -14968,7 +14938,7 @@ class ErrorRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
     static get type() { return 'error'; }
     static error_element_class = 'bq-error-message';
     /** Render the given error_object to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {Error|String} error_object,
      * @param {Object|undefined|null} options: {
      *     style?: Object,  // css style to be applied to output element
@@ -15003,7 +14973,7 @@ class ErrorRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
             tag: 'pre',
             attrs: {
                 class: this.error_element_class,
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+                [src_output_context__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext */ .H.attribute__data_source_media_type]: this.media_type,
             },
             style,
         });
@@ -15025,10 +14995,10 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   B: () => (/* binding */ GraphvizRenderer)
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7957);
 /* harmony import */ var _graphviz__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7474);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_1__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_1__]);
+src_output_context__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 
@@ -15038,7 +15008,7 @@ class GraphvizRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0_
         const style = options?.style;
         const element = ocx.create_child({
             attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+                [src_output_context__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext */ .H.attribute__data_source_media_type]: this.media_type,
             },
             style,
             set_id: true, // required for selector below
@@ -15143,9 +15113,9 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   b: () => (/* binding */ ImageDataRenderer)
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_1__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7957);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_1__]);
+src_output_context__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 class ImageDataRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* .ApplicationBasedRenderer */ .rK {
@@ -15154,7 +15124,7 @@ class ImageDataRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0
         const style = options?.style;
         const parent = ocx.create_child({
             attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+                [src_output_context__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext */ .H.attribute__data_source_media_type]: this.media_type,
             },
         });
         const canvas = ocx.CLASS.create_element({
@@ -15186,10 +15156,10 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   e: () => (/* binding */ PlotlyRenderer)
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7957);
 /* harmony import */ var _plotly__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4723);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_1__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_1__]);
+src_output_context__WEBPACK_IMPORTED_MODULE_1__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 
@@ -15224,7 +15194,7 @@ class PlotlyRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/
         config.displayModeBar = false; // remove icons/links from top-right of plot
         const parent = ocx.create_child({
             attrs: {
-                [src_output_context_types__WEBPACK_IMPORTED_MODULE_1__/* .OutputContextLike */ .s.attribute__data_source_media_type]: this.media_type,
+                [src_output_context__WEBPACK_IMPORTED_MODULE_1__/* .OutputContext */ .H.attribute__data_source_media_type]: this.media_type,
             },
         });
         const output_element = ocx.CLASS.create_element({
@@ -15427,7 +15397,7 @@ class TextBasedRenderer extends Renderer {
         }
     }
     /** render the given value
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {string} value,  // value to be rendered
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
@@ -15440,7 +15410,7 @@ class TextBasedRenderer extends Renderer {
 class ApplicationBasedRenderer extends Renderer {
     static get media_type() { return `application/${this.type}`; }
     /** render the given value
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {ValueType} value,  // value appropriate to type (determined by subclass)
      * @param {OptionsType} options?: {
      *     style?:        Object,   // css style to be applied to output element
@@ -15485,26 +15455,25 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2023);
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7007);
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1024);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
-/* harmony import */ var src_output_context___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9779);
-/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(9888);
-/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8067);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(8380);
-/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
-/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8890);
-/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(8669);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(9241);
-/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
-/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
-/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(3593);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(1688);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(9015);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__, src_settings___WEBPACK_IMPORTED_MODULE_15__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, src_output_context___WEBPACK_IMPORTED_MODULE_6__, _eval_worker___WEBPACK_IMPORTED_MODULE_8__, src_settings___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7957);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9888);
+/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8067);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8380);
+/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4395);
+/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8890);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(9241);
+/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(5462);
+/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4723);
+/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(1576);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3593);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(1688);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(9015);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_14__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_14__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
 
 const lib_dir_path = '../../../lib/';
@@ -15535,7 +15504,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // During evaluation, a number of other values are available "globally",
 // though these values do not persist after the particular evaluation
 // (except for references from async code started during the evaluation).
-// These values include ocx (an instance of OutputContextLike which provides
+// These values include ocx (an instance of OutputContext which provides
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
@@ -15593,7 +15562,6 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     LocatedError
 //     BqManager
 //     BqCellElement
-//     OutputContextLike
 //     OutputContext
 //     Renderer
 //     TextBasedRenderer
@@ -15638,7 +15606,6 @@ const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).con
 
 
 
-
 class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU {
     constructor(babel_parse_error_object, underlying_error, ocx) {
         super(babel_parse_error_object.toString(), babel_parse_error_object.loc.line, babel_parse_error_object.loc.column, ocx, {
@@ -15656,7 +15623,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         src_renderer_factories__WEBPACK_IMPORTED_MODULE_4__/* ._initial_text_renderer_factories */ .$W.push(this);
     }
     /** Render by evaluating the given code and outputting to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} code,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
@@ -15688,7 +15655,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         catch (parse_error) {
             let updated_parse_error = parse_error;
             try {
-                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg)(code_to_run, {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg)(code_to_run, {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
@@ -15744,9 +15711,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         return eval_ocx.element;
     }
     async #create_eval_environment(eval_context, ocx, source_code) {
-        const cell_id = ocx.element.closest(`[${src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_element}]`)?.getAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_element);
+        const cell_id = ocx.element.closest(`[${src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H.attribute__data_source_element}]`)?.getAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
-        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__/* .load_d3 */ .l)();
+        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__/* .load_d3 */ .l)();
         function is_stopped() {
             return ocx.stopped;
         }
@@ -15842,7 +15809,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             }
         }
         async function create_worker(options) {
-            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_8__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
+            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_7__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
             return worker;
         }
@@ -15887,38 +15854,37 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__,
             d3, // for use with Plotly
-            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__/* .load_Plotly */ .O,
-            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__/* .load_Algebrite */ .B,
+            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__/* .load_Plotly */ .O,
+            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__/* .load_Algebrite */ .B,
             range,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__/* .uuidv4 */ .gZ),
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_19__,
-            get_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_settings */ .TJ,
-            get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_themes_settings */ .kQ,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__/* .uuidv4 */ .gZ),
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_18__,
+            get_settings: src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_settings */ .TJ,
+            get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_themes_settings */ .kQ,
             // parse support
-            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg,
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg,
             JavaScriptParseError,
             LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU,
             // ui, Renderer, etc classes
             BqManager: src_bq_manager___WEBPACK_IMPORTED_MODULE_1__/* .BqManager */ .N,
             BqCellElement: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__/* .BqCellElement */ .c,
-            OutputContextLike: src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s,
-            OutputContext: src_output_context___WEBPACK_IMPORTED_MODULE_6__/* .OutputContext */ .H,
+            OutputContext: src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H,
             Renderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .Renderer */ .A4,
             TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TextBasedRenderer */ .m9,
             ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .ApplicationBasedRenderer */ .rK,
-            Activity: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__/* .Activity */ .Il,
-            ActivityManager: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_7__/* .ActivityManager */ .BT,
-            Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_9__/* .Dialog */ .lG,
-            Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__/* .Menu */ .W,
-            KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyEventManager */ .jC,
-            KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMap */ .QA,
-            KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeyMapMapper */ .Xm,
-            KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_11__/* .KeySpec */ .Zp,
-            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__/* .OpenPromise */ .q,
-            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__/* .AbortSignalAction */ .$,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__/* .SerialDataSource */ .Y,
+            Activity: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__/* .Activity */ .Il,
+            ActivityManager: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__/* .ActivityManager */ .BT,
+            Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__/* .Dialog */ .lG,
+            Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__/* .Menu */ .W,
+            KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyEventManager */ .jC,
+            KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMap */ .QA,
+            KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMapMapper */ .Xm,
+            KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeySpec */ .Zp,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__/* .OpenPromise */ .q,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__/* .SerialDataSource */ .Y,
         };
         eval_environment.eval_environment = eval_environment;
         return eval_environment;
@@ -34854,11 +34820,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1024);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7957);
 /* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3593);
 /* harmony import */ var _katex___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(809);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__]);
-([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__]);
+([src_output_context__WEBPACK_IMPORTED_MODULE_2__, src_settings___WEBPACK_IMPORTED_MODULE_3__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 
 
 
@@ -34872,7 +34838,7 @@ class LaTeXRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
         src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__/* ._initial_text_renderer_factories */ .$W.push(this);
     }
     /** Render the given LaTeX source to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} latex,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
@@ -34886,7 +34852,7 @@ class LaTeXRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/*
             throwOnError: false,
         });
         const element = ocx.CLASS.element_for_options(ocx.element, options, true);
-        element.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
+        element.setAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_2__/* .OutputContext */ .H.attribute__data_source_media_type, this.media_type);
         element.innerHTML = markup;
         return element;
     }
@@ -34922,11 +34888,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3161);
 /* harmony import */ var src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9406);
 /* harmony import */ var src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3363);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9799);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7957);
 /* harmony import */ var _marked__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(138);
 /* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(9241);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
-([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context_types__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__]);
+([src_renderer_application_error_renderer__WEBPACK_IMPORTED_MODULE_2__, src_renderer_text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, src_renderer_text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _marked__WEBPACK_IMPORTED_MODULE_6__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 
 
 
@@ -34984,7 +34950,7 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
         src_renderer_factories__WEBPACK_IMPORTED_MODULE_0__/* ._initial_text_renderer_factories */ .$W.push(this);
     }
     /** Render by evaluating the given markdown and outputting to ocx.
-     * @param {OutputContextLike} ocx,
+     * @param {OutputContext} ocx,
      * @param {String} markdown,
      * @param {undefined|TextBasedRendererOptionsType} options,
      * @return {Element} element to which output was rendered
@@ -34994,7 +34960,7 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
         markdown ??= '';
         const global_state = options?.global_state ?? ocx.bq.global_state;
         const parent = ocx.CLASS.element_for_options(ocx.element, options, true);
-        parent.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_5__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
+        parent.setAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H.attribute__data_source_media_type, this.media_type);
         let deferred_evaluations = [];
         const marked_options = {
             walkTokens(token) {
@@ -35288,9 +35254,9 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7007);
 /* harmony import */ var src_renderer_factories__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1024);
-/* harmony import */ var src_output_context_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9799);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context_types__WEBPACK_IMPORTED_MODULE_2__]);
-src_output_context_types__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7957);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_output_context__WEBPACK_IMPORTED_MODULE_2__]);
+src_output_context__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 
 
 
@@ -35302,7 +35268,7 @@ class TextRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_0__/* 
     }
     async _render(ocx, text, options) {
         const element = ocx.CLASS.element_for_options(ocx.element, options, true);
-        element.setAttribute(src_output_context_types__WEBPACK_IMPORTED_MODULE_2__/* .OutputContextLike */ .s.attribute__data_source_media_type, this.media_type);
+        element.setAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_2__/* .OutputContext */ .H.attribute__data_source_media_type, this.media_type);
         element.classList.add('bq-plain-text');
         element.innerText = text; // innerText sanitizes text
         return element;

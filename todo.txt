@@ -136,7 +136,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 * data-source-element is not set for all outputs [not fixing; the top-level output does have this set--by BqManager.singleton.invoke_renderer()]
 * data-type on output elements (vs data-source-media-type, etc) -- rationalize creation of output elements and sub-elements
 * rationalize data-type and data-media-type
-* OutputContextLike.abort_if_stopped(): these exceptions are uncaught, should catch them and output an appropriate message
+* OutputContextLike.abort_if_stopped(): these exceptions are uncaught, should catch them and output an appropriate message (not always practical...)
 * fix dialog/settings-dialog #ui hack
 * markdown renderer: is there a way to keep a computation running (keepalive).  Yes....
 * fix console.{error,warn} usages

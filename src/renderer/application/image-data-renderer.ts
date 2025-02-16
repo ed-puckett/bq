@@ -8,19 +8,19 @@ import {
 } from './types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 
 export class ImageDataRenderer extends ApplicationBasedRenderer<ImageDataRendererValueType, ImageDataRendererOptionsType> {
     static get type (){ return 'image-data'; }
 
-    async _render(ocx: OutputContextLike, config: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, config: ImageDataRendererValueType, options?: ImageDataRendererOptionsType): Promise<Element> {
         const style = options?.style;
 
         const parent = ocx.create_child({
             attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
+                [OutputContext.attribute__data_source_media_type]: this.media_type,
             },
         });
         const canvas = ocx.CLASS.create_element({

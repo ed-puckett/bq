@@ -63,7 +63,7 @@ import {
 
 import {
     OutputContext,
-} from 'src/output-context/_';
+} from 'src/output-context';
 
 import {
     Menu,

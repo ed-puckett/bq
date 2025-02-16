@@ -8,8 +8,8 @@ import {
 } from './types';
 
 import {
-    OutputContextLike,
-} from 'src/output-context/types';
+    OutputContext,
+} from 'src/output-context';
 
 import {
     load_Plotly,
@@ -19,7 +19,7 @@ import {
 export class PlotlyRenderer extends ApplicationBasedRenderer<PlotlyRendererValueType, PlotlyRendererOptionsType> {
     static get type (){ return 'plotly'; }
 
-    async _render(ocx: OutputContextLike, plotly_config: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
+    async _render(ocx: OutputContext, plotly_config: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
         if (typeof plotly_config !== 'object') {
             throw new TypeError('plotly_config must be an object');
         }
@@ -51,7 +51,7 @@ export class PlotlyRenderer extends ApplicationBasedRenderer<PlotlyRendererValue
 
         const parent = ocx.create_child({
             attrs: {
-                [OutputContextLike.attribute__data_source_media_type]: this.media_type,
+                [OutputContext.attribute__data_source_media_type]: this.media_type,
             },
         });
         const output_element = ocx.CLASS.create_element({
