@@ -13,21 +13,6 @@ import {
 } from 'lib/ui/beep';
 
 
-// === TIMEOUT / NEXT TICK UTILITIES ===
-
-export async function delay_ms(ms?: number, resolve_result?: () => void): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, (ms ?? 0), resolve_result));
-}
-
-export async function next_tick(): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve));
-}
-
-export async function next_micro_tick(): Promise<void> {
-    return new Promise(resolve => queueMicrotask(resolve));
-}
-
-
 // === NODE/ELEMENT UTILITIES ===
 
 /** set an event handler on the given textarea so that it automatically resizes based on content

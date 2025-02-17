@@ -14,8 +14,6 @@
 </head>
 <body>
 <bq-cell data-type="markdown" class="show-full">
-&lt;div class="help-content">
-
 # Content
 
 ## One {#nav-one-bc65a823-a48f-4bec-bb36-e8d0f468b6da}
@@ -64,18 +62,17 @@
 ## Five {#nav-five-eba218f6-57a6-4c7e-9dcf-d5c88f42801f}
 ## Five {#nav-five-efaa810d-bd64-4dbc-a563-3d0f1a921a54}
 ## Five {#nav-five-07f4c5f5-a400-46b7-b25a-76d0b22188ec}
-&lt;/div>
 
 ~~~! javascript
 (await import_local('./establish-navigation-container.js')).default(ocx, {
+    heading: 'XYZZY',
     nav_trail_heading: '>>>',
     nav_trail: [
         [ 'x', 'http://x' ],
         [ 'y', 'http://y' ],
         [ 'z', 'http://z' ],
     ],
-    heading: 'XYZZY',
- });
+});
 ~~~
 </bq-cell>
 </body>

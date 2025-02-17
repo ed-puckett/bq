@@ -9067,9 +9067,7 @@ function create_select_element(parent, id, opts) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Al: () => (/* binding */ next_tick),
 /* harmony export */   Je: () => (/* binding */ update_element_style),
-/* harmony export */   L1: () => (/* binding */ next_micro_tick),
 /* harmony export */   NM: () => (/* binding */ move_node),
 /* harmony export */   NN: () => (/* binding */ is_scrollable),
 /* harmony export */   Vv: () => (/* binding */ set_element_attrs),
@@ -9079,7 +9077,6 @@ function create_select_element(parent, id, opts) {
 /* harmony export */   ho: () => (/* binding */ clear_element),
 /* harmony export */   pt: () => (/* binding */ create_element_or_mapping),
 /* harmony export */   rE: () => (/* binding */ create_element_mapping),
-/* harmony export */   v9: () => (/* binding */ delay_ms),
 /* harmony export */   z3: () => (/* binding */ scrollable_parent)
 /* harmony export */ });
 /* unused harmony exports setup_textarea_auto_resize, trigger_textarea_auto_resize, find_matching_ancestor, safe_setAttributeNS, validate_parent_and_before_from_options, mapping_default_key, create_stylesheet_link, create_inline_stylesheet, create_script, create_inline_script, load_script_and_wait_for_condition, find_child_offset */
@@ -9088,16 +9085,6 @@ function create_select_element(parent, id, opts) {
 const current_script_url = "file:///home/ed/code/bq/lib/ui/dom-tools.ts"; // save for later
 
 
-// === TIMEOUT / NEXT TICK UTILITIES ===
-async function delay_ms(ms, resolve_result) {
-    return new Promise(resolve => setTimeout(resolve, (ms ?? 0), resolve_result));
-}
-async function next_tick() {
-    return new Promise(resolve => setTimeout(resolve));
-}
-async function next_micro_tick() {
-    return new Promise(resolve => queueMicrotask(resolve));
-}
 // === NODE/ELEMENT UTILITIES ===
 /** set an event handler on the given textarea so that it automatically resizes based on content
  * @param {HTMLTextAreaElement} textarea
@@ -14332,21 +14319,21 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
             this.parent.keepalive = new_state;
         }
     }
-    // === STATIC UTILITY ===
+    // === STATIC UTILITY METHODS ===
     static sprintf(format, ...args) {
         return (0,lib_sys_sprintf__WEBPACK_IMPORTED_MODULE_2__/* .sprintf */ .n)(format, ...args);
     }
     static async sleep(s) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .delay_ms */ .v9)(1000 * s);
+        return this.delay_ms(1000 * s);
     }
     static async delay_ms(ms) {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .delay_ms */ .v9)(ms);
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     static async next_tick() {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .next_tick */ .Al)();
+        return new Promise(resolve => setTimeout(resolve));
     }
     static async next_micro_tick() {
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .next_micro_tick */ .L1)();
+        return new Promise(resolve => queueMicrotask(resolve));
     }
     // === STATIC METHODS ===
     static get_svg_string(svg_node) {
@@ -14614,35 +14601,35 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
      */
     sprintf(format, ...args) {
         this.abort_if_stopped();
-        return OutputContext.sprintf(format, ...args);
+        return this.CLASS.sprintf(format, ...args);
     }
     /** @param {Number} s delay in seconds
      *  @return {Promise} promise which will resolve after s seconds
      */
     async sleep(s) {
         this.abort_if_stopped();
-        return OutputContext.delay_ms(1000 * s);
+        return this.CLASS.sleep(s);
     }
     /** @param {Number} ms delay in milliseconds
      *  @return {Promise} promise which will resolve after ms milliseconds
      */
     async delay_ms(ms) {
         this.abort_if_stopped();
-        return OutputContext.delay_ms(ms);
+        return this.CLASS.delay_ms(ms);
     }
     /** @return {Promise} promise which will resolve after next "tick"
      * setTimeout() is used.
      */
     async next_tick() {
         this.abort_if_stopped();
-        return OutputContext.next_tick();
+        return this.CLASS.next_tick();
     }
     /** @return {Promise} promise which will resolve after next "tick"
      * queueMicrotask() is used.
      */
     async next_micro_tick() {
         this.abort_if_stopped();
-        return OutputContext.next_micro_tick();
+        return this.CLASS.next_micro_tick();
     }
     // === BASIC OPERATIONS ===
     #bq;

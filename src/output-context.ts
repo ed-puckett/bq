@@ -16,9 +16,6 @@ import {
     is_visible,
     is_scrollable,
     scrollable_parent,
-    delay_ms        as tools_delay_ms,
-    next_tick       as tools_next_tick,
-    next_micro_tick as tools_next_micro_tick,
 } from 'lib/ui/dom-tools';
 
 import {
@@ -84,26 +81,26 @@ export class OutputContext extends ActivityManager {
     }
 
 
-    // === STATIC UTILITY ===
+    // === STATIC UTILITY METHODS ===
 
     static sprintf(format: string, ...args: any[]): string {
         return lib_sprintf(format, ...args);
     }
 
     static async sleep(s: number): Promise<void> {
-        return tools_delay_ms(1000*s);
+        return this.delay_ms(1000*s);
     }
 
     static async delay_ms(ms: number): Promise<void> {
-        return tools_delay_ms(ms);
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     static async next_tick(): Promise<void> {
-        return tools_next_tick();
+        return new Promise(resolve => setTimeout(resolve));
     }
 
     static async next_micro_tick(): Promise<void> {
-        return tools_next_micro_tick();
+        return new Promise(resolve => queueMicrotask(resolve));
     }
 
 
@@ -393,7 +390,7 @@ export class OutputContext extends ActivityManager {
      */
     sprintf(format: string, ...args: any[]): string {
         this.abort_if_stopped();
-        return OutputContext.sprintf(format, ...args);
+        return this.CLASS.sprintf(format, ...args);
     }
 
     /** @param {Number} s delay in seconds
@@ -401,7 +398,7 @@ export class OutputContext extends ActivityManager {
      */
     async sleep(s: number): Promise<void> {
         this.abort_if_stopped();
-        return OutputContext.delay_ms(1000*s);
+        return this.CLASS.sleep(s);
     }
 
     /** @param {Number} ms delay in milliseconds
@@ -409,7 +406,7 @@ export class OutputContext extends ActivityManager {
      */
     async delay_ms(ms: number): Promise<void> {
         this.abort_if_stopped();
-        return OutputContext.delay_ms(ms);
+        return this.CLASS.delay_ms(ms);
     }
 
     /** @return {Promise} promise which will resolve after next "tick"
@@ -417,7 +414,7 @@ export class OutputContext extends ActivityManager {
      */
     async next_tick(): Promise<void> {
         this.abort_if_stopped();
-        return OutputContext.next_tick();
+        return this.CLASS.next_tick();
     }
 
     /** @return {Promise} promise which will resolve after next "tick"
@@ -425,7 +422,7 @@ export class OutputContext extends ActivityManager {
      */
     async next_micro_tick(): Promise<void> {
         this.abort_if_stopped();
-        return OutputContext.next_micro_tick();
+        return this.CLASS.next_micro_tick();
     }
 
 

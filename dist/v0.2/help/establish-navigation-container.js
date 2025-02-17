@@ -1,6 +1,6 @@
 export default function establish_navigation_container(ocx, options=null) {
     const {
-        selector = '.help-content',
+        selector = '*',
         heading,
         nav_trail,
         nav_trail_heading,
@@ -154,8 +154,12 @@ export default function establish_navigation_container(ocx, options=null) {
             }
         });
 
-    const container_element = ocx.CLASS.create_element({
-        before: content_element,
+    const {
+        container_element,
+        content_container_element,
+    } = ocx.CLASS.create_element_mapping({
+        _key: 'container_element',
+        parent: enclosing_output_element,
         attrs: {
             class: 'help-container',
         },
@@ -167,10 +171,16 @@ export default function establish_navigation_container(ocx, options=null) {
                 },
                 children: sidebar_children,
             },
+            {
+                _key: 'content_container_element',
+                attrs: {
+                    class: 'help-content',
+                }
+            },
         ],
     });
     // move content_element into place
-    container_element.appendChild(content_element);
+    content_container_element.appendChild(content_element);
 
     if (!no_scroll) {
         container_element.scrollIntoView();
