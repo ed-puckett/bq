@@ -90,6 +90,10 @@ main {
     font-family: monospace;
 }
 
+.bq-hidden-block {
+    display: none
+}
+
 bq-cell {
     --content-color: lightgrey;
 

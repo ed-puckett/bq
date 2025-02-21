@@ -21,7 +21,7 @@ export default function establish_navigation_container(ocx, options=null) {
         throw new TypeError('nav_trail_heading must be undefined, null, or a string');
     }
 
-    const enclosing_output_element = ocx.element.closest('output[class="bq-cell-output"]');
+    const enclosing_output_element = ocx.element.closest('output[class~="bq-cell-output"]');
     if (!enclosing_output_element) {
         throw new Error('unexpected: no enclosing output element found');
     }
@@ -34,6 +34,26 @@ export default function establish_navigation_container(ocx, options=null) {
         throw new TypeError(`content_element not found for selector: ${selector}`);
     }
 
+    // hide the content until it has been reprocessed
+    const parent_ocx = ocx.parent;
+    if (!parent_ocx) {
+        throw new TypeError('ocx has no parent');
+    }
+    parent_ocx.element.classList.add('bq-hidden-block');
+
+    // set up the deferred show (waiting for the rest of the markdown to be rendered)
+    ocx.keepalive = true;
+    parent_ocx.render_completions.subscribe(
+        () => {
+            parent_ocx.element.classList.remove('bq-hidden-block');
+        },
+        {
+            abort_signal: parent_ocx.abort_signal,
+            once: true,
+        },
+    );
+
+    // continue setting up reprocessed content
     const nav_trail_grid_template_areas_css = nav_trail
           ? `grid-template-areas:
         "help-nav-trail help-nav-trail"
@@ -43,6 +63,7 @@ export default function establish_navigation_container(ocx, options=null) {
         "help-sidebar help-content";
 `;
 
+    // create the style element with the css defined above
     ocx.CLASS.create_element({
         parent: document.head,
         tag: 'style',
@@ -136,24 +157,47 @@ export default function establish_navigation_container(ocx, options=null) {
             innerText: heading,
         });
     }
+    const nav_heading_id_prefix = 'nav-heading-';
+    const nav_link_id_prefix    = 'nav-';
+    let nav_links_container = null;
     content_element
         .querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id], h7[id], h8[id], h9[id]')
         .forEach(el => {
-            const match = el.id.match(/^nav-/);
-            if (match) {
+            if (el.id.startsWith(nav_heading_id_prefix)) {
                 sidebar_children.push({
+                    tag: 'h3',
+                    innerText: el.innerText,
+                });
+                nav_links_container = [];
+                sidebar_children.push({
+                    tag: 'ul',
+                    children: nav_links_container,
+                });
+            } else if (el.id.startsWith(nav_link_id_prefix)) {
+                const a_def = {
                     tag: 'a',
                     attrs: {
                         href: `#${el.id}`,
                     },
                     innerText: el.innerText,
-                });
-                sidebar_children.push({
-                    tag: 'br',
-                });
+                };
+                if (nav_links_container) {
+                    nav_links_container.push({
+                        tag: 'li',
+                        children: [ 
+                            { ...a_def },
+                       ],
+                    });
+                } else {
+                    sidebar_children.push(a_def);
+                    sidebar_children.push({
+                        tag: 'br',
+                    });
+                }
             }
         });
 
+    // create the new element structure that will hold content_element
     const {
         container_element,
         content_container_element,

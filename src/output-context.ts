@@ -36,6 +36,7 @@ import {
 } from 'src/renderer/text/types';
 
 import {
+    Renderer,
     ErrorRenderer,
     ErrorRendererValueType,
     ErrorRendererOptionsType,
@@ -55,6 +56,14 @@ import {
     LaTeXRenderer,
     JavaScriptRenderer,
 } from 'src/renderer/_';
+
+
+export type OutputContextRenderCompletion<OutputContextType> = {
+    renderer: Renderer,
+    ocx:      OutputContextType,
+    value?:   any,
+    options?: object,
+}
 
 
 const css_class__bq_cell_output         = 'bq-cell-output';
@@ -462,6 +471,9 @@ export class OutputContext extends ActivityManager {
         parent?.manage_activity(this);
     }
 
+    readonly #render_completions = new SerialDataSource<OutputContextRenderCompletion<OutputContext>>
+    get render_completions (){ return this.#render_completions; }
+
 
     // === BASIC OPERATIONS ===
 
@@ -652,5 +664,48 @@ export class OutputContext extends ActivityManager {
     async plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
         return new PlotlyRenderer().render(this, code, options);
+    }
+
+
+    // === RENDER INTERFACE ===
+
+    async _invoke_renderer<ValueType, OptionsType>(
+        renderer: { /*async*/ _render( ocx:      OutputContext,
+                                       value:    ValueType,
+                                       options?: OptionsType ): Promise<Element>,
+                  },
+        value:    ValueType,
+        options?: OptionsType ): Promise<Element>
+    {
+        return renderer._render(this, value, options)
+            .then(result => {
+                // Make sure that this ocx is stopped and that the error, if any, is output
+                // to the log. If nothing has yet called a function that checks if this ocx
+                // if stopped, then BqManager.prototype.render_cells() never gets the
+                // corresponding error, and therefore the BqManager.prototype.rendering_cells
+                // gets fulfilled, however this ocx is not in a usable state.  So if some cell
+                // in the document is awaiting that promise and then tries to use this ocx
+                // when it fulfills, an unhandled rejection results.
+                // This turns out to be important for document autoeval.
+                this.abort_if_stopped();
+                return result;
+            })
+            .catch((error: unknown) => {
+                try {
+                    this.stop();  // stop anything that may have been started
+                } catch (ignored_error: unknown) {
+                    console.error('ignored second-level error while stopping ocx after render error', ignored_error);
+                    // nothing
+                }
+                throw error;
+            })
+        .finally(() => {
+            this.#render_completions.dispatch({
+                ocx: this,
+                renderer: (renderer as unknown) as Renderer,
+                value:    value as any,
+                options:  options as object,
+            });
+        });
     }
 }

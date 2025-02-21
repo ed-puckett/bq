@@ -14,12 +14,25 @@
 </head>
 <body>
 <bq-cell data-type="markdown" class="show-full">
+~~~! javascript
+(await import_local('./establish-navigation-container.js'))
+    .default(ocx, {
+        heading: 'SerialDataSource',
+        nav_trail_heading: '>>>',
+        nav_trail: [
+            [ 'x', 'http://x' ],
+            [ 'y', 'http://y' ],
+            [ 'z', 'http://z' ],
+        ],
+    });
+~~~
+
 # Content
 
 ## One {#nav-one-bc65a823-a48f-4bec-bb36-e8d0f468b6da}
 ### Two {#nav-two-7865c978-da2e-4640-8a34-2b5d79e6ba52}
 ### Three {#nav-three-745da900-f361-4da2-a022-cef467234ed4}
-# Four
+# Four {#nav-heading-1}
 ## Five {#nav-five-142b9772-4a3c-4448-abdd-82f0103a7354}
 ## Five {#nav-five-1a993453-8efa-4053-b666-7a27e23eccdf}
 ## Five {#nav-five-1cff0b62-fe8a-46a1-bb0b-e29b9397ea1a}
@@ -34,8 +47,10 @@
 ## Five {#nav-five-edf89443-79ab-417b-abd2-a41cc5dfc933}
 ## Five {#nav-five-84bda9d8-2f20-441b-a8c1-34316f31e03d}
 ## Five {#nav-five-a44a4c93-764d-46de-bbda-0efafeb9601b}
+# heading2 {#nav-heading-2}
 ## Five {#nav-five-acf0b01f-2896-479c-84a2-f256e891eadc}
 ## Five {#nav-five-2bc9d231-286d-4f13-a98a-8e2d5f41b981}
+# heading3 {#nav-heading-3}
 ## Five {#nav-five-3f7a34b9-0325-4487-97ef-26cdc215e4b5}
 ## Five {#nav-five-c1d22deb-ee09-4ff2-8cc7-67a86cbebe01}
 ## Five {#nav-five-1561c95f-2bd3-4b00-aad0-1adb26f5e2a3}
@@ -50,7 +65,6 @@
 ## Five {#nav-five-656078b3-d0f9-4146-ba04-a8e3f29b38cf}
 ## Five {#nav-five-5cb32a8b-751a-4be3-a053-ff98867f7b5b}
 ## Five {#nav-five-c9e96bfc-f137-4314-b63c-5bb226e1cdb0}
-## Five {#nav-five-19cd0697-d509-4db2-a438-f910f5094182}
 ## Five {#nav-five-3a8eb8f9-ea52-418b-a821-ae4c25537c7d}
 ## Five {#nav-five-a5634f2d-ff69-426f-9614-fc46d7860bb2}
 ## Five {#nav-five-dfdc4cb0-c0a3-4a40-9799-6c1f2d8cf91d}
@@ -63,17 +77,6 @@
 ## Five {#nav-five-efaa810d-bd64-4dbc-a563-3d0f1a921a54}
 ## Five {#nav-five-07f4c5f5-a400-46b7-b25a-76d0b22188ec}
 
-~~~! javascript
-(await import_local('./establish-navigation-container.js')).default(ocx, {
-    heading: 'XYZZY',
-    nav_trail_heading: '>>>',
-    nav_trail: [
-        [ 'x', 'http://x' ],
-        [ 'y', 'http://y' ],
-        [ 'z', 'http://z' ],
-    ],
-});
-~~~
 </bq-cell>
 </body>
 </html>

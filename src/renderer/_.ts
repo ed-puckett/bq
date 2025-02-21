@@ -2,6 +2,7 @@
 
 export {
     RendererFactory,
+    Renderer,
     TextBasedRenderer,
     ApplicationBasedRenderer,
     LocatedError,
