@@ -13,6 +13,17 @@
       -->
 </head>
 <body>
+<bq-cell data-type="javascript" class="show-full">
+// Custom Renderer Example
+const bullet = '\u00b7';  // middle dot
+class ListItemRenderer extends TextBasedRenderer {
+    static type = 'list-item';
+    async _render(ocx, value, options) {
+        return ocx.render_text(`${bullet} ${value?.trim()}\n`);
+    }
+}
+TextBasedRenderer.add_renderer_factory(ListItemRenderer);
+</bq-cell>
 <bq-cell data-type="markdown" class="show-full">
 ~~~! javascript
 (await import_local('./establish-navigation-container.js'))
@@ -29,6 +40,60 @@
 
 # SerialDataSource
 
-</bq-cell>
-</body>
-</html>
+## Properties {#nav-heading-properties}
+
+### prop-item1 {#nav-prop-item1}
+### prop-item2 {#nav-prop-item2}
+### prop-item3 {#nav-prop-item3}
+
+## Methods {#nav-heading-methods}
+
+~~~! list-item
+item1
+~~~
+~~~! list-item
+item2
+~~~
+~~~! list-item
+item3
+~~~
+
+### subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription
+
+### subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription {#nav-x}
+
+~~~ javascript
+subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription {
+~~~
+
+1. list
+item
+
+1. list1 
+item1
+
+1. list2  
+item3
+
+1. list0
+
+   1. indent  
+     item0
+
+&lt;dl>
+&lt;dt>dt1&lt;/dt>
+&lt;dd>dd1&lt;/dd>
+&lt;dt>dt2&lt;/dt>
+    &lt;dd>&lt;dl>
+        &lt;dt>idt1&lt;/dt>
+        &lt;dd>idd1&lt;/dd>
+        &lt;dt>idt2&lt;/dt>
+        &lt;dd>idd2&lt;/dd>
+    &lt;/dl>&lt;/dd>
+&lt;dt>dt3&lt;/dt>
+&lt;dd>dd3&lt;/dd>
+&lt;/dl>
+
+&lt;/bq-cell>
+&lt;/body>
+&lt;/html>

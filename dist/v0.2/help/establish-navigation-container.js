@@ -72,7 +72,12 @@ export default function establish_navigation_container(ocx, options=null) {
     padding: 0;
     margin: 0;
 }
+body:has(.help-container) {
+    align-content: center;
+}
 .help-container {
+    font-family: sans-serif;
+    max-width: 72em;
     display: grid;
     ${nav_trail_grid_template_areas_css}
     --help-nav-trail-element-height: 2em;
@@ -110,9 +115,27 @@ export default function establish_navigation_container(ocx, options=null) {
     grid-area: help-sidebar;
     grid-column: sidebar-start / sidebar-end;
 
+    & .help-sidebar-heading {
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
     & a {
-        display: inline-block;
+        display: block;
         margin: 0.25em 0;
+    }
+
+    & .help-sidebar-link-heading {
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    & li {
+        list-style: none;
     }
 }
 .help-content {
@@ -153,7 +176,9 @@ export default function establish_navigation_container(ocx, options=null) {
     const sidebar_children = [];
     if (heading) {
         sidebar_children.push({
-            tag: 'h1',
+            attrs: {
+                class: 'help-sidebar-heading',
+            },
             innerText: heading,
         });
     }
@@ -165,7 +190,9 @@ export default function establish_navigation_container(ocx, options=null) {
         .forEach(el => {
             if (el.id.startsWith(nav_heading_id_prefix)) {
                 sidebar_children.push({
-                    tag: 'h3',
+                    attrs: {
+                        class: 'help-sidebar-link-heading',
+                    },
                     innerText: el.innerText,
                 });
                 nav_links_container = [];
@@ -190,9 +217,6 @@ export default function establish_navigation_container(ocx, options=null) {
                     });
                 } else {
                     sidebar_children.push(a_def);
-                    sidebar_children.push({
-                        tag: 'br',
-                    });
                 }
             }
         });
