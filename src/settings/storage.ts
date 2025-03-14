@@ -3,7 +3,7 @@ import {
 } from 'lib/sys/idb';
 
 
-const uuid = 'aed2419a-d23e-48b0-ae31-4f378729bf9b';
+const uuid = '91cc2a89-45ea-4b2e-a5f4-3b20cfc8e2b0';
 
 export const db_key_settings = 'settings';
 export const db_key_themes   = 'themes';

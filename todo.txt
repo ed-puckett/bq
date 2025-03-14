@@ -1,3 +1,4 @@
+Makefile: changing .js or .html files does not trigger rebuild
 markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)
 update revision in version number in package.json when building
 store version number (including revision) in dist/<version_dir> when building
@@ -45,6 +46,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* eliminate reset_before_render setting?  Setting to false may have undesired effects for saved notebooks
 * fix deprecation warnings when compiling (inflight and glob packages) (these were dependencies of mocha)
 * need to support (persistent) historical versions so that others can have a stable version to work against
 * in markdown, inline invocation of a javascript renderer would be nice

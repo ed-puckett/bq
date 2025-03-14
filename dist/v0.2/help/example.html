@@ -13,18 +13,32 @@
       -->
 </head>
 <body>
+<bq-cell data-type="javascript">
+const {
+    define_help_renderer,
+    establish_navigation_container,
+} = await import_local('./establish-navigation-container.js');
+define_help_renderer(eval_environment);
+vars({ establish_navigation_container });
+</bq-cell>
 <bq-cell data-type="markdown" class="show-full">
 ~~~! javascript
-(await import_local('./establish-navigation-container.js'))
-    .default(ocx, {
-        heading: 'SerialDataSource',
-        nav_trail_heading: '>>>',
-        nav_trail: [
-            [ 'x', 'http://x' ],
-            [ 'y', 'http://y' ],
-            [ 'z', 'http://z' ],
-        ],
-    });
+bqx.establish_navigation_container(ocx, {
+    heading: 'SerialDataSource',
+    nav_trail_heading: '>>>',
+    nav_trail: [
+        [ 'x', 'http://x' ],
+        [ 'y', 'http://y' ],
+        [ 'z', 'http://z' ],
+    ],
+});
+~~~
+
+~~~! help-item
+help item #1
+text line 1
+text line 2
+text line 3
 ~~~
 
 # Content

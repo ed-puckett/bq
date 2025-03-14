@@ -161,8 +161,6 @@ export class BqManager {
 
 
     constructor() {
-        this.#eval_states.subscribe(this.#eval_states_observer.bind(this));  //!!! never unsubscribed
-
         this.#command_bindings = get_global_command_bindings();
 
         let initial_key_maps: undefined|Array<KeyMap>;
@@ -218,7 +216,6 @@ export class BqManager {
     }
 
     #activity_manager: ActivityManager = new ActivityManager(true);  // true: multiple_stops
-    #eval_states = new SerialDataSource<{ cell: BqCellElement, eval_state: boolean }>();
     #command_bindings: { [command: string]: ((...args: any[]) => any) };
     #key_event_manager: KeyEventManager<BqManager>;
     #with_menubar: undefined|boolean = undefined;  // undefined until first time a menu is set up
@@ -233,9 +230,6 @@ export class BqManager {
 
     #notification_manager = new NotificationManager();
     get notification_manager (){ return this.#notification_manager; }
-
-    #reset_before_render: boolean = false;  // from settings, kept up-to-date via settings_updated_events
-    get reset_before_render (){ return this.#reset_before_render; }
 
     get head_element (){
         const el = document.querySelector('head');
@@ -281,8 +275,6 @@ export class BqManager {
     get interactive (){ return (!this.in_presentation_view || this.active_cell?.shown_in_presentation); }
 
     get cell_parent (){ return this.main_element; }
-
-    get activity_manager (){ return this.#activity_manager; }
 
     get editable (){ return this.#editable; }
     set_editable(editable: boolean = true) {
@@ -352,9 +344,9 @@ export class BqManager {
 
     stop(): void {
         try {
-            this.activity_manager.stop();
+            this.#activity_manager.stop();
         } catch (error) {
-            console.error('error while stopping this.activity_manager', error, this.activity_manager);
+            console.error('error while stopping this.#activity_manager', error, this.#activity_manager);
         }
     }
 
@@ -574,10 +566,9 @@ export class BqManager {
 
     // === RENDER INTERFACE ===
 
-    async invoke_renderer_for_type( type:            string = 'plain',
-                                    options?:        null|TextBasedRendererOptionsType,
-                                    cell?:           null|BqCellElement,
-                                    output_element?: Element ): Promise<Element> {
+    async invoke_renderer_for_type( type:     string = 'plain',
+                                    cell:     BqCellElement,
+                                    options?: null|TextBasedRendererOptionsType ): Promise<Element> {
         if (cell && cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
         }
@@ -586,28 +577,20 @@ export class BqManager {
         if (!renderer) {
             throw new TypeError('no renderer found for type "${type}"');
         }
-        return this.invoke_renderer(renderer, options, cell, output_element);
+        return this.invoke_renderer(renderer, cell, options);
     }
 
-    async invoke_renderer( renderer:        TextBasedRenderer,
-                           options?:        null|TextBasedRendererOptionsType,
-                           cell?:           null|BqCellElement,
-                           output_element?: Element ): Promise<Element> {
+    async invoke_renderer( renderer: TextBasedRenderer,
+                           cell:     BqCellElement,
+                           options?: null|TextBasedRendererOptionsType ): Promise<Element> {
         if (!(renderer instanceof TextBasedRenderer)) {
             throw new TypeError('renderer must be an instance of TextBasedRenderer');
         }
         if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
             throw new TypeError('options must be undefined, null, or an object');
         }
-        cell ??= this.active_cell;
-        if (!cell) {
-            throw new TypeError('cell not specified and no active_cell');
-        }
         if (cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
-        }
-        if (typeof output_element !== 'undefined' && !(output_element instanceof Element)) {
-            throw new TypeError('output_element must be undefined or an instance of Element');
         }
 
         cell.ensure_id();
@@ -620,12 +603,8 @@ export class BqManager {
             };
         }
 
-        // reset_before_render is performed only if no output_element was passed in
-        if (!output_element && this.#reset_before_render) {
-            cell.reset();
-        }
-
-        output_element ??= OutputContext.create_cell_output(cell, renderer.media_type);
+        cell.reset();  // removes cell's prior output element, if any
+        const output_element = OutputContext.create_cell_output(cell, renderer.media_type);
 
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
@@ -644,9 +623,11 @@ export class BqManager {
 
         const ocx = new OutputContext(this, output_element);  // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
-        this.activity_manager.manage_activity(ocx, () => {
+        this.#activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
         });
+
+        this.#render_states.dispatch({ renderer, cell, ocx, begin: true });
 
         return renderer.render(ocx, cell.get_text(), options)
             .catch((error) => {
@@ -664,8 +645,17 @@ export class BqManager {
                 if (!ocx.keepalive) {
                     ocx.stop();  // stop anything that may have been started
                 }
+                this.#render_states.dispatch({ renderer, cell, ocx, begin: false });
             });
     }
+
+    /** this.#render_states is triggered by this.invoke_renderer() at the
+     * beginning of renderer invokation (begin = true) and again at the
+     * end (begin = false) when the renderer completes.  Note that additional
+     * background rendering may still occur is ocx.keepalive is true.
+     */
+    #render_states = new SerialDataSource<{ renderer: TextBasedRenderer, cell: BqCellElement, ocx: OutputContext, begin: boolean }>();
+    get render_states (){ return this.#render_states; }
 
     /** this.#rendering_cells is set to a promise when render_cells() is active,
      * and removed and set back to undefined when render_cells() is done.
@@ -692,7 +682,7 @@ export class BqManager {
             this.reset_global_state();
 
             let stopped = false;
-            const stop_states_subscription = this.activity_manager.stop_states.subscribe((state: StopState) => {
+            const stop_states_subscription = this.#activity_manager.stop_states.subscribe((state: StopState) => {
                 stopped = true;
             })
 
@@ -710,7 +700,7 @@ export class BqManager {
                 }
 
                 try {
-                    await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
+                    await this.invoke_renderer_for_type(iter_cell.type, iter_cell);
                 } catch (error: unknown) {
                     console.warn('stopped render_cells after error rendering cell', error, iter_cell);
                     render_error = error;
@@ -926,7 +916,6 @@ export class BqManager {
         const {
             classic_menu,
             editor_options,
-            render_options,
         } = (get_settings() ?? {}) as any;
         this.set_menu_style(classic_menu);
         for (const cell of this.get_cells()) {
@@ -937,31 +926,6 @@ export class BqManager {
         if (root_element) {
             (root_element as HTMLElement).style.setProperty('--cell-max-height-scrolling', `${editor_options?.limited_size ?? 50}vh`);
         }
-        // update reset_before_render
-        this.#reset_before_render = !!render_options?.reset_before_render;
-    }
-
-
-    // === EVAL STATES ===
-
-    emit_eval_state(cell: BqCellElement, eval_state: boolean) {
-        if (cell.bq !== this) {
-            console.error('unexpected: cell has a different bq');
-        }
-        this.#eval_states.dispatch({ cell, eval_state });
-    }
-
-    #eval_states_observer(data: { cell: BqCellElement, eval_state: boolean }) {
-        const {
-            cell,
-            eval_state,
-        } = data;
-
-        if (cell.bq !== this) {
-            console.error('unexpected: cell has a different bq');
-        }
-
-        //!!! do something...  is this observer necessary?
     }
 
 
@@ -1118,7 +1082,7 @@ export class BqManager {
         } else {
             this.set_structure_modified();
             try {
-                await this.invoke_renderer_for_type(cell.type, undefined, cell);
+                await this.invoke_renderer_for_type(cell.type, cell);
             } catch (error: unknown) {
                 console.warn('error rendering cell', error, cell);
                 return false;

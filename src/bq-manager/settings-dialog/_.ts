@@ -39,7 +39,6 @@ import {
     analyze_editor_options_line_wrapping,
     analyze_editor_options_limited_size,
     analyze_formatting_options_flush_left,
-    analyze_render_options_reset_before_render,
     get_valid_theme_values,
 } from 'src/settings/_';
 
@@ -136,16 +135,6 @@ const sections = [
             settings_path: [ 'formatting_options', 'flush_left' ],
             analyze: analyze_formatting_options_flush_left,  // (value, label) => complaint
         }],
-    }, {
-        name: 'Render',
-        settings: [{
-            id: 'render_options_reset_before_render',
-            label: 'Reset cell before render',
-            type: 'checkbox',
-            settings_path: [ 'render_options', 'reset_before_render' ],
-            analyze: analyze_render_options_reset_before_render,  // (value, label) => complaint
-        }
-        ],
     },
 ];
 

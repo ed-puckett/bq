@@ -1,4 +1,17 @@
-export default function establish_navigation_container(ocx, options=null) {
+export function define_help_renderer(eval_environment) {
+    const { TextBasedRenderer } = eval_environment;
+    class HelpItemRenderer extends TextBasedRenderer {
+        static type = 'help-item';
+        async _render(ocx, text, options) {
+            const lines = text.trim().split('\n');
+            const first_line = lines.shift();
+            return ocx.markdown(`### ${first_line}\n- ${lines.join('\n- ')}`);
+        }
+    }
+    TextBasedRenderer.add_renderer_factory(HelpItemRenderer);
+}
+
+export function establish_navigation_container(ocx, options=null) {
     const {
         selector = '*',
         heading,
@@ -211,7 +224,7 @@ body:has(.help-container) {
                 if (nav_links_container) {
                     nav_links_container.push({
                         tag: 'li',
-                        children: [ 
+                        children: [
                             { ...a_def },
                        ],
                     });

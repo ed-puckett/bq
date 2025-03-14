@@ -11756,7 +11756,6 @@ class BqManager {
     #start_called = false;
     static get version_string() { return dist_version_info__WEBPACK_IMPORTED_MODULE_18__/* .version_string */ .N; }
     constructor() {
-        this.#eval_states.subscribe(this.#eval_states_observer.bind(this)); //!!! never unsubscribed
         this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_command_bindings */ .yU)();
         let initial_key_maps;
         try {
@@ -11803,7 +11802,6 @@ class BqManager {
         }
     }
     #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT(true); // true: multiple_stops
-    #eval_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_19__/* .SerialDataSource */ .Y();
     #command_bindings;
     #key_event_manager;
     #with_menubar = undefined; // undefined until first time a menu is set up
@@ -11817,8 +11815,6 @@ class BqManager {
     #cell_ocx_map = new WeakMap(); // maintained by this.invoke_renderer()
     #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__/* .NotificationManager */ .h();
     get notification_manager() { return this.#notification_manager; }
-    #reset_before_render = false; // from settings, kept up-to-date via settings_updated_events
-    get reset_before_render() { return this.#reset_before_render; }
     get head_element() {
         const el = document.querySelector('head');
         if (!el) {
@@ -11857,7 +11853,6 @@ class BqManager {
     get in_presentation_view() { return (this.cell_view === 'presentation'); }
     get interactive() { return (!this.in_presentation_view || this.active_cell?.shown_in_presentation); }
     get cell_parent() { return this.main_element; }
-    get activity_manager() { return this.#activity_manager; }
     get editable() { return this.#editable; }
     set_editable(editable = true) {
         editable = !!editable; // ensure Boolean
@@ -11924,10 +11919,10 @@ class BqManager {
     }
     stop() {
         try {
-            this.activity_manager.stop();
+            this.#activity_manager.stop();
         }
         catch (error) {
-            console.error('error while stopping this.activity_manager', error, this.activity_manager);
+            console.error('error while stopping this.#activity_manager', error, this.#activity_manager);
         }
     }
     stop_cell(cell) {
@@ -12113,7 +12108,7 @@ class BqManager {
         return window.location.pathname.split('/').slice(-1)[0];
     }
     // === RENDER INTERFACE ===
-    async invoke_renderer_for_type(type = 'plain', options, cell, output_element) {
+    async invoke_renderer_for_type(type = 'plain', cell, options) {
         if (cell && cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
         }
@@ -12122,24 +12117,17 @@ class BqManager {
         if (!renderer) {
             throw new TypeError('no renderer found for type "${type}"');
         }
-        return this.invoke_renderer(renderer, options, cell, output_element);
+        return this.invoke_renderer(renderer, cell, options);
     }
-    async invoke_renderer(renderer, options, cell, output_element) {
+    async invoke_renderer(renderer, cell, options) {
         if (!(renderer instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9)) {
             throw new TypeError('renderer must be an instance of TextBasedRenderer');
         }
         if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
             throw new TypeError('options must be undefined, null, or an object');
         }
-        cell ??= this.active_cell;
-        if (!cell) {
-            throw new TypeError('cell not specified and no active_cell');
-        }
         if (cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
-        }
-        if (typeof output_element !== 'undefined' && !(output_element instanceof Element)) {
-            throw new TypeError('output_element must be undefined or an instance of Element');
         }
         cell.ensure_id();
         const cell_id = cell.id;
@@ -12149,11 +12137,8 @@ class BqManager {
                 global_state: this.global_state,
             };
         }
-        // reset_before_render is performed only if no output_element was passed in
-        if (!output_element && this.#reset_before_render) {
-            cell.reset();
-        }
-        output_element ??= src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
+        cell.reset(); // removes cell's prior output element, if any
+        const output_element = src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
         // resources to be cleaned up, too.
@@ -12170,9 +12155,10 @@ class BqManager {
         output_element.addEventListener('click', event_listener, { capture: true });
         const ocx = new src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
-        this.activity_manager.manage_activity(ocx, () => {
+        this.#activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
         });
+        this.#render_states.dispatch({ renderer, cell, ocx, begin: true });
         return renderer.render(ocx, cell.get_text(), options)
             .catch((error) => {
             const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
@@ -12189,8 +12175,16 @@ class BqManager {
             if (!ocx.keepalive) {
                 ocx.stop(); // stop anything that may have been started
             }
+            this.#render_states.dispatch({ renderer, cell, ocx, begin: false });
         });
     }
+    /** this.#render_states is triggered by this.invoke_renderer() at the
+     * beginning of renderer invokation (begin = true) and again at the
+     * end (begin = false) when the renderer completes.  Note that additional
+     * background rendering may still occur is ocx.keepalive is true.
+     */
+    #render_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_19__/* .SerialDataSource */ .Y();
+    get render_states() { return this.#render_states; }
     /** this.#rendering_cells is set to a promise when render_cells() is active,
      * and removed and set back to undefined when render_cells() is done.
      * (render_cells() implements the command "eval-all".)
@@ -12212,7 +12206,7 @@ class BqManager {
             this.stop(); // stop any previously-running renderers
             this.reset_global_state();
             let stopped = false;
-            const stop_states_subscription = this.activity_manager.stop_states.subscribe((state) => {
+            const stop_states_subscription = this.#activity_manager.stop_states.subscribe((state) => {
                 stopped = true;
             });
             let render_error = undefined;
@@ -12226,7 +12220,7 @@ class BqManager {
                     break; // only eval cells before limit_cell if limit_cell given
                 }
                 try {
-                    await this.invoke_renderer_for_type(iter_cell.type, undefined, iter_cell);
+                    await this.invoke_renderer_for_type(iter_cell.type, iter_cell);
                 }
                 catch (error) {
                     console.warn('stopped render_cells after error rendering cell', error, iter_cell);
@@ -12418,7 +12412,7 @@ class BqManager {
         }
     }
     update_from_settings() {
-        const { classic_menu, editor_options, render_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)() ?? {});
+        const { classic_menu, editor_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)() ?? {});
         this.set_menu_style(classic_menu);
         for (const cell of this.get_cells()) {
             cell.update_from_settings();
@@ -12428,22 +12422,6 @@ class BqManager {
         if (root_element) {
             root_element.style.setProperty('--cell-max-height-scrolling', `${editor_options?.limited_size ?? 50}vh`);
         }
-        // update reset_before_render
-        this.#reset_before_render = !!render_options?.reset_before_render;
-    }
-    // === EVAL STATES ===
-    emit_eval_state(cell, eval_state) {
-        if (cell.bq !== this) {
-            console.error('unexpected: cell has a different bq');
-        }
-        this.#eval_states.dispatch({ cell, eval_state });
-    }
-    #eval_states_observer(data) {
-        const { cell, eval_state, } = data;
-        if (cell.bq !== this) {
-            console.error('unexpected: cell has a different bq');
-        }
-        //!!! do something...  is this observer necessary?
     }
     // === CELL MANAGEMENT ===
     /** return an ordered list of the BqCellElement (bq-cell) cells in the document
@@ -12588,7 +12566,7 @@ class BqManager {
         else {
             this.set_structure_modified();
             try {
-                await this.invoke_renderer_for_type(cell.type, undefined, cell);
+                await this.invoke_renderer_for_type(cell.type, cell);
             }
             catch (error) {
                 console.warn('error rendering cell', error, cell);
@@ -13790,16 +13768,6 @@ const sections = [
                 settings_path: ['formatting_options', 'flush_left'],
                 analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_formatting_options_flush_left */ .rZ, // (value, label) => complaint
             }],
-    }, {
-        name: 'Render',
-        settings: [{
-                id: 'render_options_reset_before_render',
-                label: 'Reset cell before render',
-                type: 'checkbox',
-                settings_path: ['render_options', 'reset_before_render'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_render_options_reset_before_render */ .ql, // (value, label) => complaint
-            }
-        ],
     },
 ];
 class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dialog */ .lG {
@@ -35383,7 +35351,6 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   kQ: () => (/* reexport safe */ _theme_settings__WEBPACK_IMPORTED_MODULE_1__.kQ),
 /* harmony export */   o3: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.o3),
 /* harmony export */   qO: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.qO),
-/* harmony export */   ql: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.ql),
 /* harmony export */   rZ: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.rZ),
 /* harmony export */   ry: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.ry),
 /* harmony export */   wq: () => (/* reexport safe */ _settings__WEBPACK_IMPORTED_MODULE_0__.wq)
@@ -35422,12 +35389,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */   km: () => (/* binding */ theme_system),
 /* harmony export */   o3: () => (/* binding */ analyze_editor_options_tab_size),
 /* harmony export */   qO: () => (/* binding */ analyze_editor_options_tab_key_indents),
-/* harmony export */   ql: () => (/* binding */ analyze_render_options_reset_before_render),
 /* harmony export */   rZ: () => (/* binding */ analyze_formatting_options_flush_left),
 /* harmony export */   ry: () => (/* binding */ analyze_editor_options_indent),
 /* harmony export */   wq: () => (/* binding */ analyze_editor_options_mode)
 /* harmony export */ });
-/* unused harmony exports validate_numeric, analyze_contained, analyze_editor_options, analyze_formatting_options, analyze_render_options, analyze_settings, _reset_settings */
+/* unused harmony exports validate_numeric, analyze_contained, analyze_editor_options, analyze_formatting_options, analyze_settings, _reset_settings */
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5428);
 /* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1602);
@@ -35455,9 +35421,6 @@ const initial_settings = {
     },
     formatting_options: {
         flush_left: true,
-    },
-    render_options: {
-        reset_before_render: true,
     },
 };
 // === EVENT INTERFACE ===
@@ -35643,33 +35606,6 @@ function analyze_formatting_options(formatting_options, name) {
     }
     return undefined;
 }
-/** analyze/validate a render_options reset_before_render property
- *  @param {string} value
- *  @return {string|undefined} returns a complaint string if invalid, or undefined if valid
- */
-function analyze_render_options_reset_before_render(value, name) {
-    if (typeof value !== 'boolean') {
-        return `${name ?? 'reset_before_render'} must be true or false`;
-    }
-    return undefined;
-}
-/** analyze/validate a render_options object
- *  @param {Object} render_options: { reset_before_render?: boolean }
- *  @return {string|undefined} returns a complaint string if invalid, or undefined if valid
- */
-function analyze_render_options(render_options, name) {
-    const keys = Object.keys(render_options);
-    if (!keys.every(k => ['reset_before_render'].includes(k))) {
-        return `${name ?? 'render_options'} may only have the keys "reset_before_render"`;
-    }
-    if ('reset_before_render' in render_options) {
-        const complaint = analyze_render_options_reset_before_render(render_options.reset_before_render);
-        if (complaint) {
-            return complaint;
-        }
-    }
-    return undefined;
-}
 const valid_theme_values = [theme_system, theme_light, theme_dark];
 function get_valid_theme_values() {
     return [...valid_theme_values];
@@ -35688,8 +35624,8 @@ function analyze_settings(settings, name) {
         return `${name ?? 'settings'} must be an object`;
     }
     const keys = Object.keys(settings);
-    if (!keys.every(k => ['editor_options', 'formatting_options', 'render_options', 'theme', 'classic_menu'].includes(k))) {
-        return `${name ?? 'settings'} may only have the keys "editor_options", "formatting_options", "render_options", "theme" or "classic_menu"`;
+    if (!keys.every(k => ['editor_options', 'formatting_options', 'theme', 'classic_menu'].includes(k))) {
+        return `${name ?? 'settings'} may only have the keys "editor_options", "formatting_options", "theme" or "classic_menu"`;
     }
     if (!('editor_options' in settings)) {
         return `${name ?? 'settings'} must contain an "editor_options" property`;
@@ -35705,15 +35641,6 @@ function analyze_settings(settings, name) {
     }
     else {
         const complaint = analyze_formatting_options(settings.formatting_options);
-        if (complaint) {
-            return complaint;
-        }
-    }
-    if (!('render_options' in settings)) {
-        return `${name ?? 'settings'} must contain a "render_options" property`;
-    }
-    else {
-        const complaint = analyze_render_options(settings.render_options);
         if (complaint) {
             return complaint;
         }
@@ -35868,7 +35795,7 @@ class IndexedDBInterface {
 
 ;// ./src/settings/storage.ts
 
-const uuid = 'aed2419a-d23e-48b0-ae31-4f378729bf9b';
+const uuid = '91cc2a89-45ea-4b2e-a5f4-3b20cfc8e2b0';
 const db_key_settings = 'settings';
 const db_key_themes = 'themes';
 // database_name and database_store_name use UUIDs, but these must be constant,
