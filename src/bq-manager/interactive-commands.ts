@@ -89,17 +89,7 @@ export async function interactive_command__eval_and_refocus(command_context: Com
         return false;
     }
     _scroll_target_into_view(command_context);
-    const eval_result = await command_context.dm.command__eval(command_context);
-    if (!eval_result) {
-        return false;
-    } else {
-        const adjacent_cell = command_context.dm.adjacent_cell(command_context.target as BqCellElement, true);
-        const next_cell = adjacent_cell
-            ? adjacent_cell
-            : (command_context.dm.in_presentation_view ? undefined : command_context.dm.create_cell());
-        next_cell?.scroll_into_view(true);
-        return true;
-    }
+    return command_context.dm.command__eval_and_refocus(command_context);
 }
 
 /** reset global eval context and then eval all cells in the document

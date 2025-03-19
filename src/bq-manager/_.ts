@@ -116,6 +116,16 @@ import 'src/style-hacks.css';  // webpack implementation
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
 
+
+export type RenderState = {  // see #render_states in class BqManager
+    type:      'begin'|'complete'|'error',
+    error?:    unknown,  // set when type === 'error'
+    renderer:  TextBasedRenderer,
+    cell:      BqCellElement,
+    ocx:       OutputContext,
+};
+
+
 export class BqManager {
     get CLASS (){ return this.constructor as typeof BqManager; }
 
@@ -627,9 +637,13 @@ export class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
 
-        this.#render_states.dispatch({ renderer, cell, ocx, begin: true });
+        this.#render_states.dispatch({ type: 'begin', renderer, cell, ocx });
 
         return renderer.render(ocx, cell.get_text(), options)
+            .then(element => {
+                this.#render_states.dispatch({ type: 'complete', renderer, cell, ocx });
+                return element;
+            })
             .catch((error) => {
                 const error_message_element = ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
                 error_message_element.scrollIntoView(false);
@@ -639,44 +653,97 @@ export class BqManager {
                 if (!ocx.keepalive) {
                     ocx.stop();  // stop anything that may have been started
                 }
+                this.#render_states.dispatch({ type: 'error', error, renderer, cell, ocx });
                 throw error;
             })
             .finally(() => {
                 if (!ocx.keepalive) {
                     ocx.stop();  // stop anything that may have been started
                 }
-                this.#render_states.dispatch({ renderer, cell, ocx, begin: false });
             });
     }
+
+    /** this.#rendering_cells is set to a promise when render_cells() is active,
+     * and removed and set back to undefined when render_cells() is done.
+     * (render_cells() implements the commands "eval, "eval-all", etc.)
+     * If render_cells() completes without error, then the promise will be
+     * fulfilled after the next "tick" with a value of undefined.  Otherwise,
+     * If there was an error, the promise will be fulfilled after the next
+     * "tick" with the error object.  The promise is not rejected to prevent
+     * unhandled rejection issues.
+     */
+    #rendering_cells: undefined|Promise<any> = undefined;
+    get rendering_cells (){ return this.#rendering_cells; }
 
     /** this.#render_states is triggered by this.invoke_renderer() at the
      * beginning of renderer invokation (begin = true) and again at the
      * end (begin = false) when the renderer completes.  Note that additional
      * background rendering may still occur is ocx.keepalive is true.
      */
-    #render_states = new SerialDataSource<{ renderer: TextBasedRenderer, cell: BqCellElement, ocx: OutputContext, begin: boolean }>();
+    #render_states = new SerialDataSource<RenderState>();
     get render_states (){ return this.#render_states; }
 
-    /** this.#rendering_cells is set to a promise when render_cells() is active,
-     * and removed and set back to undefined when render_cells() is done.
-     * (render_cells() implements the command "eval-all".)
-     * If render_cells() completes without error, then the promise will be
-     * fulfilled after queueing a microtask.  Otherwise if there was an error,
-     * the promise never settles.
-     */
-    #rendering_cells: undefined|Promise<any> = undefined;
-    get rendering_cells (){ return this.#rendering_cells; }
+    subscribe_render_states_during_render(observer: (state: RenderState) => void) {
+        if (!this.#rendering_cells) {
+            throw new Error('render not active');
+        }
+        const abort_controller = new AbortController();
+        this.#rendering_cells.then(() => abort_controller.abort());
+        this.#render_states.subscribe(observer, {
+            abort_signal: abort_controller.signal,
+        });
+    }
 
-    async render_cells(limit_cell?: null|BqCellElement): Promise<boolean> {
+    /** render (a range of) cells in the document, in order.
+     * @param {undefined|null|BqCellElement} limit_cell the cell just after the last cell to be rendered
+     * @param {undefined|null|BqCellElement} start_cell the first cell to be rendered
+     * @return {Boolean} true iff no errors occurred
+     * Rendering stops if an error occurs.
+     * An error occurs if the specified cell(s) do not currently exist in the document,
+     * or if they are out of order.
+     * Rendering begins with start_cell (or the first cell if start_cell is not given),
+     * and proceeds to subsequent cells until the limit_cell is encountered of if the
+     * end of the document is encountered.  Note that the next cell to be rendered is
+     * determined after the prior cell is rendered; this means that if rendering alters
+     * the structure of cells in the document then the order of rendering will be also
+     * be affected.
+     */
+    async render_cells(limit_cell?: null|BqCellElement, start_cell?: null|BqCellElement): Promise<boolean> {
         let result = false;
 
+        let render_error: unknown = undefined;
+
+        // set up this.#rendering_cells promise:
         var resolve_rendering_cells: undefined|((value: PromiseLike<any> | any) => void);
         this.#rendering_cells = new Promise((resolve) => {
             resolve_rendering_cells = resolve;
         });
 
+        // determine start_cell and limit_cell and validate
         const cells = this.get_cells();
-        if (!limit_cell || cells.indexOf(limit_cell) !== -1) {
+        if (cells.length <= 0) {
+            render_error = new Error('document has no cells')
+        } else if (typeof start_cell !== 'undefined' && start_cell !== null && !(start_cell instanceof BqCellElement)) {
+            render_error = new Error('start_cell must be undefined, null or an instance of BqCellElement')
+        } else if (typeof limit_cell !== 'undefined' && limit_cell !== null && !(limit_cell instanceof BqCellElement)) {
+            render_error = new Error('limit_cell must be undefined, null or an instance of BqCellElement')
+        } else {
+            start_cell ??= cells[0];
+            const start_cell_index = cells.indexOf(start_cell);
+            if (start_cell_index === -1) {
+                render_error = new Error('start_cell does not exist in document');
+            } else {
+                const limit_cell_index = limit_cell ? cells.indexOf(limit_cell) : -1;
+                if (limit_cell_index !== -1 && limit_cell_index < start_cell_index) {
+                    render_error = new Error('limit_cell must not occur before start_cell');
+                }
+                // validation complete
+            }
+        }
+
+        if (render_error) {
+            console.warn('render_cells: validation failed', render_error);
+        } else {
             this.set_structure_modified();
             this.stop();  // stop any previously-running renderers
             this.reset_global_state();
@@ -686,25 +753,24 @@ export class BqManager {
                 stopped = true;
             })
 
-            let render_error: unknown = undefined;
-
-            cell_eval_loop:
-            for (const iter_cell of cells) {
+            cell_render_loop:
+            for (let iter_cell = start_cell ; iter_cell; iter_cell = this.adjacent_cell(iter_cell, true, true)) {
                 if (stopped) {
                     this.notification_manager.add('stopped');
-                    break;
+                    break cell_render_loop;
                 }
+
                 iter_cell.scroll_into_view(true);
-                if (limit_cell && iter_cell === limit_cell) {
-                    break;  // only eval cells before limit_cell if limit_cell given
+                if (iter_cell === limit_cell) {
+                    break cell_render_loop;
                 }
 
                 try {
                     await this.invoke_renderer_for_type(iter_cell.type, iter_cell);
                 } catch (error: unknown) {
-                    console.warn('stopped render_cells after error rendering cell', error, iter_cell);
+                    console.warn('stopped render_cells after error while rendering cell', error, iter_cell);
                     render_error = error;
-                    break cell_eval_loop;
+                    break cell_render_loop;
                 }
             }
 
@@ -712,25 +778,20 @@ export class BqManager {
 
             stop_states_subscription.unsubscribe();
 
+            // reset this.#rendering_cells to undefined and then resolve the
+            // promise (to which this.#rendering_cells was previously set).
             this.#rendering_cells = undefined;
-            // Only resolve the promise if there were no errors.
-            // The reason is that if there was an error (for example, the ocx
-            // threw an error after being stopped), then the ocx will be
-            // unusable and trying to do something with it will just cause
-            // more errors....
-            if (!render_error) {
-                // use setTimeout to allow async operations to settle before
-                // calling resolve_rendering_cells().
-                setTimeout(() => {
-                    try {
-                        // typescript cannot determine that resolve_rendering_cells
-                        // is not undefined...
-                        resolve_rendering_cells?.(undefined);
-                    } catch (error) {
-                        console.warn('error received while calling resolve_rendering_cells()', error);
-                    }
-                });
-            }
+            // Code that hooks this.#rendering_cells must be careful if that
+            // promise is fulfilled with an error object.  The reason is that
+            // if there was an error (for example, the ocx threw an error after
+            // being stopped), then the ocx will be unusable and trying to do
+            // something with it will just cause more errors....
+            // Use setTimeout to allow async operations to settle before
+            // calling resolve_rendering_cells().
+            setTimeout(() => {
+                // (render_error === undefined) implies no error
+                resolve_rendering_cells?.(render_error);
+            });
         }
 
         return result;
@@ -1080,24 +1141,28 @@ export class BqManager {
         if (!(cell instanceof BqCellElement)) {
             return false;
         } else {
-            this.set_structure_modified();
-            try {
-                await this.invoke_renderer_for_type(cell.type, cell);
-            } catch (error: unknown) {
-                console.warn('error rendering cell', error, cell);
-                return false;
-            }
-            return true;
+            const result = this.render_cells(this.adjacent_cell(cell, true, true), cell);
+            cell.scroll_into_view(true);
+            return result;
         }
     }
 
-    async #multi_eval_helper(command_context: CommandContext<BqManager>, eval_all: boolean = false): Promise<boolean> {
-        if (!(command_context.target instanceof BqCellElement)) {
+    /** eval target cell and refocus on next cell
+     *  @return {Boolean} true iff command successfully handled
+     */
+    async command__eval_and_refocus(command_context: CommandContext<BqManager>): Promise<boolean> {
+        const cell = command_context.target;
+        if (!(cell instanceof BqCellElement)) {
             return false;
         } else {
-            return eval_all
-                ? this.render_cells()
-                : this.render_cells(command_context.target);
+            const next_cell = this.adjacent_cell(cell, true, true);
+            const result = this.render_cells(next_cell, cell);
+            if (!next_cell) {
+                if (!this.in_presentation_view) {
+                    this.create_cell().scroll_into_view(true);
+                }
+            }
+            return result;
         }
     }
 
@@ -1106,7 +1171,11 @@ export class BqManager {
      *  @return {Boolean} true iff command successfully handled
      */
     async command__eval_before(command_context: CommandContext<BqManager>): Promise<boolean> {
-        return this.#multi_eval_helper(command_context, false);
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            return this.render_cells(command_context.target);
+        }
     }
 
     /** stop all running evaluations, reset global eval context and then eval all cells in the document
@@ -1114,7 +1183,11 @@ export class BqManager {
      *  @return {Boolean} true iff command successfully handled
      */
     async command__eval_all(command_context: CommandContext<BqManager>): Promise<boolean> {
-        return this.#multi_eval_helper(command_context, true);
+        if (!(command_context.target instanceof BqCellElement)) {
+            return false;
+        } else {
+            return this.render_cells();
+        }
     }
 
     /** stop evaluation for the target cell.

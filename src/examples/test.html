@@ -6,13 +6,14 @@
 </head>
 <body>
 <bq-cell data-type="javascript" id="id-d7a0b782-0c74-40ec-8f6d-6c1bdfafeb4d">// Demonstrate BqManager.prototype.rendering_cells promise
-// This field is undefined unless a multi-cell eval is active in which case it is a
-// promise that will fulfill when (and if) the multi-cell eval completes without error.
 keepalive();
-ocx.bq.rendering_cells?.then(() => {
-    ocx.markdown('# Render complete!');
-    cell.scroll_into_view(true);
+ocx.bq.rendering_cells?.then(error => {
+    if (!error) {
+        ocx.markdown('# Render complete!');
+        cell.scroll_into_view(true);
+    }
 });
+ocx.bq.subscribe_render_states_during_render(render_state => console.log('RENDER_STATE', render_state));
 </bq-cell>
 <bq-cell data-type="markdown" id="id-6f7b7bde-4e30-4630-80e4-1bf57d042d3d">## Markdown
 *... with math:*

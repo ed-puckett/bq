@@ -99,11 +99,11 @@ export class Menu<DocumentManager> {
     #selects = new SerialDataSource<{ select: boolean, target: EventTarget }>();  // select: true is sent before, select: false is sent after
     get selects (){ return this.#selects; }
 
-    #get_command_bindings: undefined|null|MenuCommandBindingsGetter;  // set in constructor
+    #get_command_bindings: undefined|null|MenuCommandBindingsGetter;  // initialized in constructor
     get get_command_bindings (){ return this.#get_command_bindings; }
 
     #menu_command_to_elements = new Map<string, Set<HTMLElement>>();
-    #menu_container: undefined|HTMLElement;  // set in constructor, set back to undefined in this.remove()
+    #menu_container: undefined|HTMLElement;  // initialized in constructor, set back to undefined in this.remove()
 
     get element (){ return this.#menu_container; }
 

@@ -49,7 +49,7 @@ export class Activity {
     }
 
     // --- internal ---
-    readonly #multiple_stops: boolean;  // set in constructor
+    readonly #multiple_stops: boolean;  // initialized in constructor
     #abort_controller = new AbortController();
     #stop_states      = new SerialDataSource<StopState>();
 

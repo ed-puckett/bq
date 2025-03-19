@@ -99,7 +99,7 @@ export class AbortSignalAction {
 
     // --- internal ---
 
-    // set in constructor:
+    // initialized in constructor:
     #abort_signal: undefined|AbortSignal;
     #action:       (() => void);
 
