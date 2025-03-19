@@ -124,6 +124,9 @@ export class LocatedError extends Error {
         this.#ocx = ocx;
         this.#line_number  = line_number;
         this.#column_index = column_index;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
     }
     #line_number:  number;
     #column_index: number;

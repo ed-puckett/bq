@@ -230,6 +230,9 @@ export class JavaScriptParseError extends LocatedError {
                    cause: underlying_error,
                } );
         this.#babel_parse_error_object = babel_parse_error_object;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
     }
     #babel_parse_error_object: any;
 
@@ -286,7 +289,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
-                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
+                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing received error', parse_error);
                     // just leave updated_parse_error as is
                 } else {
                     updated_parse_error = new JavaScriptParseError(parse_result.errors[0], parse_error, eval_ocx);

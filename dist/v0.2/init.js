@@ -11559,11 +11559,22 @@ class CodemirrorInterface {
         }
         else {
             const head = line.from + column_index;
-            this.#view.dispatch({
-                selection: { head, anchor: head },
-                scrollIntoView: true,
-            });
-            return true;
+            try {
+                this.#view.dispatch({
+                    selection: { head, anchor: head },
+                    scrollIntoView: true,
+                });
+                return true;
+            }
+            catch (_) {
+                // Chromium v134 can throw "RangeError: Selection points
+                // outside of document" if the line_number and column_index
+                // are out of range, and this can happen because the
+                // JavascriptRenderer inserts a preamble into the code when
+                // it constructs the AsyncGeneratorFunction object used to
+                // evaluate the cell code.
+                return false; // just giving up...
+            }
         }
     }
     is_neutral() {
@@ -12161,6 +12172,9 @@ class BqManager {
         this.#render_states.dispatch({ type: 'begin', renderer, cell, ocx });
         return renderer.render(ocx, cell.get_text(), options)
             .then(element => {
+            if (!ocx.keepalive) {
+                ocx.stop(); // stop anything that may have been started
+            }
             this.#render_states.dispatch({ type: 'complete', renderer, cell, ocx });
             return element;
         })
@@ -12175,11 +12189,6 @@ class BqManager {
             }
             this.#render_states.dispatch({ type: 'error', error, renderer, cell, ocx });
             throw error;
-        })
-            .finally(() => {
-            if (!ocx.keepalive) {
-                ocx.stop(); // stop anything that may have been started
-            }
         });
     }
     /** this.#rendering_cells is set to a promise when render_cells() is active,
@@ -15467,6 +15476,9 @@ class LocatedError extends Error {
         this.#ocx = ocx;
         this.#line_number = line_number;
         this.#column_index = column_index;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
     }
     #line_number;
     #column_index;
@@ -15649,6 +15661,9 @@ class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODUL
             cause: underlying_error,
         });
         this.#babel_parse_error_object = babel_parse_error_object;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
     }
     #babel_parse_error_object;
     get babel_parse_error_object() { return this.#babel_parse_error_object; }
@@ -15696,7 +15711,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
-                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing the received error', parse_error);
+                    console.warn('unexpected: got error while creating AsyncGeneratorFunction but babel_parse did not return errors; throwing received error', parse_error);
                     // just leave updated_parse_error as is
                 }
                 else {

@@ -641,6 +641,9 @@ export class BqManager {
 
         return renderer.render(ocx, cell.get_text(), options)
             .then(element => {
+                if (!ocx.keepalive) {
+                    ocx.stop();  // stop anything that may have been started
+                }
                 this.#render_states.dispatch({ type: 'complete', renderer, cell, ocx });
                 return element;
             })
@@ -655,11 +658,6 @@ export class BqManager {
                 }
                 this.#render_states.dispatch({ type: 'error', error, renderer, cell, ocx });
                 throw error;
-            })
-            .finally(() => {
-                if (!ocx.keepalive) {
-                    ocx.stop();  // stop anything that may have been started
-                }
             });
     }
 

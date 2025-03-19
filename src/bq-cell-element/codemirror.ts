@@ -224,11 +224,21 @@ export class CodemirrorInterface {
             return false;
         } else {
             const head = line.from + column_index;
-            this.#view.dispatch({
-                selection: { head, anchor: head },
-                scrollIntoView: true,
-            });
-            return true;
+            try {
+                this.#view.dispatch({
+                    selection: { head, anchor: head },
+                    scrollIntoView: true,
+                });
+                return true;
+            } catch (_: unknown) {
+                // Chromium v134 can throw "RangeError: Selection points
+                // outside of document" if the line_number and column_index
+                // are out of range, and this can happen because the
+                // JavascriptRenderer inserts a preamble into the code when
+                // it constructs the AsyncGeneratorFunction object used to
+                // evaluate the cell code.
+                return false;  // just giving up...
+            }
         }
     }
 
