@@ -12172,6 +12172,7 @@ class BqManager {
         this.#render_states.dispatch({ type: 'begin', renderer, cell, ocx });
         return renderer.render(ocx, cell.get_text(), options)
             .then(element => {
+            this.#render_states.dispatch({ type: 'end', renderer, cell, ocx });
             if (!ocx.keepalive) {
                 ocx.stop(); // stop anything that may have been started
             }
@@ -12556,7 +12557,9 @@ class BqManager {
     }
     // === SHOW UNHANDLED EVENT ===
     _show_unhandled_event(event, is_unhandled_rejection) {
-        const message = `Unhandled ${is_unhandled_rejection ? 'rejection' : 'error'}: ${event?.reason?.message}`;
+        const message = is_unhandled_rejection
+            ? `Unhandled rejection: ${event?.reason?.message}`
+            : `Unhandled error: ${event?.error?.message}`;
         lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__/* .AlertDialog */ .Lt.run(message);
     }
     // === COMMAND HANDLER IMPLEMENTATIONS ===

@@ -118,7 +118,7 @@ const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
 
 export type RenderState = {  // see #render_states in class BqManager
-    type:      'begin'|'complete'|'error',
+    type:      'begin'|'end'|'complete'|'error',
     error?:    unknown,  // set when type === 'error'
     renderer:  TextBasedRenderer,
     cell:      BqCellElement,
@@ -641,6 +641,7 @@ export class BqManager {
 
         return renderer.render(ocx, cell.get_text(), options)
             .then(element => {
+                this.#render_states.dispatch({ type: 'end', renderer, cell, ocx });
                 if (!ocx.keepalive) {
                     ocx.stop();  // stop anything that may have been started
                 }

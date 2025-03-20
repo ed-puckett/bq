@@ -4,26 +4,9 @@
     <meta charset="utf-8">
     <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
     <script src="../bq-bootstrap.js"></script>
-    <!--
-        These help files are intended to be located in a fixed relative location
-        from the dist directory on the server on which they reside, and the
-        bootstrap code is loaded from a relative url.  This makes the help files
-        independent of the server on which they are actually located.
-        The top-level help directory is a direct subdirectory of dist/<version_dir>.
-      -->
 </head>
 <body>
-<bq-cell data-type="javascript">
-const {
-    define_help_renderer,
-    establish_navigation_container,
-} = await import_local('./establish-navigation-container.js');
-define_help_renderer(eval_environment);
-vars({ establish_navigation_container });
-</bq-cell>
-<bq-cell data-type="markdown" class="show-full">
-~~~! javascript
-bqx.establish_navigation_container(ocx, {
+<bq-cell data-type="javascript">(await import_local('./init-help.js')).init_help(eval_environment, {
     heading: 'SerialDataSource',
     nav_trail_heading: '>>>',
     nav_trail: [
@@ -31,8 +14,8 @@ bqx.establish_navigation_container(ocx, {
         [ 'y', 'http://y' ],
         [ 'z', 'http://z' ],
     ],
-});
-~~~
+});</bq-cell>
+<bq-cell data-type="markdown" class="show-full">
 
 ~~~! help-item
 help item #1
