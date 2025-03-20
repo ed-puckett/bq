@@ -1061,7 +1061,9 @@ export class BqManager {
     // === SHOW UNHANDLED EVENT ===
 
     _show_unhandled_event(event: Event, is_unhandled_rejection: boolean): void {
-        const message = `Unhandled ${is_unhandled_rejection ? 'rejection' : 'error'}: ${(event as any)?.reason?.message}`;
+        const message = is_unhandled_rejection
+            ? `Unhandled rejection: ${(event as any)?.reason?.message}`
+            : `Unhandled error: ${(event as any)?.error?.message}`;
         AlertDialog.run(message);
     }
 
