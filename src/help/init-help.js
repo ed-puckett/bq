@@ -1,7 +1,6 @@
 export function init_help(eval_environment, options) {
     define_help_renderer(eval_environment);
     eval_environment.ocx.bq.subscribe_render_states_during_render(render_state => {
-console.log({ render_state });//!!!
         if (render_state.ocx !== eval_environment.ocx) {  // skip first cell (the one that calls this initialization function)
             switch (render_state.type) {
             case 'begin': {
@@ -39,17 +38,14 @@ function define_help_renderer(eval_environment) {
 function establish_navigation_container(ocx, options=null) {
     const {
         selector = '*',
-        heading,
         nav_trail,
         nav_trail_heading,
-        no_scroll,
+        no_set_title = false,
+        no_scroll    = false,
     } = (options ?? {});
 
     if (selector !== null && ![ 'undefined', 'string' ].includes(typeof selector)) {
         throw new TypeError('selector must be undefined, null, or a string');
-    }
-    if (heading !== null && ![ 'undefined', 'string' ].includes(typeof heading)) {
-        throw new TypeError('heading must be undefined, null, or a string');
     }
     if ( nav_trail !== null && typeof nav_trail !== 'undefined' &&
          !( Array.isArray(nav_trail) && nav_trail.every(pair_item => Array.isArray(pair_item) && pair_item.length === 2 && pair_item.every(item => typeof item === 'string')) ) ) {
@@ -134,10 +130,17 @@ body:has(.help-container) {
     grid-area: help-sidebar;
     grid-column: sidebar-start / sidebar-end;
 
+    & .help-sidebar-title {
+        &::before {
+            content: url('../favicon.ico');
+            margin: 0 0.5em 0 0;
+        }
+    }
+
     & .help-sidebar-heading {
         margin-block-start: 0.67em;
         margin-block-end: 0.67em;
-        font-size: 2em;
+        font-size: 1.8em;
         font-weight: bold;
     }
 
@@ -193,13 +196,31 @@ body:has(.help-container) {
     );
 
     const sidebar_children = [];
-    if (heading) {
-        sidebar_children.push({
-            attrs: {
-                class: 'help-sidebar-heading',
+    sidebar_children.push({
+        children: [
+            {
+                tag: 'h1',
+                attrs: {
+                    class: 'help-sidebar-title',
+                },
+                innerText: `bq help`,
             },
-            innerText: heading,
-        });
+        ],
+    });
+    if (!no_set_title) {
+        const first_h1 = document.querySelector('h1');
+        if (first_h1) {
+            const title = first_h1.innerText;
+            if (title) {
+                ocx.bq.set_title(title);
+                sidebar_children.push({
+                    attrs: {
+                        class: 'help-sidebar-heading',
+                    },
+                    innerText: title,
+                });
+            }
+        }
     }
     const nav_heading_id_prefix = 'nav-heading-';
     const nav_link_id_prefix    = 'nav-';
