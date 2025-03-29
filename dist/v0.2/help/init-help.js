@@ -205,6 +205,9 @@ body:has(.help-container) {
                 },
                 innerText: `bq help`,
             },
+            {
+                tag: 'hr',
+            },
         ],
     });
     if (!no_set_title) {

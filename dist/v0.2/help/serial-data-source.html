@@ -4,96 +4,74 @@
     <meta charset="utf-8">
     <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
     <script src="../bq-bootstrap.js"></script>
-    <!--
-        These help files are intended to be located in a fixed relative location
-        from the dist directory on the server on which they reside, and the
-        bootstrap code is loaded from a relative url.  This makes the help files
-        independent of the server on which they are actually located.
-        The top-level help directory is a direct subdirectory of dist/<version_dir>.
-      -->
 </head>
 <body>
-<bq-cell data-type="javascript" class="show-full">
-// Custom Renderer Example
-const bullet = '\u00b7';  // middle dot
-class ListItemRenderer extends TextBasedRenderer {
-    static type = 'list-item';
-    async _render(ocx, value, options) {
-        return ocx.render_text(`${bullet} ${value?.trim()}\n`);
-    }
-}
-TextBasedRenderer.add_renderer_factory(ListItemRenderer);
-</bq-cell>
+<bq-cell data-type="javascript">(await import_local('./init-help.js')).init_help(eval_environment);</bq-cell>
 <bq-cell data-type="markdown" class="show-full">
-~~~! javascript
-(await import_local('./establish-navigation-container.js'))
-    .default(ocx, {
-        heading: 'XYZZY',
-        nav_trail_heading: '>>>',
-        nav_trail: [
-            [ 'x', 'http://x' ],
-            [ 'y', 'http://y' ],
-            [ 'z', 'http://z' ],
-        ],
-    });
-~~~
 
 # SerialDataSource
 
-## Properties {#nav-heading-properties}
-
-### prop-item1 {#nav-prop-item1}
-### prop-item2 {#nav-prop-item2}
-### prop-item3 {#nav-prop-item3}
-
-## Methods {#nav-heading-methods}
-
-~~~! list-item
-item1
-~~~
-~~~! list-item
-item2
-~~~
-~~~! list-item
-item3
+~~~! help-item
+help item #1
+text line 1
+text line 2
+text line 3
 ~~~
 
-### subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription
+export type SerialDataSourceOptions = {
+    abort_signal?: AbortSignal,
+    once?:         Boolean,
+};
 
-### subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription {#nav-x}
+export type SerialDataSourceSubscription = {
+    abort_signal?: AbortSignal,
+    unsubscribe:   (() => void),
+};
 
-~~~ javascript
-subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription {
-~~~
+export class SerialDataSource<T> {
+    #subject = new Subject<T>();
 
-1. list
-item
+    subscribe(observer: ((value: T) => void), options?: SerialDataSourceOptions): SerialDataSourceSubscription {
+        const {
+            abort_signal,
+            once,
+        } = (options ?? {} as SerialDataSourceOptions);
 
-1. list1
-item1
+        abort_signal?.throwIfAborted();
 
-1. list2
-item3
+        let subscription: undefined|SerialDataSourceSubscription;
+        let unsubscribed = false;
+        const subscription_observer = once
+            ? (value: T) => {
+                if (!unsubscribed) {
+                    unsubscribed = true;
+                    subscription?.unsubscribe();  // note: subscription is not undefined
+                }
+                observer(value);
+            }
+            : observer;
+        subscription = this.#subject.subscribe(subscription_observer);
 
-1. list0
+        const abort_signal_action = new AbortSignalAction(
+            abort_signal,
+            () => { subscription.unsubscribe(); },
+        );
+        const unsubscribe = () => {
+            abort_signal_action.trigger();
+        };
 
-   1. indent
-     item0
+        return {
+            abort_signal,
+            unsubscribe,
+        } as SerialDataSourceSubscription;
+    }
 
-&lt;dl>
-&lt;dt>dt1&lt;/dt>
-&lt;dd>dd1&lt;/dd>
-&lt;dt>dt2&lt;/dt>
-    &lt;dd>&lt;dl>
-        &lt;dt>idt1&lt;/dt>
-        &lt;dd>idd1&lt;/dd>
-        &lt;dt>idt2&lt;/dt>
-        &lt;dd>idd2&lt;/dd>
-    &lt;/dl>&lt;/dd>
-&lt;dt>dt3&lt;/dt>
-&lt;dd>dd3&lt;/dd>
-&lt;/dl>
+    dispatch(data: T) {
+        this.#subject.next(data);
+    }
+}
 
-&lt;/bq-cell>
-&lt;/body>
-&lt;/html>
+
+</bq-cell>
+</body>
+</html>

@@ -66,6 +66,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     delay_ms
 //     next_tick
 //     next_micro_tick
+//     JSON5
 //     sprintf
 //     render_text
 //     render_error
@@ -189,6 +190,10 @@ import {
 import {
     SerialDataSource,
 } from 'lib/sys/serial-data-source';
+
+import {
+    JSON5,
+} from 'lib/sys/json5';
 
 import {
     uuidv4,
@@ -481,6 +486,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             delay_ms:         ocx.delay_ms.bind(ocx),
             next_tick:        ocx.next_tick.bind(ocx),
             next_micro_tick:  ocx.next_micro_tick.bind(ocx),
+
+            JSON5,
 
             // output functions defined by ocx
             sprintf:          ocx.sprintf.bind(ocx),

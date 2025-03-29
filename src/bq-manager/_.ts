@@ -1142,7 +1142,7 @@ export class BqManager {
         if (!(cell instanceof BqCellElement)) {
             return false;
         } else {
-            const result = this.render_cells(this.adjacent_cell(cell, true, true), cell);
+            const result = await this.render_cells(this.adjacent_cell(cell, true, true), cell);
             cell.scroll_into_view(true);
             return result;
         }
@@ -1157,7 +1157,7 @@ export class BqManager {
             return false;
         } else {
             const next_cell = this.adjacent_cell(cell, true, true);
-            const result = this.render_cells(next_cell, cell);
+            const result = await this.render_cells(next_cell, cell);
             if (!next_cell) {
                 if (!this.in_presentation_view) {
                     this.create_cell().scroll_into_view(true);
