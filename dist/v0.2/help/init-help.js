@@ -144,16 +144,16 @@ body:has(.help-container) {
         font-weight: bold;
     }
 
-    & a {
-        display: block;
-        margin: 0.25em 0;
-    }
-
     & .help-sidebar-link-heading {
         margin-block-start: 0.67em;
         margin-block-end: 0.67em;
         font-size: 1.5em;
         font-weight: bold;
+    }
+
+    & a {
+        display: block;
+        margin: 0.25em 0;
     }
 
     & li {

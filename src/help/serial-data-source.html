@@ -18,15 +18,19 @@ text line 2
 text line 3
 ~~~
 
+~~~
 export type SerialDataSourceOptions = {
     abort_signal?: AbortSignal,
     once?:         Boolean,
 };
+~~~
 
+~~~
 export type SerialDataSourceSubscription = {
     abort_signal?: AbortSignal,
     unsubscribe:   (() => void),
 };
+~~~
 
 export class SerialDataSource<T> {
     #subject = new Subject<T>();
