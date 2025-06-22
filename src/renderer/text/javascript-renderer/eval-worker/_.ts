@@ -61,7 +61,7 @@ export class EvalWorker extends Activity {
         super.stop();
     }
 
-    async eval(expression: string, eval_context: object): Promise<any> {
+    async eval(expression: string, bqv: object): Promise<any> {
         if (this.stopped) {
             throw new Error(`eval worker ${this.id}: worker has been stopped`);
         }
@@ -93,7 +93,7 @@ export class EvalWorker extends Activity {
             id: expression_id,
             worker_id: this.id,
             expression,
-            eval_context,
+            bqv,
         };
 
         this.#current_expression = {
@@ -130,7 +130,7 @@ export class EvalWorker extends Activity {
     }
 
     // returns an async interator, i.e., this function is an async generator
-    stream_eval(expression: string, eval_context: object) {
+    stream_eval(expression: string, bqv: object) {
         const self = this;
 
         if (self.stopped) {
@@ -188,7 +188,7 @@ export class EvalWorker extends Activity {
             id: expression_id,
             worker_id: self.id,
             expression,
-            eval_context,
+            bqv,
         };
 
         self.#current_expression = {

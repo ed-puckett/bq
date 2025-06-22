@@ -21,7 +21,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // derived from the global_state property of the options passed to the
 // eval() method.
 //
-// vars(...objects) assigns new properties to "bqx", the evaluation
+// vars(...objects) assigns new properties to "bqv", the evaluation
 // context, within the code.  The return value is the array of the
 // given arguments (unmodified).
 //
@@ -39,7 +39,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
-//     bqx:           the global eval environment (synonym for "this" on entry)
+//     bqv:           the notebook-wide eval environment (synonym for "this" on entry)
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
@@ -51,7 +51,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //!!!
 //     eval_environment
 //     vars
-//     bqx
+//     bqv
 //     ocx
 //     source_code
 //     cell
@@ -263,11 +263,11 @@ export class JavaScriptRenderer extends TextBasedRenderer {
     async _render(ocx: OutputContext, code: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         const global_state = options?.global_state ?? ocx.bq.global_state;
 
-        const eval_context = ((global_state as any)[this.type] ??= {});
+        const bqv = ((global_state as any)[this.type] ??= {});
 
         const eval_ocx = ocx.CLASS.ocx_for_options(ocx, options);
 
-        const eval_environment = await this.#create_eval_environment(eval_context, eval_ocx, code);
+        const eval_environment = await this.#create_eval_environment(bqv, eval_ocx, code);
         const eval_environment_entries = Object.entries(eval_environment);
 
         // create an async generator with the given code as the heart of its
@@ -280,7 +280,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         const eval_fn_args   = eval_environment_entries.map(([_, v]) => v);
 
         // evaluate the code:
-        const eval_fn_this = eval_context;
+        const eval_fn_this = bqv;
         // add newline to code to prevent problems in case the last line is a // comment
         const code_to_run = `"use strict";${code}\n`;
         const eval_fn_body = code_to_run;
@@ -331,7 +331,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
                 // "error element" that can be recognized further up as an
                 // error, but this seems kludgey.  So (for now at least) the
                 // user is required to handle potential errors in their code.
-                // See: examples/unhandled-rejection.html
+                // See: src/examples/unhandled-rejection.html
                 throw caught_error;
             }
 
@@ -351,7 +351,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         return eval_ocx.element;
     }
 
-    async #create_eval_environment(eval_context: object, ocx: OutputContext, source_code: string) {
+    async #create_eval_environment(bqv: object, ocx: OutputContext, source_code: string) {
         const cell_id = ocx.element.closest(`[${OutputContext.attribute__data_source_element}]`)?.getAttribute(OutputContext.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
 
@@ -458,7 +458,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         }
 
         function vars(...objects: object[]) {
-            Object.assign((eval_context as any), ...objects);
+            Object.assign((bqv as any), ...objects);
             return objects;
         }
 
@@ -466,7 +466,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             eval_environment: undefined as any,  // updated below to be a direct self reference
 
             vars:             ocx.AIS(vars),
-            bqx:              eval_context,  // the evalulation context, and a synonym for "this" in the running code
+            bqv,              // the notebook-wide eval environment (synonym for "this" on entry)
             ocx,
             source_code,      // this evaluation's source code
             cell,             // this evaluation's associated cell or undefined if no associated cell

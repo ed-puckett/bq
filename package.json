@@ -1,6 +1,6 @@
 {
   "name": "bq",
-  "version": "0.2.0",
+  "version": "10.0.0",
   "author": "Ed Puckett",
   "description": "Interactive notebook based on Web standards and JavaScript/TypeScript",
   "keywords": "JavaScript EcmaScript TypeScript es5 es6 interactive notebook logbook",

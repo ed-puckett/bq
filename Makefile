@@ -15,7 +15,7 @@
 # 7. check the dist directory to make sure the new vX.Y directory has been created
 # 8. push changes to the git servers
 
-VERSION = 0.2
+VERSION = 10.0
 
 SERVER_ADDRESS    = 127.0.0.127
 SERVER_PORT       = 4320
@@ -40,6 +40,9 @@ all: $(DIST_DIR)
 .PHONY: clean
 clean: #kill-server #<<< NOTE: just leave server running...
 	@-rm -fr "$(DIST_DIR)" "webpack.config.js" >/dev/null 2>&1 || true
+# NOTE: leave everything in the top-level of the dist directory intact
+# (preserving old versions) while removing only the subdirectory for
+# the current version (as specified above by the VERSION variable).
 
 .PHONY: full-clean
 full-clean: clean
