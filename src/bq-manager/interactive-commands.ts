@@ -59,64 +59,64 @@ export async function interactive_command__export(command_context: CommandContex
 }
 
 
-export function interactive_command__toggle_auto_eval(command_context: CommandContext<BqManager>): boolean {
+export function interactive_command__toggle_auto_render(command_context: CommandContext<BqManager>): boolean {
     if (command_context.dm.in_presentation_view) {
         return false;
     }
-    return command_context.dm.command__toggle_auto_eval(command_context);
+    return command_context.dm.command__toggle_auto_render(command_context);
 }
 
 export function interactive_command__show_settings_dialog(command_context: CommandContext<BqManager>): boolean {
     return command_context.dm.command__show_settings_dialog(command_context);
 }
 
-/** eval target cell
+/** render target cell
  *  @return {Boolean} true iff command successfully handled
  */
-export async function interactive_command__eval(command_context: CommandContext<BqManager>): Promise<boolean> {
+export async function interactive_command__render(command_context: CommandContext<BqManager>): Promise<boolean> {
     if (!command_context.dm.interactive) {
         return false;
     }
     _scroll_target_into_view(command_context);
-    return command_context.dm.command__eval(command_context);
+    return command_context.dm.command__render(command_context);
 }
 
-/** eval target cell and refocus to next cell (or a new one if at the end of the document)
+/** render target cell and refocus to next cell (or a new one if at the end of the document)
  *  @return {Boolean} true iff command successfully handled
  */
-export async function interactive_command__eval_and_refocus(command_context: CommandContext<BqManager>): Promise<boolean> {
+export async function interactive_command__render_and_refocus(command_context: CommandContext<BqManager>): Promise<boolean> {
     if (!command_context.dm.interactive) {
         return false;
     }
     _scroll_target_into_view(command_context);
-    return command_context.dm.command__eval_and_refocus(command_context);
+    return command_context.dm.command__render_and_refocus(command_context);
 }
 
-/** reset global eval context and then eval all cells in the document
- *  from the beginning up to but not including the target cell.
+/** reset global state and then render all cells in the document from the
+ *  beginning up to but not including the target cell.
  *  @return {Boolean} true iff command successfully handled
  */
-export async function interactive_command__eval_before(command_context: CommandContext<BqManager>): Promise<boolean> {
+export async function interactive_command__render_before(command_context: CommandContext<BqManager>): Promise<boolean> {
     if (command_context.dm.in_presentation_view) {
         return false;
     }
     _scroll_target_into_view(command_context);
-    return command_context.dm.command__eval_before(command_context);
+    return command_context.dm.command__render_before(command_context);
 }
 
-/** stop all running evaluations, reset global eval context and then eval all cells in the document
- *  from first to last, and set focus to the last.
+/** stop all running renderings, reset global state and then render all cells
+ *  in the document from first to last, and set focus to the last.
  *  @return {Boolean} true iff command successfully handled
  */
-export async function interactive_command__eval_all(command_context: CommandContext<BqManager>): Promise<boolean> {
+export async function interactive_command__render_all(command_context: CommandContext<BqManager>): Promise<boolean> {
     if (command_context.dm.in_presentation_view) {
         return false;
     }
     _scroll_target_into_view(command_context);
-    return command_context.dm.command__eval_all(command_context);
+    return command_context.dm.command__render_all(command_context);
 }
 
-/** stop evaluation for the target cell.
+/** stop rendering for the target cell.
  *  @return {Boolean} true iff command successfully handled
  */
 export function interactive_command__stop(command_context: CommandContext<BqManager>): boolean {
@@ -124,7 +124,7 @@ export function interactive_command__stop(command_context: CommandContext<BqMana
     return command_context.dm.command__stop(command_context);
 }
 
-/** stop all running evaluations.
+/** stop all running renderings.
  *  @return {Boolean} true iff command successfully handled
  */
 export function interactive_command__stop_all(command_context: CommandContext<BqManager>): boolean {

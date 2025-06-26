@@ -14,38 +14,43 @@ const dynamic_import = new Function('path', 'return import(path);');
 
 
 // ======================================================================
-// !!! out of date !!!
-// CODE EVALUATION
-// ---------------
-// Within the code given for evaluation, "this" references the context
-// derived from the global_state property of the options passed to the
-// eval() method.
+// !!! update !!!
+// JAVASCRIPT CODE RENDERING
+// -------------------------
+// JavaScript code is rendered by evaluating it.  Specifically, the code
+// becomes the body of a new async generator function.  This function is
+// then called and its output(s) are rendered.
 //
-// vars(...objects) assigns new properties to "bqv", the evaluation
-// context, within the code.  The return value is the array of the
-// given arguments (unmodified).
+// Within the code given for evaluation, "this" is initially set to a
+// reference to bqv, an environment (namespace) derived from the
+// global_state property of the options passed to the _render() method.
+//
+// vars(...objects) assigns new properties to "bqv".  The return value is
+// the array of the given arguments (unmodified).
 //
 // A return statement within a cell terminates the evaluation (except
-// for asynchronous parts that have already been evaluated), and the
+// for asynchronous parts that have already been started), and the
 // value passed to the return statement becomes the synchronous result
-// of the evaluation.
+// of the evaluation.  Intermediate values may be returned via yield
+// statements.
 //
-// eval_environment
-// -----------------
-// During evaluation, a number of other values are available "globally",
-// though these values do not persist after the particular evaluation
-// (except for references from async code started during the evaluation).
-// These values include ocx (an instance of OutputContext which provides
-// utilities for manipulation of the output of the cell), various graphics,
-// etc functions.  Also included are:
+// evaluation namespace
+// --------------------
+// During evaluation, several variable are available implicitly (without the
+// need to reference them through another object).  The evaluation environment
+// comprises these variables, and this is also available (self-referentially)
+// as the "eval_environment" variable.  The eval_environment is specific to
+// one particular evaluation.  However, one of the variables, "bqv", references
+// the notebook-wide evaluation environment which persists across evalutions
+// and across all cells in a notebook.
 //
-//     bqv:           the notebook-wide eval environment (synonym for "this" on entry)
+//     bqv:           the notebook-wide evaluation environment
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
 //     import_local:  import other libraries from local directories
 //     vars:          export new "global" properties
-//     is_stopped:    determine if the evaluation has been stopped
+//     is_stopped:    determine if the rendering/evaluation has been stopped
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
@@ -111,9 +116,11 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     SerialDataSource
 //!!!
 //
-// These all continue to be available even after the evaluation has
-// returned if there are any async operations still active.
-// See the method #create_eval_environment().
+// These all continue to be available to active async operations, even
+// after the main evaluation returns.
+//
+// See the method #create_eval_environment() for details of the creation
+// of eval_environment.
 // ======================================================================
 
 const AsyncFunction          = Object.getPrototypeOf(async function () {}).constructor;
@@ -275,7 +282,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
         // Then, the code will be evaluated by applying the function to the
         // corresponding values from eval_environment.  Note that evaluation
         // will be performed in the JavaScript global environment and that
-        // eval_environment is effected via the function parameters/arguments.
+        // the implicit evaluation environment implicit variables are
+        // implemented via the function parameters/arguments.
         const eval_fn_params = eval_environment_entries.map(([k, _]) => k);
         const eval_fn_args   = eval_environment_entries.map(([_, v]) => v);
 
@@ -466,8 +474,8 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             eval_environment: undefined as any,  // updated below to be a direct self reference
 
             vars:             ocx.AIS(vars),
-            bqv,              // the notebook-wide eval environment (synonym for "this" on entry)
-            ocx,
+            bqv,              // the notebook-wide evaluation environment (the "this" parameter is a synonym on entry)
+            ocx,              // this evaluation's OutputContext instance
             source_code,      // this evaluation's source code
             cell,             // this evaluation's associated cell or undefined if no associated cell
 

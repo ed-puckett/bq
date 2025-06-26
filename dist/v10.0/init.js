@@ -14395,7 +14395,7 @@ class BqManager {
     // - command__show_settings_dialog ... shows settings dialog
     //
     // - command__eval_before,
-    // - command__eval_all ............... will show notification if evaluation is subsequently stopped
+    // - command__eval_all ............... will show notification if rendering is subsequently stopped
     //
     // - command__focus_up,
     // - command__focus_down,
@@ -14476,8 +14476,8 @@ class BqManager {
             return this.render_cells(command_context.target);
         }
     }
-    /** stop all running evaluations, reset global eval context and then eval all cells in the document
-     *  from first to last, and set focus to the last.
+    /** stop all running renderings, reset global eval context and then render
+     *  all cells in the document from first to last, and set focus to the last.
      *  @return {Boolean} true iff command successfully handled
      */
     async command__eval_all(command_context) {
@@ -14488,7 +14488,7 @@ class BqManager {
             return this.render_cells();
         }
     }
-    /** stop evaluation for the target cell.
+    /** stop rendering for the target cell.
      *  @return {Boolean} true iff command successfully handled
      */
     command__stop(command_context) {
@@ -14500,7 +14500,7 @@ class BqManager {
             return true;
         }
     }
-    /** stop all running evaluations.
+    /** stop all running renderings.
      *  @return {Boolean} true iff command successfully handled
      */
     command__stop_all(command_context) {
@@ -15365,7 +15365,7 @@ async function interactive_command__eval_before(command_context) {
     _scroll_target_into_view(command_context);
     return command_context.dm.command__eval_before(command_context);
 }
-/** stop all running evaluations, reset global eval context and then eval all cells in the document
+/** stop all running renderings, reset global eval context and then eval all cells in the document
  *  from first to last, and set focus to the last.
  *  @return {Boolean} true iff command successfully handled
  */
@@ -15376,14 +15376,14 @@ async function interactive_command__eval_all(command_context) {
     _scroll_target_into_view(command_context);
     return command_context.dm.command__eval_all(command_context);
 }
-/** stop evaluation for the target cell.
+/** stop rendering for the target cell.
  *  @return {Boolean} true iff command successfully handled
  */
 function interactive_command__stop(command_context) {
     _scroll_target_into_view(command_context);
     return command_context.dm.command__stop(command_context);
 }
-/** stop all running evaluations.
+/** stop all running renderings.
  *  @return {Boolean} true iff command successfully handled
  */
 function interactive_command__stop_all(command_context) {
@@ -17293,7 +17293,7 @@ class ApplicationBasedRenderer extends Renderer {
      * @param {OptionsType} options?: {
      *     style?:        Object,   // css style to be applied to output element
      *     inline?:       Boolean,  // render inline vs block?
-     *     global_state?: Object,   // global_state for evaluation; default: ocx.bq.global_state using ocx passed to render()
+     *     global_state?: Object,   // global_state for rendering; default: ocx.bq.global_state using ocx passed to render()
      * }
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs
@@ -17367,23 +17367,26 @@ const src_dir_url = new URL(src_dir_path, (0,lib_sys_assets_server_url__WEBPACK_
 const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 // !!! out of date !!!
-// CODE EVALUATION
-// ---------------
-// Within the code given for evaluation, "this" references the context
-// derived from the global_state property of the options passed to the
-// eval() method.
+// JAVASCRIPT CODE RENDERING
+// -------------------------
+// JavaScript code is rendered by evaluating it.  Specifically, the code
+// becomes the body of a new async generator function that is then applied.
 //
-// vars(...objects) assigns new properties to "bqv", the evaluation
-// context, within the code.  The return value is the array of the
-// given arguments (unmodified).
+// Within the code given for evaluation, "this" is initially set to a
+// reference to bqv, an environment (namespace) derived from the
+// global_state property of the options passed to the _render() method.
+//
+// vars(...objects) assigns new properties to "bqv".  The return value is
+// the array of the given arguments (unmodified).
 //
 // A return statement within a cell terminates the evaluation (except
-// for asynchronous parts that have already been evaluated), and the
+// for asynchronous parts that have already been started), and the
 // value passed to the return statement becomes the synchronous result
-// of the evaluation.
+// of the evaluation.  Intermediate values may be returned via yield
+// statements.
 //
-// eval_environment
-// -----------------
+// evaluation environment
+// ----------------------
 // During evaluation, a number of other values are available "globally",
 // though these values do not persist after the particular evaluation
 // (except for references from async code started during the evaluation).
@@ -17391,13 +17394,13 @@ const dynamic_import = new Function('path', 'return import(path);');
 // utilities for manipulation of the output of the cell), various graphics,
 // etc functions.  Also included are:
 //
-//     bqv:           the notebook-wide eval environment (synonym for "this" on entry)
+//     bqv:           the notebook-wide evaluation environment
 //     println:       prints its argument followed by newline
 //     printf:        implementation of std C printf()
 //     sprintf:       implementation of std C sprintf()
 //     import_local:  import other libraries from local directories
 //     vars:          export new "global" properties
-//     is_stopped:    determine if the evaluation has been stopped
+//     is_stopped:    determine if the rendering/evaluation has been stopped
 //     delay_ms:      return a Promise that resolves after a specified delay
 //     create_worker: create a new EvalWorker instance
 //!!!
@@ -17711,8 +17714,8 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         const eval_environment = {
             eval_environment: undefined, // updated below to be a direct self reference
             vars: ocx.AIS(vars),
-            bqv, // the notebook-wide eval environment (synonym for "this" on entry)
-            ocx,
+            bqv, // the notebook-wide eval_environment (the "this" parameter is a synonym on entry)
+            ocx, // this evaluation's OutputContext instance
             source_code, // this evaluation's source code
             cell, // this evaluation's associated cell or undefined if no associated cell
             is_stopped, // no abort_if_stopped()....

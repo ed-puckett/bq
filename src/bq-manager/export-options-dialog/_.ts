@@ -24,7 +24,7 @@ import {
     get_valid_cell_view_values,
     get_cell_view_descriptions,
     cell_view_values_default,
-    get_auto_eval,
+    get_auto_render,
 } from 'src/init';
 
 
@@ -121,19 +121,19 @@ export class ExportOptionsDialog extends Dialog {
             cv_select_element.onchange = (event) => update_cv_description();
         }
 
-        // --- auto-eval? ---
+        // --- auto-render? ---
 
         create_element({
             parent: this._dialog_form_content,
             tag: 'label',
             children: [
-                'Auto-eval saved notebook when loading',  // string: create text node
+                'Auto-render saved notebook when loading',  // string: create text node
                 {
                     tag: 'input',
                     attrs: {
                         type: 'checkbox',
-                        name: 'auto_eval',
-                        checked: get_auto_eval() ? true : undefined,
+                        name: 'auto_render',
+                        checked: get_auto_render() ? true : undefined,
                     },
                 },
             ],

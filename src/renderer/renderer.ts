@@ -99,7 +99,7 @@ export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends R
      * @param {OptionsType} options?: {
      *     style?:        Object,   // css style to be applied to output element
      *     inline?:       Boolean,  // render inline vs block?
-     *     global_state?: Object,   // global_state for evaluation; default: ocx.bq.global_state using ocx passed to render()
+     *     global_state?: Object,   // global_state for rendering; default: ocx.bq.global_state using ocx passed to render()
      * }
      * @return {Element} element to which output was rendered
      * @throws {Error} if error occurs

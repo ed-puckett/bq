@@ -12,16 +12,16 @@ export function get_menubar_spec() {
             { label: 'Save as...',           item: { command: 'save-as'                     } },
             { label: 'Export...',            item: { command: 'export'                      } },
             '---',
-            { label: 'Auto-eval',            item: { command: 'toggle-auto-eval'            } },
+            { label: 'Auto-render',          item: { command: 'toggle-auto-render'          } },
             '---',
             { label: 'Settings...',          item: { command: 'settings'                    } },
         ] },
 
         { label: 'Cell', collection: [
-            { label: 'Eval',                 item: { command: 'eval-and-refocus'            } },
-            { label: 'Eval and stay',        item: { command: 'eval'                        } },
-            { label: 'Eval before',          item: { command: 'eval-before'                 } },
-            { label: 'Eval all',             item: { command: 'eval-all'                    } },
+            { label: 'Render',               item: { command: 'render-and-refocus'          } },
+            { label: 'Render and stay',      item: { command: 'render'                      } },
+            { label: 'Render before',        item: { command: 'render-before'               } },
+            { label: 'Render all',           item: { command: 'render-all'                  } },
             '---',
             { label: 'Stop cell',            item: { command: 'stop'                        } },
             { label: 'Stop all',             item: { command: 'stop-all'                    } },
@@ -73,16 +73,16 @@ export function get_ellipsis_menu_spec() {
             { label: 'Save as...',           item: { command: 'save-as'                     } },
             { label: 'Export...',            item: { command: 'export'                      } },
             '---',
-            { label: 'Auto-eval',            item: { command: 'toggle-auto-eval'            } },
+            { label: 'Auto-render',          item: { command: 'toggle-auto-render'          } },
             '---',
             { label: 'Settings...',          item: { command: 'settings'                    } },
         ] },
 
         { label: 'Cell', collection: [
-            { label: 'Eval',                 item: { command: 'eval-and-refocus'            } },
-            { label: 'Eval and stay',        item: { command: 'eval'                        } },
-            { label: 'Eval before',          item: { command: 'eval-before'                 } },
-            { label: 'Eval all',             item: { command: 'eval-all'                    } },
+            { label: 'Render',               item: { command: 'render-and-refocus'          } },
+            { label: 'Render and stay',      item: { command: 'render'                      } },
+            { label: 'Render before',        item: { command: 'render-before'               } },
+            { label: 'Render all',           item: { command: 'render-all'                  } },
             '---',
             { label: 'Stop cell',            item: { command: 'stop'                        } },
             { label: 'Stop all',             item: { command: 'stop-all'                    } },
@@ -139,14 +139,14 @@ export function get_global_initial_key_map_bindings() {
         'save-as':                     [ 'CmdOrCtrl-Shift-S' ],
         'export':                      [ 'CmdOrCtrl-Shift-E' ],
 
-        'toggle-auto-eval':            [ 'CmdOrCtrl-Shift-A' ],
+        'toggle-auto-render':          [ 'CmdOrCtrl-Shift-A' ],
 
         'settings':                    [ 'CmdOrCtrl-,' ],
 
-        'eval':                        [ 'CmdOrCtrl-Enter' ],
-        'eval-and-refocus':            [ 'Shift-Enter' ],
-        'eval-before':                 [ 'CmdOrCtrl-Shift-Enter' ],
-        'eval-all':                    [ 'CmdOrCtrl-Shift-Alt-Enter' ],
+        'render':                      [ 'CmdOrCtrl-Enter' ],
+        'render-and-refocus':          [ 'Shift-Enter' ],
+        'render-before':               [ 'CmdOrCtrl-Shift-Enter' ],
+        'render-all':                  [ 'CmdOrCtrl-Shift-Alt-Enter' ],
 
         'stop':                        [ 'CmdOrCtrl-Shift-$' ],
         'stop-all':                    [ 'CmdOrCtrl-Shift-Alt-$' ],
@@ -192,14 +192,14 @@ export function get_global_command_bindings() {
         'save-as':                     interactive_commands.interactive_command__save_as,
         'export':                      interactive_commands.interactive_command__export,
 
-        'toggle-auto-eval':            interactive_commands.interactive_command__toggle_auto_eval,
+        'toggle-auto-render':          interactive_commands.interactive_command__toggle_auto_render,
 
         'settings':                    interactive_commands.interactive_command__show_settings_dialog,
 
-        'eval':                        interactive_commands.interactive_command__eval,
-        'eval-and-refocus':            interactive_commands.interactive_command__eval_and_refocus,
-        'eval-before':                 interactive_commands.interactive_command__eval_before,
-        'eval-all':                    interactive_commands.interactive_command__eval_all,
+        'render':                      interactive_commands.interactive_command__render,
+        'render-and-refocus':          interactive_commands.interactive_command__render_and_refocus,
+        'render-before':               interactive_commands.interactive_command__render_before,
+        'render-all':                  interactive_commands.interactive_command__render_all,
 
         'stop':                        interactive_commands.interactive_command__stop,
         'stop-all':                    interactive_commands.interactive_command__stop_all,

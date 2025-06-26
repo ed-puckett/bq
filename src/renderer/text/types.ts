@@ -4,7 +4,7 @@ export type TextBasedRendererOptionsType = {
     style?:        object,           // css style to be applied to output element
     class?:        string|string[],  // class list to be set (absolute; not just additions or removals)
     inline?:       boolean,          // render inline vs block?
-    global_state?: object,           // global_state for evaluation; default: ocx.bq.global_state using ocx passed to render()
+    global_state?: object,           // global_state for rendering; default: ocx.bq.global_state using ocx passed to render()
 };
 
 /** Validate options (throwing an Error if validation does not pass), and

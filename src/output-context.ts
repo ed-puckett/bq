@@ -686,7 +686,7 @@ export class OutputContext extends ActivityManager {
                 // gets fulfilled, however this ocx is not in a usable state.  So if some cell
                 // in the document is awaiting that promise and then tries to use this ocx
                 // when it fulfills, an unhandled rejection results.
-                // This turns out to be important for document autoeval.
+                // This turns out to be important for document auto-render.
                 this.abort_if_stopped();
                 return result;
             })

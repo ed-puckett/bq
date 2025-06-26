@@ -286,5 +286,5 @@ export class EvalWorker extends Activity {
     }
 }
 
-// Safari does not support static initialization blocks in classes (at the time of writing), so do it this way:
+// Call the (async) static initializer:
 await EvalWorker._async_init_static();

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript">
+    keepalive();
+    import_local('video-feedback.js').then(m => m.run(ocx));
+</bq-cell>
+</body>
+</html>

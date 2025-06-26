@@ -41,18 +41,18 @@ import {
 // See also: https://marked.js.org/using_pro#async
 
 
-// ``` blocks are extended as follows:
+// The syntax of ``` blocks is extended as follows:
 // - the opening ``` may be optionally followed by:
 //   -- renderer source type (e.g., "javascript", the default)
 //   -- then either $ or ! or both in either order:
-//      --- $ indicates that the "source" should be output (in a block with css class: eval_code_source_css_class)
+//      --- $ indicates that the "source" should be output (in a block with css class: render_code_source_css_class)
 //      --- ! indicates that the source should be rendered (executed) and output
 // - the source type, $ and ! can be separated by any amount of whitespace, or none
 
 const extension_name__inline_latex     = 'inline-latex';
 const extension_name__block_latex      = 'block-latex';
 const extension_name__inline_eval_code = 'inline-eval-code';
-const extension_name__eval_code        = 'eval-code';
+const extension_name__render_code      = 'render-code';
 
 const inline_latex_start_re = /\$[^$!]/;
 const block_latex_start_re  = /\$\$/;
@@ -60,8 +60,8 @@ const block_latex_start_re  = /\$\$/;
 const inline_latex_match_re = /^\$((?:\\.|[^\\$!])(?:\\.|[^\\$])*?)\$/;  // note: unlike block... below, do not match empty contents ($$)
 const block_latex_match_re  = /^\$\$((?:\\.|\$[^$]|[^\\$])*?)\$\$/;
 
-const inline_eval_code_start_re = /\$[!]/;
-const inline_eval_code_match_re = /^\$[!]((?:\\.|[^\\$])+?)\$/;
+const inline_render_code_start_re = /\$[!]/;
+const inline_render_code_match_re = /^\$[!]((?:\\.|[^\\$])+?)\$/;
 
 // code block beginnings:
 //     ```[\s]*[<flags>][\s]*[<language>]
@@ -73,21 +73,21 @@ const inline_eval_code_match_re = /^\$[!]((?:\\.|[^\\$])+?)\$/;
 //     !       // execute code block and render output
 //     !$      // display code block and then execute and render output
 //     $       // optional abbreviated version of !$
-function make_eval_code_start_re(introducer_char: string) {
+function make_render_code_start_re(introducer_char: string) {
     return new RegExp(String.raw`[${introducer_char}]{3}[\s!$]*[\s]*[^!$\n]*[\n]`);
 }
-function make_eval_code_match_re(introducer_char: string) {
+function make_render_code_match_re(introducer_char: string) {
     return new RegExp(String.raw`^[${introducer_char}]{3}(?<flags_exec>[\s]*[!])?(?<flags_show>[\s]*[$])?[^\n]*?(?:[\n]|(?<source_type>[^\s\n]+)[^\n]*[\n])(?<code>.*?)[${introducer_char}]{3}`, 's');
 }
 
-const eval_code_start_re_tilde     = make_eval_code_start_re('~');
-const eval_code_start_re_backquote = make_eval_code_start_re('`');
+const render_code_start_re_tilde     = make_render_code_start_re('~');
+const render_code_start_re_backquote = make_render_code_start_re('`');
 
-const eval_code_match_re_tilde     = make_eval_code_match_re('~');
-const eval_code_match_re_backquote = make_eval_code_match_re('`');
+const render_code_match_re_tilde     = make_render_code_match_re('~');
+const render_code_match_re_backquote = make_render_code_match_re('`');
 
-const eval_code_source_type_default = JavaScriptRenderer.type;
-const eval_code_source_css_class = 'bq-markdown-code-source';
+const render_code_source_type_default = JavaScriptRenderer.type;
+const render_code_source_css_class = 'bq-markdown-code-source';
 
 
 type walkTokens_token_type = {
@@ -109,7 +109,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
         _initial_text_renderer_factories.push(this);
     }
 
-    /** Render by evaluating the given markdown and outputting to ocx.
+    /** Render the given markdown and output via ocx.
      * @param {OutputContext} ocx,
      * @param {String} markdown,
      * @param {undefined|TextBasedRendererOptionsType} options,
@@ -124,7 +124,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
         const parent = ocx.CLASS.element_for_options(ocx.element, options, true);
         parent.setAttribute(OutputContext.attribute__data_source_media_type, this.media_type);
 
-        let deferred_evaluations: {
+        let deferred_renderings: {
             output_element_id: string,
             text:              string,
             renderer:          TextBasedRenderer,
@@ -141,7 +141,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
                     }
 
                     case extension_name__inline_eval_code:
-                    case extension_name__eval_code: {
+                    case extension_name__render_code: {
                         let renderer_factory: undefined|RendererFactory = undefined;
                         try {
 
@@ -161,7 +161,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
                             const markup_segments: string[] = [];
                             function add_segment(renderer_factory: RendererFactory, text_to_render: string, css_class?: string) {
                                 const output_element_id = generate_object_id();
-                                deferred_evaluations.push({
+                                deferred_renderings.push({
                                     output_element_id,
                                     text: text_to_render,
                                     renderer: new renderer_factory() as TextBasedRenderer,
@@ -170,13 +170,13 @@ export class MarkdownRenderer extends TextBasedRenderer {
                                         global_state,
                                     },
                                 });
-                                // this is the element we will render to from deferred_evaluations:
+                                // this is the element we will render to from deferred_renderings:
                                 const markup_segment_tag_name = inline ? 'span' : 'div';
                                 markup_segments.push(`<${markup_segment_tag_name} id="${output_element_id}"${css_class ? ` class="${css_class}"` : ''}></${markup_segment_tag_name}>`);
                             }
                             if (show && text) {
                                 // render the source text without executing
-                                add_segment(MarkdownRenderer, '```'+source_type+'\n'+text+'\n```\n', eval_code_source_css_class);
+                                add_segment(MarkdownRenderer, '```'+source_type+'\n'+text+'\n```\n', render_code_source_css_class);
                             }
                             // render/execute the source text
                             add_segment(renderer_factory, text);
@@ -196,16 +196,16 @@ export class MarkdownRenderer extends TextBasedRenderer {
         const markup = marked.parse(markdown, marked_options);  // using extensions, see below
         parent.innerHTML = markup;
 
-        // now run the deferred_evaluations
-        // by setting up the output elements for each of deferred_evaluations, we
+        // now run the deferred_renderings
+        // by setting up the output elements for each of deferred_renderings, we
         // are now free to render asynchronously and in the background
         // Note: we are assuming that parent (and ocx.element) are already in the DOM
         // so that we can find the output element through document.getElementById().
-        for (const { output_element_id, text, renderer, renderer_options } of deferred_evaluations) {
+        for (const { output_element_id, text, renderer, renderer_options } of deferred_renderings) {
             const output_element = document.getElementById(output_element_id);
             if (!output_element) {
                 // unexpected...
-                ErrorRenderer.render_sync(ocx, new Error(`deferred_evaluations: cannot find output element with id "${output_element_id}"`));
+                ErrorRenderer.render_sync(ocx, new Error(`deferred_renderings: cannot find output element with id "${output_element_id}"`));
             } else {
                 const sub_ocx = ocx.create_new_ocx(output_element, ocx);
                 await renderer.render(sub_ocx, text, renderer_options)
@@ -254,17 +254,17 @@ marked.use({
             name: extension_name__inline_latex,
             level: 'inline',
             start(src: string) {
-                // must make sure we're not matching a $ in an "eval code" block
-                const eval_code_match = src.match(eval_code_start_re_tilde) || src.match(eval_code_start_re_backquote);
+                // must make sure we're not matching a $ in a "render code" block
+                const render_code_match = src.match(render_code_start_re_tilde) || src.match(render_code_start_re_backquote);
                 const match = src.match(inline_latex_start_re);
-                if (!eval_code_match) {
-                    // "eval code" did not match
+                if (!render_code_match) {
+                    // "render code" did not match
                     return match?.index;
                 } else if (match) {
                     // both matched
-                    // (shenanigans because typescript doesn't know match.index and eval_code_match.index are not undefined)
-                    if ((match.index??0) < (eval_code_match.index??Infinity)) {
-                        return match.index;  // matched sooner that "eval code"
+                    // (shenanigans because typescript doesn't know match.index and render_code_match.index are not undefined)
+                    if ((match.index??0) < (render_code_match.index??Infinity)) {
+                        return match.index;  // matched sooner than "render code"
                     } else {
                         return undefined;
                     }
@@ -325,11 +325,11 @@ marked.use({
             name: extension_name__inline_eval_code,
             level: 'inline',
             start(src: string) {
-                const match = src.match(inline_eval_code_start_re);
+                const match = src.match(inline_render_code_start_re);
                 return match?.index;
             },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
-                const match = src.match(inline_eval_code_match_re);
+                const match = src.match(inline_render_code_match_re);
                 if (!match) {
                     return undefined;
                 } else {
@@ -354,14 +354,14 @@ marked.use({
             },
         },
         {
-            name: extension_name__eval_code,
+            name: extension_name__render_code,
             level: 'block',
             start(src: string) {
-                const match = src.match(eval_code_start_re_tilde) || src.match(eval_code_start_re_backquote);
+                const match = src.match(render_code_start_re_tilde) || src.match(render_code_start_re_backquote);
                 return match?.index;
             },
             tokenizer(src: string, tokens: unknown): undefined|walkTokens_token_type {
-                const match = src.match(eval_code_match_re_tilde) || src.match(eval_code_match_re_backquote);
+                const match = src.match(render_code_match_re_tilde) || src.match(render_code_match_re_backquote);
                 if (!match) {
                     return undefined;
                 } else {
@@ -369,12 +369,12 @@ marked.use({
                         return undefined;  // renderer according to normal markdown
                     } else {
                         const inline = false;
-                        const source_type = (match.groups?.source_type?.trim() ?? '') || eval_code_source_type_default;
+                        const source_type = (match.groups?.source_type?.trim() ?? '') || render_code_source_type_default;
                         const code = match.groups?.code ?? '';
                         const show = !!(match.groups?.flags_show);
 
                         return {
-                            type: extension_name__eval_code,
+                            type: extension_name__render_code,
                             raw: match[0],
                             text: code,
                             inline,

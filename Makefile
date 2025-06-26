@@ -15,7 +15,7 @@
 # 7. check the dist directory to make sure the new vX.Y directory has been created
 # 8. push changes to the git servers
 
-VERSION = 10.0
+VERSION = 11.0
 
 SERVER_ADDRESS    = 127.0.0.127
 SERVER_PORT       = 4320

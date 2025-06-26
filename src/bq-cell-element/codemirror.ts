@@ -236,7 +236,7 @@ export class CodemirrorInterface {
                 // are out of range, and this can happen because the
                 // JavascriptRenderer inserts a preamble into the code when
                 // it constructs the AsyncGeneratorFunction object used to
-                // evaluate the cell code.
+                // render/evaluate the cell code.
                 return false;  // just giving up...
             }
         }

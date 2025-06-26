@@ -8,8 +8,8 @@ import {
     save_serializer,
     cell_view_attribute_name,
     cell_view_values_default,
-    get_auto_eval,
-    set_auto_eval,
+    get_auto_render,
+    set_auto_render,
     bootstrap_script_src_alternatives_default,
 } from 'src/init';
 
@@ -158,7 +158,7 @@ export class BqManager {
         } else {
             this.#start_called = true;
 
-            if (get_auto_eval()) {
+            if (get_auto_render()) {
                 this.render_cells();
             } else {
                 this.active_cell?.scroll_into_view(true);
@@ -524,7 +524,7 @@ export class BqManager {
 
         let bootstrap_script_src = bootstrap_script_src_alternatives_default;
         let cell_view            = undefined;
-        let auto_eval            = get_auto_eval();
+        let auto_render          = get_auto_render();
         let active_cell          = false;
         if (show_options_dialog) {
             const options_dialog_result = await ExportOptionsDialog.run();
@@ -535,7 +535,7 @@ export class BqManager {
             ( {
                 bootstrap_script_src,
                 cell_view,
-                auto_eval   = false,
+                auto_render = false,
                 active_cell = false,
             } = Object.fromEntries([ ...options_dialog_result ]) as any );
             if (!cell_view) {
@@ -545,7 +545,7 @@ export class BqManager {
 
         const bound_serializer = save_serializer.bind(null, bootstrap_script_src, {
             cell_view,
-            auto_eval,
+            auto_render,
             active_cell,
         });
         const save_result = await fs_interface.save(bound_serializer, {
@@ -664,7 +664,7 @@ export class BqManager {
 
     /** this.#rendering_cells is set to a promise when render_cells() is active,
      * and removed and set back to undefined when render_cells() is done.
-     * (render_cells() implements the commands "eval, "eval-all", etc.)
+     * (render_cells() implements the commands "render, "render-all", etc.)
      * If render_cells() completes without error, then the promise will be
      * fulfilled after the next "tick" with a value of undefined.  Otherwise,
      * If there was an error, the promise will be fulfilled after the next
@@ -929,14 +929,14 @@ export class BqManager {
             // no update to command 'save-as'
             // no update to command 'export'
 
-            menu.set_menu_state('toggle-auto-eval',            { checked: get_auto_eval(), enabled: !presentation });
+            menu.set_menu_state('toggle-auto-render',          { checked: get_auto_render(), enabled: !presentation });
 
             // no update to command 'settings'
 
-            menu.set_menu_state('eval',                        { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-and-refocus',            { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-before',                 { enabled: interactive && editable && !!active_cell });
-            menu.set_menu_state('eval-all',                    { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('render',                      { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('render-and-refocus',          { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('render-before',               { enabled: interactive && editable && !!active_cell });
+            menu.set_menu_state('render-all',                  { enabled: interactive && editable && !!active_cell });
 
             menu.set_menu_state('stop',                        { enabled: active_cell?.can_stop });
             menu.set_menu_state('stop-all',                    { enabled: all_cells.some(cell => cell.can_stop) });
@@ -1086,12 +1086,12 @@ export class BqManager {
     // - command__export ................. must use the system file select dialog due to sandbox
     //                                     also, shows notification
     //
-    // - command__toggle_auto_eval ....... shows notification
+    // - command__toggle_auto_render ..... shows notification
     //
     // - command__show_settings_dialog ... shows settings dialog
     //
-    // - command__eval_before,
-    // - command__eval_all ............... will show notification if evaluation is subsequently stopped
+    // - command__render_before,
+    // - command__render_all ............. will show notification if rendering is subsequently stopped
     //
     // - command__focus_up,
     // - command__focus_down,
@@ -1121,11 +1121,11 @@ export class BqManager {
         return this.perform_save(true, true);
     }
 
-    command__toggle_auto_eval(command_context: CommandContext<BqManager>): boolean {
-        const new_auto_eval_setting = !get_auto_eval();
-        set_auto_eval(new_auto_eval_setting);
+    command__toggle_auto_render(command_context: CommandContext<BqManager>): boolean {
+        const new_auto_render_setting = !get_auto_render();
+        set_auto_render(new_auto_render_setting);
         this.set_structure_modified();
-        this.notification_manager.add(`auto-eval ${new_auto_eval_setting ? 'on' : 'off'}`);
+        this.notification_manager.add(`auto-render ${new_auto_render_setting ? 'on' : 'off'}`);
         return true;
     }
 
@@ -1134,10 +1134,10 @@ export class BqManager {
         return true;
     }
 
-    /** eval target cell
+    /** render target cell
      *  @return {Boolean} true iff command successfully handled
      */
-    async command__eval(command_context: CommandContext<BqManager>): Promise<boolean> {
+    async command__render(command_context: CommandContext<BqManager>): Promise<boolean> {
         const cell = command_context.target;
         if (!(cell instanceof BqCellElement)) {
             return false;
@@ -1148,10 +1148,10 @@ export class BqManager {
         }
     }
 
-    /** eval target cell and refocus on next cell
+    /** render target cell and refocus on next cell
      *  @return {Boolean} true iff command successfully handled
      */
-    async command__eval_and_refocus(command_context: CommandContext<BqManager>): Promise<boolean> {
+    async command__render_and_refocus(command_context: CommandContext<BqManager>): Promise<boolean> {
         const cell = command_context.target;
         if (!(cell instanceof BqCellElement)) {
             return false;
@@ -1167,11 +1167,11 @@ export class BqManager {
         }
     }
 
-    /** reset global eval context and then eval all cells in the document
+    /** reset global state and then render all cells in the document
      *  from the beginning up to but not including the target cell.
      *  @return {Boolean} true iff command successfully handled
      */
-    async command__eval_before(command_context: CommandContext<BqManager>): Promise<boolean> {
+    async command__render_before(command_context: CommandContext<BqManager>): Promise<boolean> {
         if (!(command_context.target instanceof BqCellElement)) {
             return false;
         } else {
@@ -1179,11 +1179,11 @@ export class BqManager {
         }
     }
 
-    /** stop all running evaluations, reset global eval context and then eval all cells in the document
-     *  from first to last, and set focus to the last.
+    /** stop all running renderings, reset global state and then render
+     *  all cells in the document from first to last, and set focus to the last.
      *  @return {Boolean} true iff command successfully handled
      */
-    async command__eval_all(command_context: CommandContext<BqManager>): Promise<boolean> {
+    async command__render_all(command_context: CommandContext<BqManager>): Promise<boolean> {
         if (!(command_context.target instanceof BqCellElement)) {
             return false;
         } else {
@@ -1191,7 +1191,7 @@ export class BqManager {
         }
     }
 
-    /** stop evaluation for the target cell.
+    /** stop rendering for the target cell.
      *  @return {Boolean} true iff command successfully handled
      */
     command__stop(command_context: CommandContext<BqManager>): boolean {
@@ -1203,7 +1203,7 @@ export class BqManager {
         }
     }
 
-    /** stop all running evaluations.
+    /** stop all running renderings.
      *  @return {Boolean} true iff command successfully handled
      */
     command__stop_all(command_context: CommandContext<BqManager>): boolean {

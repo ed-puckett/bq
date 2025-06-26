@@ -48,10 +48,10 @@ const _external_bootstrap_link = 'https://ed-puckett.github.io/bq/dist/current/b
 // see also below: get_bootstrap_script_src_alternatives()
 
 
-// === CELL-VIEW / AUTO-EVAL DATA ===
+// === CELL-VIEW / AUTO-RENDER DATA ===
 
-export const cell_view_attribute_name = 'data-cell-view';  // set on document.documentElement
-export const auto_eval_attribute_name = 'data-auto-eval';  // set on document.documentElement; significance: only presence or absence
+export const cell_view_attribute_name   = 'data-cell-view';    // set on document.documentElement
+export const auto_render_attribute_name = 'data-auto-render';  // set on document.documentElement; significance: only presence or absence
 
 const _cell_view_descriptions = {
     normal:       'normal: show all cells, scrolling if necessary (the default)',
@@ -65,12 +65,12 @@ export const cell_view_values_default = 'normal';
 export function get_valid_cell_view_values() { return [ ..._valid_cell_view_values ]; }  // return copy to prevent modification
 export function get_cell_view_descriptions() { return { ..._cell_view_descriptions }; }  // return copy to prevent modification
 
-export function get_auto_eval() { return document.documentElement.hasAttribute(auto_eval_attribute_name); }
-export function set_auto_eval(setting: boolean) {
+export function get_auto_render() { return document.documentElement.hasAttribute(auto_render_attribute_name); }
+export function set_auto_render(setting: boolean) {
     if (setting) {
-        document.documentElement.setAttribute(auto_eval_attribute_name, '');
+        document.documentElement.setAttribute(auto_render_attribute_name, '');
     } else {
-        document.documentElement.removeAttribute(auto_eval_attribute_name);
+        document.documentElement.removeAttribute(auto_render_attribute_name);
     }
 }
 
@@ -216,7 +216,7 @@ export function show_initialization_failed(reason: unknown) {
  *                          // cell_view setting or don't specify cell_view
  *                          // at all if not set in document.
  *
- *     auto_eval?: boolean = false,  // set "auto-eval" on saved document?
+ *     auto_render?: boolean = false,  // set "auto-render" on saved document?
  *
  *     active_cell?: boolean = false,  // whether or not to preserve the
  *                                     // "data-active" attribute on the
@@ -233,7 +233,7 @@ export async function save_serializer(
         cell_view,
     } = (options as any);
     const {
-        auto_eval   = false,
+        auto_render = false,
         active_cell = false,
     } = (options as any);
 
@@ -288,7 +288,7 @@ export async function save_serializer(
     const title_markup  = title_text ? `  <title>${title_text}</title>\n` : '';
     return `\
 <!DOCTYPE html>
-<html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_eval ? ` ${auto_eval_attribute_name}` : ''}>
+<html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_render ? ` ${auto_render_attribute_name}` : ''}>
 <head>
     <meta charset="utf-8">
     <script src=${make_string_literal(bootstrap_script_src, true)}></script>
