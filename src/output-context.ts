@@ -665,47 +665,4 @@ export class OutputContext extends ActivityManager {
         this.abort_if_stopped();
         return new PlotlyRenderer().render(this, code, options);
     }
-
-
-    // === RENDER INTERFACE ===
-
-    async _invoke_renderer<ValueType, OptionsType>(
-        renderer: { /*async*/ _render( ocx:      OutputContext,
-                                       value:    ValueType,
-                                       options?: OptionsType ): Promise<Element>,
-                  },
-        value:    ValueType,
-        options?: OptionsType ): Promise<Element>
-    {
-        return renderer._render(this, value, options)
-            .then(result => {
-                // Make sure that this ocx is stopped and that the error, if any, is output
-                // to the log. If nothing has yet called a function that checks if this ocx
-                // if stopped, then BqManager.prototype.render_cells() never gets the
-                // corresponding error, and therefore the BqManager.prototype.rendering_cells
-                // gets fulfilled, however this ocx is not in a usable state.  So if some cell
-                // in the document is awaiting that promise and then tries to use this ocx
-                // when it fulfills, an unhandled rejection results.
-                // This turns out to be important for document auto-render.
-                this.abort_if_stopped();
-                return result;
-            })
-            .catch((error: unknown) => {
-                try {
-                    this.stop();  // stop anything that may have been started
-                } catch (ignored_error: unknown) {
-                    console.error('ignored second-level error while stopping ocx after render error', ignored_error);
-                    // nothing
-                }
-                throw error;
-            })
-        .finally(() => {
-            this.#render_completions.dispatch({
-                ocx: this,
-                renderer: (renderer as unknown) as Renderer,
-                value:    value as any,
-                options:  options as object,
-            });
-        });
-    }
 }

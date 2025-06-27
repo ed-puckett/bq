@@ -41,6 +41,50 @@ export class Renderer {
     /** get the media_type specified by the class
      */
     get media_type (){ return (this.constructor as typeof Renderer).media_type; }
+
+
+    // === COMMON RENDER HANDLER FOR EXTENSION CLASSES ===
+
+    static async _invoke_renderer<ValueType, OptionsType>(
+        renderer: { /*async*/ _render( ocx:      OutputContext,
+                                       value:    ValueType,
+                                       options?: OptionsType ): Promise<Element>,
+                  },
+        ocx:      OutputContext,
+        value:    ValueType,
+        options?: OptionsType ): Promise<Element>
+    {
+        return renderer._render(ocx, value, options)
+            .then(result => {
+                // Make sure that the ocx is stopped and that the error, if any, is output
+                // to the log. If nothing has yet called a function that checks if the ocx
+                // if stopped, then BqManager.prototype.render_cells() never gets the
+                // corresponding error, and therefore the BqManager.prototype.rendering_cells
+                // gets fulfilled, however the ocx is not in a usable state.  So if some cell
+                // in the document is awaiting that promise and then tries to use the ocx
+                // when it fulfills, an unhandled rejection results.
+                // This turns out to be important for document auto-render.
+                ocx.abort_if_stopped();
+                return result;
+            })
+            .catch((error: unknown) => {
+                try {
+                    ocx.stop();  // stop anything that may have been started
+                } catch (ignored_error: unknown) {
+                    console.error('ignored second-level error while stopping ocx after render error', ignored_error);
+                    // nothing
+                }
+                throw error;
+            })
+        .finally(() => {
+            ocx.render_completions.dispatch({
+                ocx,
+                renderer: (renderer as unknown) as Renderer,
+                value:    value as any,
+                options:  options as object,
+            });
+        });
+    }
 }
 
 
@@ -81,7 +125,7 @@ export abstract class TextBasedRenderer extends Renderer {
      * @throws {Error} if error occurs
      */
     async render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        return ocx._invoke_renderer(this, value, options);
+        return Renderer._invoke_renderer(this, ocx, value, options);
     }
 
     /** to be implemented by subclasses
@@ -105,7 +149,7 @@ export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends R
      * @throws {Error} if error occurs
      */
     async render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element> {
-        return ocx._invoke_renderer(this, value, options);
+        return Renderer._invoke_renderer(this, ocx, value, options);
     }
 
     /** to be implemented by subclasses
