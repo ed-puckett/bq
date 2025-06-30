@@ -1,5 +1,6 @@
 export function init_help(eval_environment, options) {
     define_help_renderer(eval_environment);
+//!!! render_states, etc is no longer defined !!!
     eval_environment.ocx.bq.subscribe_render_states_during_render(render_state => {
         if (render_state.ocx !== eval_environment.ocx) {  // skip first cell (the one that calls this initialization function)
             switch (render_state.type) {

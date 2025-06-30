@@ -96,7 +96,7 @@ export abstract class TextBasedRenderer extends Renderer {
 
     static factory_for_type(type: string):  undefined|RendererFactory { return text_renderer_factory_for_type(type); }
     static renderer_for_type(type: string): undefined|TextBasedRenderer {
-        const factory = text_renderer_factory_for_type(type);
+        const factory = this.factory_for_type(type);
         if (!factory) {
             return undefined;
         } else {

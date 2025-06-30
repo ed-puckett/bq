@@ -13484,7 +13484,6 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var dist_version_info__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(321);
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(742);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(5428);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
@@ -13499,14 +13498,13 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3593);
 /* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3882);
 /* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(6136);
-/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
+/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
 ([src_init__WEBPACK_IMPORTED_MODULE_0__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
-
 
 
 
@@ -13635,7 +13633,7 @@ class BqManager {
     #editable = true;
     #active_cell = null;
     #global_state = {}; // persistent state for renderers
-    #cell_ocx_map = new WeakMap(); // maintained by this.invoke_renderer()
+    #cell_ocx_map = new WeakMap(); // maintained by this.invoke_cell_renderer()
     #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__/* .NotificationManager */ .h();
     get notification_manager() { return this.#notification_manager; }
     get head_element() {
@@ -13931,29 +13929,20 @@ class BqManager {
         return window.location.pathname.split('/').slice(-1)[0];
     }
     // === RENDER INTERFACE ===
-    async invoke_renderer_for_type(type = 'plain', cell, options) {
-        if (cell && cell.bq !== this) {
-            throw new TypeError('unexpected: cell has a different bq');
-        }
-        type ??= 'plain';
-        const renderer = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.renderer_for_type(type);
-        if (!renderer) {
-            throw new TypeError('no renderer found for type "${type}"');
-        }
-        return this.invoke_renderer(renderer, cell, options);
-    }
-    async invoke_renderer(renderer, cell, options) {
-        if (!(renderer instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9)) {
-            throw new TypeError('renderer must be an instance of TextBasedRenderer');
-        }
-        if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
-            throw new TypeError('options must be undefined, null, or an object');
+    async invoke_cell_renderer(cell, options) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+            throw new TypeError('cell must be an instance of BqCellElement');
         }
         if (cell.bq !== this) {
             throw new TypeError('unexpected: cell has a different bq');
         }
+        if (typeof options !== 'undefined' && options !== null && typeof options !== 'object') {
+            throw new TypeError('options must be undefined, null, or an object');
+        }
         cell.ensure_id();
         const cell_id = cell.id;
+        const type = cell.type ?? 'plain';
+        const media_type = `text/${type}`; //!!! should this be established here or elsewhere?
         if (!options?.global_state) {
             options = {
                 ...(options ?? {}),
@@ -13961,7 +13950,7 @@ class BqManager {
             };
         }
         cell.reset(); // removes cell's prior output element, if any
-        const output_element = src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, renderer.media_type);
+        const output_element = src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
         // resources to be cleaned up, too.
@@ -13981,26 +13970,11 @@ class BqManager {
         this.#activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
         });
-        this.#render_states.dispatch({ type: 'begin', renderer, cell, ocx });
-        return renderer.render(ocx, cell.get_text(), options)
-            .then(element => {
-            this.#render_states.dispatch({ type: 'end', renderer, cell, ocx });
-            if (!ocx.keepalive) {
-                ocx.stop(); // stop anything that may have been started
-            }
-            this.#render_states.dispatch({ type: 'complete', renderer, cell, ocx });
-            return element;
-        })
+        return ocx.invoke_renderer_for_type(type, cell.get_text(), options)
             .catch((error) => {
-            const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
-            error_message_element.scrollIntoView(false);
             if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
                 cell?.set_cursor_position(error.line_number, error.column_index);
             }
-            if (!ocx.keepalive) {
-                ocx.stop(); // stop anything that may have been started
-            }
-            this.#render_states.dispatch({ type: 'error', error, renderer, cell, ocx });
             throw error;
         });
     }
@@ -14015,23 +13989,6 @@ class BqManager {
      */
     #rendering_cells = undefined;
     get rendering_cells() { return this.#rendering_cells; }
-    /** this.#render_states is triggered by this.invoke_renderer() at the
-     * beginning of renderer invokation (begin = true) and again at the
-     * end (begin = false) when the renderer completes.  Note that additional
-     * background rendering may still occur is ocx.keepalive is true.
-     */
-    #render_states = new lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_19__/* .SerialDataSource */ .Y();
-    get render_states() { return this.#render_states; }
-    subscribe_render_states_during_render(observer) {
-        if (!this.#rendering_cells) {
-            throw new Error('render not active');
-        }
-        const abort_controller = new AbortController();
-        this.#rendering_cells.then(() => abort_controller.abort());
-        this.#render_states.subscribe(observer, {
-            abort_signal: abort_controller.signal,
-        });
-    }
     /** render (a range of) cells in the document, in order.
      * @param {undefined|null|BqCellElement} limit_cell the cell just after the last cell to be rendered
      * @param {undefined|null|BqCellElement} start_cell the first cell to be rendered
@@ -14100,7 +14057,7 @@ class BqManager {
                     break cell_render_loop;
                 }
                 try {
-                    await this.invoke_renderer_for_type(iter_cell.type, iter_cell);
+                    await this.invoke_cell_renderer(iter_cell);
                 }
                 catch (error) {
                     console.warn('stopped render_cells after error while rendering cell', error, iter_cell);
@@ -14231,7 +14188,7 @@ class BqManager {
     async #perform_command_for_ui(command_context) {
         const result = await this.#perform_command(command_context);
         if (!result) {
-            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
+            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_19__/* .beep */ .T)();
         }
     }
     #update_menu_state() {
@@ -16508,6 +16465,26 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
     get bq() { return this.#bq; }
     get element() { return this.#element; }
     get parent() { return this.#parent; }
+    get topmost() {
+        let p = this;
+        for (let tries = 0; tries < 10; tries++) {
+            if (!p.parent) {
+                return p;
+            }
+            p = p.parent;
+        }
+        // after several tries, the topmost parent was not found, so maybe
+        // is a cycle.  Try more carefully....
+        p = this;
+        const seen = new Set();
+        for (;;) {
+            seen.add(p);
+            if (!p.parent || seen.has(p.parent)) {
+                return p;
+            }
+            p = p.parent;
+        }
+    }
     /** construct a new OutputContext for the given element and with an optional parent.
      *  @param {Element} element controlled by this new OutputContext
      *  @param {undefined|OutputContext} parent for this new OutputContext
@@ -16700,6 +16677,51 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
     async plotly(code, options) {
         this.abort_if_stopped();
         return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .PlotlyRenderer */ .e$().render(this, code, options);
+    }
+    // === RENDERER EXTENSIBILITY ===
+    /** extensions provides a means of specifying ocx-local mapping of type to RendererFactory
+     */
+    extensions = new Map();
+    text_renderer_factory_for_type(type) {
+        for (let hosting_ocx = this; hosting_ocx; hosting_ocx = hosting_ocx.parent) {
+            const factory = hosting_ocx.extensions.get(type);
+            if (factory) {
+                return factory;
+            }
+        }
+        // not found in this.extensions, fall back to TextBasedRenderer factory mapping
+        return src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .TextBasedRenderer */ .m9.factory_for_type(type);
+    }
+    text_renderer_for_type(type) {
+        const factory = this.text_renderer_factory_for_type(type);
+        if (!factory) {
+            return undefined;
+        }
+        else {
+            const renderer = new factory();
+            return renderer;
+        }
+    }
+    async invoke_renderer_for_type(type, value, options) {
+        const renderer = this.text_renderer_for_type(type);
+        if (!renderer) {
+            throw new Error(`renderer not found for type \"${type}\"`);
+        }
+        return renderer.render(this, value, options)
+            .then(element => {
+            if (!this.keepalive) {
+                this.stop(); // stop anything that may have been started
+            }
+            return element;
+        })
+            .catch((error) => {
+            const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .ErrorRenderer */ .iv.render_sync(this, error, { abbreviated: true });
+            error_message_element.scrollIntoView(false);
+            if (!this.keepalive) {
+                this.stop(); // stop anything that may have been started
+            }
+            throw error;
+        });
     }
 }
 
@@ -17255,7 +17277,7 @@ class TextBasedRenderer extends Renderer {
     static reset_renderer_factories() { (0,_factories__WEBPACK_IMPORTED_MODULE_0__/* .reset_to_initial_text_renderer_factories */ .GV)(); }
     static factory_for_type(type) { return (0,_factories__WEBPACK_IMPORTED_MODULE_0__/* .text_renderer_factory_for_type */ .My)(type); }
     static renderer_for_type(type) {
-        const factory = (0,_factories__WEBPACK_IMPORTED_MODULE_0__/* .text_renderer_factory_for_type */ .My)(type);
+        const factory = this.factory_for_type(type);
         if (!factory) {
             return undefined;
         }
@@ -36873,23 +36895,18 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
                     }
                     case extension_name__inline_eval_code:
                     case extension_name__render_code: {
-                        let renderer_factory = undefined;
                         try {
                             const { text = '', inline, source_type, show = false, } = token;
                             if (!source_type) {
                                 throw new TypeError('no source_type given');
                             }
-                            renderer_factory = src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1__/* .TextBasedRenderer */ .m9.factory_for_type(source_type);
-                            if (!renderer_factory) {
-                                throw new TypeError(`cannot find renderer for source type "${source_type}"`);
-                            }
                             const markup_segments = [];
-                            function add_segment(renderer_factory, text_to_render, css_class) {
+                            function add_segment(source_type, text_to_render, css_class) {
                                 const output_element_id = (0,lib_sys_uuid__WEBPACK_IMPORTED_MODULE_7__/* .generate_object_id */ .Q7)();
                                 deferred_renderings.push({
                                     output_element_id,
+                                    source_type,
                                     text: text_to_render,
-                                    renderer: new renderer_factory(),
                                     renderer_options: {
                                         inline,
                                         global_state,
@@ -36901,10 +36918,10 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
                             }
                             if (show && text) {
                                 // render the source text without executing
-                                add_segment(MarkdownRenderer, '```' + source_type + '\n' + text + '\n```\n', render_code_source_css_class);
+                                add_segment(MarkdownRenderer.type, '```' + source_type + '\n' + text + '\n```\n', render_code_source_css_class);
                             }
                             // render/execute the source text
-                            add_segment(renderer_factory, text);
+                            add_segment(source_type, text);
                             token.markup = markup_segments.join('\n');
                         }
                         catch (error) {
@@ -36924,7 +36941,7 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
         // are now free to render asynchronously and in the background
         // Note: we are assuming that parent (and ocx.element) are already in the DOM
         // so that we can find the output element through document.getElementById().
-        for (const { output_element_id, text, renderer, renderer_options } of deferred_renderings) {
+        for (const { output_element_id, source_type, text, renderer_options } of deferred_renderings) {
             const output_element = document.getElementById(output_element_id);
             if (!output_element) {
                 // unexpected...
@@ -36932,7 +36949,7 @@ class MarkdownRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_1_
             }
             else {
                 const sub_ocx = ocx.create_new_ocx(output_element, ocx);
-                await renderer.render(sub_ocx, text, renderer_options)
+                await sub_ocx.invoke_renderer_for_type(source_type, text, renderer_options)
                     .catch((error) => {
                     sub_ocx.keepalive = false; // in case this got set prior to the error
                     sub_ocx.stop(); // stop background processing, if any
