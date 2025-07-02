@@ -71,7 +71,7 @@ class ListItemRenderer extends TextBasedRenderer {
         return ocx.render_text(`${bullet} ${value?.trim()}\n`);
     }
 }
-ocx.topmost.extensions.set(type, ListItemRenderer);
+ocx.topmost.extensions.add(ListItemRenderer);
 ```
 ```! list-item
 abc

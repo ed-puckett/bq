@@ -1,9 +1,6 @@
 import {
-    _initial_text_renderer_factories,
-} from 'src/renderer/factories';
-
-import {
     TextBasedRenderer,
+    _initial_text_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
@@ -103,10 +100,8 @@ type walkTokens_token_type = {
 export class MarkdownRenderer extends TextBasedRenderer {
     static get type (){ return 'markdown'; }
 
-    static {
-        // required for all TextBasedRenderer extensions
-        _initial_text_renderer_factories.push(this);
-    }
+    // the following is necessary for the initial TextBasedRenderer extensions:
+    static { _initial_text_renderer_factories.push(this); }
 
     /** Render the given markdown and output via ocx.
      * @param {OutputContext} ocx,

@@ -56,6 +56,7 @@ import {
     MarkdownRenderer,
     LaTeXRenderer,
     JavaScriptRenderer,
+    ExtensionManager,
 } from 'src/renderer/_';
 
 
@@ -446,7 +447,12 @@ export class OutputContext extends ActivityManager {
     get element (){ return this.#element; }
     get parent  (){ return this.#parent; }
 
-    get topmost (){
+    /** @return {OutputContext} topmost OutputContext starting from this
+     * The "topmost" OutputContext is defined as the first OutputContext
+     * in the parent chain with no parent or whose parent is on some cycle
+     * in the parent chain.
+     */
+    get topmost (): OutputContext {
         let p: undefined|OutputContext = this;
         for (let tries = 0; tries < 10; tries++) {
             if (!p.parent) {
@@ -455,7 +461,7 @@ export class OutputContext extends ActivityManager {
             p = p.parent;
         }
         // after several tries, the topmost parent was not found, so maybe
-        // is a cycle.  Try more carefully....
+        // there is a cycle.  Try more carefully:
         p = this;
         const seen = new Set();
         for (;;) {
@@ -693,7 +699,9 @@ export class OutputContext extends ActivityManager {
 
     /** extensions provides a means of specifying ocx-local mapping of type to RendererFactory
      */
-    readonly extensions = new Map<string, RendererFactory>();
+    readonly #extensions = new ExtensionManager();
+
+    get extensions (){ return this.#extensions; }
 
     text_renderer_factory_for_type(type: string): undefined|RendererFactory {
         for (let hosting_ocx: undefined|OutputContext = this; hosting_ocx; hosting_ocx = hosting_ocx.parent) {

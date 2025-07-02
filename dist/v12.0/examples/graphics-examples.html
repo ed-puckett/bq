@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" data-auto-render>
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript" id="id-91beff3a-033e-47d8-bba7-6cdfa548b859">const width  = 200;
+const height = 150;
+
+const {
+    draw_arrow,
+    draw_arrowhead,
+} = canvas_tools;
+
+const canvas_renderer = (canvas) => {
+    const ctx = canvas.getContext('2d');
+
+    // re-center and orient y-axis upward
+    ctx.translate(width/2, height);
+    ctx.scale(1, -1);  // flip so that y increases up
+
+    draw_arrow(ctx, -100, 100, 100, 100, {
+        double: true,
+        len: 20,
+        tick: 20,
+        label: 'ARROW!',
+        label_options: {
+            dxr: 0,
+            dyr: 1,
+            clear: true,
+            padding: 0,
+        },
+    });
+    draw_arrowhead(ctx, 0, 100, 0, 1);
+};
+const canvas = ocx.create_child({
+    tag: 'canvas',
+    attrs: { width, height },
+});
+await canvas_renderer(canvas);
+</bq-cell>
+<bq-cell data-type="javascript" id="id-d95b7b66-9513-4fe9-88b2-100b3f4dc51c">const width  = 500;
+const height = 500;
+
+const {
+    draw_flipped_text,
+    draw_arc,
+    draw_dot,
+    draw_line,
+    draw_ticks,
+    draw_arrow,
+} = canvas_tools;
+
+const canvas_renderer = (canvas) => {
+    const ctx = canvas.getContext('2d');
+
+    // re-center and orient y-axis upward
+    ctx.translate(width/2, height/2);
+    ctx.scale(1, -1);  // flip so that y increases up
+
+    ctx.fillStyle = 'aliceblue';
+    ctx.fillRect(0, 0, 150, 150);
+
+    const text = 'This is it!';
+    const tx = 40;
+    const ty = 40;
+    ctx.fillStyle = 'green';
+    draw_flipped_text(ctx, text, tx, ty, {
+        clear: 'yellow',
+        angle: Math.PI/3,
+        padding: 15,
+        dxr: 2,
+        dyr: 2,
+    });
+    ctx.strokeStyle = 'red';
+    draw_dot(ctx, tx, ty);
+
+    ctx.strokeStyle = 'orange';
+    const r = 2/5*Math.min(width, height);
+    draw_arc(ctx, 0, 0, r, {
+        a0:  9/8*Math.PI,
+        a1: -1/8*Math.PI,
+        counterclockwise: true,
+        no_close_path: true,
+        no_fill: true,
+    });
+
+    draw_line(ctx, -200, 120, 200, 120);
+
+    const x_axis_x0 = -Math.floor(9/10*width/2);
+    const x_axis_y0 = 0;
+    const x_axis_x1 = Math.floor(9/10*width/2);
+    const x_axis_y1 = 0;
+
+    const y_axis_x0 = 0;
+    const y_axis_y0 = -Math.floor(9/10*height/2);
+    const y_axis_x1 = 0;
+    const y_axis_y1 = Math.floor(9/10*height/2);
+
+    ctx.strokeStyle = 'black';
+    draw_dot(ctx, 0, 0);
+    draw_flipped_text(ctx, "O", 0, 0, {
+        dxr: 1,
+        dyr: 1,
+    });
+    draw_line(ctx, x_axis_x0, x_axis_y0, x_axis_x1, x_axis_y1);
+    draw_line(ctx, y_axis_x0, y_axis_y0, y_axis_x1, y_axis_y1);
+
+    ctx.strokeStyle = 'red';
+    draw_ticks(ctx, 0, 0, x_axis_x1, x_axis_y1, 10, true);
+    draw_dot(ctx, 200, 0);
+};
+
+const canvas = ocx.create_child({
+    tag: 'canvas',
+    attrs: { width, height },
+});
+await canvas_renderer(canvas);
+</bq-cell>
+<bq-cell data-type="javascript" id="id-6f316d92-82ad-4b51-a8c7-d54a45e58642">const width  = 300;
+const height = 300;
+
+const canvas_renderer = (canvas) => {
+    const ctx = canvas.getContext('2d');
+
+    ctx.strokeStyle = 'orange';
+    ctx.fillStyle   = 'yellow';
+
+    // adapted from https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#basic_example
+
+    ctx.lineWidth = 10;
+
+    // door
+    ctx.fillRect(130, 190, 40, 60);
+
+    // wall
+    ctx.strokeRect(75, 140, 150, 110);
+
+    // roof
+    ctx.beginPath();
+    ctx.moveTo(50, 140);
+    ctx.lineTo(150, 60);
+    ctx.lineTo(250, 140);
+    ctx.closePath();
+    ctx.stroke();
+};
+
+const canvas = ocx.create_child({
+    tag: 'canvas',
+    attrs: { width, height },
+});
+await canvas_renderer(canvas);
+</bq-cell>
+<bq-cell id="id-297814e8-593a-4c4c-a1fa-46c4fd98ddad" data-type="javascript">// from: https://plotly.com/javascript/box-plots/ "Rainbow Box Plot"
+
+function linspace(a,b,n) {
+  return d3.range(n).map(function(i){return a+i*(b-a)/(n-1);});
+}
+const boxNumber = 30;
+const boxColor = [];
+const allColors = linspace(0, 360, boxNumber);
+const data = [];
+const yValues = [];
+
+// colors
+
+for( let i = 0; i < boxNumber;  i++ ){
+  const result = 'hsl('+ allColors[i] +',50%'+',50%)';
+  boxColor.push(result);
+}
+
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+};
+
+// create y Values
+
+for( let i = 0; i < boxNumber;  i++ ){
+  const ySingleArray = [];
+    for( let j = 0; j < 10;  j++ ){
+      const randomNum = getRandomArbitrary(0, 1);
+      const yIndValue = 3.5*Math.sin(Math.PI * i/boxNumber) + i/boxNumber+(1.5+0.5*Math.cos(Math.PI*i/boxNumber))*randomNum;
+      ySingleArray.push(yIndValue);
+    }
+  yValues.push(ySingleArray);
+}
+
+// create traces
+
+for( let i = 0; i < boxNumber;  i++ ){
+  const result = {
+    y: yValues[i],
+    type:'box',
+    marker:{
+      color: boxColor[i]
+    }
+  };
+  data.push(result);
+};
+
+// format the layout
+
+const layout = {
+  xaxis: {
+    showgrid: false,
+    zeroline: false,
+    tickangle: 60,
+    showticklabels: false
+  },
+  yaxis: {
+    zeroline: false,
+    gridcolor: 'white'
+  },
+  paper_bgcolor: 'rgb(233,233,233)',
+  plot_bgcolor: 'rgb(233,233,233)',
+  showlegend:false
+};
+
+await plotly({ data, layout });
+</bq-cell>
+</body>
+</html>

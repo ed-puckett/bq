@@ -312,7 +312,7 @@ export class BqManager {
         } catch (error: unknown) {
             console.error('error calling this.stop()', error, this);
         }
-        TextBasedRenderer.reset_renderer_factories();
+        TextBasedRenderer.reset_to_initial_text_renderer_factories();
         this.reset_global_state();
         this.#file_handle = undefined;
         for (const cell of this.get_cells()) {

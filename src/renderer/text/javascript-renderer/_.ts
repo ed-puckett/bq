@@ -139,11 +139,8 @@ import {
     TextBasedRenderer,
     ApplicationBasedRenderer,
     LocatedError,
-} from 'src/renderer/renderer';
-
-import {
     _initial_text_renderer_factories,
-} from 'src/renderer/factories';
+} from 'src/renderer/renderer';
 
 import {
     TextBasedRendererOptionsType,
@@ -255,10 +252,8 @@ export class JavaScriptParseError extends LocatedError {
 export class JavaScriptRenderer extends TextBasedRenderer {
     static get type (){ return 'javascript'; }
 
-    static {
-        // required for all TextBasedRenderer extensions
-        _initial_text_renderer_factories.push(this);
-    }
+    // the following is necessary for the initial TextBasedRenderer extensions:
+    static { _initial_text_renderer_factories.push(this); }
 
     /** Render by evaluating the given code and outputting to ocx.
      * @param {OutputContext} ocx,

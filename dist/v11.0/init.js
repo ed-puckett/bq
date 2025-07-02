@@ -16465,6 +16465,11 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
     get bq() { return this.#bq; }
     get element() { return this.#element; }
     get parent() { return this.#parent; }
+    /** @return {OutputContext} topmost OutputContext starting from this
+     * The "topmost" OutputContext is defined as the first OutputContext
+     * in the parent chain with no parent or whose parent is on some cycle
+     * in the parent chain.
+     */
     get topmost() {
         let p = this;
         for (let tries = 0; tries < 10; tries++) {
@@ -16474,7 +16479,7 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
             p = p.parent;
         }
         // after several tries, the topmost parent was not found, so maybe
-        // is a cycle.  Try more carefully....
+        // there is a cycle.  Try more carefully:
         p = this;
         const seen = new Set();
         for (;;) {
