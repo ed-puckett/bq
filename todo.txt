@@ -1,10 +1,7 @@
-clean up TextBasedRenderer factory/renderer extensibility mechanism
+define ocx.render_tty() or something like that (?)
 global_state: javascript can set arbitrary keys (via vars(), etc) which may lead to prototype pollution or other problems
-Makefile: changing .js or .html files does not trigger rebuild
 markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)
 update revision in version number in package.json when building
-store version number (including revision) in dist/<version_dir> when building
-define ocx.render_tty() or something like that (?)
 provide visual indication of a cell's show-full and show-in-presentation states
 Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 sometimes after refresh document hangs with a blank page...
@@ -48,6 +45,8 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* store version number (including revision) in dist/<version_dir> when building
+* clean up TextBasedRenderer factory/renderer extensibility mechanism
 * eliminate reset_before_render setting?  Setting to false may have undesired effects for saved notebooks
 * fix deprecation warnings when compiling (inflight and glob packages) (these were dependencies of mocha)
 * need to support (persistent) historical versions so that others can have a stable version to work against

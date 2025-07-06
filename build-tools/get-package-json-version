@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const args = process.argv.slice(2);
+args.unshift(process.argv[1].replace(/^.*[/]/, ''));
+
+//const package_json = (await import('../package.json', { with: { type: "json" } })).default;
+import package_json from '../package.json' with { type: "json" };
+
+function fail_exit(message) {
+    console.error(`** ${message}`);
+    process.exit(1);
+}
+
+const version_re = /^(?<major>[\d]+)[.](?<minor>[\d]+)(?:[.](?<revision>[\d])+)?$/;
+
+const package_json_version = package_json.version;
+const package_json_version_match = package_json_version?.match(version_re);
+if (!package_json_version_match) {
+    fail_exit(`bad version number in package.json: ${typeof package_json_version === 'string' ? `"${package_json_version}"` : package_json_version}`);
+}
+
+const {
+    major,
+    minor,
+    revision = 0,
+} = package_json_version_match.groups;
+console.log(`${major}.${minor}.${revision ?? '0'}`);

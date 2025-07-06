@@ -395,15 +395,6 @@ export class OutputContext extends ActivityManager {
 
     // === UTILITY ===
 
-    /** @param {String} format
-     *  @param {any[]} args
-     *  @return {String} formatted string
-     */
-    sprintf(format: string, ...args: any[]): string {
-        this.abort_if_stopped();
-        return this.CLASS.sprintf(format, ...args);
-    }
-
     /** @param {Number} s delay in seconds
      *  @return {Promise} promise which will resolve after s seconds
      */
@@ -434,6 +425,15 @@ export class OutputContext extends ActivityManager {
     async next_micro_tick(): Promise<void> {
         this.abort_if_stopped();
         return this.CLASS.next_micro_tick();
+    }
+
+    /** @param {String} format
+     *  @param {any[]} args
+     *  @return {String} formatted string
+     */
+    sprintf(format: string, ...args: any[]): string {
+        this.abort_if_stopped();
+        return this.CLASS.sprintf(format, ...args);
     }
 
 
@@ -609,24 +609,6 @@ export class OutputContext extends ActivityManager {
 
     // === ADVANCED OPERATIONS ===
 
-    async render_text(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        this.abort_if_stopped();
-        text ??= '';
-        if (typeof text !== 'string') {
-            text = (text as any)?.toString?.() ?? '';
-        }
-        return new TextRenderer().render(this, text, options);
-    }
-
-    async render_error(error: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element> {
-        // don't call this.abort_if_stopped() for render_error() so that errors can still be rendered
-        // also, call the synchronous ErrorRenderer,render_sync() method.
-        if (error instanceof StoppedError) {
-            options = { ...(options ?? {}), abbreviated: true };
-        }
-        return ErrorRenderer.render_sync(this, error, options);
-    }
-
     async render_value(value: any, options?: TextBasedRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
         // transform value to text and then render as text
@@ -638,11 +620,47 @@ export class OutputContext extends ActivityManager {
         } else {
             text = '[unprintable value]';
         }
-        return this.render_text(text, options);
+        return this.print(text, options);
+    }
+
+    async render_error(error: ErrorRendererValueType, options?: ErrorRendererOptionsType): Promise<Element> {
+        // don't call this.abort_if_stopped() for render_error() so that errors can still be rendered
+        // also, call the synchronous ErrorRenderer,render_sync() method.
+        if (error instanceof StoppedError) {
+            options = { ...(options ?? {}), abbreviated: true };
+        }
+        return ErrorRenderer.render_sync(this, error, options);
+    }
+
+    async print(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        text ??= '';
+        if (typeof text !== 'string') {
+            text = (text as any)?.toString?.() ?? '';
+        }
+        return new TextRenderer().render(this, text, options);
     }
 
     async println(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        return this.render_text((text ?? '') + '\n', options);
+        return this.print((text ?? '') + '\n', options);
+    }
+
+    async tty(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        this.abort_if_stopped();
+        text ??= '';
+        if (typeof text !== 'string') {
+            text = (text as any)?.toString?.() ?? '';
+        }
+        options ??= {};
+        options.style ??= {};
+        if (!Object.hasOwn(options.style, 'font-family') && !Object.hasOwn(options.style, 'fontFamily')) {
+            (options.style as any)['font-family'] = 'monospace';
+        }
+        return new TextRenderer().render(this, text, options);
+    }
+
+    async ttyln(text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
+        return this.tty((text ?? '') + '\n', options);
     }
 
     async printf(format: string, ...args: any[]): Promise<Element> {
@@ -655,7 +673,7 @@ export class OutputContext extends ActivityManager {
             }
             text = this.CLASS.sprintf(format, ...args);
         }
-        return this.render_text(text, { inline: true });
+        return this.print(text, { inline: true });
     }
 
     async print__(options?: TextBasedRendererOptionsType): Promise<Element> {

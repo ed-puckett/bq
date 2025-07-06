@@ -10,12 +10,12 @@
 # 2. push changes to the git servers
 # 3. tag the version
 # 4. change the "version" entry in package.json (MAJOR.MINOR.REVISION -- REVISION may be 0)
-# 5. change the VERSION string below (match MAJOR and MINOR from package.json)
-# 6. do: make full-clean all
-# 7. check the dist directory to make sure the new vX.Y directory has been created
-# 8. push changes to the git servers
+# 5. do: make full-clean all
+# 6. check the dist directory to make sure the new vX.Y directory has been created
+# 7. push changes to the git servers
 
-VERSION = 12.0
+# get VERSION as <major>.<minor> from package.json
+VERSION := $(shell ./build-tools/get-package-json-version | sed -e 's/[.][^.]*$$//' )
 
 SERVER_ADDRESS    = 127.0.0.127
 SERVER_PORT       = 4320

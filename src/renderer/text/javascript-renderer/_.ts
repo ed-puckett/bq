@@ -71,12 +71,14 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     delay_ms
 //     next_tick
 //     next_micro_tick
-//     JSON5
 //     sprintf
-//     render_text
-//     render_error
+//     JSON5
 //     render_value
+//     render_error
+//     print
 //     println
+//     tty
+//     ttyln
 //     printf
 //     print__
 //     javascript
@@ -103,8 +105,8 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     Renderer
 //     TextBasedRenderer
 //     ApplicationBasedRenderer
-//     Activity,
-//     ActivityManager,
+//     Activity
+//     ActivityManager
 //     Dialog
 //     Menu
 //     KeyEventManager
@@ -490,14 +492,17 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             next_tick:        ocx.next_tick.bind(ocx),
             next_micro_tick:  ocx.next_micro_tick.bind(ocx),
 
+            sprintf:          ocx.sprintf.bind(ocx),
+
             JSON5,
 
             // output functions defined by ocx
-            sprintf:          ocx.sprintf.bind(ocx),
-            render_text:      ocx.render_text.bind(ocx),
-            render_error:     ocx.render_error.bind(ocx),
             render_value:     ocx.render_value.bind(ocx),
+            render_error:     ocx.render_error.bind(ocx),
+            print:            ocx.print.bind(ocx),
             println:          ocx.println.bind(ocx),
+            tty:              ocx.tty.bind(ocx),
+            ttyln:            ocx.ttyln.bind(ocx),
             printf:           ocx.printf.bind(ocx),
             print__:          ocx.print__.bind(ocx),
 
