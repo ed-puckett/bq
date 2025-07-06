@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-auto-render>
+<head>
+    <meta charset="utf-8">
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript" id="id-d7a0b782-0c74-40ec-8f6d-6c1bdfafeb4d">// Demonstrate BqManager.prototype.rendering_cells promise
+keepalive();
+ocx.bq.rendering_cells?.then(error => {
+    if (!error) {
+        ocx.markdown('# Render complete!');
+        cell.scroll_into_view(true);
+    }
+});
+</bq-cell>
+<bq-cell data-type="markdown" id="id-6f7b7bde-4e30-4630-80e4-1bf57d042d3d">## Markdown
+*... with math:*
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
+$$
+*... with code:*
+```!$ javascript
+let s = 0;
+for (let i = 1; i < 10_000_000; i++) {
+    s += 1/(i*i);
+}
+yield sprintf('result = %7f\n', Math.sqrt(s*6));
+```</bq-cell>
+<bq-cell data-type="javascript" id="id-7f79d793-abb7-4740-a5e3-24d0be7c45c2">ocx.update_style({
+    'max-width': '6em',
+    color:       'purple',
+    background:  'aliceblue',
+    border:      '1px solid black',
+    padding:     '0.5em',
+    overflow:    'hidden',
+});
+const ccx = ocx.create_child_ocx({
+    style: {
+        color:           'red',
+        background:      'yellow',
+        'border-radius': '0.5em',
+    },
+});
+await ocx.println('1. xyzzy');
+await ccx.println('2. whir!');
+await ocx.println('3. third');
+await ccx.println('4. buzz!');
+await ocx.println('5. fifth');</bq-cell>
+<bq-cell data-type="latex" id="id-2dbc2e81-1791-4154-b298-87fbfd8a0b93">\mathnormal{N}(x ; \mu, \sigma) = \int_0^x  \negthickspace { \frac{1}{\sigma \sqrt{2 \pi}} e^{- \frac{1}{2}( \frac{t - \mu}{\sigma} )^2}  dt }</bq-cell>
+<bq-cell data-type="javascript" id="id-1cd42c60-1efc-4734-bf4e-0cb8f0895273">// from https://plotly.com/javascript/line-charts/
+const trace1 = {
+    x: [  1,  2,  3,  4,  5,  6,  7 ],
+    y: [ 10, 15, 13, 17, 11, 12, 20 ],
+    type: 'scatter',
+};
+const trace2 = {
+    x: [  1,  2,  3,  4,  5,  6,  7 ],
+    y: [ 16,  5, 11,  9, 20,  1,  4 ],
+    type: 'scatter',
+};
+await plotly([ trace1, trace2 ]);</bq-cell>
+<bq-cell data-type="javascript" id="id-738fe1bb-c4db-4f94-81b0-e7804440d2d2">await graphviz({ nodes: "abc", edges: ["ab", "bc", "ca"] });</bq-cell>
+<bq-cell id="id-9b45bea7-d291-44e4-a98a-a4c77c42e30a">### Custom Renderer Example
+```! javascript
+const type = 'list-item';
+const bullet = '\u00b7';  // middle dot
+class ListItemRenderer extends TextBasedRenderer {
+    static type = type;
+    async _render(ocx, value, options) {
+        return ocx.render_text(`${bullet} ${value?.trim()}\n`);
+    }
+}
+ocx.topmost.extensions.add(ListItemRenderer);
+```
+```! list-item
+abc
+```
+```! list-item
+def
+```
+```! list-item
+ghi
+```</bq-cell>
+<bq-cell data-type="javascript" id="id-ccb6c725-b405-408f-9076-cb542113d287">const worker = await create_worker({ keepalive: true });
+const worker_code = 'for (let i = 0; i < 10; i++) { await new Promise(resolve => setTimeout(resolve, 100)); yield `Reply #${i}`; }';
+for await (const reply of worker.stream_eval(worker_code)) {
+    println(reply);
+}
+println(await worker.eval('return (Math.sqrt(5) + 1) / 2'));</bq-cell>
+
+<bq-cell data-type="markdown" id="id-b3480a72-6290-4509-8039-abcc1f412a76"># $x\textrm{b}$
+$$
+a x^2 + b x + c = 0
+$$
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
+$$
+```! javascript
+    await markdown(`## Seconds since 1 Jan 1970: ${Date.now()/1000}`);
+    function test(x) { return `--- ${x} ---`; }
+    await print__();
+    for (let i = 100; i < 200; i++) {
+        await printf(' %s', test(i));
+        await sleep(0.01);
+    }
+```
+</bq-cell>
+<bq-cell data-type="javascript" id="id-55ffb8a7-cbb5-4a03-a31b-b956ef670c93">bg(async () => {
+    for (let i = 100; i < 200; i++) {
+        await printf(' %d', i);
+        await sleep(0.01);
+    }
+    end_bg();
+});
+</bq-cell>
+<bq-cell data-type="plain" id="id-74f70550-598f-4da9-b2f7-921078bf2f29">The quick brown fox jumped over the lazy dog's back.</bq-cell>
+</body>
+</html>

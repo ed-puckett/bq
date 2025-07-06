@@ -1,10 +1,6 @@
 import {
-    _initial_text_renderer_factories,
-} from 'src/renderer/factories';
-
-import {
-    RendererFactory,
     TextBasedRenderer,
+    _initial_text_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
@@ -104,10 +100,8 @@ type walkTokens_token_type = {
 export class MarkdownRenderer extends TextBasedRenderer {
     static get type (){ return 'markdown'; }
 
-    static {
-        // required for all TextBasedRenderer extensions
-        _initial_text_renderer_factories.push(this);
-    }
+    // the following is necessary for the initial TextBasedRenderer extensions:
+    static { _initial_text_renderer_factories.push(this); }
 
     /** Render the given markdown and output via ocx.
      * @param {OutputContext} ocx,
@@ -126,8 +120,8 @@ export class MarkdownRenderer extends TextBasedRenderer {
 
         let deferred_renderings: {
             output_element_id: string,
+            source_type:       string,
             text:              string,
-            renderer:          TextBasedRenderer,
             renderer_options:  TextBasedRendererOptionsType,
         }[] = [];
 
@@ -142,7 +136,6 @@ export class MarkdownRenderer extends TextBasedRenderer {
 
                     case extension_name__inline_eval_code:
                     case extension_name__render_code: {
-                        let renderer_factory: undefined|RendererFactory = undefined;
                         try {
 
                             const {
@@ -154,17 +147,13 @@ export class MarkdownRenderer extends TextBasedRenderer {
                             if (!source_type) {
                                 throw new TypeError('no source_type given');
                             }
-                            renderer_factory = TextBasedRenderer.factory_for_type(source_type);
-                            if (!renderer_factory) {
-                                throw new TypeError(`cannot find renderer for source type "${source_type}"`);
-                            }
                             const markup_segments: string[] = [];
-                            function add_segment(renderer_factory: RendererFactory, text_to_render: string, css_class?: string) {
+                            function add_segment(source_type: string, text_to_render: string, css_class?: string) {
                                 const output_element_id = generate_object_id();
                                 deferred_renderings.push({
                                     output_element_id,
+                                    source_type,
                                     text: text_to_render,
-                                    renderer: new renderer_factory() as TextBasedRenderer,
                                     renderer_options: {
                                         inline,
                                         global_state,
@@ -176,10 +165,10 @@ export class MarkdownRenderer extends TextBasedRenderer {
                             }
                             if (show && text) {
                                 // render the source text without executing
-                                add_segment(MarkdownRenderer, '```'+source_type+'\n'+text+'\n```\n', render_code_source_css_class);
+                                add_segment(MarkdownRenderer.type, '```'+source_type+'\n'+text+'\n```\n', render_code_source_css_class);
                             }
                             // render/execute the source text
-                            add_segment(renderer_factory, text);
+                            add_segment(source_type, text);
                             token.markup = markup_segments.join('\n');
 
                         } catch (error: unknown) {
@@ -201,14 +190,14 @@ export class MarkdownRenderer extends TextBasedRenderer {
         // are now free to render asynchronously and in the background
         // Note: we are assuming that parent (and ocx.element) are already in the DOM
         // so that we can find the output element through document.getElementById().
-        for (const { output_element_id, text, renderer, renderer_options } of deferred_renderings) {
+        for (const { output_element_id, source_type, text, renderer_options } of deferred_renderings) {
             const output_element = document.getElementById(output_element_id);
             if (!output_element) {
                 // unexpected...
                 ErrorRenderer.render_sync(ocx, new Error(`deferred_renderings: cannot find output element with id "${output_element_id}"`));
             } else {
                 const sub_ocx = ocx.create_new_ocx(output_element, ocx);
-                await renderer.render(sub_ocx, text, renderer_options)
+                await sub_ocx.invoke_renderer_for_type(source_type, text, renderer_options)
                     .catch((error: unknown) => {
                         sub_ocx.keepalive = false;  // in case this got set prior to the error
                         sub_ocx.stop();  // stop background processing, if any

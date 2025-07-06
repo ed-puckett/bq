@@ -1,3 +1,4 @@
+clean up TextBasedRenderer factory/renderer extensibility mechanism
 global_state: javascript can set arbitrary keys (via vars(), etc) which may lead to prototype pollution or other problems
 Makefile: changing .js or .html files does not trigger rebuild
 markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)

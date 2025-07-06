@@ -36,6 +36,7 @@ import {
 } from 'src/renderer/text/types';
 
 import {
+    RendererFactory,
     Renderer,
     ErrorRenderer,
     ErrorRendererValueType,
@@ -55,6 +56,7 @@ import {
     MarkdownRenderer,
     LaTeXRenderer,
     JavaScriptRenderer,
+    ExtensionManager,
 } from 'src/renderer/_';
 
 
@@ -445,6 +447,32 @@ export class OutputContext extends ActivityManager {
     get element (){ return this.#element; }
     get parent  (){ return this.#parent; }
 
+    /** @return {OutputContext} topmost OutputContext starting from this
+     * The "topmost" OutputContext is defined as the first OutputContext
+     * in the parent chain with no parent or whose parent is on some cycle
+     * in the parent chain.
+     */
+    get topmost (): OutputContext {
+        let p: undefined|OutputContext = this;
+        for (let tries = 0; tries < 10; tries++) {
+            if (!p.parent) {
+                return p;
+            }
+            p = p.parent;
+        }
+        // after several tries, the topmost parent was not found, so maybe
+        // there is a cycle.  Try more carefully:
+        p = this;
+        const seen = new Set();
+        for (;;) {
+            seen.add(p);
+            if (!p.parent || seen.has(p.parent)) {
+                return p;
+            }
+            p = p.parent;
+        }
+    }
+
     /** construct a new OutputContext for the given element and with an optional parent.
      *  @param {Element} element controlled by this new OutputContext
      *  @param {undefined|OutputContext} parent for this new OutputContext
@@ -664,5 +692,60 @@ export class OutputContext extends ActivityManager {
     async plotly(code: PlotlyRendererValueType, options?: PlotlyRendererOptionsType): Promise<Element> {
         this.abort_if_stopped();
         return new PlotlyRenderer().render(this, code, options);
+    }
+
+
+    // === RENDERER EXTENSIBILITY ===
+
+    /** extensions provides a means of specifying ocx-local mapping of type to RendererFactory
+     */
+    readonly #extensions = new ExtensionManager();
+
+    get extensions (){ return this.#extensions; }
+
+    text_renderer_factory_for_type(type: string): undefined|RendererFactory {
+        for (let hosting_ocx: undefined|OutputContext = this; hosting_ocx; hosting_ocx = hosting_ocx.parent) {
+            const factory = hosting_ocx.extensions.get(type);
+            if (factory) {
+                return factory;
+            }
+        }
+        // not found in this.extensions, fall back to TextBasedRenderer factory mapping
+        return TextBasedRenderer.factory_for_type(type);
+    }
+
+    text_renderer_for_type(type: string): undefined|TextBasedRenderer {
+        const factory = this.text_renderer_factory_for_type(type);
+        if (!factory) {
+            return undefined;
+        } else {
+            const renderer = new factory();
+            return renderer as TextBasedRenderer;
+        }
+    }
+
+    async invoke_renderer_for_type( type:     string,
+                                    value:    string,
+                                    options?: TextBasedRendererOptionsType ): Promise<Element> {
+        const renderer = this.text_renderer_for_type(type);
+        if (!renderer) {
+            throw new Error(`renderer not found for type \"${type}\"`);
+        }
+
+        return renderer.render(this, value, options)
+            .then(element => {
+                if (!this.keepalive) {
+                    this.stop();  // stop anything that may have been started
+                }
+                return element;
+            })
+            .catch((error) => {
+                const error_message_element = ErrorRenderer.render_sync(this, error, { abbreviated: true });
+                error_message_element.scrollIntoView(false);
+                if (!this.keepalive) {
+                    this.stop();  // stop anything that may have been started
+                }
+                throw error;
+            });
     }
 }

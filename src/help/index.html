@@ -34,10 +34,6 @@ See the source code here: https://github.com/ed-puckett/bq
 
 ---
 
-[Example Page](./example.html)
-
----
-
 ## Notebook Structure
 
 ## Renderer Types
@@ -60,9 +56,10 @@ See the source code here: https://github.com/ed-puckett/bq
 - OutputContext (ocx)
   - associated with bq: BqManager
   - associated with element: Element
+  - invoke_renderer_for_type() method
 - BqManager.singleton
   - controls data-cell-view attribute on document.documentElement (:root)
-  - invoke_renderer() and invoke_renderer_for_type() methods
+  - invoke_cell_renderer() method
 </bq-cell>
 </body>
 </html>

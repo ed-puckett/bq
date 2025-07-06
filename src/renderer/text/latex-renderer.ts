@@ -1,10 +1,7 @@
 import {
     TextBasedRenderer,
-} from 'src/renderer/renderer';
-
-import {
     _initial_text_renderer_factories,
-} from 'src/renderer/factories';
+} from 'src/renderer/renderer';
 
 import {
     TextBasedRendererOptionsType,
@@ -28,10 +25,8 @@ export class LaTeXRenderer extends TextBasedRenderer {
 
     static get type (){ return 'latex'; }
 
-    static {
-        // required for all TextBasedRenderer extensions
-        _initial_text_renderer_factories.push(this);
-    }
+    // the following is necessary for the initial TextBasedRenderer extensions:
+    static { _initial_text_renderer_factories.push(this); }
 
     /** Render the given LaTeX source to ocx.
      * @param {OutputContext} ocx,

@@ -17,8 +17,8 @@ import {
 } from 'src/bq-cell-element/_';
 
 import {
-    reset_to_initial_text_renderer_factories,
-} from 'src/renderer/factories';
+    TextBasedRenderer,
+} from 'src/renderer/_';
 
 
 // === BOOTSTRAP SCRIPT SRC DATA ===
@@ -168,8 +168,8 @@ async function initialize_document(): Promise<void> {
         // Initialize BqManager to enable interaction.
         BqManager._initialize_singleton();
 
-        // initialize renderer factories after all the TextBasedRenderer factories have been registered...
-        reset_to_initial_text_renderer_factories();
+        // initialize text renderer factories after all the TextBasedRenderer factories have been registered...
+        TextBasedRenderer.reset_to_initial_text_renderer_factories();
 
         // asynchronously start BqManager instance
         setTimeout(() => BqManager.singleton.start());

@@ -36,7 +36,6 @@ export {
     PlotlyRendererOptionsType,
 } from './application/types';
 
-
 export {
-    _initial_text_renderer_factories,  // for initialization only
-} from './factories';
+    ExtensionManager,
+} from './extension-manager';

@@ -16701,6 +16701,40 @@ class OutputContext extends lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3_
         this.abort_if_stopped();
         return new src_renderer___WEBPACK_IMPORTED_MODULE_4__/* .PlotlyRenderer */ .e$().render(this, code, options);
     }
+    // === RENDER INTERFACE ===
+    async _invoke_renderer(renderer, value, options) {
+        return renderer._render(this, value, options)
+            .then(result => {
+            // Make sure that this ocx is stopped and that the error, if any, is output
+            // to the log. If nothing has yet called a function that checks if this ocx
+            // if stopped, then BqManager.prototype.render_cells() never gets the
+            // corresponding error, and therefore the BqManager.prototype.rendering_cells
+            // gets fulfilled, however this ocx is not in a usable state.  So if some cell
+            // in the document is awaiting that promise and then tries to use this ocx
+            // when it fulfills, an unhandled rejection results.
+            // This turns out to be important for document auto-render.
+            this.abort_if_stopped();
+            return result;
+        })
+            .catch((error) => {
+            try {
+                this.stop(); // stop anything that may have been started
+            }
+            catch (ignored_error) {
+                console.error('ignored second-level error while stopping ocx after render error', ignored_error);
+                // nothing
+            }
+            throw error;
+        })
+            .finally(() => {
+            this.#render_completions.dispatch({
+                ocx: this,
+                renderer: renderer,
+                value: value,
+                options: options,
+            });
+        });
+    }
 }
 
 __webpack_async_result__();
@@ -17214,40 +17248,6 @@ class Renderer {
     /** get the media_type specified by the class
      */
     get media_type() { return this.constructor.media_type; }
-    // === COMMON RENDER HANDLER FOR EXTENSION CLASSES ===
-    static async _invoke_renderer(renderer, ocx, value, options) {
-        return renderer._render(ocx, value, options)
-            .then(result => {
-            // Make sure that the ocx is stopped and that the error, if any, is output
-            // to the log. If nothing has yet called a function that checks if the ocx
-            // if stopped, then BqManager.prototype.render_cells() never gets the
-            // corresponding error, and therefore the BqManager.prototype.rendering_cells
-            // gets fulfilled, however the ocx is not in a usable state.  So if some cell
-            // in the document is awaiting that promise and then tries to use the ocx
-            // when it fulfills, an unhandled rejection results.
-            // This turns out to be important for document auto-render.
-            ocx.abort_if_stopped();
-            return result;
-        })
-            .catch((error) => {
-            try {
-                ocx.stop(); // stop anything that may have been started
-            }
-            catch (ignored_error) {
-                console.error('ignored second-level error while stopping ocx after render error', ignored_error);
-                // nothing
-            }
-            throw error;
-        })
-            .finally(() => {
-            ocx.render_completions.dispatch({
-                ocx,
-                renderer: renderer,
-                value: value,
-                options: options,
-            });
-        });
-    }
 }
 class TextBasedRenderer extends Renderer {
     static get media_type() { return `text/${this.type}`; }
@@ -17282,7 +17282,7 @@ class TextBasedRenderer extends Renderer {
      * @throws {Error} if error occurs
      */
     async render(ocx, value, options) {
-        return Renderer._invoke_renderer(this, ocx, value, options);
+        return ocx._invoke_renderer(this, value, options);
     }
 }
 class ApplicationBasedRenderer extends Renderer {
@@ -17299,7 +17299,7 @@ class ApplicationBasedRenderer extends Renderer {
      * @throws {Error} if error occurs
      */
     async render(ocx, value, options) {
-        return Renderer._invoke_renderer(this, ocx, value, options);
+        return ocx._invoke_renderer(this, value, options);
     }
 }
 class LocatedError extends Error {

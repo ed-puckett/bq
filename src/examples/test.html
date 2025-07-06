@@ -61,16 +61,18 @@ const trace2 = {
 };
 await plotly([ trace1, trace2 ]);</bq-cell>
 <bq-cell data-type="javascript" id="id-738fe1bb-c4db-4f94-81b0-e7804440d2d2">await graphviz({ nodes: "abc", edges: ["ab", "bc", "ca"] });</bq-cell>
-<bq-cell id="id-09b81998-b439-494f-80f2-58321488ef9a" data-type="javascript">// Custom Renderer Example
+<bq-cell id="id-9b45bea7-d291-44e4-a98a-a4c77c42e30a">### Custom Renderer Example
+```! javascript
+const type = 'list-item';
 const bullet = '\u00b7';  // middle dot
 class ListItemRenderer extends TextBasedRenderer {
-    static type = 'list-item';
+    static type = type;
     async _render(ocx, value, options) {
         return ocx.render_text(`${bullet} ${value?.trim()}\n`);
     }
 }
-TextBasedRenderer.add_renderer_factory(ListItemRenderer);</bq-cell>
-<bq-cell id="id-9b45bea7-d291-44e4-a98a-a4c77c42e30a">### Custom Renderer Example
+ocx.topmost.extensions.add(ListItemRenderer);
+```
 ```! list-item
 abc
 ```

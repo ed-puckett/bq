@@ -1,11 +1,6 @@
 import {
-    text_renderer_factory_for_type,
-    reset_to_initial_text_renderer_factories,
-    get_text_renderer_factories,
-    set_text_renderer_factories,
-    add_text_renderer_factory,
-    remove_text_renderer_factory,
-} from './factories';
+    ExtensionManager,
+} from './extension-manager';
 
 import {
     TextBasedRendererOptionsType,
@@ -91,32 +86,6 @@ export class Renderer {
 export abstract class TextBasedRenderer extends Renderer {
     static get media_type (){ return `text/${this.type}`; }
 
-    static get_renderer_types():       string[] { return get_text_renderer_factories().map(rf => rf.type); }
-    static reset_renderer_factories(): void     { reset_to_initial_text_renderer_factories(); }
-
-    static factory_for_type(type: string):  undefined|RendererFactory { return text_renderer_factory_for_type(type); }
-    static renderer_for_type(type: string): undefined|TextBasedRenderer {
-        const factory = text_renderer_factory_for_type(type);
-        if (!factory) {
-            return undefined;
-        } else {
-            const renderer = new factory();
-            return renderer as TextBasedRenderer;
-        }
-    }
-
-    static get_renderer_factories():                                 RendererFactory[] { return get_text_renderer_factories(); }
-    static set_renderer_factories(new_factories: RendererFactory[]): void              { set_text_renderer_factories(new_factories); }
-    static add_renderer_factory(rf: RendererFactory):                void              { add_text_renderer_factory(rf); }
-
-    static remove_renderer_factory(rf: RendererFactory):   void { remove_text_renderer_factory(rf); }
-    static remove_renderer_factory_for_type(type: string): void {
-        const factory = this.factory_for_type(type);
-        if (factory) {
-            this.remove_renderer_factory(factory);
-        }
-    }
-
     /** render the given value
      * @param {OutputContext} ocx,
      * @param {string} value,  // value to be rendered
@@ -131,7 +100,51 @@ export abstract class TextBasedRenderer extends Renderer {
     /** to be implemented by subclasses
      */
     abstract /*async*/ _render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element>;
+
+
+    // === TEXT RENDERER EXTENSIBILITY ===
+
+    static #extensions = new ExtensionManager();  // note: "extension" here refers to extending the rendering system, and not class extensions
+
+    static factory_for_type(type: string): undefined|RendererFactory {
+        return this.#extensions.get(type);
+    }
+
+    static renderer_for_type(type: string): undefined|TextBasedRenderer {
+        const factory = this.factory_for_type(type);
+        if (!factory) {
+            return undefined;
+        } else {
+            const renderer = new factory();
+            return renderer as TextBasedRenderer;
+        }
+    }
+
+    static add_text_renderer_factory(factory: RendererFactory): void {
+        this.#extensions.add(factory);
+    }
+
+    static remove_text_renderer_factory(factory: RendererFactory): void {
+        this.#extensions.remove(factory);
+    }
+
+    static get_text_renderer_types(): string[] {
+        return this.#extensions.get_all().map(({ type }) => type);
+    }
+
+    static get_text_renderer_factories(): RendererFactory[] {
+        return this.#extensions.get_all();
+    }
+
+    static reset_to_initial_text_renderer_factories() {
+        this.#extensions.reset(_initial_text_renderer_factories);
+    }
 }
+
+
+/** for use only by initial TextBasedRenderer extensions and this.reset_to_initial_text_renderer_factories();
+ */
+export const _initial_text_renderer_factories: RendererFactory[] = [];
 
 
 export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends Renderer {
