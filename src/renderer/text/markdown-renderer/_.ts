@@ -197,7 +197,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
                 ErrorRenderer.render_sync(ocx, new Error(`deferred_renderings: cannot find output element with id "${output_element_id}"`));
             } else {
                 const sub_ocx = ocx.create_new_ocx(output_element, ocx);
-                await sub_ocx.invoke_renderer_for_type(source_type, text, renderer_options)
+                await sub_ocx.render(source_type, text, renderer_options)
                     .catch((error: unknown) => {
                         sub_ocx.keepalive = false;  // in case this got set prior to the error
                         sub_ocx.stop();  // stop background processing, if any

@@ -742,9 +742,9 @@ export class OutputContext extends ActivityManager {
         }
     }
 
-    async invoke_renderer_for_type( type:     string,
-                                    value:    string,
-                                    options?: TextBasedRendererOptionsType ): Promise<Element> {
+    async render( type:     string,
+                  value:    string,
+                  options?: TextBasedRendererOptionsType ): Promise<Element> {
         const renderer = this.text_renderer_for_type(type);
         if (!renderer) {
             throw new Error(`renderer not found for type \"${type}\"`);

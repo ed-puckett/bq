@@ -1,4 +1,3 @@
-define ocx.render_tty() or something like that (?)
 global_state: javascript can set arbitrary keys (via vars(), etc) which may lead to prototype pollution or other problems
 markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)
 update revision in version number in package.json when building
@@ -45,6 +44,7 @@ search for uses of BqManager.singleton (should be few; instead: access through O
 
 
 --- DONE ---
+* define ocx.render_tty() or something like that (?)
 * store version number (including revision) in dist/<version_dir> when building
 * clean up TextBasedRenderer factory/renderer extensibility mechanism
 * eliminate reset_before_render setting?  Setting to false may have undesired effects for saved notebooks

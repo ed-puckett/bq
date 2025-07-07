@@ -40,7 +40,7 @@ export class Renderer {
 
     // === COMMON RENDER HANDLER FOR EXTENSION CLASSES ===
 
-    static async _invoke_renderer<ValueType, OptionsType>(
+    protected static async _invoke_renderer<ValueType, OptionsType>(
         renderer: { /*async*/ _render( ocx:      OutputContext,
                                        value:    ValueType,
                                        options?: OptionsType ): Promise<Element>,

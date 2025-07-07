@@ -227,7 +227,7 @@ export class BqManager {
     #editable: boolean = true;
     #active_cell: null|BqCellElement = null;
     #global_state: object = {};  // persistent state for renderers
-    #cell_ocx_map = new WeakMap<BqCellElement, Set<OutputContext>>();  // maintained by this.invoke_cell_renderer()
+    #cell_ocx_map = new WeakMap<BqCellElement, Set<OutputContext>>();  // maintained by this.render_cell()
 
     #notification_manager = new NotificationManager();
     get notification_manager (){ return this.#notification_manager; }
@@ -567,8 +567,8 @@ export class BqManager {
 
     // === RENDER INTERFACE ===
 
-    async invoke_cell_renderer( cell:     BqCellElement,
-                                options?: null|TextBasedRendererOptionsType ): Promise<Element> {
+    async render_cell( cell:     BqCellElement,
+                       options?: null|TextBasedRendererOptionsType ): Promise<Element> {
         if (!(cell instanceof BqCellElement)) {
             throw new TypeError('cell must be an instance of BqCellElement');
         }
@@ -616,7 +616,7 @@ export class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
 
-        return ocx.invoke_renderer_for_type(type, cell.get_text(), options)
+        return ocx.render(type, cell.get_text(), options)
             .catch((error) => {
                 if (error instanceof LocatedError) {
                     cell?.set_cursor_position(error.line_number, error.column_index);
@@ -709,7 +709,7 @@ export class BqManager {
                 }
 
                 try {
-                    await this.invoke_cell_renderer(iter_cell);
+                    await this.render_cell(iter_cell);
                 } catch (error: unknown) {
                     console.warn('stopped render_cells after error while rendering cell', error, iter_cell);
                     render_error = error;
