@@ -26,7 +26,7 @@ for (let i = 1; i < 10_000_000; i++) {
 }
 yield sprintf('result = %7f\n', Math.sqrt(s*6));
 ```</bq-cell>
-<bq-cell data-type="javascript" id="id-7f79d793-abb7-4740-a5e3-24d0be7c45c2">ocx.update_style({
+<bq-cell data-type="javascript" id="id-7f79d793-abb7-4740-a5e3-24d0be7c45c2" class="show-full">ocx.update_style({
     'max-width': '6em',
     color:       'purple',
     background:  'aliceblue',
@@ -87,23 +87,6 @@ for await (const reply of worker.stream_eval(worker_code)) {
     println(reply);
 }
 println(await worker.eval('return (Math.sqrt(5) + 1) / 2'));</bq-cell>
-
-<bq-cell data-type="markdown" id="id-b3480a72-6290-4509-8039-abcc1f412a76"># $x\textrm{b}$
-$$
-a x^2 + b x + c = 0
-$$
-$$
-x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
-$$
-```! javascript
-    await markdown(`## Seconds since 1 Jan 1970: ${Date.now()/1000}`);
-    function test(x) { return `--- ${x} ---`; }
-    await print__();
-    for (let i = 100; i < 200; i++) {
-        await printf(' %s', test(i));
-        await sleep(0.01);
-    }
-```</bq-cell>
 <bq-cell data-type="javascript" id="id-55ffb8a7-cbb5-4a03-a31b-b956ef670c93">bg(async () => {
     for (let i = 100; i < 200; i++) {
         await printf(' %d', i);
