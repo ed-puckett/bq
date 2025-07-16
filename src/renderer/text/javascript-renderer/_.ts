@@ -140,13 +140,12 @@ import {
     Renderer,
     TextBasedRenderer,
     ApplicationBasedRenderer,
-    LocatedError,
     _initial_text_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
     TextBasedRendererOptionsType,
-} from 'src/renderer/text/types';
+} from '../types';
 
 import {
     ErrorRendererValueType,
@@ -156,6 +155,10 @@ import {
 import {
     ErrorRenderer,
 } from 'src/renderer/application/error-renderer';
+
+import {
+    LocatedError,
+} from 'src/renderer/located-error';
 
 import {
     OutputContext,

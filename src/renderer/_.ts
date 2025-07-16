@@ -5,7 +5,6 @@ export {
     Renderer,
     TextBasedRenderer,
     ApplicationBasedRenderer,
-    LocatedError,
 } from './renderer';
 
 export { TextRenderer       } from './text/text-renderer';
@@ -39,3 +38,7 @@ export {
 export {
     ExtensionManager,
 } from './extension-manager';
+
+export {
+    LocatedError,
+} from './located-error';

@@ -16759,7 +16759,7 @@ __webpack_async_result__();
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   B5: () => (/* reexport safe */ _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__.B),
-/* harmony export */   BU: () => (/* reexport safe */ _renderer__WEBPACK_IMPORTED_MODULE_0__.BU),
+/* harmony export */   BU: () => (/* reexport safe */ _located_error__WEBPACK_IMPORTED_MODULE_10__.B),
 /* harmony export */   Js: () => (/* reexport safe */ _text_text_renderer__WEBPACK_IMPORTED_MODULE_1__.J),
 /* harmony export */   MH: () => (/* reexport safe */ _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__.M),
 /* harmony export */   To: () => (/* reexport safe */ _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__.T),
@@ -16780,9 +16780,11 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1560);
 /* harmony import */ var _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(39);
 /* harmony import */ var _extension_manager__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(1461);
+/* harmony import */ var _located_error__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(3891);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__]);
 ([_text_text_renderer__WEBPACK_IMPORTED_MODULE_1__, _text_markdown_renderer___WEBPACK_IMPORTED_MODULE_2__, _text_latex_renderer__WEBPACK_IMPORTED_MODULE_3__, _text_javascript_renderer___WEBPACK_IMPORTED_MODULE_4__, _application_error_renderer__WEBPACK_IMPORTED_MODULE_5__, _application_image_data_renderer__WEBPACK_IMPORTED_MODULE_6__, _application_graphviz_renderer__WEBPACK_IMPORTED_MODULE_7__, _application_plotly_renderer__WEBPACK_IMPORTED_MODULE_8__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 // === RE-EXPORTS ===
+
 
 
 
@@ -17243,6 +17245,34 @@ class ExtensionManager {
 
 /***/ }),
 
+/***/ 3891:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   B: () => (/* binding */ LocatedError)
+/* harmony export */ });
+class LocatedError extends Error {
+    constructor(message, line_number, column_index, ocx, options) {
+        super(message, options);
+        this.#ocx = ocx;
+        this.#line_number = line_number;
+        this.#column_index = column_index;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, this.constructor);
+        }
+    }
+    #line_number;
+    #column_index;
+    #ocx;
+    get line_number() { return this.#line_number; }
+    get column_index() { return this.#column_index; }
+    get ocx() { return this.#ocx; }
+}
+
+
+/***/ }),
+
 /***/ 7007:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -17250,7 +17280,6 @@ class ExtensionManager {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   $W: () => (/* binding */ _initial_text_renderer_factories),
 /* harmony export */   A4: () => (/* binding */ Renderer),
-/* harmony export */   BU: () => (/* binding */ LocatedError),
 /* harmony export */   Ve: () => (/* binding */ is_RendererFactory),
 /* harmony export */   m9: () => (/* binding */ TextBasedRenderer),
 /* harmony export */   rK: () => (/* binding */ ApplicationBasedRenderer)
@@ -17371,23 +17400,6 @@ class ApplicationBasedRenderer extends Renderer {
         return Renderer._invoke_renderer(this, ocx, value, options);
     }
 }
-class LocatedError extends Error {
-    constructor(message, line_number, column_index, ocx, options) {
-        super(message, options);
-        this.#ocx = ocx;
-        this.#line_number = line_number;
-        this.#column_index = column_index;
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, this.constructor);
-        }
-    }
-    #line_number;
-    #column_index;
-    #ocx;
-    get line_number() { return this.#line_number; }
-    get column_index() { return this.#column_index; }
-    get ocx() { return this.#ocx; }
-}
 
 
 /***/ }),
@@ -17405,26 +17417,27 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_bq_manager___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4931);
 /* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2023);
 /* harmony import */ var src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7007);
-/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7957);
-/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9888);
-/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8067);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8380);
-/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(4395);
-/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(8890);
-/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(8669);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5428);
-/* harmony import */ var lib_sys_json5__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(7302);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(9241);
-/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(5462);
-/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4723);
-/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(1576);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3593);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(1688);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(9015);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_4__, _eval_worker___WEBPACK_IMPORTED_MODULE_6__, src_settings___WEBPACK_IMPORTED_MODULE_14__]);
-([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_4__, _eval_worker___WEBPACK_IMPORTED_MODULE_6__, src_settings___WEBPACK_IMPORTED_MODULE_14__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var src_renderer_located_error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3891);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7957);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9888);
+/* harmony import */ var _eval_worker___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8067);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8380);
+/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4395);
+/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8890);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_json5__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(7302);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(9241);
+/* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
+/* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
+/* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(3593);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(1688);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(9015);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_15__]);
+([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
 
 const lib_dir_path = '../../../lib/';
@@ -17567,7 +17580,8 @@ const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).con
 
 
 
-class JavaScriptParseError extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU {
+
+class JavaScriptParseError extends src_renderer_located_error__WEBPACK_IMPORTED_MODULE_4__/* .LocatedError */ .B {
     constructor(babel_parse_error_object, underlying_error, ocx) {
         super(babel_parse_error_object.toString(), babel_parse_error_object.loc.line, babel_parse_error_object.loc.column, ocx, {
             cause: underlying_error,
@@ -17618,7 +17632,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         catch (parse_error) {
             let updated_parse_error = parse_error;
             try {
-                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg)(code_to_run, {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg)(code_to_run, {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
@@ -17674,9 +17688,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         return eval_ocx.element;
     }
     async #create_eval_environment(bqv, ocx, source_code) {
-        const cell_id = ocx.element.closest(`[${src_output_context__WEBPACK_IMPORTED_MODULE_4__/* .OutputContext */ .H.attribute__data_source_element}]`)?.getAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_4__/* .OutputContext */ .H.attribute__data_source_element);
+        const cell_id = ocx.element.closest(`[${src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H.attribute__data_source_element}]`)?.getAttribute(src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H.attribute__data_source_element);
         const cell = cell_id ? (document.getElementById(cell_id) ?? undefined) : undefined;
-        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_11__/* .load_d3 */ .l)();
+        const d3 = await (0,src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__/* .load_d3 */ .l)();
         function is_stopped() {
             return ocx.stopped;
         }
@@ -17772,7 +17786,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             }
         }
         async function create_worker(options) {
-            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_6__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
+            const worker = new _eval_worker___WEBPACK_IMPORTED_MODULE_7__/* .EvalWorker */ .V(options); // is an Activity; multiple_stops = false
             ocx.manage_activity(worker);
             return worker;
         }
@@ -17803,7 +17817,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             next_tick: ocx.next_tick.bind(ocx),
             next_micro_tick: ocx.next_micro_tick.bind(ocx),
             sprintf: ocx.sprintf.bind(ocx),
-            JSON5: lib_sys_json5__WEBPACK_IMPORTED_MODULE_10__/* .JSON5 */ .Y,
+            JSON5: lib_sys_json5__WEBPACK_IMPORTED_MODULE_11__/* .JSON5 */ .Y,
             // output functions defined by ocx
             render_value: ocx.render_value.bind(ocx),
             render_error: ocx.render_error.bind(ocx),
@@ -17820,37 +17834,37 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_16__,
+            canvas_tools: lib_ui_canvas_tools__WEBPACK_IMPORTED_MODULE_17__,
             d3, // for use with Plotly
-            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_12__/* .load_Plotly */ .O,
-            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_13__/* .load_Algebrite */ .B,
+            load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__/* .load_Plotly */ .O,
+            load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__/* .load_Algebrite */ .B,
             range,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_17__/* .uuidv4 */ .gZ),
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_18__,
-            get_settings: src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_settings */ .TJ,
-            get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_themes_settings */ .kQ,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__/* .uuidv4 */ .gZ),
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_19__,
+            get_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_settings */ .TJ,
+            get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_themes_settings */ .kQ,
             // parse support
-            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_15__/* .parse */ .qg,
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg,
             JavaScriptParseError,
-            LocatedError: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .LocatedError */ .BU,
+            LocatedError: src_renderer_located_error__WEBPACK_IMPORTED_MODULE_4__/* .LocatedError */ .B,
             // ui, Renderer, etc classes
             BqManager: src_bq_manager___WEBPACK_IMPORTED_MODULE_1__/* .BqManager */ .N,
             BqCellElement: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__/* .BqCellElement */ .c,
-            OutputContext: src_output_context__WEBPACK_IMPORTED_MODULE_4__/* .OutputContext */ .H,
+            OutputContext: src_output_context__WEBPACK_IMPORTED_MODULE_5__/* .OutputContext */ .H,
             Renderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .Renderer */ .A4,
             TextBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .TextBasedRenderer */ .m9,
             ApplicationBasedRenderer: src_renderer_renderer__WEBPACK_IMPORTED_MODULE_3__/* .ApplicationBasedRenderer */ .rK,
-            Activity: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_5__/* .Activity */ .Il,
-            ActivityManager: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_5__/* .ActivityManager */ .BT,
-            Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_7__/* .Dialog */ .lG,
-            Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_8__/* .Menu */ .W,
-            KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_9__/* .KeyEventManager */ .jC,
-            KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_9__/* .KeyMap */ .QA,
-            KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_9__/* .KeyMapMapper */ .Xm,
-            KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_9__/* .KeySpec */ .Zp,
-            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_19__/* .OpenPromise */ .q,
-            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_20__/* .AbortSignalAction */ .$,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_21__/* .SerialDataSource */ .Y,
+            Activity: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__/* .Activity */ .Il,
+            ActivityManager: lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_6__/* .ActivityManager */ .BT,
+            Dialog: lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__/* .Dialog */ .lG,
+            Menu: lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__/* .Menu */ .W,
+            KeyEventManager: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyEventManager */ .jC,
+            KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMap */ .QA,
+            KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMapMapper */ .Xm,
+            KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeySpec */ .Zp,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__/* .OpenPromise */ .q,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__/* .SerialDataSource */ .Y,
         };
         eval_environment.eval_environment = eval_environment;
         return eval_environment;

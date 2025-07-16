@@ -5,7 +5,7 @@ import {
 
 import {
     TextBasedRendererOptionsType,
-} from 'src/renderer/text/types';
+} from '../types';
 
 import {
     ErrorRenderer,
