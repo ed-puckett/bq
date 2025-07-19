@@ -169,7 +169,7 @@ async function initialize_document(): Promise<void> {
         BqManager._initialize_singleton();
 
         // initialize text renderer factories after all the TextBasedRenderer factories have been registered...
-        TextBasedRenderer.reset_to_initial_text_renderer_factories();
+        TextBasedRenderer.reset_to_initial_text_based_renderer_factories();
 
         // asynchronously start BqManager instance
         setTimeout(() => BqManager.singleton.start());

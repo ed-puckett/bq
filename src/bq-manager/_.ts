@@ -312,7 +312,7 @@ export class BqManager {
         } catch (error: unknown) {
             console.error('error calling this.stop()', error, this);
         }
-        TextBasedRenderer.reset_to_initial_text_renderer_factories();
+        TextBasedRenderer.reset_to_initial_text_based_renderer_factories();
         this.reset_global_state();
         this.#file_handle = undefined;
         for (const cell of this.get_cells()) {
@@ -616,7 +616,21 @@ export class BqManager {
             this.#dissociate_cell_ocx(cell, ocx);
         });
 
-        return ocx.render(type, cell.get_text(), options)
+        return ocx.render_text(type, cell.get_text(), options)
+            .then(element => {
+                if (!ocx.keepalive) {
+                    ocx.stop();  // stop anything that may have been started
+                }
+                return element;
+            })
+            .catch((error) => {
+                const error_message_element = ErrorRenderer.render_sync(ocx, error, { abbreviated: true });
+                error_message_element.scrollIntoView(false);
+                if (!ocx.keepalive) {
+                    ocx.stop();  // stop anything that may have been started
+                }
+                throw error;
+            })
             .catch((error) => {
                 if (error instanceof LocatedError) {
                     cell?.set_cursor_position(error.line_number, error.column_index);

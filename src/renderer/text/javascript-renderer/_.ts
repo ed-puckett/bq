@@ -140,7 +140,7 @@ import {
     Renderer,
     TextBasedRenderer,
     ApplicationBasedRenderer,
-    _initial_text_renderer_factories,
+    _initial_text_based_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
@@ -258,7 +258,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
     static get type (){ return 'javascript'; }
 
     // the following is necessary for the initial TextBasedRenderer extensions:
-    static { _initial_text_renderer_factories.push(this); }
+    static { _initial_text_based_renderer_factories.push(this); }
 
     /** Render by evaluating the given code and outputting to ocx.
      * @param {OutputContext} ocx,

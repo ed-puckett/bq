@@ -1,24 +1,23 @@
 import {
     RendererFactory,
     is_RendererFactory,
-    TextBasedRenderer,
 } from './renderer';
 
 
-export type ExtensionManagerMappedInfo = {
-    factory: RendererFactory,
-    shadows: RendererFactory[],
+export type ExtensionManagerMappedInfo<ValueType, OptionsType> = {
+    factory: RendererFactory<ValueType, OptionsType>,
+    shadows: RendererFactory<ValueType, OptionsType>[],
 };
 
 
-export class ExtensionManager {
+export class ExtensionManager<ValueType, OptionsType> {
     get CLASS (){ return this.constructor as typeof ExtensionManager; }
 
     clear() {
-        this.#type_to_factory_info_map = new Map<string, ExtensionManagerMappedInfo>();
+        this.#type_to_factory_info_map = new Map<string, ExtensionManagerMappedInfo<ValueType, OptionsType>>();
     }
 
-    #type_to_factory_info_map = new Map<string, ExtensionManagerMappedInfo>();
+    #type_to_factory_info_map = new Map<string, ExtensionManagerMappedInfo<ValueType, OptionsType>>();
 
     // Note: each entry of this.#type_to_factory_info_map refers to an "info"
     // object that contains a "shadows" property which is in turn an array of
@@ -33,7 +32,7 @@ export class ExtensionManager {
 
     static canonicalize_type(type: string) { return type.toLowerCase(); }
 
-    get(type: string): undefined|RendererFactory {
+    get(type: string): undefined|RendererFactory<ValueType, OptionsType> {
         if (typeof type !== 'string' || type.length <= 0) {
             throw new TypeError('type must be a non-empty string');
         }
@@ -42,15 +41,15 @@ export class ExtensionManager {
         return current_info?.factory;
     }
 
-    get_all(): RendererFactory[] {
+    get_all(): RendererFactory<ValueType, OptionsType>[] {
         return [ ...this.#type_to_factory_info_map.values() ].map(({ factory }) => factory);
     }
 
-    add(factory: RendererFactory): void {
+    add(factory: RendererFactory<ValueType, OptionsType>): void {
         this.CLASS.#add_factory_to_map(factory, this.#type_to_factory_info_map);
     }
 
-    static #add_factory_to_map(factory: RendererFactory, map: Map<string, ExtensionManagerMappedInfo>): void {
+    static #add_factory_to_map<VT, OT>(factory: RendererFactory<VT, OT>, map: Map<string, ExtensionManagerMappedInfo<VT, OT>>): void {
         if (!is_RendererFactory(factory) || factory.type.length <= 0) {
             throw new TypeError('factory must be a RendererFactory with a nonempty type string');
         }
@@ -65,7 +64,7 @@ export class ExtensionManager {
         map.set(canonical_type, new_info);
     }
 
-    remove(factory: RendererFactory): void {
+    remove(factory: RendererFactory<ValueType, OptionsType>): void {
         if (!is_RendererFactory(factory) || factory.type.length <= 0) {
             throw new TypeError('factory must be a RendererFactory with a nonempty type string');
         }
@@ -87,12 +86,12 @@ export class ExtensionManager {
         }
     }
 
-    reset(initial_factories?: RendererFactory[]) {
+    reset(initial_factories?: RendererFactory<ValueType, OptionsType>[]) {
         if (typeof initial_factories !== 'undefined' && !(Array.isArray(initial_factories) && initial_factories.every(item => is_RendererFactory(item)))) {
             throw new TypeError('initial_factories must be undefined or an array of RendererFactory');
         }
 
-        const new_map = new Map<string, ExtensionManagerMappedInfo>();
+        const new_map = new Map<string, ExtensionManagerMappedInfo<ValueType, OptionsType>>();
         if (initial_factories) {
             for (const factory of initial_factories) {
                 this.CLASS.#add_factory_to_map(factory, new_map);

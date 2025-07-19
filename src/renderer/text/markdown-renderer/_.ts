@@ -1,6 +1,6 @@
 import {
     TextBasedRenderer,
-    _initial_text_renderer_factories,
+    _initial_text_based_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
@@ -101,7 +101,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
     static get type (){ return 'markdown'; }
 
     // the following is necessary for the initial TextBasedRenderer extensions:
-    static { _initial_text_renderer_factories.push(this); }
+    static { _initial_text_based_renderer_factories.push(this); }
 
     /** Render the given markdown and output via ocx.
      * @param {OutputContext} ocx,
@@ -197,7 +197,7 @@ export class MarkdownRenderer extends TextBasedRenderer {
                 ErrorRenderer.render_sync(ocx, new Error(`deferred_renderings: cannot find output element with id "${output_element_id}"`));
             } else {
                 const sub_ocx = ocx.create_new_ocx(output_element, ocx);
-                await sub_ocx.render(source_type, text, renderer_options)
+                await sub_ocx.render_text(source_type, text, renderer_options)
                     .catch((error: unknown) => {
                         sub_ocx.keepalive = false;  // in case this got set prior to the error
                         sub_ocx.stop();  // stop background processing, if any

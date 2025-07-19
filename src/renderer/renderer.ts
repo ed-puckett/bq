@@ -11,8 +11,8 @@ import {
 } from 'src/output-context';
 
 
-export interface RendererFactory {
-    new (): Renderer;
+export interface RendererFactory<ValueType, OptionsType> {
+    new (): Renderer<ValueType, OptionsType>;
     type: string;
 };
 
@@ -22,7 +22,7 @@ export function is_RendererFactory(thing: any): boolean {
 }
 
 
-export class Renderer {
+export abstract class Renderer<ValueType, OptionsType> {
     /** type which instances handle, to be overridden in subclasses
      */
     static get type (){ return ''; }
@@ -38,18 +38,21 @@ export class Renderer {
     get media_type (){ return (this.constructor as typeof Renderer).media_type; }
 
 
-    // === COMMON RENDER HANDLER FOR EXTENSION CLASSES ===
+    // === COMMON RENDER ENTRY POINT ===
 
-    protected static async _invoke_renderer<ValueType, OptionsType>(
-        renderer: { /*async*/ _render( ocx:      OutputContext,
-                                       value:    ValueType,
-                                       options?: OptionsType ): Promise<Element>,
-                  },
-        ocx:      OutputContext,
-        value:    ValueType,
-        options?: OptionsType ): Promise<Element>
-    {
-        return renderer._render(ocx, value, options)
+    /** render the given value
+     * @param {OutputContext} ocx,
+     * @param {ValueType} value,  // value appropriate to type (determined by subclass)
+     * @param {OptionsType} options?: {
+     *     style?:        Object,   // css style to be applied to output element
+     *     inline?:       Boolean,  // render inline vs block?
+     *     global_state?: Object,   // global_state for rendering; default: ocx.bq.global_state using ocx passed to render()
+     * }
+     * @return {Element} element to which output was rendered
+     * @throws {Error} if error occurs
+     */
+    async render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element> {
+        return this._render(ocx, value, options)
             .then(result => {
                 // Make sure that the ocx is stopped and that the error, if any, is output
                 // to the log. If nothing has yet called a function that checks if the ocx
@@ -70,48 +73,32 @@ export class Renderer {
                     // nothing
                 }
                 throw error;
-            })
-        .finally(() => {
-            ocx.render_completions.dispatch({
-                ocx,
-                renderer: (renderer as unknown) as Renderer,
-                value:    value as any,
-                options:  options as object,
             });
-        });
-    }
-}
-
-
-export abstract class TextBasedRenderer extends Renderer {
-    static get media_type (){ return `text/${this.type}`; }
-
-    /** render the given value
-     * @param {OutputContext} ocx,
-     * @param {string} value,  // value to be rendered
-     * @param {undefined|TextBasedRendererOptionsType} options,
-     * @return {Element} element to which output was rendered
-     * @throws {Error} if error occurs
-     */
-    async render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element> {
-        return Renderer._invoke_renderer(this, ocx, value, options);
     }
 
     /** to be implemented by subclasses
      */
-    abstract /*async*/ _render(ocx: OutputContext, value: string, options?: TextBasedRendererOptionsType): Promise<Element>;
+    abstract /*async*/ _render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element>;
+}
+
+
+export type TextBasedRendererFactory = RendererFactory<string, TextBasedRendererOptionsType>;
+
+
+export abstract class TextBasedRenderer extends Renderer<string, TextBasedRendererOptionsType> {
+    static get media_type (){ return `text/${this.type}`; }
 
 
     // === TEXT RENDERER EXTENSIBILITY ===
 
     static #extensions = new ExtensionManager();  // note: "extension" here refers to extending the rendering system, and not class extensions
 
-    static factory_for_type(type: string): undefined|RendererFactory {
+    static text_based_renderer_factory_for_type(type: string): undefined|TextBasedRendererFactory {
         return this.#extensions.get(type);
     }
 
-    static renderer_for_type(type: string): undefined|TextBasedRenderer {
-        const factory = this.factory_for_type(type);
+    static text_based_renderer_renderer_for_type(type: string): undefined|TextBasedRenderer {
+        const factory = this.text_based_renderer_factory_for_type(type);
         if (!factory) {
             return undefined;
         } else {
@@ -120,52 +107,33 @@ export abstract class TextBasedRenderer extends Renderer {
         }
     }
 
-    static add_text_renderer_factory(factory: RendererFactory): void {
+    static add_text_based_renderer_factory(factory: TextBasedRendererFactory): void {
         this.#extensions.add(factory);
     }
 
-    static remove_text_renderer_factory(factory: RendererFactory): void {
+    static remove_text_based_renderer_factory(factory: TextBasedRendererFactory): void {
         this.#extensions.remove(factory);
     }
 
-    static get_text_renderer_types(): string[] {
+    static get_text_based_renderer_types(): string[] {
         return this.#extensions.get_all().map(({ type }) => type);
     }
 
-    static get_text_renderer_factories(): RendererFactory[] {
+    static get_text_based_renderer_factories(): TextBasedRendererFactory[] {
         return this.#extensions.get_all();
     }
 
-    static reset_to_initial_text_renderer_factories() {
-        this.#extensions.reset(_initial_text_renderer_factories);
+    static reset_to_initial_text_based_renderer_factories() {
+        this.#extensions.reset(_initial_text_based_renderer_factories);
     }
 }
 
 
-/** for use only by initial TextBasedRenderer extensions and this.reset_to_initial_text_renderer_factories();
+/** for use only by initial TextBasedRenderer extensions and TextBasedRenderer.reset_to_initial_text_based_renderer_factories();
  */
-export const _initial_text_renderer_factories: RendererFactory[] = [];
+export const _initial_text_based_renderer_factories: TextBasedRendererFactory[] = [];
 
 
-export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends Renderer {
+export abstract class ApplicationBasedRenderer<ValueType, OptionsType> extends Renderer<ValueType, OptionsType> {
     static get media_type (){ return `application/${this.type}`; }
-
-    /** render the given value
-     * @param {OutputContext} ocx,
-     * @param {ValueType} value,  // value appropriate to type (determined by subclass)
-     * @param {OptionsType} options?: {
-     *     style?:        Object,   // css style to be applied to output element
-     *     inline?:       Boolean,  // render inline vs block?
-     *     global_state?: Object,   // global_state for rendering; default: ocx.bq.global_state using ocx passed to render()
-     * }
-     * @return {Element} element to which output was rendered
-     * @throws {Error} if error occurs
-     */
-    async render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element> {
-        return Renderer._invoke_renderer(this, ocx, value, options);
-    }
-
-    /** to be implemented by subclasses
-     */
-    abstract /*async*/ _render(ocx: OutputContext, value: ValueType, options?: OptionsType): Promise<Element>;
 }

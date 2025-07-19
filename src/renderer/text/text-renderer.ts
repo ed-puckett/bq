@@ -1,6 +1,6 @@
 import {
     TextBasedRenderer,
-    _initial_text_renderer_factories,
+    _initial_text_based_renderer_factories,
 } from 'src/renderer/renderer';
 
 import {
@@ -16,7 +16,7 @@ export class TextRenderer extends TextBasedRenderer {
     static get type (){ return 'plain'; }
 
     // the following is necessary for the initial TextBasedRenderer extensions:
-    static { _initial_text_renderer_factories.push(this); }
+    static { _initial_text_based_renderer_factories.push(this); }
 
     async _render(ocx: OutputContext, text: string, options?: TextBasedRendererOptionsType): Promise<Element> {
         const element = ocx.CLASS.element_for_options(ocx.element, options, true) as HTMLElement;

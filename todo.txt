@@ -1,10 +1,11 @@
+is_RendererFactory() should do more work to identify that the class is correct
 global_state: javascript can set arbitrary keys (via vars(), etc) which may lead to prototype pollution or other problems
 markdown('# heading {#heading}\n[heading](#heading)'); rendered in a javascript cell and then clicking the output "heading" link puts scrolling into bad state (chromium, not firefox)
 update revision in version number in package.json when building
 provide visual indication of a cell's show-full and show-in-presentation states
 Firefox (and sometimes Chromium) reports "unreachable code after return" in init.js... (see http://127.127.127.127:4320/src/advent-of-code/2024/11/index.html)
 sometimes after refresh document hangs with a blank page...
-auto-eval documents cause unhandled rejection when trying to call beep() in Firefox
+auto-render documents cause unhandled rejection when trying to call beep() in Firefox
 errors in bq-cell javascript do not indicate where the error happened in the code
 add command/menu to reset cell and output ids
 add export dialog option to reset cell and output ids
@@ -18,7 +19,7 @@ documentation: tell Firefox users about "Always ask you where to save files" set
 create command (or implement in "export") that distills/renders a document into a static HTML document without dependence on bq (think about scripts, css, etc)
 KeySpec.#is_on_macos needs to be tested/fixed
 canceling save-as creates notification "document saved" (Firefox, not Chromium)
-improve appearance of notifications, AlertDialog, ConfirmDialog and SettingsDialog
+improve appearance of notifications, AlertDialog, ConfirmDialog and SettingsDialOutputContextRenderCompletionog
 replace marked with remark?  See: https://github.com/remarkjs/remark
 data-active on cell is (sometimes?) ignored when loading document (focus is set to first cell even when data-active="true" is set on last cell)
 assets_server_url(): in lib but highly dependent on src-dependent information like bootstrap script location

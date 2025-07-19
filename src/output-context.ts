@@ -36,7 +36,6 @@ import {
 } from 'src/renderer/text/types';
 
 import {
-    RendererFactory,
     Renderer,
     ErrorRenderer,
     ErrorRendererValueType,
@@ -56,16 +55,9 @@ import {
     MarkdownRenderer,
     LaTeXRenderer,
     JavaScriptRenderer,
+    TextBasedRendererFactory,
     ExtensionManager,
 } from 'src/renderer/_';
-
-
-export type OutputContextRenderCompletion<OutputContextType> = {
-    renderer: Renderer,
-    ocx:      OutputContextType,
-    value?:   any,
-    options?: object,
-}
 
 
 const css_class__bq_cell_output         = 'bq-cell-output';
@@ -499,9 +491,6 @@ export class OutputContext extends ActivityManager {
         parent?.manage_activity(this);
     }
 
-    readonly #render_completions = new SerialDataSource<OutputContextRenderCompletion<OutputContext>>
-    get render_completions (){ return this.#render_completions; }
-
 
     // === BASIC OPERATIONS ===
 
@@ -715,13 +704,13 @@ export class OutputContext extends ActivityManager {
 
     // === RENDERER EXTENSIBILITY ===
 
-    /** extensions provides a means of specifying ocx-local mapping of type to RendererFactory
+    /** extensions provides a means of specifying ocx-local mapping of type strings to TextBasedRendererFactory objects
      */
-    readonly #extensions = new ExtensionManager();
+    readonly #extensions = new ExtensionManager<string, TextBasedRendererOptionsType>();
 
     get extensions (){ return this.#extensions; }
 
-    text_renderer_factory_for_type(type: string): undefined|RendererFactory {
+    text_based_renderer_factory_for_type(type: string): undefined|TextBasedRendererFactory {
         for (let hosting_ocx: undefined|OutputContext = this; hosting_ocx; hosting_ocx = hosting_ocx.parent) {
             const factory = hosting_ocx.extensions.get(type);
             if (factory) {
@@ -729,11 +718,11 @@ export class OutputContext extends ActivityManager {
             }
         }
         // not found in this.extensions, fall back to TextBasedRenderer factory mapping
-        return TextBasedRenderer.factory_for_type(type);
+        return TextBasedRenderer.text_based_renderer_factory_for_type(type);
     }
 
-    text_renderer_for_type(type: string): undefined|TextBasedRenderer {
-        const factory = this.text_renderer_factory_for_type(type);
+    text_based_renderer_for_type(type: string): undefined|TextBasedRenderer {
+        const factory = this.text_based_renderer_factory_for_type(type);
         if (!factory) {
             return undefined;
         } else {
@@ -742,28 +731,16 @@ export class OutputContext extends ActivityManager {
         }
     }
 
-    async render( type:     string,
-                  value:    string,
-                  options?: TextBasedRendererOptionsType ): Promise<Element> {
-        const renderer = this.text_renderer_for_type(type);
+    async render_text( type:     string,
+                       value:    string,
+                       options?: TextBasedRendererOptionsType ): Promise<Element> {
+        this.abort_if_stopped();
+
+        const renderer = this.text_based_renderer_for_type(type);
         if (!renderer) {
             throw new Error(`renderer not found for type \"${type}\"`);
         }
 
-        return renderer.render(this, value, options)
-            .then(element => {
-                if (!this.keepalive) {
-                    this.stop();  // stop anything that may have been started
-                }
-                return element;
-            })
-            .catch((error) => {
-                const error_message_element = ErrorRenderer.render_sync(this, error, { abbreviated: true });
-                error_message_element.scrollIntoView(false);
-                if (!this.keepalive) {
-                    this.stop();  // stop anything that may have been started
-                }
-                throw error;
-            });
+        return renderer.render(this, value, options);
     }
 }

@@ -3,6 +3,7 @@
 export {
     RendererFactory,
     Renderer,
+    TextBasedRendererFactory,
     TextBasedRenderer,
     ApplicationBasedRenderer,
 } from './renderer';
