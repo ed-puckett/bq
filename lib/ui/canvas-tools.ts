@@ -205,7 +205,7 @@ export function draw_ticks(ctx: CanvasRenderingContext2D, x0: number, y0: number
     }
 }
 
-/** Draw text flipped top-to-bottom and centered at (x, y).
+/** Draw text centered at (x, y).
  * @param {CanvasRenderingContext2D} ctx
  * @param {String} text,  // text to draw
  * @param {Number} x      // center x
@@ -213,6 +213,7 @@ export function draw_ticks(ctx: CanvasRenderingContext2D, x0: number, y0: number
  * @param {Object} options: {
  *     stroke_only?: Boolean,  // only stroke if true, otherwise fill text
  *     clear?:       Boolean,  // clear background before rendering text?  true: clear to transparent, "color": fill with color
+ *     flip?:        Boolean,  // flip rendering top-to-bottom?
  *     padding?:     Number,   // padding to apply to rectangle when clearing
  *     angle?:       Number,   // orientation angle (radians)
  *     dxr?:         Number,   // x offset as a ratio to text width;  0: none, 1: offset by full width
@@ -221,13 +222,14 @@ export function draw_ticks(ctx: CanvasRenderingContext2D, x0: number, y0: number
  * The height used for the dyr calculation is (actualBoundingBoxAscent - actualBoundingBoxDescent).
  * With dxr = dyr = 0 (or undefined), the text will be output centered on (x, y)
  */
-export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options?: object) {
+export function draw_text(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options?: object) {
     if (!(ctx instanceof CanvasRenderingContext2D)) {
         throw new TypeError('ctx must be an instance of CanvasRenderingContext2D');
     }
     const {
         stroke_only,
         clear,
+        flip,
         padding,
         angle,
         dxr,
@@ -242,7 +244,9 @@ export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x
         const width  = metrics.width;
         const height = (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent);
         ctx.translate(x, y);
-        ctx.scale(1, -1);  // flip
+        if (flip) {
+            ctx.scale(1, -1);  // flip
+        }
         if (angle) {  // note: angle === 0 fails this test, but that is consistent with not rotating
             ctx.rotate(-angle);
         }
@@ -278,6 +282,29 @@ export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x
     } finally {
         ctx.setTransform(initial_transform);
     }
+}
+
+/** Draw text flipped top-to-bottom and centered at (x, y).
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {String} text,  // text to draw
+ * @param {Number} x      // center x
+ * @param {Number} y      // center y
+ * @param {Object} options: {
+ *     stroke_only?: Boolean,  // only stroke if true, otherwise fill text
+ *     clear?:       Boolean,  // clear background before rendering text?  true: clear to transparent, "color": fill with color
+ *     flip?:        Boolean,  // flip rendering top-to-bottom?  (default: true)
+ *     padding?:     Number,   // padding to apply to rectangle when clearing
+ *     angle?:       Number,   // orientation angle (radians)
+ *     dxr?:         Number,   // x offset as a ratio to text width;  0: none, 1: offset by full width
+ *     dyr?:         Number,   // y offset as a ratio to text height; 0: none, 1: offset by full height
+ * }
+ * The height used for the dyr calculation is (actualBoundingBoxAscent - actualBoundingBoxDescent).
+ * With dxr = dyr = 0 (or undefined), the text will be output centered on (x, y)
+ */
+export function draw_flipped_text(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, options?: object) {
+    options ??= {};
+    (options as any).flip = true;
+    draw_text(ctx, text, x, y, options);
 }
 
 /** Ratio of default arrowhead length to current line width (ctx.lineWidth),
