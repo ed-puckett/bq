@@ -227,7 +227,7 @@ import {
 
 import * as rxjs from 'rxjs';
 
-import * as canvas_tools from 'lib/ui/canvas-tools';
+import * as canvas_tools from 'lib/ui/canvas-tools/_';
 
 import {
     parse as babel_parse,

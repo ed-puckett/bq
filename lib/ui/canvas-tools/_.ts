@@ -1,3 +1,5 @@
+export * from './svg-path-interpreter';
+
 /** Draw an arc centered a (x, y) with radius r.
  * @param {CanvasRenderingContext2D} ctx
  * @param {Number} x  // center x
