@@ -224,10 +224,10 @@ export function show_initialization_failed(reason: unknown) {
  * }
  * @return {string} the HTML source string
  */
-export async function save_serializer(
+export function save_serializer(
     bootstrap_script_src_choice?: string,
     options?: object
-): Promise<string> {
+): ReadableStream {
     options ??= {};
     let {
         cell_view,
@@ -254,18 +254,7 @@ export async function save_serializer(
     if (!main_element) {
         throw new Error('bad format for document: <main> element not found');
     }
-    const contents_segments = [];
-    for (const node of main_element.childNodes) {
-        if (node.nodeType === Node.TEXT_NODE && node.nodeValue !== null) {
-            contents_segments.push(node.nodeValue);  // the text of the TEXT node
-        } else if (node instanceof BqCellElement) {
-            contents_segments.push(node.getOuterHTML(active_cell));
-        } else if (node instanceof Element) {
-            contents_segments.push(node.outerHTML);
-        } else {
-            console.warn('save_serializer(): ignoring not-text, non-Element node', node);
-        }
-    }
+/*!!!
     // Note on newlines.  See:
     //     https://stackoverflow.com/questions/52457449/why-do-browsers-insert-2-linebreaks-into-an-empty-body-element
     //     https://html.spec.whatwg.org/#parsing-main-inhtml
@@ -281,21 +270,53 @@ export async function save_serializer(
     if (contents_segments.length > 2 && contents_segments[contents_segments.length-1].match(multiple_newline_re)) {
         contents_segments[contents_segments.length-1] = '\n';
     }
+*/
     // Now get the final contents for the <body> to be saved
-    const contents = contents_segments.join('');
     const title_element = document.querySelector('head title') as HTMLElement;
     const title_text    = title_element ? title_element.innerText.replaceAll('<', '&lt;') : '';
     const title_markup  = title_text ? `  <title>${title_text}</title>\n` : '';
-    return `\
+
+    // In some ways it's kind of silly to use a generator here but it
+    // simplifies sequencing the parts of the serialized document.
+    function* markup_generator() {
+        yield `\
 <!DOCTYPE html>
 <html lang="en"${cell_view && (cell_view !== cell_view_values_default) ? ` ${cell_view_attribute_name}="${cell_view}"` : ''}${auto_render ? ` ${auto_render_attribute_name}` : ''}>
 <head>
     <meta charset="utf-8">
     <script src=${make_string_literal(bootstrap_script_src, true)}></script>
 ${title_markup}</head>
-<body>${contents}</body>
+<body>`;
+
+        for (const node of main_element?.childNodes ?? []) {  // main_element is not undefined/null, but TypeScript can't tell
+            if (node.nodeType === Node.TEXT_NODE && node.nodeValue !== null) {
+                yield node.nodeValue;  // the text of the TEXT node
+            } else if (node instanceof BqCellElement) {
+                yield node.getOuterHTML(active_cell);
+            } else if (node instanceof Element) {
+                yield node.outerHTML;
+            } else {
+                console.warn('save_serializer(): ignoring not-text, non-Element node', node);
+            }
+        }
+
+        yield `</body>
 </html>
 `;
+    }
+
+    const markup_generator_instance = markup_generator();
+
+    return new ReadableStream({
+        pull(controller) {
+            const { done, value } = markup_generator_instance.next();
+            if (done) {
+                controller.close();
+            } else {
+                controller.enqueue(value);
+            }
+        }
+    });
 }
 
 /** Called during document initialization to get alternatives for the

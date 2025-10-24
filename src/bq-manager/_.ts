@@ -14,8 +14,14 @@ import {
 } from 'src/init';
 
 import {
-    fs_interface,
+    fs_perform_save,
 } from 'lib/sys/fs-interface';
+
+import {
+    server_fsapi_available,
+    server_perform_save,
+} from '../server-interface';
+console.log({ server_fsapi_available });//!!!
 
 import {
     SerialDataSource,
@@ -501,17 +507,16 @@ export class BqManager {
 
     // === SAVE HANDLING ====
 
-    async perform_save(perform_save_as: boolean = false, show_options_dialog: boolean = false): Promise<boolean> {
-        if (show_options_dialog) {
-            perform_save_as = true;  // show_options_dialog implies perform_save_as
+    async perform_save(perform_save_as: boolean = false, perform_export: boolean = false): Promise<boolean> {
+        if (perform_export) {
+            perform_save_as = true;  // perform_export implies perform_save_as
         }
-        if (!perform_save_as && !show_options_dialog) {
-            if (this.is_neutral()) {
-                // no need to actually save
-                this.notification_manager.add('no changes need to be saved');
-                return true;  // indicate: not canceled
-            }
+        if (!perform_save_as && !perform_export && this.is_neutral()) {
+            // no need to actually save
+            this.notification_manager.add('no changes need to be saved');
+            return true;  // indicate: not canceled
         }
+        const show_options_dialog = perform_save_as || perform_export;
 
         let bootstrap_script_src = bootstrap_script_src_alternatives_default;
         let cell_view            = undefined;
@@ -534,17 +539,13 @@ export class BqManager {
             }
         }
 
-        const bound_serializer = save_serializer.bind(null, bootstrap_script_src, {
+        const contents = save_serializer(bootstrap_script_src, {
             cell_view,
             auto_render,
             active_cell,
         });
-        const save_result = await fs_interface.save(bound_serializer, {
-            file_handle: perform_save_as ? undefined : this.#file_handle,
-            prompt_options: {
-                suggestedName: this.#get_suggested_filename(),//!!!
-            },
-        });
+        const save_interface = perform_export ? fs_perform_save : server_perform_save;
+        const save_result = await save_interface(contents, document.location);
         const {
             canceled,
             file_handle,
@@ -558,10 +559,6 @@ export class BqManager {
             this.notification_manager.add('document saved');
         }
         return !canceled;
-    }
-
-    #get_suggested_filename(): string {
-        return window.location.pathname.split('/').slice(-1)[0];
     }
 
 

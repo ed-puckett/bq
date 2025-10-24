@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript">
+// this causes an unhandled rejection after sleep(1) expires because keepalive is not set
+sleep(1).then(() => ocx.println('printing later!'));
+</bq-cell>
+<bq-cell data-type="javascript">
+// this does not cause an unhandled rejection after sleep(1) expires because keepalive is set
+keepalive();
+sleep(1).then(() => ocx.println('printing later!'));
+</bq-cell>
+<bq-cell data-type="javascript">
+// this does not cause an unhandled rejection after sleep(1) expires because the error is handled
+sleep(1).then(() => ocx.println('printing later!')).catch(render_error);
+</bq-cell>
+<bq-cell data-type="markdown">
+### the javascript code causes an unhandled rejection after sleep(1) expires because keepalive is not set
+*... with math:*
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
+$$
+*... with code:*
+```!$ javascript
+sleep(1).then(() => ocx.println('printing later!'));
+```
+</bq-cell>
+<bq-cell data-type="markdown">
+### the javascript code does not cause an unhandled rejection after sleep(1) expires because keepalive is set
+*... with math:*
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
+$$
+*... with code:*
+```!$ javascript
+keepalive();
+sleep(1).then(() => ocx.println('printing later!'));
+```
+</bq-cell>
+<bq-cell data-type="markdown">
+### the javascript code does not cause an unhandled rejection after sleep(1) expires because the error is handled
+*... with math:*
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4 a c}}{2 a}
+$$
+*... with code:*
+```!$ javascript
+sleep(1).then(() => ocx.println('printing later!')).catch(render_error);
+```
+</bq-cell>
+</body>
+</html>
