@@ -2,8 +2,8 @@
 # CHANGING VERSION NUMBER
 #
 # The version number for this product is the version number stored in package.json.
-# The VERSION string below is varified that its "major" and "minor" parts match
-# package.json.
+# The VERSION string below is verified that its "major" and "minor" parts match
+# that of "version" in package.json.
 #
 # To move to a next major or minor version:
 # 1. do a final build
@@ -83,15 +83,19 @@ test:
 	npm test
 
 .PHONY: server
-# kill the server by performing a GET on /QUIT
+# kill the server by performing a GET on /-QUIT-
 # start the server in the directory $(DIST_VERSIONS_DIR)
 server: $(DIST_DIR)
-	( ./build-tools/simple-http-endpoint.js --root="$(DIST_VERSIONS_DIR)" --host=$(SERVER_ADDRESS) --port=$(SERVER_PORT) --quit=QUIT --fsapi=FSAPI 2>&1 )
+	( ./build-tools/simple-http-endpoint.js --root="$(DIST_VERSIONS_DIR)" --host=$(SERVER_ADDRESS) --port=$(SERVER_PORT) --quit=-QUIT- --features=-FEATURES- --access=crd/crud 2>&1 )
+
+.PHONY: plain-server;
+plain-server: $(DIST_DIR)
+	( ./build-tools/simple-http-endpoint.js --root="$(DIST_VERSIONS_DIR)" --host=$(SERVER_ADDRESS) --port=$(SERVER_PORT) --quit=-QUIT- --access=r 2>&1 )
 
 .PHONY: kill-server
 # uses curl and lsof
 kill-server:
-	@if lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN >/dev/null 2>&1; then echo 'sending QUIT to server'; curl -s http://$(SERVER_ADDRESS):$(SERVER_PORT)/QUIT >/dev/null 2>&1; true; fi
+	@if lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN >/dev/null 2>&1; then echo 'sending -QUIT- to server'; curl -s http://$(SERVER_ADDRESS):$(SERVER_PORT)/-QUIT- >/dev/null 2>&1; true; fi
 
 .PHONY: dev-server
 dev-server:

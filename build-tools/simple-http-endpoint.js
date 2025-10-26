@@ -9,9 +9,9 @@ const args = process.argv.slice(2);
 args.unshift(process.argv[1].replace(/^.*[/]/, ''));
 
 
-const HOST_DEFAULT      = '127.0.0.1';
-const PORT_DEFAULT      = 8000;
-const FSAPI_KEY_DEFAULT = 'FSAPI AVAILABLE';
+const DEFAULT_HOST   = '127.0.0.1';
+const DEFAULT_PORT   = 8000;
+const DEFAULT_ACCESS = 'r';
 
 const CONFIG_ENV_VAR_PREFIX = 'HTTP_ENDPOINT_';
 
@@ -78,20 +78,57 @@ process.on('uncaughtException', (error, origin) => {
 
 // === GET CONFIGURATION ===
 
-const validate_host      = async (host)     => !(typeof host === 'string' && host.length > 0) ? 'host must be a nonempty string' : undefined;
-const validate_port      = async (port)     => { const nport = +port; return !(Number.isInteger(nport) && 1 <= nport && nport <= 0xFFFF) ? 'port must be an integer from 1-65535' : undefined; };
-const validate_quit      = async (quit)     => !(typeof quit === 'string' && quit.length > 0 && quit.match(/^[.-_a-zA-Z0-9]+$/)) ? 'quit must specify a nonempty string of alphanumeric characters or - or _' : undefined;
-const validate_root      = async (root)     => !(await fs.promises.stat(root).then(stats => stats.isDirectory(), () => false)) ? 'root must be a path to a directory' : undefined;
-const validate_fsapi     = async (endpoint) => !(typeof endpoint === 'string' && endpoint.length > 0 && endpoint.match(/^[.-_a-zA-Z0-9]+$/)) ? 'endpoint path must be a nonempty string of alphanumeric characters or - or _' : undefined;
-const validate_fsapi_key = async (key)      => !(typeof key === 'string') ? 'key must be a string' : undefined;
+const validate_root     = async (root)          => (await fs.promises.stat(root).then(stats => stats.isDirectory(), () => false)) ? undefined : 'root must be a path to a directory';
+const validate_host     = async (host)          => (typeof host === 'string' && host.length > 0) ? undefined : 'host must be a nonempty string';
+const validate_port     = async (port)          => { const nport = +port; return (Number.isInteger(nport) && 1 <= nport && nport <= 0xFFFF) ? undefined : 'port must be an integer from 1-65535'; };
+const validate_quit     = async (quit_path)     => validate_path_arg(quit_path,     'quit');
+const validate_features = async (features_path) => validate_path_arg(features_path, 'features');
+const validate_access   = async (spec)          => parse_access(spec, true) ? undefined : 'access must specify directory/file access capabilities (see below)';
+
+const validate_path_arg = (path_arg, name) => {
+    return (typeof path_arg === 'string' && path_arg.length > 0 && path_arg.match(/^[-._a-zA-Z0-9]+$/))
+        ? undefined
+        : `${name} must specify a nonempty string of alphanumeric characters or . or - or _`;
+};
+
+const parse_access = (spec, dry_run=false) => {
+    const match = spec.match(/^(?:(?<directory_access>[CcRrDd]*)[/])?(?<file_access>[CcRrUuDd]*)$/);
+    if (dry_run) {
+        return match ? true : undefined;
+    } else {
+        const parse_access_specifiers = (access_text) => {
+            access_text = access_text.toLowerCase();
+            const specified_access = {};
+            for (const [ char, key ] of [
+                [ 'c', 'create' ],
+                [ 'r', 'read'   ],
+                [ 'u', 'update' ],
+                [ 'd', 'delete' ],
+            ]) {
+                specified_access[key] = access_text.includes(char);
+            }
+            return specified_access;
+        };
+        const access = {};
+        const spec_parts = spec.split('/');
+        if (spec_parts.length < 2) {
+            // only the file portion was specified
+            spec_parts.unshift('');  // add in empty directory access specifier
+        }
+        return {
+            directory: parse_access_specifiers(spec_parts[0]),
+            file:      parse_access_specifiers(spec_parts[1]),
+        };
+    }
+};
 
 const config_items = {
-    host:        { default: HOST_DEFAULT,      validate: validate_host,      description: 'specify host for server' },
-    port:        { default: PORT_DEFAULT,      validate: validate_port,      description: 'specify port for server' },
-    root:        {                             validate: validate_root,      description: 'specify server root directory' },
-    quit:        {                             validate: validate_quit,      description: 'specify pathname that will cause server to quit' },
-    fsapi:       {                             validate: validate_fsapi,     description: 'enable fsapi and specify fsapi validation path' },
-    'fsapi-key': { default: FSAPI_KEY_DEFAULT, validate: validate_fsapi_key, description: 'specify key that will be sent as response to fsapi endpoint' },
+    root:     {                          validate: validate_root,      description: 'specify server root directory (required)' },
+    host:     { default: DEFAULT_HOST,   validate: validate_host,      description: 'specify host for server' },
+    port:     { default: DEFAULT_PORT,   validate: validate_port,      description: 'specify port for server' },
+    quit:     {                          validate: validate_quit,      description: 'specify pathname that will cause server to quit (optional)' },
+    features: {                          validate: validate_features,  description: 'specify pathname to return server features (optional)' },
+    access:   { default: DEFAULT_ACCESS, validate: validate_access,    description: 'specify access capabilities (see below)' },
     // items with only flag: true and a description are also supported...
 };
 const config_items_key_length_max = Math.max(...Object.keys(config_items).map(k => k.length));
@@ -140,7 +177,7 @@ const get_config = async () => {
             }
         }
     }
-    // finally, validate the obtained values
+    // after gathering from various sources, validate the obtained argument values
     for (const key in config_items) {
         const validate = config_items[key].validate;
         if (validate) {
@@ -152,6 +189,10 @@ const get_config = async () => {
                 }
             }
         }
+    }
+    // special case: replace access with parsed version
+    if (typeof config.access !== 'undefined') {
+        config.access = parse_access(config.access ?? DEFAULT_ACCESS);
     }
     // one last thing: convert root path to absolute
     if (config.root) {
@@ -165,6 +206,17 @@ const get_config = async () => {
 
 const config = await get_config();
 console.log(config);//!!!
+
+const get_features = () => {
+    return ['quit', 'features', 'access']
+        .reduce(
+            (acc, key) => {
+                acc[key] = config[key];
+                return acc;
+            },
+            {},
+        );
+};
 
 
 // === START SERVER ===
@@ -209,7 +261,8 @@ http
             }
         };
         try {
-            if (config.fsapi && req.url.match(new RegExp(`^/${config.fsapi}([?#].*)?$`))) {  // special case for fsapi
+            if (config.features && req.url.match(new RegExp(`^/${config.features}([?#].*)?$`))) {
+                // special case for features path
                 switch (req.method) {
                 case 'HEAD': {
                     ensure_head_sent(200);
@@ -218,7 +271,7 @@ http
                 }
                 case 'GET': {
                     ensure_head_sent(200);
-                    res.end(config['fsapi-key']);
+                    res.end(JSON.stringify(get_features()));
                     break;
                 }
                 default: {
@@ -226,7 +279,8 @@ http
                     break;
                 }
                 }
-            } else {  // not a special fsapi request, handle normally
+            } else {
+                // not a special features path request, handle normally
                 switch (req.method) {
                 case 'HEAD': {
                     const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
@@ -239,7 +293,7 @@ http
                     if (!file_info.found) {
                         ensure_head_sent(404, true);
                     } else if (file_info.stats.isFile()) {
-                        const mime_type = MIME_TYPES[file_info.ext] ?? MIME_TYPES_DEFAULT;
+                        const mime_type = MIME_TYPES[file_info.ext] ?? DEFAULT_MIME_TYPE;
                         headers['Content-Type'] = mime_type;
                         if (file_info.stats) {
                             headers['Content-Length'] = file_info.stats.size;
@@ -257,25 +311,29 @@ http
                                 ensure_head_sent(404, true);
                             });
                     } else if (file_info.stats.isDirectory()) {
-                        const dir_files = await fs.promises.readdir(file_info.file_path);
-                        const dir_stats = await Promise.all(dir_files.map(file_name => {
-                            return fs.promises.stat(path.join(file_info.file_path, file_name))
-                                .then(stats => {
-                                    return {
-                                        name:        file_name,
-                                        mode:        stats.mode,
-                                        size:        stats.size,
-                                        size:        stats.size,
-                                        atimeMs:     stats.atimeMs,
-                                        mtimeMs:     stats.mtimeMs,
-                                        ctimeMs:     stats.ctimeMs,
-                                        birthtimeMs: stats.birthtimeMs,
-                                    };
-                                });
-                        }));
-                        headers['Content-Type'] = 'application/json';
-                        ensure_head_sent();
-                        res.end(JSON.stringify(dir_stats, null, 2));
+                        if (!config.access.directory.read) {
+                            ensure_head_sent(403, true);
+                        } else {
+                            const dir_files = await fs.promises.readdir(file_info.file_path);
+                            const dir_stats = await Promise.all(dir_files.map(file_name => {
+                                return fs.promises.stat(path.join(file_info.file_path, file_name))
+                                    .then(stats => {
+                                        return {
+                                            name:        file_name,
+                                            mode:        stats.mode,
+                                            size:        stats.size,
+                                            size:        stats.size,
+                                            atimeMs:     stats.atimeMs,
+                                            mtimeMs:     stats.mtimeMs,
+                                            ctimeMs:     stats.ctimeMs,
+                                            birthtimeMs: stats.birthtimeMs,
+                                        };
+                                    });
+                            }));
+                            headers['Content-Type'] = 'application/json';
+                            ensure_head_sent();
+                            res.end(JSON.stringify(dir_stats, null, 2));
+                        }
                     } else {
                         // unsupported file type
                         ensure_head_sent(403, true);
@@ -285,58 +343,57 @@ http
                 }
                 case 'PUT':
                 case 'POST': {
-                    if (!config.fsapi) {
-                        ensure_head_sent(400, true);
-                    } else {
-                        const put_request = req.method === 'PUT';
-                        const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
-                        if (file_info.subdirectory_specified) {
-                            if (put_request) {
-                                // PUT to directory not supported
-                                ensure_head_sent(400, true);
-                            } else if (file_info.found) {
-                                // fail creating directory for a path that already exists
-                                ensure_head_sent(403, true);
-                            } else {
-                                fs.promises.mkdir(file_info.file_path)
-                                    .then(()  => ensure_head_sent(200, true))
-                                    .catch(() => ensure_head_sent(403, true));
-                            }
-                        } else {  // reqular non-directory path specified
-                            if (file_info.stats?.isDirectory()) {
-                                // fail if file already exists for the path but it is a directory
-                                ensure_head_sent(403, true);
-                            } else if (put_request && !file_info.found) {
-                                // file creation via PUT not supported (must use POST)
-                                ensure_head_sent(404, true);
-                            } else {
-                                const stream = fs.createWriteStream(file_info.file_path, { flags: 'w' });
-                                stream
-                                    .on('error', () => ensure_head_sent(500, true));
-                                req.pipe(stream)
-                                    .on('error',  () => ensure_head_sent(500, true))
-                                    .on('finish', () => ensure_head_sent(200, true));
-                            }
+                    const put_request = req.method === 'PUT';
+                    const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
+                    if (file_info.subdirectory_specified) {
+                        if (put_request) {
+                            // PUT to directory not supported
+                            // (not checking access because "update" access for a directory is prohibited (by validation))
+                            ensure_head_sent(400, true);
+                        } else if (!config.access.directory.create) {
+                            ensure_head_sent(400, true);
+                        } else if (file_info.found) {
+                            // fail creating directory for a path that already exists
+                            ensure_head_sent(403, true);
+                        } else {
+                            fs.promises.mkdir(file_info.file_path)
+                                .then(()  => ensure_head_sent(200, true))
+                                .catch(() => ensure_head_sent(403, true));
+                        }
+                    } else {  // reqular non-directory path specified
+                        if (!config.access.file[ put_request ? 'update' : 'create' ]) {
+                            ensure_head_sent(400, true);
+                        } else if (file_info.stats?.isDirectory()) {
+                            // fail if file already exists for the path but it is a directory
+                            ensure_head_sent(403, true);
+                        } else if (put_request && !file_info.found) {
+                            // file creation via PUT not supported (must use POST)
+                            ensure_head_sent(404, true);
+                        } else {
+                            const stream = fs.createWriteStream(file_info.file_path, { flags: 'w' });
+                            stream
+                                .on('error', () => ensure_head_sent(500, true));
+                            req.pipe(stream)
+                                .on('error',  () => ensure_head_sent(500, true))
+                                .on('finish', () => ensure_head_sent(200, true));
                         }
                     }
                     break;
                 }
                 case 'DELETE': {
-                    if (!config.fsapi) {
+                    const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
+                    if (!config.access[ file_info.stats.isDirectory() ? 'directory' : 'file' ].delete) {
                         ensure_head_sent(400, true);
+                    } else if (!file_info.found) {
+                        ensure_head_sent(404, true);
+                    } else if (file_info.root_specified) {
+                        // do not delete the root directory
+                        ensure_head_sent(403, true);
                     } else {
-                        const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
-                        if (!file_info.found) {
-                            ensure_head_sent(404, true);
-                        } else if (file_info.root_specified) {
-                            // do not delete the root directory
-                            ensure_head_sent(403, true);
-                        } else {
-                            const remove_path = file_info.stats.isDirectory() ? fs.promises.rmdir : fs.promises.rm;
-                            remove_path(file_info.file_path)
-                                .then(() => ensure_head_sent(200, true))
-                                .catch((error) => ensure_head_sent(403, true));
-                        }
+                        const remove_path = file_info.stats.isDirectory() ? fs.promises.rmdir : fs.promises.rm;
+                        remove_path(file_info.file_path)
+                            .then(() => ensure_head_sent(200, true))
+                            .catch((error) => ensure_head_sent(403, true));
                     }
                     break;
                 }
@@ -379,7 +436,7 @@ const MIME_TYPES = {
     'xml':      'application/xml',
     'py':       'text/x-python',
 };
-const MIME_TYPES_DEFAULT = 'application/octet-stream';
+const DEFAULT_MIME_TYPE = 'application/octet-stream';
 
 const HTTP_STATUS_CODES = {  // (Oct 2025) from https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
     100: "Continue",                         // [RFC9110, Section 15.2.1]

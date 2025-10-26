@@ -18,10 +18,9 @@ import {
 } from 'lib/sys/fs-interface';
 
 import {
-    server_fsapi_available,
+    server_get_features,
     server_perform_save,
 } from '../server-interface';
-console.log({ server_fsapi_available });//!!!
 
 import {
     SerialDataSource,
@@ -222,6 +221,7 @@ export class BqManager {
         }
     }
 
+    #server_features = server_get_features();
     #activity_manager: ActivityManager = new ActivityManager(true);  // true: multiple_stops
     #command_bindings: { [command: string]: ((...args: any[]) => any) };
     #key_event_manager: KeyEventManager<BqManager>;
@@ -229,7 +229,6 @@ export class BqManager {
     #menu: undefined|Menu<BqManager> = undefined;
     #menu_commands_subscription: undefined|SerialDataSourceSubscription = undefined;
     #menu_selects_subscription:  undefined|SerialDataSourceSubscription = undefined;
-    #file_handle: any = null;
     #editable: boolean = true;
     #active_cell: null|BqCellElement = null;
     #global_state: object = {};  // persistent state for renderers
@@ -308,8 +307,7 @@ export class BqManager {
         this.#global_state = {};
     }
     /** reset the document, meaning that all cells will be reset,
-     *  and this.#global_state will be reset.  Also, the saved file
-     *  handle this.#file_handle set to undefined.
+     *  and this.#global_state will be reset.
      *  @return {BqManager} this
      */
     reset() {
@@ -320,7 +318,6 @@ export class BqManager {
         }
         TextBasedRenderer.reset_to_initial_text_based_renderer_factories();
         this.reset_global_state();
-        this.#file_handle = undefined;
         for (const cell of this.get_cells()) {
             try {
                 cell.reset();
@@ -554,7 +551,6 @@ export class BqManager {
         if (canceled) {
             this.notification_manager.add('save canceled');
         } else {
-            this.#file_handle = file_handle ?? undefined;
             this.set_neutral();
             this.notification_manager.add('document saved');
         }
@@ -866,22 +862,22 @@ export class BqManager {
         //!!! review this !!!
         const menu = this.#menu;
         if (menu) {
-            const presentation    = this.in_presentation_view;
-            const interactive     = this.interactive;
-            const all_cells       = this.get_cells();
-            const cells           = all_cells.filter(cell => cell.showing);
-            const active_cell     = this.active_cell;
-            const active_index    = active_cell ? cells.indexOf(active_cell) : -1;
-            const editable        = this.editable;
-            const cell_type       = active_cell?.type;
-            const cell_view       = this.cell_view;
-            const has_save_handle = !!this.#file_handle;
-            const is_neutral      = this.is_neutral();
+            const presentation       = this.in_presentation_view;
+            const interactive        = this.interactive;
+            const all_cells          = this.get_cells();
+            const cells              = all_cells.filter(cell => cell.showing);
+            const active_cell        = this.active_cell;
+            const active_index       = active_cell ? cells.indexOf(active_cell) : -1;
+            const editable           = this.editable;
+            const cell_type          = active_cell?.type;
+            const cell_view          = this.cell_view;
+            const is_neutral         = this.is_neutral();
+            const can_save_to_server = this.#server_features.access.file.create;
 
             menu.set_menu_state('clear-all',                   { enabled: !presentation && editable });
 
-            menu.set_menu_state('save',                        { enabled: !is_neutral && has_save_handle });
-            // no update to command 'save-as'
+            menu.set_menu_state('save',                        { enabled: can_save_to_server && !is_neutral });
+            menu.set_menu_state('save-as',                     { enabled: can_save_to_server });
             // no update to command 'export'
 
             menu.set_menu_state('toggle-auto-render',          { checked: get_auto_render(), enabled: !presentation });

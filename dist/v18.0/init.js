@@ -9638,7 +9638,7 @@ async function fs_perform_save(contents, document_url) {
         const contents_string = contents_chunks.join('');
         // set up an <a> element to implement the download
         const a_el = document.createElement('a');
-        a_el.download = document_url.pathname.split('/')[-1][0]; // just the last component of the pathname
+        a_el.download = document_url.pathname.split('/').slice(-1)[0]; // just the last component of the pathname
         const blob = URL.createObjectURL(new Blob([contents_string], { type: 'text/html' }));
         a_el.href = blob;
         const completion_callback = () => {
@@ -13674,7 +13674,6 @@ const current_script_url = (/* unused pure expression or super */ null && ("file
 
 
 
-console.log({ server_fsapi_available: _server_interface__WEBPACK_IMPORTED_MODULE_1__/* .server_fsapi_available */ .s9 }); //!!!
 
 
 
@@ -13789,6 +13788,7 @@ class BqManager {
             (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .show_initialization_failed */ .$W)(error);
         }
     }
+    #server_features = (0,_server_interface__WEBPACK_IMPORTED_MODULE_1__/* .server_get_features */ .ZM)();
     #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT(true); // true: multiple_stops
     #command_bindings;
     #key_event_manager;
@@ -13796,7 +13796,6 @@ class BqManager {
     #menu = undefined;
     #menu_commands_subscription = undefined;
     #menu_selects_subscription = undefined;
-    #file_handle = null;
     #editable = true;
     #active_cell = null;
     #global_state = {}; // persistent state for renderers
@@ -13864,8 +13863,7 @@ class BqManager {
         this.#global_state = {};
     }
     /** reset the document, meaning that all cells will be reset,
-     *  and this.#global_state will be reset.  Also, the saved file
-     *  handle this.#file_handle set to undefined.
+     *  and this.#global_state will be reset.
      *  @return {BqManager} this
      */
     reset() {
@@ -13877,7 +13875,6 @@ class BqManager {
         }
         src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.reset_to_initial_text_based_renderer_factories();
         this.reset_global_state();
-        this.#file_handle = undefined;
         for (const cell of this.get_cells()) {
             try {
                 cell.reset();
@@ -14081,7 +14078,6 @@ class BqManager {
             this.notification_manager.add('save canceled');
         }
         else {
-            this.#file_handle = file_handle ?? undefined;
             this.set_neutral();
             this.notification_manager.add('document saved');
         }
@@ -14377,11 +14373,11 @@ class BqManager {
             const editable = this.editable;
             const cell_type = active_cell?.type;
             const cell_view = this.cell_view;
-            const has_save_handle = !!this.#file_handle;
             const is_neutral = this.is_neutral();
+            const can_save_to_server = this.#server_features.access.file.create;
             menu.set_menu_state('clear-all', { enabled: !presentation && editable });
-            menu.set_menu_state('save', { enabled: !is_neutral && has_save_handle });
-            // no update to command 'save-as'
+            menu.set_menu_state('save', { enabled: can_save_to_server && !is_neutral });
+            menu.set_menu_state('save-as', { enabled: can_save_to_server });
             // no update to command 'export'
             menu.set_menu_state('toggle-auto-render', { checked: (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_render */ ._k)(), enabled: !presentation });
             // no update to command 'settings'
@@ -37478,42 +37474,55 @@ function is_compatible_with_options(element, options, always_return_options = fa
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   O0: () => (/* binding */ server_perform_save),
-/* harmony export */   s9: () => (/* binding */ server_fsapi_available)
+/* harmony export */   ZM: () => (/* binding */ server_get_features)
 /* harmony export */ });
-/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FSAPI_CHECK_PATH, HTTP_ENDPOINT_FSAPI_CHECK_PATH_RESPONSE, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FSAPI_CHECK_URL, ensure_server_fsapi_available, server_request_quit */
+/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, server_request_quit */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/server-interface.ts"; // save for later
 
-const HTTP_ENDPOINT_QUIT_PATH = '/QUIT';
-const HTTP_ENDPOINT_FSAPI_CHECK_PATH = '/FSAPI';
-const HTTP_ENDPOINT_FSAPI_CHECK_PATH_RESPONSE = 'FSAPI AVAILABLE';
+const HTTP_ENDPOINT_QUIT_PATH = '/-QUIT-';
+const HTTP_ENDPOINT_FEATURES_PATH = '/-FEATURES-';
 const HTTP_ENDPOINT_BASE_URL = new URL('/', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url));
 const HTTP_ENDPOINT_QUIT_URL = new URL(HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_BASE_URL);
-const HTTP_ENDPOINT_FSAPI_CHECK_URL = new URL(HTTP_ENDPOINT_FSAPI_CHECK_PATH, HTTP_ENDPOINT_BASE_URL);
-const server_fsapi_available = await fetch(HTTP_ENDPOINT_FSAPI_CHECK_URL)
+const HTTP_ENDPOINT_FEATURES_URL = new URL(HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL);
+const DEFAULT_SERVER_FEATURES = {
+    quit: undefined,
+    features: undefined,
+    access: {
+        directory: { create: false, read: false, update: false, delete: false },
+        file: { create: false, read: true, update: false, delete: false },
+    },
+};
+const _server_features = await fetch(HTTP_ENDPOINT_FEATURES_URL)
     .then(response => {
     if (!response.ok) {
-        return false;
+        return DEFAULT_SERVER_FEATURES;
     }
     else {
         return response.text()
-            .then(body_text => {
-            return (body_text === HTTP_ENDPOINT_FSAPI_CHECK_PATH_RESPONSE);
-        });
+            .then(body_text => JSON.parse(body_text))
+            .catch(error => DEFAULT_SERVER_FEATURES);
     }
 })
     .catch(_ignored_error => false);
-function ensure_server_fsapi_available() {
-    if (!server_fsapi_available) {
-        throw new Error('server does not support fsapi operations');
-    }
+function server_get_features() {
+    // return a copy
+    return JSON.parse(JSON.stringify(_server_features));
+}
+function _throw_access_error() {
+    throw new Error('unsupported server operation');
 }
 async function server_request_quit() {
-    ensure_server_fsapi_available();
+    if (_server_features.quit) {
+        _throw_access_error();
+    }
     return fetch(HTTP_ENDPOINT_QUIT_URL).then(response => response.ok, _ignored_error => false);
 }
 async function server_perform_save(contents, document_url) {
-    ensure_server_fsapi_available();
+    throw new Error('UNIMPLEMENTED'); //!!!
+    if (_server_features.access.file.create) {
+        _throw_access_error();
+    }
     const document_url_string = document_url.toString(); // toString() is compatible with both URL and Location
     return fetch(document_url_string, {
         method: 'POST',

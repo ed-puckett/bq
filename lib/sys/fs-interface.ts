@@ -18,7 +18,7 @@ export async function fs_perform_save(contents: ReadableStream, document_url: UR
         const contents_string = contents_chunks.join('');
         // set up an <a> element to implement the download
         const a_el = document.createElement('a') as HTMLAnchorElement;
-        a_el.download = document_url.pathname.split('/')[-1][0];  // just the last component of the pathname
+        a_el.download = document_url.pathname.split('/').slice(-1)[0];  // just the last component of the pathname
         const blob = URL.createObjectURL(new Blob([ contents_string ], { type: 'text/html'}));
         a_el.href = blob;
         const completion_callback = () => {
