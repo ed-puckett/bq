@@ -3,7 +3,7 @@ import {
 } from 'lib/sys/open-promise';
 
 
-export async function fs_perform_save(contents: ReadableStream, document_url: URL|Location) {
+export async function fs_perform_save(document_url: URL|Location, contents: ReadableStream) {
     // (return an explicit promise that we can resolve from within an event callback)
     return new Promise(async (resolve, reject) => {
         // get contents as a string

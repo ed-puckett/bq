@@ -9542,7 +9542,8 @@ async function load_Algebrite() {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   U: () => (/* binding */ assets_server_url)
+/* harmony export */   U: () => (/* binding */ assets_server_url),
+/* harmony export */   h: () => (/* binding */ url_references_assets_server)
 /* harmony export */ });
 const current_script_url = "file:///home/ed/code/bq/lib/sys/assets-server-url.ts"; // save for later
 const local_server_root = new URL('../..', current_script_url); // assumes this script is located two directory levels below server root
@@ -9588,13 +9589,29 @@ function assets_server_url(local_url) {
     let result;
     if (local_url.href.startsWith(local_server_root.href)) {
         const relative = local_url.href.slice(local_server_root.href.length);
-        result = new URL(assets_server_root.href + relative);
+        result = new URL(relative, assets_server_root.href);
     }
     else {
         // we have no basis to reinterpret local_url with respect to assets_server_root
-        result = local_url;
+        result = (local_url instanceof URL) ? local_url : new URL(local_url.href);
     }
     return result;
+}
+/** return true iff url references the assets server and not some other server.
+*/
+function url_references_assets_server(url) {
+    _setup_assets_server_root();
+    if (!assets_server_root) { // this is for the sake of typescript
+        throw new Error('unexpected: assets_server_root is not set');
+    }
+    // We assume that instances of URL return an empty string
+    // for the port when the port is unspecified or is specified
+    // but is the default for the protocol.  This assures
+    // consistent comparison below.
+    return (url.protocol === assets_server_root.protocol &&
+        url.host === assets_server_root.host && // host includes port if specified and not default
+        ((url instanceof Location) ? '' : url.username) === assets_server_root.username && // Location has no username property
+        url.pathname.startsWith(assets_server_root.pathname));
 }
 
 
@@ -9623,7 +9640,7 @@ const { /* parse */ "qg": parse, /* parseExpression */ "YK": parseExpression, /*
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   c: () => (/* binding */ fs_perform_save)
 /* harmony export */ });
-async function fs_perform_save(contents, document_url) {
+async function fs_perform_save(document_url, contents) {
     // (return an explicit promise that we can resolve from within an event callback)
     return new Promise(async (resolve, reject) => {
         // get contents as a string
@@ -10718,6 +10735,236 @@ function draw_arrow(ctx, x0, y0, x1, y1, options) {
 
 /***/ }),
 
+/***/ 2002:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   create_control_element: () => (/* binding */ create_control_element),
+/* harmony export */   create_radio_control: () => (/* binding */ create_radio_control),
+/* harmony export */   create_select_control: () => (/* binding */ create_select_control),
+/* harmony export */   create_select_element: () => (/* binding */ create_select_element)
+/* harmony export */ });
+/* harmony import */ var _dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
+
+/** create a new HTML control as a child of the given parent with an optional label element
+ *  @param {Node} parent
+ *  @param {undefined|null|string} id for control element
+ *  @param {Object|undefined|null} options: {
+ *             tag?:         string,   // tag name for element; default: 'input'
+ *             type?:        string,   // type name for element; default: 'text' (only used if tag === 'input')
+ *             label?:       string,   // if !!label, then create a label element
+ *             label_after?: boolean,  // if !!label_after, the add label after element, otherwise before
+ *             attrs?:       object,   // attributes to set on the new control element
+ *         }
+ *  @return {Element} the new control element
+ */
+function create_control_element(parent, id, options) {
+    if (typeof id !== 'undefined' && id !== null && (typeof id !== 'string' || id === '')) {
+        throw new TypeError('id must be undefined, null, or a non-empty string');
+    }
+    id ??= undefined; // null -> undefined
+    const { tag = 'input', type = 'text', label, label_after, attrs = {}, } = (options ?? {});
+    if (label && !id) {
+        throw new TypeError('id must be a non-empty string if label is specified');
+    }
+    if ('id' in attrs || 'type' in attrs) {
+        throw new TypeError('attrs must not contain "id" or "type"');
+    }
+    const control_opts = {
+        id,
+        ...attrs,
+    };
+    if (tag === 'input') {
+        control_opts.type = type;
+    }
+    const control = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)({
+        tag,
+        attrs: control_opts,
+    });
+    let control_label;
+    if (label) {
+        control_label = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)({
+            tag: 'label',
+            attrs: {
+                for: id, // id may be undefined
+            },
+        });
+        control_label.innerText = label;
+    }
+    if (label_after) {
+        parent.appendChild(control);
+        if (control_label) {
+            parent.appendChild(control_label);
+        }
+    }
+    else {
+        if (control_label) {
+            parent.appendChild(control_label);
+        }
+        parent.appendChild(control);
+    }
+    return control;
+}
+/** create a new HTML <select> and associated <option> elements
+ *  as a child of the given parent with an optional label element
+ *  @param {Node} parent
+ *  @param {undefined|null|string} id for control element
+ *  @param {Object|undefined|null} opts: {
+ *             tag?:         string,    // tag name for element; default: 'input'
+ *             label?:       string,    // if !!label, then create a label element
+ *             label_after?: boolean,   // if !!label_after, the add label after element, otherwise before
+ *             attrs?:       object,    // attributes to set on the new <select> element
+ *             options?:     object[],  // array of objects, each of which contain "value"
+ *                                      // and "label" keys (value defaults to label)
+ *                                      // values are the option attributes.  If no "value"
+ *                                      // attribute is specified then the key is used.
+ *                                      // One entry may also contain a boolean "selected".
+ *         }
+ * Note: we are assuming that opts.options is specified with an key-order-preserving object.
+ *  @return {Element} the new <select> element
+ */
+function create_select_element(parent, id, opts) {
+    opts = opts ?? {};
+    if ('tag' in opts || 'type' in opts) {
+        throw new TypeError('opts must not contain "tag" or "type"');
+    }
+    const option_elements = [];
+    const options = opts.options;
+    if (typeof options === 'object') {
+        for (const { value, label, selected } of options) {
+            const option_attrs = {
+                value: (value ?? label),
+                selected: selected ? "true" : undefined,
+            };
+            const option_element = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)({
+                tag: 'option',
+                attrs: option_attrs,
+            });
+            option_element.innerText = label;
+            option_elements.push(option_element);
+        }
+    }
+    const select_opts = {
+        ...opts,
+        tag: 'select',
+    };
+    const select_element = create_control_element(parent, id, select_opts);
+    for (const option_element of option_elements) {
+        select_element.appendChild(option_element);
+    }
+    return select_element;
+}
+function create_radio_control(parent, legend, name, checked_value, alternatives_specs) {
+    const spec = {
+        parent,
+        tag: 'fieldset',
+        children: [
+            {
+                tag: 'legend',
+                innerText: legend,
+            },
+        ],
+    };
+    for (const { label, label_aux, details, value: spec_value, tooltip } of alternatives_specs) {
+        const value = spec_value ?? label;
+        const child = {
+            tag: 'label',
+            attrs: {
+                title: tooltip ? tooltip : undefined,
+            },
+            children: [
+                {
+                    tag: 'input',
+                    attrs: {
+                        type: 'radio',
+                        name,
+                        value,
+                        checked: (value === checked_value) ? true : undefined,
+                    },
+                },
+                {
+                    children: [
+                        {
+                            tag: 'span',
+                            attrs: {
+                                class: 'export-radio-label',
+                            },
+                            children: [
+                                `${label}:`, // string: create text node
+                            ],
+                        },
+                        {
+                            tag: 'span',
+                            attrs: {
+                                class: 'export-radio-label-aux',
+                            },
+                            children: [
+                                label_aux, // string: create text node
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+        if (details) {
+            child.children[1].children.push({
+                attrs: {
+                    class: 'export-radio-details',
+                },
+                children: [
+                    details.toString(),
+                ],
+            });
+        }
+        spec.children.push(child);
+    }
+    return (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)(spec);
+}
+function create_select_control(parent, label, name, selected_value, alternatives_specs) {
+    const spec = {
+        parent,
+        tag: 'label',
+        children: [
+            label, // string: create text node
+            {
+                tag: 'select',
+                attrs: {
+                    name,
+                },
+                children: [], // populated below
+            },
+        ],
+    };
+    const select_children = spec.children[spec.children.length - 1].children;
+    for (const spec of alternatives_specs) {
+        let label, value, tooltip;
+        if (typeof spec === 'string') {
+            label = spec;
+            value = spec;
+        }
+        else {
+            label = spec.label;
+            value = spec.value ?? spec.label;
+            tooltip = spec.tooltip;
+        }
+        select_children.push({
+            tag: 'option',
+            innerText: label,
+            attrs: {
+                value,
+                title: tooltip ? tooltip : undefined,
+                selected: (value === selected_value) ? true : undefined,
+            },
+        });
+    }
+    return (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)(spec);
+}
+
+
+/***/ }),
+
 /***/ 8380:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -10725,9 +10972,7 @@ function draw_arrow(ctx, x0, y0, x1, y1, options) {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Lt: () => (/* binding */ AlertDialog),
 /* harmony export */   TM: () => (/* binding */ ConfirmDialog),
-/* harmony export */   Wc: () => (/* binding */ create_control_element),
-/* harmony export */   lG: () => (/* binding */ Dialog),
-/* harmony export */   nJ: () => (/* binding */ create_select_element)
+/* harmony export */   lG: () => (/* binding */ Dialog)
 /* harmony export */ });
 /* unused harmony export load_stylesheet */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
@@ -10933,115 +11178,6 @@ class ConfirmDialog extends Dialog {
         }
         this._setup_accept_and_decline_buttons(options);
     }
-}
-// === UTILITY FUNCTIONS ===
-/** create a new HTML control as a child of the given parent with an optional label element
- *  @param {Node} parent
- *  @param {undefined|null|string} id for control element
- *  @param {Object|undefined|null} options: {
- *             tag?:         string,   // tag name for element; default: 'input'
- *             type?:        string,   // type name for element; default: 'text' (only used if tag === 'input')
- *             label?:       string,   // if !!label, then create a label element
- *             label_after?: boolean,  // if !!label_after, the add label after element, otherwise before
- *             attrs?:       object,   // attributes to set on the new control element
- *         }
- *  @return {Element} the new control element
- */
-function create_control_element(parent, id, options) {
-    if (typeof id !== 'undefined' && id !== null && (typeof id !== 'string' || id === '')) {
-        throw new TypeError('id must be undefined, null, or a non-empty string');
-    }
-    id ??= undefined; // null -> undefined
-    const { tag = 'input', type = 'text', label, label_after, attrs = {}, } = (options ?? {});
-    if (label && !id) {
-        throw new TypeError('id must be a non-empty string if label is specified');
-    }
-    if ('id' in attrs || 'type' in attrs) {
-        throw new TypeError('attrs must not contain "id" or "type"');
-    }
-    const control_opts = {
-        id,
-        ...attrs,
-    };
-    if (tag === 'input') {
-        control_opts.type = type;
-    }
-    const control = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
-        tag,
-        attrs: control_opts,
-    });
-    let control_label;
-    if (label) {
-        control_label = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
-            tag: 'label',
-            attrs: {
-                for: id, // id may be undefined
-            },
-        });
-        control_label.innerText = label;
-    }
-    if (label_after) {
-        parent.appendChild(control);
-        if (control_label) {
-            parent.appendChild(control_label);
-        }
-    }
-    else {
-        if (control_label) {
-            parent.appendChild(control_label);
-        }
-        parent.appendChild(control);
-    }
-    return control;
-}
-/** create a new HTML <select> and associated <option> elements
- *  as a child of the given parent with an optional label element
- *  @param {Node} parent
- *  @param {undefined|null|string} id for control element
- *  @param {Object|undefined|null} opts: {
- *             tag?:         string,    // tag name for element; default: 'input'
- *             label?:       string,    // if !!label, then create a label element
- *             label_after?: boolean,   // if !!label_after, the add label after element, otherwise before
- *             attrs?:       object,    // attributes to set on the new <select> element
- *             options?:     object[],  // array of objects, each of which contain "value"
- *                                      // and "label" keys (value defaults to label)
- *                                      // values are the option attributes.  If no "value"
- *                                      // attribute is specified then the key is used.
- *                                      // One entry may also contain a boolean "selected".
- *         }
- * Note: we are assuming that opts.options is specified with an key-order-preserving object.
- *  @return {Element} the new <select> element
- */
-function create_select_element(parent, id, opts) {
-    opts = opts ?? {};
-    if ('tag' in opts || 'type' in opts) {
-        throw new TypeError('opts must not contain "tag" or "type"');
-    }
-    const option_elements = [];
-    const options = opts.options;
-    if (typeof options === 'object') {
-        for (const { value, label, selected } of options) {
-            const option_attrs = {
-                value: (value ?? label),
-                selected: selected ? "true" : undefined,
-            };
-            const option_element = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
-                tag: 'option',
-                attrs: option_attrs,
-            });
-            option_element.innerText = label;
-            option_elements.push(option_element);
-        }
-    }
-    const select_opts = {
-        ...opts,
-        tag: 'select',
-    };
-    const select_element = create_control_element(parent, id, select_opts);
-    for (const option_element of option_elements) {
-        select_element.appendChild(option_element);
-    }
-    return select_element;
 }
 
 
@@ -13648,7 +13784,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var dist_version_info__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(5252);
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(742);
-/* harmony import */ var _server_interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7475);
+/* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3787);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
@@ -13666,8 +13802,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface__WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface__WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
 
@@ -13788,7 +13924,8 @@ class BqManager {
             (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .show_initialization_failed */ .$W)(error);
         }
     }
-    #server_features = (0,_server_interface__WEBPACK_IMPORTED_MODULE_1__/* .server_get_features */ .ZM)();
+    #server_features = _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI.get_features(); // these remain the same during operation
+    #server_interface = new _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI();
     #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT(true); // true: multiple_stops
     #command_bindings;
     #key_event_manager;
@@ -14071,8 +14208,8 @@ class BqManager {
             auto_render,
             active_cell,
         });
-        const save_interface = perform_export ? lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_19__/* .fs_perform_save */ .c : _server_interface__WEBPACK_IMPORTED_MODULE_1__/* .server_perform_save */ .O0;
-        const save_result = await save_interface(contents, document.location);
+        const save_interface = perform_export ? lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_19__/* .fs_perform_save */ .c : this.#server_interface.write.bind(this.#server_interface);
+        const save_result = await save_interface(document.location, contents);
         const { canceled, file_handle, stats, } = save_result;
         if (canceled) {
             this.notification_manager.add('save canceled');
@@ -14898,10 +15035,12 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8380);
-/* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6336);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_3__]);
-src_init__WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2002);
+/* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6336);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_4__]);
+src_init__WEBPACK_IMPORTED_MODULE_4__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/export-options-dialog/_.ts")); // save for later
+
 
 
 
@@ -14926,8 +15065,8 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
             accept_button_label: 'Continue',
         });
         // --- bootstrap script choices ---
-        const bss_choices_default = src_init__WEBPACK_IMPORTED_MODULE_3__/* .bootstrap_script_src_alternatives_default */ .bI;
-        const bss_choices = Object.entries((0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_bootstrap_script_src_alternatives */ .o6)())
+        const bss_choices_default = src_init__WEBPACK_IMPORTED_MODULE_4__/* .bootstrap_script_src_alternatives_default */ .bI;
+        const bss_choices = Object.entries((0,src_init__WEBPACK_IMPORTED_MODULE_4__/* .get_bootstrap_script_src_alternatives */ .o6)())
             .map(([choice, { label, details, url }]) => {
             return {
                 value: choice,
@@ -14937,14 +15076,14 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
                 tooltip: `script url: ${url}`,
             };
         });
-        create_radio_control(this._dialog_form_content, 'Bootstrap script', 'bootstrap_script_src', bss_choices_default, bss_choices);
+        (0,lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_3__.create_radio_control)(this._dialog_form_content, 'Bootstrap script', 'bootstrap_script_src', bss_choices_default, bss_choices);
         // --- cell view ---
-        const cv_current = document.documentElement.getAttribute(src_init__WEBPACK_IMPORTED_MODULE_3__/* .cell_view_attribute_name */ .Qy);
+        const cv_current = document.documentElement.getAttribute(src_init__WEBPACK_IMPORTED_MODULE_4__/* .cell_view_attribute_name */ .Qy);
         const cv_unset_choice = '(unset)';
         const cv_unset_value = ''; // must be empty string; this will be recognized by caller as "unset"
         const cv_choices_default = cv_current ?? cv_unset_value;
-        const cv_choices_standard = (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_valid_cell_view_values */ .ct)();
-        const cv_descriptions = (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_cell_view_descriptions */ .oy)();
+        const cv_choices_standard = (0,src_init__WEBPACK_IMPORTED_MODULE_4__/* .get_valid_cell_view_values */ .ct)();
+        const cv_descriptions = (0,src_init__WEBPACK_IMPORTED_MODULE_4__/* .get_cell_view_descriptions */ .oy)();
         if (cv_choices_standard.includes(cv_unset_value)) {
             throw new Error('unexpected: valid_cell_view_values already includes cv_unset_value');
         }
@@ -14964,7 +15103,7 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
                 };
             }),
         ];
-        const cv_element_tree = create_select_control(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
+        const cv_element_tree = (0,lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_3__.create_select_control)(this._dialog_form_content, 'Cell view', 'cell_view', cv_choices_default, cv_choices);
         const cv_description_element = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
             parent: cv_element_tree,
             attrs: {
@@ -14999,7 +15138,7 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
                     attrs: {
                         type: 'checkbox',
                         name: 'auto_render',
-                        checked: (0,src_init__WEBPACK_IMPORTED_MODULE_3__/* .get_auto_render */ ._k)() ? true : undefined,
+                        checked: (0,src_init__WEBPACK_IMPORTED_MODULE_4__/* .get_auto_render */ ._k)() ? true : undefined,
                     },
                 },
             ],
@@ -15021,111 +15160,6 @@ class ExportOptionsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* 
             ],
         });
     }
-}
-function create_radio_control(parent, legend, name, checked_value, alternatives_specs) {
-    const spec = {
-        parent,
-        tag: 'fieldset',
-        children: [
-            {
-                tag: 'legend',
-                innerText: legend,
-            },
-        ],
-    };
-    for (const { label, label_aux, details, value: spec_value, tooltip } of alternatives_specs) {
-        const value = spec_value ?? label;
-        const child = {
-            tag: 'label',
-            attrs: {
-                title: tooltip ? tooltip : undefined,
-            },
-            children: [
-                {
-                    tag: 'input',
-                    attrs: {
-                        type: 'radio',
-                        name,
-                        value,
-                        checked: (value === checked_value) ? true : undefined,
-                    },
-                },
-                {
-                    children: [
-                        {
-                            tag: 'span',
-                            attrs: {
-                                class: 'export-radio-label',
-                            },
-                            children: [
-                                `${label}:`, // string: create text node
-                            ],
-                        },
-                        {
-                            tag: 'span',
-                            attrs: {
-                                class: 'export-radio-label-aux',
-                            },
-                            children: [
-                                label_aux, // string: create text node
-                            ],
-                        },
-                    ],
-                },
-            ],
-        };
-        if (details) {
-            child.children[1].children.push({
-                attrs: {
-                    class: 'export-radio-details',
-                },
-                children: [
-                    details.toString(),
-                ],
-            });
-        }
-        spec.children.push(child);
-    }
-    return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)(spec);
-}
-function create_select_control(parent, label, name, selected_value, alternatives_specs) {
-    const spec = {
-        parent,
-        tag: 'label',
-        children: [
-            label, // string: create text node
-            {
-                tag: 'select',
-                attrs: {
-                    name,
-                },
-                children: [], // populated below
-            },
-        ],
-    };
-    const select_children = spec.children[spec.children.length - 1].children;
-    for (const spec of alternatives_specs) {
-        let label, value, tooltip;
-        if (typeof spec === 'string') {
-            label = spec;
-            value = spec;
-        }
-        else {
-            label = spec.label;
-            value = spec.value ?? spec.label;
-            tooltip = spec.tooltip;
-        }
-        select_children.push({
-            tag: 'option',
-            innerText: label,
-            attrs: {
-                value,
-                title: tooltip ? tooltip : undefined,
-                selected: (value === selected_value) ? true : undefined,
-            },
-        });
-    }
-    return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)(spec);
 }
 
 __webpack_async_result__();
@@ -15667,6 +15701,102 @@ __webpack_async_result__();
 
 /***/ }),
 
+/***/ 3787:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   VI: () => (/* binding */ ServerInterface)
+/* harmony export */ });
+/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL */
+/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
+const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface/_.ts"; // save for later
+
+const HTTP_ENDPOINT_QUIT_PATH = '/-QUIT-';
+const HTTP_ENDPOINT_FEATURES_PATH = '/-FEATURES-';
+const HTTP_ENDPOINT_BASE_URL = new URL('/', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url));
+const HTTP_ENDPOINT_QUIT_URL = new URL(HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_BASE_URL);
+const HTTP_ENDPOINT_FEATURES_URL = new URL(HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL);
+const DEFAULT_SERVER_FEATURES = {
+    quit: undefined,
+    features: undefined,
+    access: {
+        directory: { create: false, read: false, update: false, delete: false },
+        file: { create: false, read: true, update: false, delete: false },
+    },
+};
+// Fetch SERVER_FEATURES from the server during initialization.
+// It is assumed these remain the same during operation.
+const _server_features = await fetch(HTTP_ENDPOINT_FEATURES_URL)
+    .then(response => {
+    if (!response.ok) {
+        return DEFAULT_SERVER_FEATURES;
+    }
+    else {
+        return response.text()
+            .then(body_text => JSON.parse(body_text))
+            .catch(error => DEFAULT_SERVER_FEATURES);
+    }
+})
+    .catch(_ignored_error => false);
+class ServerInterface {
+    get CLASS() { return this.constructor; }
+    static get_features() {
+        return JSON.parse(JSON.stringify(_server_features)); // return a copy
+    }
+    async read(url, contents) {
+        this.#confirm_access(url, 'read');
+        const url_string = url.toString(); // toString() is compatible with both URL and Location
+        return fetch(url_string).then(response => response.ok, _ignored_error => false);
+    }
+    async write(url, contents, update_only = false) {
+        throw new Error('UNIMPLEMENTED'); //!!! protect until tested
+        this.#confirm_access(url, (update_only ? 'update' : 'create'));
+        const url_string = url.toString(); // toString() is compatible with both URL and Location
+        return fetch(url_string, {
+            method: update_only ? 'PUT' : 'POST',
+            body: contents,
+        }).then(response => response.ok, _ignored_error => false);
+    }
+    async remove(url) {
+        throw new Error('UNIMPLEMENTED'); //!!! protect until tested
+        this.#confirm_access(url, 'delete');
+        const url_string = url.toString(); // toString() is compatible with both URL and Location
+        return fetch(url_string, {
+            method: 'DELETE',
+        }).then(response => response.ok, _ignored_error => false);
+    }
+    /** _server_request_quit() is not normally used, included for completeness
+     */
+    async _server_request_quit() {
+        if (!_server_features.quit) {
+            throw new Error('server does not support QUIT');
+        }
+        return fetch(HTTP_ENDPOINT_QUIT_URL).then(response => response.ok, _ignored_error => false);
+    }
+    #confirm_access(url, action) {
+        if (!(0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .url_references_assets_server */ .h)(url)) {
+            throw new Error('url does not reference assets server');
+        }
+        // When checking access control, we infer if url represents a directory
+        // or if it represents a file by looking for a trailing '/' in the
+        // pathname.  If this inference turns out to be wrong and access is
+        // not actually permitted, then the server will report the error back.
+        // The inference can be wrong in two ways, either that a trailing '/'
+        // was specified in url but the target is actually a file, or vice versa.
+        const action_access = _server_features.access[url.pathname.endsWith('/') ? 'directory' : 'file'];
+        if (!action_access[action]) {
+            throw new Error(`access server action "${action}" prohibited`);
+        }
+    }
+}
+
+__webpack_async_result__();
+} catch(e) { __webpack_async_result__(e); } }, 1);
+
+/***/ }),
+
 /***/ 1140:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -15678,13 +15808,15 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* unused harmony export load_stylesheet */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8380);
-/* harmony import */ var lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1760);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(3593);
-/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(5934);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_settings___WEBPACK_IMPORTED_MODULE_3__]);
-src_settings___WEBPACK_IMPORTED_MODULE_3__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+/* harmony import */ var lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2002);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8380);
+/* harmony import */ var lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1760);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3593);
+/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(5934);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_settings___WEBPACK_IMPORTED_MODULE_4__]);
+src_settings___WEBPACK_IMPORTED_MODULE_4__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/settings-dialog/_.ts")); // save for later
+
 
 
 
@@ -15703,15 +15835,15 @@ const sections = [
                 id: 'theme',
                 label: 'Theme',
                 type: 'select',
-                options: (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .get_valid_theme_values */ .R1)().map(value => ({ value, label: value })),
+                options: (0,src_settings___WEBPACK_IMPORTED_MODULE_4__/* .get_valid_theme_values */ .R1)().map(value => ({ value, label: value })),
                 settings_path: ['theme'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_theme */ .NI, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_theme */ .NI, // (value, label) => complaint
             }, {
                 id: 'classic_menu',
                 label: 'Use classic menu',
                 type: 'checkbox',
                 settings_path: ['classic_menu'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_classic_menu */ .ON, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_classic_menu */ .ON, // (value, label) => complaint
             }],
     }, {
         name: 'Editor',
@@ -15720,52 +15852,52 @@ const sections = [
                 label: 'Indent',
                 type: 'text',
                 settings_path: ['editor_options', 'indent'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_indent */ .ry, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_indent */ .ry, // (value, label) => complaint
                 convert_to_number: true,
             }, {
                 id: 'editor_options_tab_size',
                 label: 'Tab size',
                 type: 'text',
                 settings_path: ['editor_options', 'tab_size'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_tab_size */ .o3, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_tab_size */ .o3, // (value, label) => complaint
                 convert_to_number: true,
             }, {
                 id: 'editor_options_indent_with_tabs',
                 label: 'Indent with tabs',
                 type: 'checkbox',
                 settings_path: ['editor_options', 'indent_with_tabs'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_indent_with_tabs */ .PN, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_indent_with_tabs */ .PN, // (value, label) => complaint
             }, {
                 id: 'editor_options_tab_key_indents',
                 label: 'TAB key indents',
                 type: 'checkbox',
                 settings_path: ['editor_options', 'tab_key_indents'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_tab_key_indents */ .qO, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_tab_key_indents */ .qO, // (value, label) => complaint
             }, {
                 id: 'editor_options_mode',
                 label: 'Mode',
                 type: 'select',
-                options: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .valid_editor_options_mode_values */ .Jz.map(value => ({ value, label: value })),
+                options: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .valid_editor_options_mode_values */ .Jz.map(value => ({ value, label: value })),
                 settings_path: ['editor_options', 'mode'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_mode */ .wq, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_mode */ .wq, // (value, label) => complaint
             }, {
                 id: 'editor_options_line_numbers',
                 label: 'Line numbers',
                 type: 'checkbox',
                 settings_path: ['editor_options', 'line_numbers'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_line_numbers */ .Uc, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_line_numbers */ .Uc, // (value, label) => complaint
             }, {
                 id: 'editor_options_line_wrapping',
                 label: 'Line wrapping',
                 type: 'checkbox',
                 settings_path: ['editor_options', 'line_wrapping'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_line_wrapping */ .GQ, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_line_wrapping */ .GQ, // (value, label) => complaint
             }, {
                 id: 'editor_options_limited_size',
                 label: 'Window size (%)',
                 type: 'number',
                 settings_path: ['editor_options', 'limited_size'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_editor_options_limited_size */ .dx, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_editor_options_limited_size */ .dx, // (value, label) => complaint
                 convert_to_number: true,
             }],
     }, {
@@ -15775,15 +15907,15 @@ const sections = [
                 label: 'Flush left',
                 type: 'checkbox',
                 settings_path: ['formatting_options', 'flush_left'],
-                analyze: src_settings___WEBPACK_IMPORTED_MODULE_3__/* .analyze_formatting_options_flush_left */ .rZ, // (value, label) => complaint
+                analyze: src_settings___WEBPACK_IMPORTED_MODULE_4__/* .analyze_formatting_options_flush_left */ .rZ, // (value, label) => complaint
             }],
     },
 ];
-class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dialog */ .lG {
+class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_3__/* .Dialog */ .lG {
     get CLASS() { return this.constructor; }
     static css_class = 'settings-dialog';
     _populate_dialog_element() {
-        const current_settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .get_settings */ .TJ)();
+        const current_settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_4__/* .get_settings */ .TJ)();
         this._dialog_element?.classList.add(this.CLASS.css_class);
         if (this._dialog_text_container) {
             this._dialog_text_container.innerText = 'Settings';
@@ -15803,25 +15935,25 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
                 const setting_div = named_section_div;
                 let control;
                 if (type === 'select') {
-                    control = (0,lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .create_select_element */ .nJ)(setting_div, id, {
+                    control = (0,lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_2__.create_select_element)(setting_div, id, {
                         label,
                         options,
                     });
                 }
                 else {
-                    control = (0,lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .create_control_element */ .Wc)(setting_div, id, {
+                    control = (0,lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_2__.create_control_element)(setting_div, id, {
                         label,
                         type,
                     });
                 }
                 if (type === 'checkbox') {
-                    control.checked = (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_4__/* .get_obj_path */ .P)(current_settings, settings_path);
+                    control.checked = (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_5__/* .get_obj_path */ .P)(current_settings, settings_path);
                 }
                 else {
-                    control.value = (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_4__/* .get_obj_path */ .P)(current_settings, settings_path);
+                    control.value = (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_5__/* .get_obj_path */ .P)(current_settings, settings_path);
                 }
                 const update_handler = async (event) => {
-                    const current_settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .get_settings */ .TJ)();
+                    const current_settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_4__/* .get_settings */ .TJ)();
                     const handle_error = async (error_message) => {
                         error_div.classList.add('active');
                         error_div.innerText = error_message;
@@ -15831,10 +15963,10 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
                             if (existing_control instanceof HTMLInputElement && existing_control.type === 'text') {
                                 existing_control.select();
                             }
-                            await (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_5__/* .beep */ .T)();
+                            await (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_6__/* .beep */ .T)();
                         }
                         else {
-                            await lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .AlertDialog */ .Lt.run(`settings update failed: ${error_message}`);
+                            await lib_ui_dialog___WEBPACK_IMPORTED_MODULE_3__/* .AlertDialog */ .Lt.run(`settings update failed: ${error_message}`);
                         }
                     };
                     const value = (type === 'checkbox')
@@ -15846,9 +15978,9 @@ class SettingsDialog extends lib_ui_dialog___WEBPACK_IMPORTED_MODULE_2__/* .Dial
                             return handle_error(complaint);
                         }
                     }
-                    (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_4__/* .set_obj_path */ .R)(current_settings, settings_path, value);
+                    (0,lib_sys_obj_path__WEBPACK_IMPORTED_MODULE_5__/* .set_obj_path */ .R)(current_settings, settings_path, value);
                     try {
-                        await (0,src_settings___WEBPACK_IMPORTED_MODULE_3__/* .update_settings */ .eq)(current_settings);
+                        await (0,src_settings___WEBPACK_IMPORTED_MODULE_4__/* .update_settings */ .eq)(current_settings);
                         error_div.classList.remove('active');
                     }
                     catch (error) {
@@ -17572,18 +17704,19 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8380);
 /* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4395);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(8890);
-/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(7575);
-/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(8669);
-/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(5428);
+/* harmony import */ var lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(7575);
+/* harmony import */ var lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(8669);
+/* harmony import */ var lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(5428);
 /* harmony import */ var lib_sys_json5__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(7302);
-/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(9241);
+/* harmony import */ var lib_sys_uuid__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(9241);
 /* harmony import */ var src_renderer_application_d3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(5462);
 /* harmony import */ var src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4723);
 /* harmony import */ var lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(1576);
 /* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(3593);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(3428);
-/* harmony import */ var lib_ui_canvas_tools___WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6287);
-/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(9015);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(3428);
+/* harmony import */ var lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(2002);
+/* harmony import */ var lib_ui_canvas_tools___WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(6287);
+/* harmony import */ var lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(9015);
 var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_15__]);
 ([src_bq_manager___WEBPACK_IMPORTED_MODULE_1__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_2__, src_output_context__WEBPACK_IMPORTED_MODULE_5__, _eval_worker___WEBPACK_IMPORTED_MODULE_7__, src_settings___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = "file:///home/ed/code/bq/src/renderer/text/javascript-renderer/_.ts"; // save for later
@@ -17668,6 +17801,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     image_data
 //     graphviz
 //     plotly
+//     control_tools
 //     canvas_tools
 //     d3
 //     load_Plotly
@@ -17707,6 +17841,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 // ======================================================================
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 const AsyncGeneratorFunction = Object.getPrototypeOf(async function* () { }).constructor;
+
 
 
 
@@ -17780,7 +17915,7 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
         catch (parse_error) {
             let updated_parse_error = parse_error;
             try {
-                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg)(code_to_run, {
+                const parse_result = (0,lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_17__/* .parse */ .qg)(code_to_run, {
                     errorRecovery: true,
                 });
                 if (parse_result.errors.length <= 0) {
@@ -17982,17 +18117,18 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             image_data: ocx.image_data.bind(ocx),
             graphviz: ocx.graphviz.bind(ocx),
             plotly: ocx.plotly.bind(ocx),
-            canvas_tools: lib_ui_canvas_tools___WEBPACK_IMPORTED_MODULE_17__,
+            controls_tools: lib_ui_controls_tools__WEBPACK_IMPORTED_MODULE_16__,
+            canvas_tools: lib_ui_canvas_tools___WEBPACK_IMPORTED_MODULE_18__,
             d3, // for use with Plotly
             load_Plotly: src_renderer_application_plotly__WEBPACK_IMPORTED_MODULE_13__/* .load_Plotly */ .O,
             load_Algebrite: lib_sys_algebrite__WEBPACK_IMPORTED_MODULE_14__/* .load_Algebrite */ .B,
             range,
-            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_18__/* .uuidv4 */ .gZ),
-            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_19__,
+            uuidv4: ocx.AIS(lib_sys_uuid__WEBPACK_IMPORTED_MODULE_19__/* .uuidv4 */ .gZ),
+            rxjs: rxjs__WEBPACK_IMPORTED_MODULE_20__,
             get_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_settings */ .TJ,
             get_themes_settings: src_settings___WEBPACK_IMPORTED_MODULE_15__/* .get_themes_settings */ .kQ,
             // parse support
-            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_16__/* .parse */ .qg,
+            babel_parse: lib_sys_babel_parser__WEBPACK_IMPORTED_MODULE_17__/* .parse */ .qg,
             JavaScriptParseError,
             LocatedError: src_renderer_located_error__WEBPACK_IMPORTED_MODULE_4__/* .LocatedError */ .B,
             // ui, Renderer, etc classes
@@ -18010,9 +18146,9 @@ class JavaScriptRenderer extends src_renderer_renderer__WEBPACK_IMPORTED_MODULE_
             KeyMap: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMap */ .QA,
             KeyMapMapper: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeyMapMapper */ .Xm,
             KeySpec: lib_ui_key___WEBPACK_IMPORTED_MODULE_10__/* .KeySpec */ .Zp,
-            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_20__/* .OpenPromise */ .q,
-            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_21__/* .AbortSignalAction */ .$,
-            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_22__/* .SerialDataSource */ .Y,
+            OpenPromise: lib_sys_open_promise__WEBPACK_IMPORTED_MODULE_21__/* .OpenPromise */ .q,
+            AbortSignalAction: lib_sys_abort_signal_action__WEBPACK_IMPORTED_MODULE_22__/* .AbortSignalAction */ .$,
+            SerialDataSource: lib_sys_serial_data_source__WEBPACK_IMPORTED_MODULE_23__/* .SerialDataSource */ .Y,
         };
         eval_environment.eval_environment = eval_environment;
         return eval_environment;
@@ -37464,74 +37600,6 @@ function is_compatible_with_options(element, options, always_return_options = fa
     }
 }
 
-
-/***/ }),
-
-/***/ 7475:
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   O0: () => (/* binding */ server_perform_save),
-/* harmony export */   ZM: () => (/* binding */ server_get_features)
-/* harmony export */ });
-/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, server_request_quit */
-/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-const current_script_url = "file:///home/ed/code/bq/src/server-interface.ts"; // save for later
-
-const HTTP_ENDPOINT_QUIT_PATH = '/-QUIT-';
-const HTTP_ENDPOINT_FEATURES_PATH = '/-FEATURES-';
-const HTTP_ENDPOINT_BASE_URL = new URL('/', (0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .assets_server_url */ .U)(current_script_url));
-const HTTP_ENDPOINT_QUIT_URL = new URL(HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_BASE_URL);
-const HTTP_ENDPOINT_FEATURES_URL = new URL(HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL);
-const DEFAULT_SERVER_FEATURES = {
-    quit: undefined,
-    features: undefined,
-    access: {
-        directory: { create: false, read: false, update: false, delete: false },
-        file: { create: false, read: true, update: false, delete: false },
-    },
-};
-const _server_features = await fetch(HTTP_ENDPOINT_FEATURES_URL)
-    .then(response => {
-    if (!response.ok) {
-        return DEFAULT_SERVER_FEATURES;
-    }
-    else {
-        return response.text()
-            .then(body_text => JSON.parse(body_text))
-            .catch(error => DEFAULT_SERVER_FEATURES);
-    }
-})
-    .catch(_ignored_error => false);
-function server_get_features() {
-    // return a copy
-    return JSON.parse(JSON.stringify(_server_features));
-}
-function _throw_access_error() {
-    throw new Error('unsupported server operation');
-}
-async function server_request_quit() {
-    if (_server_features.quit) {
-        _throw_access_error();
-    }
-    return fetch(HTTP_ENDPOINT_QUIT_URL).then(response => response.ok, _ignored_error => false);
-}
-async function server_perform_save(contents, document_url) {
-    throw new Error('UNIMPLEMENTED'); //!!!
-    if (_server_features.access.file.create) {
-        _throw_access_error();
-    }
-    const document_url_string = document_url.toString(); // toString() is compatible with both URL and Location
-    return fetch(document_url_string, {
-        method: 'POST',
-        body: contents,
-    }).then(response => response.ok, _ignored_error => false);
-}
-
-__webpack_async_result__();
-} catch(e) { __webpack_async_result__(e); } }, 1);
 
 /***/ }),
 

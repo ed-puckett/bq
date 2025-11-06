@@ -18,9 +18,8 @@ import {
 } from 'lib/sys/fs-interface';
 
 import {
-    server_get_features,
-    server_perform_save,
-} from '../server-interface';
+    ServerInterface,
+} from './server-interface/_';
 
 import {
     SerialDataSource,
@@ -221,7 +220,8 @@ export class BqManager {
         }
     }
 
-    #server_features = server_get_features();
+    #server_features = ServerInterface.get_features();  // these remain the same during operation
+    #server_interface = new ServerInterface();
     #activity_manager: ActivityManager = new ActivityManager(true);  // true: multiple_stops
     #command_bindings: { [command: string]: ((...args: any[]) => any) };
     #key_event_manager: KeyEventManager<BqManager>;
@@ -541,8 +541,8 @@ export class BqManager {
             auto_render,
             active_cell,
         });
-        const save_interface = perform_export ? fs_perform_save : server_perform_save;
-        const save_result = await save_interface(contents, document.location);
+        const save_interface = perform_export ? fs_perform_save : this.#server_interface.write.bind(this.#server_interface);
+        const save_result = await save_interface(document.location, contents);
         const {
             canceled,
             file_handle,

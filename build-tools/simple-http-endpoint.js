@@ -236,17 +236,17 @@ const get_file_info = async (full_url_path) => {
 
 http
     .createServer(async (req, res) => {
-        if (config.quit && req.url.slice(1) === config.quit) {  // req.url is /something
-            console.log(`QUIT request "${config.quit}" received.`);
-            res.end('** terminating');
-            terminate(0);
-        }
         const log_request = (reported_status) => {
             console.log(`${reported_status} ${req.method} ${req.url}`);
         };
         let status;
         const headers = {};
         const ensure_head_sent = (suggested_status=200, send_status_message=false) => {
+            if (send_status_message) {
+                // we will add a text message to the response below,
+                // so set Content-Type to text (if not already set to something)
+                headers['Content-Type'] ??= MIME_TYPES['text'];
+            }
             if (!res.headersSent) {
                 status ??= suggested_status;
                 res.writeHead(status, headers);
@@ -261,8 +261,15 @@ http
             }
         };
         try {
-            if (config.features && req.url.match(new RegExp(`^/${config.features}([?#].*)?$`))) {
-                // special case for features path
+            if (config.quit && req.url.slice(1) === config.quit) {  // note: req.url is /something
+                // --- special case for quit path ---
+                console.log(`QUIT request "${config.quit}" received.`);
+                headers['Content-Type'] ??= MIME_TYPES['text'];
+                ensure_head_sent(200);
+                res.end('** server terminated');
+                terminate(0);
+            } else if (config.features && req.url.match(new RegExp(`^/${config.features}([?#].*)?$`))) {
+                // --- special case for features path ---
                 switch (req.method) {
                 case 'HEAD': {
                     ensure_head_sent(200);
@@ -270,6 +277,7 @@ http
                     break;
                 }
                 case 'GET': {
+                    headers['Content-Type'] = MIME_TYPES['json'];
                     ensure_head_sent(200);
                     res.end(JSON.stringify(get_features()));
                     break;
@@ -280,7 +288,7 @@ http
                 }
                 }
             } else {
-                // not a special features path request, handle normally
+                // --- not a special features path request, handle normally ---
                 switch (req.method) {
                 case 'HEAD': {
                     const file_info = await get_file_info(req.url).catch(error => console.error('GET FILE INFO ERROR', error));
@@ -330,7 +338,7 @@ http
                                         };
                                     });
                             }));
-                            headers['Content-Type'] = 'application/json';
+                            headers['Content-Type'] = MIME_TYPES['json'];
                             ensure_head_sent();
                             res.end(JSON.stringify(dir_stats, null, 2));
                         }

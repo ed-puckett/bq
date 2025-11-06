@@ -18,6 +18,11 @@ import {
 } from 'lib/ui/dialog/_';
 
 import {
+    create_radio_control,
+    create_select_control,
+} from 'lib/ui/controls-tools';
+
+import {
     get_bootstrap_script_src_alternatives,
     bootstrap_script_src_alternatives_default,
     cell_view_attribute_name,
@@ -157,131 +162,4 @@ export class ExportOptionsDialog extends Dialog {
             ],
         });
     }
-}
-
-
-type RADIO_ALTERNATIVE_SPEC = {
-    label:     string;
-    label_aux: string;
-    details?:  string;
-    value?:    string;  // value will be taken from label if value is undefined
-    tooltip?:  string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
-};
-
-function create_radio_control(parent: HTMLElement, legend: string, name: string, checked_value: null|string, alternatives_specs: RADIO_ALTERNATIVE_SPEC[]) {
-    const spec = {
-        parent,
-        tag: 'fieldset',
-        children: [
-            {
-                tag: 'legend',
-                innerText: legend,
-            },
-        ],
-    };
-
-    for (const { label, label_aux, details, value: spec_value, tooltip } of alternatives_specs) {
-        const value = spec_value ?? label;
-        const child = {
-            tag: 'label',
-            attrs: {
-                title: tooltip ? tooltip : undefined,
-            },
-            children: [
-                {
-                    tag: 'input',
-                    attrs: {
-                        type: 'radio',
-                        name,
-                        value,
-                        checked: (value === checked_value) ? true : undefined,
-                    },
-                },
-                {
-                    children: [
-                        {
-                            tag: 'span',
-                            attrs: {
-                                class: 'export-radio-label',
-                            },
-                            children: [
-                                `${label}:`,  // string: create text node
-                            ],
-                        },
-                        {
-                            tag: 'span',
-                            attrs: {
-                                class: 'export-radio-label-aux',
-                            },
-                            children: [
-                                label_aux,  // string: create text node
-                            ],
-                        },
-                    ],
-                },
-            ],
-        };
-        if (details) {
-            (child.children[1].children as any).push({
-                attrs: {
-                    class: 'export-radio-details',
-                },
-                children: [
-                    details.toString(),
-                ],
-            });
-        }
-        (spec.children as any).push(child);
-    }
-
-    return create_element(spec);
-}
-
-
-type SELECT_ALTERNATIVE_SPEC = string | {
-    label:    string;
-    value?:   string;  // value will be taken from label if value is undefined
-    tooltip?: string;  // if specified, will add a "title" (i.e., tooltip) attribute to the label
-};
-
-function create_select_control(parent: HTMLElement, label: string, name: string, selected_value: null|string, alternatives_specs: SELECT_ALTERNATIVE_SPEC[]) {
-    const spec = {
-        parent,
-        tag: 'label',
-        children: [
-            label,  // string: create text node
-            {
-                tag: 'select',
-                attrs: {
-                    name,
-                },
-                children: [],  // populated below
-            },
-        ],
-    };
-
-    const select_children = (spec.children[spec.children.length-1] as any).children;
-
-    for (const spec of alternatives_specs) {
-        let label, value, tooltip;
-        if (typeof spec === 'string') {
-            label = spec;
-            value = spec;
-        } else {
-            label   = spec.label;
-            value   = spec.value ?? spec.label;
-            tooltip = spec.tooltip;
-        }
-        (select_children as any).push({
-            tag: 'option',
-            innerText: label,
-            attrs: {
-                value,
-                title: tooltip ? tooltip : undefined,
-                selected: (value === selected_value) ? true : undefined,
-            },
-        });
-    }
-
-    return create_element(spec);
 }

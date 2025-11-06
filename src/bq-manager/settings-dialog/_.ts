@@ -13,10 +13,13 @@ import {
 } from 'lib/ui/dom-tools';
 
 import {
-    Dialog,
-    AlertDialog,
     create_control_element,
     create_select_element,
+} from 'lib/ui/controls-tools';
+
+import {
+    Dialog,
+    AlertDialog,
 } from 'lib/ui/dialog/_';
 
 import {
