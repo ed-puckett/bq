@@ -11041,6 +11041,8 @@ class Dialog {
             this._error(error);
         }
     }
+    // disable dangerous setter that may open the dialog in a bad way
+    set open(_) { throw new Error('setter for "open" disabled'); }
     get promise() { return this.#opromise.promise; }
     async run(message, options) {
         if (!this._dialog_element) {

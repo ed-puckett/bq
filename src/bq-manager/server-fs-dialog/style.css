@@ -1,10 +1,10 @@
 //!!! REVIEW THIS !!!
 
-.fs-dialog .dialog-text {
+.server-fs-dialog .dialog-text {
     font-style: italic;
 }
 
-.fs-dialog [data-section] {
+.server-fs-dialog [data-section] {
     position: relative;
     display: grid;
     grid-template-columns: min-content min-content;
@@ -17,7 +17,7 @@
     background-color: hsl(  0deg   0%  95% / 100%);
 }
 
-.fs-dialog [data-section]::before {
+.server-fs-dialog [data-section]::before {
     position: absolute;
     content: attr(data-section);
     left: 0.8em;
@@ -30,15 +30,15 @@
     font-style: italic;
 }
 
-.fs-dialog [data-section] label {
+.server-fs-dialog [data-section] label {
     align-self: center;
     justify-self: end;
     white-space: nowrap;
     user-select: none;
 }
 
-.fs-dialog [data-section] input,
-.fs-dialog [data-section] select {
+.server-fs-dialog [data-section] input,
+.server-fs-dialog [data-section] select {
     align-self: center;
     justify-self: start;
     color:            fieldtext;
@@ -46,15 +46,15 @@
     margin: 0.25em;
 }
 
-.fs-dialog [data-section] input[type="text"] {
+.server-fs-dialog [data-section] input[type="text"] {
     width: 5em;
 }
 
-.fs-dialog input[type="submit"] {
+.server-fs-dialog input[type="submit"] {
     margin-top: 1em;
 }
 
-.fs-dialog .bq-error-message {
+.server-fs-dialog .bq-error-message {
     display: none;
     width: 13em;
     margin: 1.75em 0 0 1em;
@@ -64,6 +64,6 @@
     color: hsl(  0deg   0% 100% / 100%);
     height: fit-content;
 }
-.fs-dialog .bq-error-message.active {
+.server-fs-dialog .bq-error-message.active {
     display: block;
 }

@@ -5,18 +5,13 @@ import {
 } from 'lib/sys/assets-server-url';
 
 import {
-    ServerInterface,
-} from '../server-interface/_';
-
-import {
     create_stylesheet_link,
     create_element,
 } from 'lib/ui/dom-tools';
 
 import {
-    create_control_element,
-    create_select_element,
-} from 'lib/ui/controls-tools';
+    ServerInterface,
+} from '../server-interface/_';
 
 
 export async function load_stylesheet(): Promise<void> {
@@ -32,7 +27,9 @@ export class ServerFsDialog extends HTMLDialogElement {
     constructor(server_interface: ServerInterface) {
         super();
         this.classList.add(this.CLASS.css_class);
-        this.#server_interface = server_interface;
+        //!!! populate !!!
     }
-    #server_interface;
+
+    // disable dangerous setter that may open the dialog in a bad way
+    set open (_: any){ throw new Error('setter for "open" disabled'); }
 }
