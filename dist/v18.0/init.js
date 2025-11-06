@@ -15745,7 +15745,7 @@ class ServerInterface {
     static get_features() {
         return JSON.parse(JSON.stringify(_server_features)); // return a copy
     }
-    async read(url, contents) {
+    async read(url) {
         this.#confirm_access(url, 'read');
         const url_string = url.toString(); // toString() is compatible with both URL and Location
         return fetch(url_string).then(response => response.ok, _ignored_error => false);
@@ -15785,7 +15785,9 @@ class ServerInterface {
         // not actually permitted, then the server will report the error back.
         // The inference can be wrong in two ways, either that a trailing '/'
         // was specified in url but the target is actually a file, or vice versa.
-        const action_access = _server_features.access[url.pathname.endsWith('/') ? 'directory' : 'file'];
+        const action_access = url.pathname.endsWith('/')
+            ? _server_features.access.directory
+            : _server_features.access.file;
         if (!action_access[action]) {
             throw new Error(`access server action "${action}" prohibited`);
         }

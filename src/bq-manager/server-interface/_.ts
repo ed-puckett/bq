@@ -55,7 +55,7 @@ export class ServerInterface {
         return JSON.parse(JSON.stringify(_server_features));  // return a copy
     }
 
-    async read(url: URL|Location, contents: ReadableStream): Promise<boolean> {
+    async read(url: URL|Location): Promise<boolean> {
         this.#confirm_access(url, 'read');
 
         const url_string = url.toString();  // toString() is compatible with both URL and Location
@@ -116,7 +116,9 @@ throw new Error('UNIMPLEMENTED');//!!! protect until tested
         // not actually permitted, then the server will report the error back.
         // The inference can be wrong in two ways, either that a trailing '/'
         // was specified in url but the target is actually a file, or vice versa.
-        const action_access: { [action: string]: boolean } = _server_features.access[url.pathname.endsWith('/') ? 'directory' : 'file'];
+        const action_access: { [action: string]: boolean } = url.pathname.endsWith('/')
+            ? _server_features.access.directory
+            : _server_features.access.file;
         if (!action_access[action]) {
             throw new Error(`access server action "${action}" prohibited`);
         }
