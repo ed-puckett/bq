@@ -33,6 +33,14 @@ const DEFAULT_SERVER_FEATURES: SERVER_FEATURES = {
     },
 };
 
+
+interface FetchOptions {
+    method?:  string;
+    headers?: any;
+    body?:    any;
+}
+
+
 // Fetch SERVER_FEATURES from the server during initialization.
 // It is assumed these remain the same during operation.
 const _server_features: SERVER_FEATURES = await fetch(HTTP_ENDPOINT_FEATURES_URL)
@@ -57,39 +65,19 @@ export class ServerInterface {
 
     async read(url: URL|Location): Promise<boolean> {
         this.#confirm_access(url, 'read');
-
-        const url_string = url.toString();  // toString() is compatible with both URL and Location
-        return fetch(url_string).then(
-            response       => response.ok,
-            _ignored_error => false,
-        );
+        return this.#perform_access(url);
     }
 
     async write(url: URL|Location, contents: ReadableStream, update_only=false): Promise<boolean> {
 throw new Error('UNIMPLEMENTED');//!!! protect until tested
         this.#confirm_access(url, (update_only ? 'update' : 'create'));
-
-        const url_string = url.toString();  // toString() is compatible with both URL and Location
-        return fetch(url_string, {
-            method: update_only ? 'PUT' : 'POST',
-            body:   contents,
-        }).then(
-            response       => response.ok,
-            _ignored_error => false,
-        );
+        return this.#perform_access(url, (update_only ? 'PUT' : 'POST'), contents);
     }
 
     async remove(url: URL|Location): Promise<boolean> {
 throw new Error('UNIMPLEMENTED');//!!! protect until tested
         this.#confirm_access(url, 'delete');
-
-        const url_string = url.toString();  // toString() is compatible with both URL and Location
-        return fetch(url_string, {
-            method: 'DELETE',
-        }).then(
-            response       => response.ok,
-            _ignored_error => false,
-        );
+        return this.#perform_access(url, 'DELETE');
     }
 
     /** _server_request_quit() is not normally used, included for completeness
@@ -98,11 +86,26 @@ throw new Error('UNIMPLEMENTED');//!!! protect until tested
         if (!_server_features.quit) {
             throw new Error('server does not support QUIT');
         }
-
         return fetch(HTTP_ENDPOINT_QUIT_URL).then(
             response       => response.ok,
             _ignored_error => false,
         );
+    }
+
+    #perform_access(url: URL|Location, method?: string, contents?: ReadableStream): Promise<boolean> {
+        const options: FetchOptions = {};
+        if (typeof method !== 'undefined') {
+            options.method = method;
+        }
+        if (typeof contents !== 'undefined') {
+            options.body = contents;
+        }
+        const url_string = url.toString();  // toString() is compatible with both URL and Location
+        return fetch(url_string, options)
+            .then(
+                response       => response.ok,
+                _ignored_error => false,
+            );
     }
 
     #confirm_access(url: URL|Location, action: string) {

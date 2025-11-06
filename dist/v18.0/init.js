@@ -15747,25 +15747,17 @@ class ServerInterface {
     }
     async read(url) {
         this.#confirm_access(url, 'read');
-        const url_string = url.toString(); // toString() is compatible with both URL and Location
-        return fetch(url_string).then(response => response.ok, _ignored_error => false);
+        return this.#perform_access(url);
     }
     async write(url, contents, update_only = false) {
         throw new Error('UNIMPLEMENTED'); //!!! protect until tested
         this.#confirm_access(url, (update_only ? 'update' : 'create'));
-        const url_string = url.toString(); // toString() is compatible with both URL and Location
-        return fetch(url_string, {
-            method: update_only ? 'PUT' : 'POST',
-            body: contents,
-        }).then(response => response.ok, _ignored_error => false);
+        return this.#perform_access(url, (update_only ? 'PUT' : 'POST'), contents);
     }
     async remove(url) {
         throw new Error('UNIMPLEMENTED'); //!!! protect until tested
         this.#confirm_access(url, 'delete');
-        const url_string = url.toString(); // toString() is compatible with both URL and Location
-        return fetch(url_string, {
-            method: 'DELETE',
-        }).then(response => response.ok, _ignored_error => false);
+        return this.#perform_access(url, 'DELETE');
     }
     /** _server_request_quit() is not normally used, included for completeness
      */
@@ -15774,6 +15766,18 @@ class ServerInterface {
             throw new Error('server does not support QUIT');
         }
         return fetch(HTTP_ENDPOINT_QUIT_URL).then(response => response.ok, _ignored_error => false);
+    }
+    #perform_access(url, method, contents) {
+        const options = {};
+        if (typeof method !== 'undefined') {
+            options.method = method;
+        }
+        if (typeof contents !== 'undefined') {
+            options.body = contents;
+        }
+        const url_string = url.toString(); // toString() is compatible with both URL and Location
+        return fetch(url_string, options)
+            .then(response => response.ok, _ignored_error => false);
     }
     #confirm_access(url, action) {
         if (!(0,lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__/* .url_references_assets_server */ .h)(url)) {
