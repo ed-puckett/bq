@@ -22,6 +22,11 @@ import {
 } from './server-interface/_';
 
 import {
+    ServerFsDialog,
+} from './server-fs-dialog/_';
+console.log({ ServerFsDialog });//!!! force load for testing
+
+import {
     SerialDataSource,
     SerialDataSourceSubscription,
 } from 'lib/sys/serial-data-source';

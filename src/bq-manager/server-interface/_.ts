@@ -34,6 +34,57 @@ const DEFAULT_SERVER_FEATURES: SERVER_FEATURES = {
 };
 
 
+/** DirInfoTemplate defines the contents of entries of the array returned by
+ *  ServerInterface when a directory is read.  Actually, DirInfoTemplate
+ *  is a type-correct (but invalid) example of one such entry.  The desired
+ *  type for declarations, DirInfo, is recovered from DirInfoTemplate via
+ *  the typescript typeof type-mode operator.
+ *  Why all this complication?  It's because typescript does not provide
+ *  a clean way to get the property name of a type object or interface at
+ *  run-time.  If there was a utility type that could convert a type
+ *  object or interface to an enum type containing all the property names,
+ *  then because enums are instantiated as objects at run-time we could
+ *  use that.  However, no such utility type exists.
+ */
+class DirInfoTemplate {
+    name:        string = '';
+    mode:        number = NaN;
+    size:        number = NaN;
+    atimeMs:     number = NaN;
+    mtimeMs:     number = NaN;
+    ctimeMs:     number = NaN;
+    birthtimeMs: number = NaN;
+};
+const dir_info_template = new DirInfoTemplate();
+const dir_info_keys_set = (() => { const s = new Set<string>(); for (const key in dir_info_template) s.add(key); return s; })();
+
+/** DirInfo is a typescript type compatible with DirInfoTemplate
+ */
+export type DirInfo = typeof DirInfoTemplate;
+
+/** is_DirInfo() is a typescript type predicate for DirInfo types
+ */
+export function is_DirInfo(test: any): test is DirInfo {
+    if (typeof test !== 'object') {
+        return false;  // indicate: invalid
+    } else {
+        const all_keys_set = new Set<string>(dir_info_keys_set.values());  // start with a copy of dir_info_keys_set
+        for (const key in test) {
+            all_keys_set.add(key);
+        }
+        for (const key of all_keys_set) {
+            if ( !(key in test) ||
+                 !(key in dir_info_template) ||
+                 typeof test[key] !== typeof (dir_info_template as any)[key] )
+            {
+                return false;  // indicate: invalid
+            }
+        }
+        return true;  // indicate: valid
+    }
+}
+
+
 interface FetchOptions {
     method?:  string;
     headers?: any;

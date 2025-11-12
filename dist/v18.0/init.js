@@ -13783,35 +13783,38 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   N: () => (/* binding */ BqManager)
 /* harmony export */ });
-/* harmony import */ var dist_version_info__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(5252);
+/* harmony import */ var dist_version_info__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(5252);
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
-/* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(742);
+/* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(742);
 /* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3787);
-/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9888);
-/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8890);
-/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8380);
-/* harmony import */ var _settings_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1140);
-/* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(4568);
-/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(3854);
-/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1327);
-/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(7957);
-/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(4395);
-/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(2023);
-/* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(4641);
-/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(3593);
-/* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3882);
-/* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(6136);
-/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(5934);
-/* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(4511);
-/* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_5__, src_renderer___WEBPACK_IMPORTED_MODULE_8__, src_output_context__WEBPACK_IMPORTED_MODULE_9__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__, src_settings___WEBPACK_IMPORTED_MODULE_13__, _global_bindings__WEBPACK_IMPORTED_MODULE_14__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+/* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7670);
+/* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9888);
+/* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8890);
+/* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(8380);
+/* harmony import */ var _settings_dialog___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(1140);
+/* harmony import */ var _help_window__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(4568);
+/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(3854);
+/* harmony import */ var src_renderer___WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(1327);
+/* harmony import */ var src_output_context__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(7957);
+/* harmony import */ var lib_ui_menu___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(4395);
+/* harmony import */ var src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(2023);
+/* harmony import */ var lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(4641);
+/* harmony import */ var src_settings___WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(3593);
+/* harmony import */ var _global_bindings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(3882);
+/* harmony import */ var _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(6136);
+/* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5934);
+/* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(4511);
+/* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(6762);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
 
 
 
 
+
+console.log({ ServerFsDialog: _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ServerFsDialog */ .V }); //!!! force load for testing
 
 
 
@@ -13879,32 +13882,32 @@ class BqManager {
         }
     }
     #start_called = false;
-    static get version_string() { return dist_version_info__WEBPACK_IMPORTED_MODULE_18__/* .version_string */ .N; }
+    static get version_string() { return dist_version_info__WEBPACK_IMPORTED_MODULE_19__/* .version_string */ .N; }
     constructor() {
-        this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_command_bindings */ .yU)();
+        this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_global_command_bindings */ .yU)();
         let initial_key_maps;
         try {
-            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX)());
+            const key_map = new lib_ui_key___WEBPACK_IMPORTED_MODULE_4__/* .KeyMap */ .QA((0,_global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_global_initial_key_map_bindings */ .oX)());
             initial_key_maps = [key_map];
         }
         catch (error) {
             console.warn('received error when calling get_global_initial_key_map_bindings()', error);
             initial_key_maps = undefined;
         }
-        this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_3__/* .KeyEventManager */ .jC(this, window, {
+        this.#key_event_manager = new lib_ui_key___WEBPACK_IMPORTED_MODULE_4__/* .KeyEventManager */ .jC(this, window, {
             command_observer: this.#perform_command_for_ui.bind(this),
             initial_key_maps,
             // no abort_signal given; never aborted/detached
         });
         try {
-            const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)();
+            const settings = (0,src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_settings */ .TJ)();
             // must set bq on all incoming cells
             for (const cell of this.get_cells()) {
                 cell._set_bq(this);
             }
             this.reset_global_state();
             // listen for settings changed events and trigger update in cells
-            src_settings___WEBPACK_IMPORTED_MODULE_13__/* .settings_updated_events */ .KW.subscribe(this.update_from_settings.bind(this)); //!!! never unsubscribed
+            src_settings___WEBPACK_IMPORTED_MODULE_14__/* .settings_updated_events */ .KW.subscribe(this.update_from_settings.bind(this)); //!!! never unsubscribed
             this.update_from_settings(); // establish initial settings right away
             this.set_editable(true);
             this.#setup_csp();
@@ -13928,7 +13931,7 @@ class BqManager {
     }
     #server_features = _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI.get_features(); // these remain the same during operation
     #server_interface = new _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI();
-    #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_2__/* .ActivityManager */ .BT(true); // true: multiple_stops
+    #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__/* .ActivityManager */ .BT(true); // true: multiple_stops
     #command_bindings;
     #key_event_manager;
     #with_menubar = undefined; // undefined until first time a menu is set up
@@ -13939,7 +13942,7 @@ class BqManager {
     #active_cell = null;
     #global_state = {}; // persistent state for renderers
     #cell_ocx_map = new WeakMap(); // maintained by this.render_cell()
-    #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_12__/* .NotificationManager */ .h();
+    #notification_manager = new lib_ui_notification_manager___WEBPACK_IMPORTED_MODULE_13__/* .NotificationManager */ .h();
     get notification_manager() { return this.#notification_manager; }
     get head_element() {
         const el = document.querySelector('head');
@@ -14012,7 +14015,7 @@ class BqManager {
         catch (error) {
             console.error('error calling this.stop()', error, this);
         }
-        src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .TextBasedRenderer */ .m9.reset_to_initial_text_based_renderer_factories();
+        src_renderer___WEBPACK_IMPORTED_MODULE_9__/* .TextBasedRenderer */ .m9.reset_to_initial_text_based_renderer_factories();
         this.reset_global_state();
         for (const cell of this.get_cells()) {
             try {
@@ -14031,7 +14034,7 @@ class BqManager {
     clear() {
         this.reset();
         if (this.main_element) {
-            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .clear_element */ .ho)(this.main_element);
+            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .clear_element */ .ho)(this.main_element);
             const title_element = this.head_element.querySelector('title');
             if (title_element) {
                 title_element.remove();
@@ -14108,7 +14111,7 @@ class BqManager {
                 "media-src   'self' data: blob: *",
                 "connect-src data:",
             ].join('; ');
-            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .create_element */ .Wh)({
+            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .create_element */ .Wh)({
                 parent: document.head,
                 tag: 'meta',
                 attrs: {
@@ -14125,8 +14128,8 @@ class BqManager {
         this.set_menu_style(with_menubar);
     }
     #set_initial_active_cell() {
-        const active_cell = (document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name}[${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.attribute__active}]`) ?? // cell currently set as active
-            document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name}`) ?? // first cell
+        const active_cell = (document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c.custom_element_name}[${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c.attribute__active}]`) ?? // cell currently set as active
+            document.querySelector(`${src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c.custom_element_name}`) ?? // first cell
             this.create_cell() // new cell
         );
         if (active_cell.bq !== this) {
@@ -14149,11 +14152,11 @@ class BqManager {
             this.#menu?.remove();
             this.#menu = undefined;
             // setup new menu
-            const get_menu_spec = with_menubar ? _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_menubar_spec */ .q7 : _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_ellipsis_menu_spec */ .Ho;
-            this.#menu = lib_ui_menu___WEBPACK_IMPORTED_MODULE_10__/* .Menu */ .W.create(this, this.header_element, get_menu_spec(), {
+            const get_menu_spec = with_menubar ? _global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_menubar_spec */ .q7 : _global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_ellipsis_menu_spec */ .Ho;
+            this.#menu = lib_ui_menu___WEBPACK_IMPORTED_MODULE_11__/* .Menu */ .W.create(this, this.header_element, get_menu_spec(), {
                 as_menubar: with_menubar,
                 persistent: true,
-                get_command_bindings: _global_bindings__WEBPACK_IMPORTED_MODULE_14__/* .get_global_initial_key_map_bindings */ .oX,
+                get_command_bindings: _global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_global_initial_key_map_bindings */ .oX,
             });
             this.#menu_commands_subscription = this.#menu.commands.subscribe(this.#perform_command_for_ui.bind(this));
             this.#menu_selects_subscription = this.#menu.selects.subscribe(this.#update_menu_state.bind(this));
@@ -14190,7 +14193,7 @@ class BqManager {
         let auto_render = (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .get_auto_render */ ._k)();
         let active_cell = false;
         if (show_options_dialog) {
-            const options_dialog_result = await _export_options_dialog___WEBPACK_IMPORTED_MODULE_15__/* .ExportOptionsDialog */ .F.run();
+            const options_dialog_result = await _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__/* .ExportOptionsDialog */ .F.run();
             if (!options_dialog_result) {
                 this.notification_manager.add('save canceled');
                 return false; // indicate: canceled
@@ -14210,7 +14213,7 @@ class BqManager {
             auto_render,
             active_cell,
         });
-        const save_interface = perform_export ? lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_19__/* .fs_perform_save */ .c : this.#server_interface.write.bind(this.#server_interface);
+        const save_interface = perform_export ? lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_20__/* .fs_perform_save */ .c : this.#server_interface.write.bind(this.#server_interface);
         const save_result = await save_interface(document.location, contents);
         const { canceled, file_handle, stats, } = save_result;
         if (canceled) {
@@ -14224,7 +14227,7 @@ class BqManager {
     }
     // === RENDER INTERFACE ===
     async render_cell(cell, options) {
-        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             throw new TypeError('cell must be an instance of BqCellElement');
         }
         if (cell.bq !== this) {
@@ -14244,14 +14247,14 @@ class BqManager {
             };
         }
         cell.reset(); // removes cell's prior output element, if any
-        const output_element = src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H.create_cell_output(cell, media_type);
+        const output_element = src_output_context__WEBPACK_IMPORTED_MODULE_10__/* .OutputContext */ .H.create_cell_output(cell, media_type);
         // The following event listeners are not normally explicitly removed.
         // Instead, if the element is removed, we rely on the event listener
         // resources to be cleaned up, too.
         const event_listener = (event) => {
             // use querySelector() to re-find the cell in case it is no longer present
             const refound_cell = document.querySelector(`#${cell_id}`);
-            if (refound_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c) {
+            if (refound_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c) {
                 if (refound_cell !== this.active_cell && refound_cell.bq === this) {
                     this.set_active_cell(refound_cell);
                 }
@@ -14259,7 +14262,7 @@ class BqManager {
         };
         output_element.addEventListener('focus', event_listener, { capture: true });
         output_element.addEventListener('click', event_listener, { capture: true });
-        const ocx = new src_output_context__WEBPACK_IMPORTED_MODULE_9__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
+        const ocx = new src_output_context__WEBPACK_IMPORTED_MODULE_10__/* .OutputContext */ .H(this, output_element); // multiple_stops = false
         this.#associate_cell_ocx(cell, ocx);
         this.#activity_manager.manage_activity(ocx, () => {
             this.#dissociate_cell_ocx(cell, ocx);
@@ -14272,7 +14275,7 @@ class BqManager {
             return element;
         })
             .catch((error) => {
-            const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
+            const error_message_element = src_renderer___WEBPACK_IMPORTED_MODULE_9__/* .ErrorRenderer */ .iv.render_sync(ocx, error, { abbreviated: true });
             error_message_element.scrollIntoView(false);
             if (!ocx.keepalive) {
                 ocx.stop(); // stop anything that may have been started
@@ -14280,7 +14283,7 @@ class BqManager {
             throw error;
         })
             .catch((error) => {
-            if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_8__/* .LocatedError */ .BU) {
+            if (error instanceof src_renderer___WEBPACK_IMPORTED_MODULE_9__/* .LocatedError */ .BU) {
                 cell?.set_cursor_position(error.line_number, error.column_index);
             }
             throw error;
@@ -14324,10 +14327,10 @@ class BqManager {
         if (cells.length <= 0) {
             render_error = new Error('document has no cells');
         }
-        else if (typeof start_cell !== 'undefined' && start_cell !== null && !(start_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        else if (typeof start_cell !== 'undefined' && start_cell !== null && !(start_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             render_error = new Error('start_cell must be undefined, null or an instance of BqCellElement');
         }
-        else if (typeof limit_cell !== 'undefined' && limit_cell !== null && !(limit_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        else if (typeof limit_cell !== 'undefined' && limit_cell !== null && !(limit_cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             render_error = new Error('limit_cell must be undefined, null or an instance of BqCellElement');
         }
         else {
@@ -14496,7 +14499,7 @@ class BqManager {
     async #perform_command_for_ui(command_context) {
         const result = await this.#perform_command(command_context);
         if (!result) {
-            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_20__/* .beep */ .T)();
+            (0,lib_ui_beep__WEBPACK_IMPORTED_MODULE_21__/* .beep */ .T)();
         }
     }
     #update_menu_state() {
@@ -14551,7 +14554,7 @@ class BqManager {
         }
     }
     update_from_settings() {
-        const { classic_menu, editor_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_13__/* .get_settings */ .TJ)() ?? {});
+        const { classic_menu, editor_options, } = ((0,src_settings___WEBPACK_IMPORTED_MODULE_14__/* .get_settings */ .TJ)() ?? {});
         this.set_menu_style(classic_menu);
         for (const cell of this.get_cells()) {
             cell.update_from_settings();
@@ -14566,7 +14569,7 @@ class BqManager {
     /** return an ordered list of the BqCellElement (bq-cell) cells in the document
      */
     get_cells() {
-        return [...document.getElementsByTagName(src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name)];
+        return [...document.getElementsByTagName(src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c.custom_element_name)];
     }
     /** Return the cell that is adjacent to the given cell, either forward (or
      * alternately backward) from the reference.  If include_non_shown is false,
@@ -14623,8 +14626,8 @@ class BqManager {
                 parent: this.main_element,
                 ...options,
             };
-        const cell = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .create_element */ .Wh)({
-            tag: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c.custom_element_name,
+        const cell = (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .create_element */ .Wh)({
+            tag: src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c.custom_element_name,
             set_id: true,
             ...extended_options,
         });
@@ -14637,7 +14640,7 @@ class BqManager {
         const message = is_unhandled_rejection
             ? `Unhandled rejection: ${event?.reason?.message}`
             : `Unhandled error: ${event?.error?.message}`;
-        lib_ui_dialog___WEBPACK_IMPORTED_MODULE_4__/* .AlertDialog */ .Lt.run(message);
+        lib_ui_dialog___WEBPACK_IMPORTED_MODULE_5__/* .AlertDialog */ .Lt.run(message);
     }
     // === COMMAND HANDLER IMPLEMENTATIONS ===
     // These command__* methods handle commands directly without user interaction.
@@ -14693,7 +14696,7 @@ class BqManager {
         return true;
     }
     command__show_settings_dialog(command_context) {
-        _settings_dialog___WEBPACK_IMPORTED_MODULE_5__/* .SettingsDialog */ .g.run();
+        _settings_dialog___WEBPACK_IMPORTED_MODULE_6__/* .SettingsDialog */ .g.run();
         return true;
     }
     /** render target cell
@@ -14701,7 +14704,7 @@ class BqManager {
      */
     async command__render(command_context) {
         const cell = command_context.target;
-        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14715,7 +14718,7 @@ class BqManager {
      */
     async command__render_and_refocus(command_context) {
         const cell = command_context.target;
-        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14734,7 +14737,7 @@ class BqManager {
      *  @return {Boolean} true iff command successfully handled
      */
     async command__render_before(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14746,7 +14749,7 @@ class BqManager {
      *  @return {Boolean} true iff command successfully handled
      */
     async command__render_all(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14757,7 +14760,7 @@ class BqManager {
      *  @return {Boolean} true iff command successfully handled
      */
     command__stop(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14773,7 +14776,7 @@ class BqManager {
         return true;
     }
     command__reset(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14787,7 +14790,7 @@ class BqManager {
         return true;
     }
     command__focus_up(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14802,7 +14805,7 @@ class BqManager {
         }
     }
     command__focus_down(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14817,7 +14820,7 @@ class BqManager {
         }
     }
     #move_helper(command_context, move_down) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14831,7 +14834,7 @@ class BqManager {
                     before = this.adjacent_cell(before, move_down);
                 }
                 const parent = before ? before.parentElement : this.cell_parent;
-                (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(cell, { parent, before });
+                (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .move_node */ .NM)(cell, { parent, before });
                 // now move associated output elements, if any
                 // note that we support multiple output elements per cell, even
                 // though there is usually only one.
@@ -14841,7 +14844,7 @@ class BqManager {
                     // move newline text node, if any, following output element, too.
                     // it is included for formatting....
                     if (oe_next_sibling && oe_next_sibling.nodeType === Node.TEXT_NODE && oe_next_sibling.nodeValue === '\n') {
-                        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(oe_next_sibling, {
+                        (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .move_node */ .NM)(oe_next_sibling, {
                             parent,
                             before: cell.nextElementSibling,
                         });
@@ -14849,7 +14852,7 @@ class BqManager {
                     // now move the output element
                     // note that we are moving these nodes in reverse order
                     // because they are being moved releative to cell.nextElementSibling
-                    (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_7__/* .move_node */ .NM)(oe, {
+                    (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_8__/* .move_node */ .NM)(oe, {
                         parent,
                         before: cell.nextSibling,
                     });
@@ -14867,7 +14870,7 @@ class BqManager {
         return this.#move_helper(command_context, true);
     }
     #add_cell_helper(command_context, add_before, duplicate = false) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14902,7 +14905,7 @@ class BqManager {
         return this.#add_cell_helper(command_context, false, true);
     }
     async command__delete(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14919,7 +14922,7 @@ class BqManager {
         }
     }
     command__toggle_show_full(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14929,7 +14932,7 @@ class BqManager {
         }
     }
     command__toggle_show_in_presentation(command_context) {
-        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(command_context.target instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -14941,7 +14944,7 @@ class BqManager {
     #set_type_helper(command_context, type) {
         this.set_structure_modified();
         const cell = command_context.target;
-        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_11__/* .BqCellElement */ .c)) {
+        if (!(cell instanceof src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__/* .BqCellElement */ .c)) {
             return false;
         }
         else {
@@ -15014,7 +15017,7 @@ class BqManager {
         return this.#set_view_helper(command_context, 'presentation');
     }
     command__show_help(command_context) {
-        (0,_help_window__WEBPACK_IMPORTED_MODULE_6__/* .open_help_window */ .S)();
+        (0,_help_window__WEBPACK_IMPORTED_MODULE_7__/* .open_help_window */ .S)();
         return true;
     }
 }
@@ -15703,6 +15706,47 @@ __webpack_async_result__();
 
 /***/ }),
 
+/***/ 7670:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   V: () => (/* binding */ ServerFsDialog)
+/* harmony export */ });
+/* unused harmony export load_stylesheet */
+/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
+/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
+const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/server-fs-dialog/_.ts")); // save for later
+
+
+async function load_stylesheet() {
+    create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
+}
+class ServerFsDialog extends HTMLDialogElement {
+    get CLASS() { return this.constructor; }
+    static css_class = 'fs-dialog';
+    constructor(server_interface, start_url, for_save = false) {
+        super();
+        this.classList.add(this.CLASS.css_class);
+        //!!! populate !!!
+    }
+    // disable dangerous setter that may open the dialog in a bad way
+    set open(_) { throw new Error('setter for "open" disabled'); }
+    /** create HTML table markup from the given dir_info
+     */
+    #table_from_dir_info(dir_info, options = {}) {
+        const { parent, caption, } = options;
+        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
+            tag: 'table',
+            parent,
+            children: {},
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ 3787:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -15711,7 +15755,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VI: () => (/* binding */ ServerInterface)
 /* harmony export */ });
-/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL */
+/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, is_DirInfo */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface/_.ts"; // save for later
 
@@ -15728,6 +15772,52 @@ const DEFAULT_SERVER_FEATURES = {
         file: { create: false, read: true, update: false, delete: false },
     },
 };
+/** DirInfoTemplate defines the contents of entries of the array returned by
+ *  ServerInterface when a directory is read.  Actually, DirInfoTemplate
+ *  is a type-correct (but invalid) example of one such entry.  The desired
+ *  type for declarations, DirInfo, is recovered from DirInfoTemplate via
+ *  the typescript typeof type-mode operator.
+ *  Why all this complication?  It's because typescript does not provide
+ *  a clean way to get the property name of a type object or interface at
+ *  run-time.  If there was a utility type that could convert a type
+ *  object or interface to an enum type containing all the property names,
+ *  then because enums are instantiated as objects at run-time we could
+ *  use that.  However, no such utility type exists.
+ */
+class DirInfoTemplate {
+    name = '';
+    mode = NaN;
+    size = NaN;
+    atimeMs = NaN;
+    mtimeMs = NaN;
+    ctimeMs = NaN;
+    birthtimeMs = NaN;
+}
+;
+const dir_info_template = new DirInfoTemplate();
+const dir_info_keys_set = (() => { const s = new Set(); for (const key in dir_info_template)
+    s.add(key); return s; })();
+/** is_DirInfo() is a typescript type predicate for DirInfo types
+ */
+function is_DirInfo(test) {
+    if (typeof test !== 'object') {
+        return false; // indicate: invalid
+    }
+    else {
+        const all_keys_set = new Set(dir_info_keys_set.values()); // start with a copy of dir_info_keys_set
+        for (const key in test) {
+            all_keys_set.add(key);
+        }
+        for (const key of all_keys_set) {
+            if (!(key in test) ||
+                !(key in dir_info_template) ||
+                typeof test[key] !== typeof dir_info_template[key]) {
+                return false; // indicate: invalid
+            }
+        }
+        return true; // indicate: valid
+    }
+}
 // Fetch SERVER_FEATURES from the server during initialization.
 // It is assumed these remain the same during operation.
 const _server_features = await fetch(HTTP_ENDPOINT_FEATURES_URL)

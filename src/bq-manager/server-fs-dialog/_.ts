@@ -11,6 +11,8 @@ import {
 
 import {
     ServerInterface,
+    DirInfo,
+    is_DirInfo,
 } from '../server-interface/_';
 
 
@@ -19,12 +21,19 @@ export async function load_stylesheet(): Promise<void> {
 }
 
 
+
+type TABLE_FROM_DIR_INFO_OPTIONS = {
+    parent?:  Element,
+    caption?: string,
+};
+
+
 export class ServerFsDialog extends HTMLDialogElement {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
     static css_class = 'fs-dialog';
 
-    constructor(server_interface: ServerInterface) {
+    constructor(server_interface: ServerInterface, start_url: URL, for_save=false) {
         super();
         this.classList.add(this.CLASS.css_class);
         //!!! populate !!!
@@ -32,4 +41,20 @@ export class ServerFsDialog extends HTMLDialogElement {
 
     // disable dangerous setter that may open the dialog in a bad way
     set open (_: any){ throw new Error('setter for "open" disabled'); }
+
+    /** create HTML table markup from the given dir_info
+     */
+    #table_from_dir_info(dir_info: DirInfo[], options: TABLE_FROM_DIR_INFO_OPTIONS={}): Element {
+        const {
+            parent,
+            caption,
+        } = options;
+
+        return create_element({
+            tag: 'table',
+            parent,
+            children: {
+            },
+        });
+    }
 }
