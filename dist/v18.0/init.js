@@ -13787,7 +13787,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(742);
 /* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3787);
-/* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7670);
+/* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1488);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(8380);
@@ -15706,17 +15706,46 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 7670:
+/***/ 1488:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   V: () => (/* binding */ ServerFsDialog)
-/* harmony export */ });
-/* unused harmony export load_stylesheet */
-/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
-const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/server-fs-dialog/_.ts")); // save for later
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  V: () => (/* binding */ ServerFsDialog)
+});
+
+// UNUSED EXPORTS: load_stylesheet
+
+// EXTERNAL MODULE: ./lib/sys/assets-server-url.ts
+var sys_assets_server_url = __webpack_require__(9432);
+// EXTERNAL MODULE: ./lib/ui/dom-tools.ts
+var dom_tools = __webpack_require__(3854);
+;// ./lib/ui/jsx-create-element.ts
+
+function _jsx_create_element(type, props, ...children) {
+    const node = (0,dom_tools/* create_element */.Wh)({ tag: type, attrs: { ...props } });
+    children.forEach(child => {
+        // note: the type signatre for children is ignored when it is actually
+        // used, so do a run-time check.
+        if (typeof child === 'string') {
+            node.appendChild(document.createTextNode(child));
+        }
+        else if (child instanceof Node) {
+            node.appendChild(child);
+        }
+        else {
+            console.error('child must be a string or an instance of Node', { child });
+            throw new TypeError('child must be a string or an instance of Node');
+        }
+    });
+    return node;
+}
+
+;// ./src/bq-manager/server-fs-dialog/_.tsx
+const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/server-fs-dialog/_.tsx")); // save for later
+
 
 
 async function load_stylesheet() {
@@ -15735,12 +15764,76 @@ class ServerFsDialog extends HTMLDialogElement {
     /** create HTML table markup from the given dir_info
      */
     #table_from_dir_info(dir_info, options = {}) {
-        const { parent, caption, } = options;
-        return (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .create_element */ .Wh)({
-            tag: 'table',
-            parent,
-            children: {},
-        });
+        const default_sort_col = 1; // 0-based
+        dir_info = [...dir_info]; // copy so that sorting does not affect passed value
+        const { caption, } = options;
+        let { sort_col = default_sort_col, // 0-based
+        selected_row = 0, // 0-based
+         } = options;
+        // sort_col is validated below
+        if (!Number.isInteger(selected_row) || selected_row < 0) {
+            throw new TypeError('selected_row must be a non-negative integer');
+        }
+        // selected_row will be clamped to the integer rangle [0, dir_info.length-1].
+        const table = _jsx_create_element("table", null,
+            _jsx_create_element("caption", null, caption ?? ''),
+            _jsx_create_element("thead", null,
+                _jsx_create_element("tr", { "data-sort-col": sort_col },
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode/0xfff" }, "Type"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "name" }, "Name"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "size" }, "Size"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode%0xfff" }, "Access"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mtimeMs" }, "Modified"))),
+            _jsx_create_element("tbody", null));
+        // remove the caption element if no caption was specified
+        if (!caption) {
+            const caption_element = table.querySelector('table caption');
+            if (caption_element) { // this test is only to please typescript
+                caption_element.remove();
+            }
+        }
+        const thead_tr = table.querySelector('thead tr[data-sort-col]');
+        const tbody = table.querySelector('tbody');
+        if (!thead_tr || !tbody) {
+            throw new Error('unexpected: table elements not found');
+        }
+        const col_headers = Array.from(thead_tr.querySelectorAll('tr[data-sort-col] th[scope="col"][data-sort-prop] th'));
+        const col_count = col_headers.length;
+        function validate_sort_col(throw_error_if_invalid = false) {
+            const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count)
+                ? undefined
+                : `col_count must be in the integer range [0, ${col_count - 1}]`;
+            if (complaint && throw_error_if_invalid) {
+                throw new TypeError(complaint);
+            }
+            return complaint;
+        }
+        function clamp_selected_row() {
+            if (dir_info.length === 0) {
+                selected_row = 0;
+            }
+            else if (selected_row < 0) {
+                selected_row = 0;
+            }
+            else if (selected_row >= dir_info.length) {
+                selected_row = dir_info.length - 1;
+            }
+        }
+        function make_sort_function() {
+            const col = validate_sort_col() ? 0 : sort_col;
+            const sort_prop = col_headers[sort_col].getAttribute('data-sort-prop');
+            if (!sort_prop) {
+                throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
+            }
+            return (a, b) => {
+                return false; //!!!
+            };
+        }
+        function add_file_row() {
+            //!!!
+        }
+        //...
+        return table;
     }
 }
 

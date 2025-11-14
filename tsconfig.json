@@ -12,6 +12,9 @@
         "module": "esnext",
         "moduleResolution": "bundler",
 
+        "jsx":        "react",
+        "jsxFactory": "_jsx_create_element",
+
         "strict":                       true,
         "alwaysStrict":                 true,
         "noImplicitAny":                true,
