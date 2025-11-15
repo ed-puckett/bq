@@ -15780,11 +15780,12 @@ class ServerFsDialog extends HTMLDialogElement {
             _jsx_create_element("caption", null, caption ?? ''),
             _jsx_create_element("thead", null,
                 _jsx_create_element("tr", { "data-sort-col": sort_col },
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode/0xfff" }, "Type"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "type" }, "Type"),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode" }, "Access"),
                     _jsx_create_element("th", { scope: "col", "data-sort-prop": "name" }, "Name"),
                     _jsx_create_element("th", { scope: "col", "data-sort-prop": "size" }, "Size"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode%0xfff" }, "Access"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mtimeMs" }, "Modified"))),
+                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "modify_time_ms" }, "Modified"),
+                    _jsx_create_element("td", null))),
             _jsx_create_element("tbody", null));
         // remove the caption element if no caption was specified
         if (!caption) {
@@ -15800,6 +15801,27 @@ class ServerFsDialog extends HTMLDialogElement {
         }
         const col_headers = Array.from(thead_tr.querySelectorAll('tr[data-sort-col] th[scope="col"][data-sort-prop] th'));
         const col_count = col_headers.length;
+        function make_file_row(di, selected) {
+            //!!!
+            const row_markup = _jsx_create_element("tr", null,
+                _jsx_create_element("td", null,
+                    " ",
+                    di.type),
+                _jsx_create_element("td", null,
+                    " ",
+                    di.mode),
+                _jsx_create_element("td", null,
+                    " ",
+                    di.name),
+                _jsx_create_element("td", null,
+                    " ",
+                    di.size),
+                _jsx_create_element("td", null,
+                    " ",
+                    di.modify_time_ms),
+                _jsx_create_element("td", null, " !!!"));
+            return row_markup;
+        }
         function validate_sort_col(throw_error_if_invalid = false) {
             const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count)
                 ? undefined
@@ -15831,10 +15853,10 @@ class ServerFsDialog extends HTMLDialogElement {
             if (!match) {
                 throw new Error(`illegal data-sort-prop value for header "${col_header.textContent?.trim()}"`);
             }
-            const { prop, op, divisor } = match;
+            const { prop, op, divisor } = match.groups;
             if (!op) {
                 // compare as strings
-                return (a, b) => ((a === b) ? 0 : (a < b) ? -1 : 1);
+                return (a, b) => ((a[prop] === b[prop]) ? 0 : (a[prop] < b[prop]) ? -1 : 1);
             }
             else {
                 // compare as numbers and divide or mod by divisor
@@ -15844,15 +15866,24 @@ class ServerFsDialog extends HTMLDialogElement {
                     throw new Error(`data-sort-prop with illegal divisor for header "${col_header.textContent?.trim()}"`);
                 }
                 const xf = (op === '/')
-                    ? (x) => Math.trunc(x / divisor_number)
-                    : (x) => x % divisor_number; // (op === '%')
-                return (a, b) => (xf(a) - xf(b));
+                    ? (di) => Math.trunc(di[prop] / divisor_number)
+                    : (di) => di[prop] % divisor_number; // (op === '%')
+                return (a, b) => (xf(a[prop]) - xf(b[prop]));
             }
         }
-        function add_file_row() {
-            //!!!
+        function render() {
+            if (!tbody) { // typescript can't figure out that this was already guaranteed above...
+                throw new Error('unexpected: tbody not found');
+            }
+            validate_sort_col(true);
+            clamp_selected_row();
+            dir_info.sort(make_sort_function());
+            (0,dom_tools/* clear_element */.ho)(tbody);
+            dir_info.forEach((di, index) => {
+                tbody.appendChild(make_file_row(di, (index === selected_row)));
+            });
         }
-        //...
+        render();
         return table;
     }
 }
@@ -15868,7 +15899,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VI: () => (/* binding */ ServerInterface)
 /* harmony export */ });
-/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, is_DirInfo */
+/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, FileType, is_DirInfo */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface/_.ts"; // save for later
 
@@ -15885,6 +15916,16 @@ const DEFAULT_SERVER_FEATURES = {
         file: { create: false, read: true, update: false, delete: false },
     },
 };
+/** FileType describes the values returned in the"type" property of
+ *  DirInfo objects.
+ */
+var FileType;
+(function (FileType) {
+    FileType[FileType["file"] = 0] = "file";
+    FileType[FileType["directory"] = 1] = "directory";
+    FileType[FileType["other"] = 2] = "other";
+})(FileType || (FileType = {}));
+;
 /** DirInfoTemplate defines the contents of entries of the array returned by
  *  ServerInterface when a directory is read.  Actually, DirInfoTemplate
  *  is a type-correct (but invalid) example of one such entry.  The desired
@@ -15899,12 +15940,13 @@ const DEFAULT_SERVER_FEATURES = {
  */
 class DirInfoTemplate {
     name = '';
-    mode = NaN;
+    type = 'other';
     size = NaN;
-    atimeMs = NaN;
-    mtimeMs = NaN;
-    ctimeMs = NaN;
-    birthtimeMs = NaN;
+    mode = NaN;
+    birth_time_ms = NaN;
+    create_time_ms = NaN;
+    access_time_ms = NaN;
+    modify_time_ms = NaN;
 }
 ;
 const dir_info_template = new DirInfoTemplate();

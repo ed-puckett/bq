@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import * as fs from "node:fs";
+import * as fs   from "node:fs";
+import * as os   from "node:os";
 import * as http from "node:http";
 import * as path from "node:path";
 
@@ -15,6 +16,12 @@ const DEFAULT_ACCESS = 'r';
 
 const CONFIG_ENV_VAR_PREFIX = 'HTTP_ENDPOINT_';
 
+const ACCESS_SPECIFIERS = {
+    c: { key: 'create', description: 'allow file/directory creation' },
+    r: { key: 'read',   description: 'allow file/directory read' },
+    u: { key: 'update', description: 'allow file update (not applicable to directories)' },
+    d: { key: 'delete', description: 'allow file/directory deletion' },
+};
 
 // === TERMINATION ===
 
@@ -39,6 +46,14 @@ ${
 
 For options that require an argument, the argument may be specified as
 the next command line argument or by appeneding =value to the key.
+
+Access capabilities are specified as a string of one or more of the characters:
+
+${
+    Object.entries(ACCESS_SPECIFIERS)
+        .map(([ key, { description } ]) => `    ${key}: ${description}`)
+        .join('\n')
+}
 
 Options my also be specified with environment variables.  However,
 command-line arguments take precedence.  Flag-type variables are
@@ -99,12 +114,7 @@ const parse_access = (spec, dry_run=false) => {
         const parse_access_specifiers = (access_text) => {
             access_text = access_text.toLowerCase();
             const specified_access = {};
-            for (const [ char, key ] of [
-                [ 'c', 'create' ],
-                [ 'r', 'read'   ],
-                [ 'u', 'update' ],
-                [ 'd', 'delete' ],
-            ]) {
+            for (const [ char, { key } ] of Object.entries(ACCESS_SPECIFIERS)) {
                 specified_access[key] = access_text.includes(char);
             }
             return specified_access;
@@ -218,6 +228,8 @@ const get_features = () => {
         );
 };
 
+const user_info = os.userInfo();
+
 
 // === START SERVER ===
 
@@ -326,15 +338,27 @@ http
                             const dir_stats = await Promise.all(dir_files.map(file_name => {
                                 return fs.promises.stat(path.join(file_info.file_path, file_name))
                                     .then(stats => {
+                                        const type = stats.isFile()
+                                              ? 'file'
+                                              : stats.isDirectory()
+                                                  ? 'directory'
+                                                  : 'other';
+                                        const relevant_access_mode = (user_info.uid === -1 || user_info.gid === -1)  // windows sets ids to -1
+                                            ? (stats.mode >> 6) & 7  // windows, just use user access mode
+                                            : (stats.uid === user_info.uid)  // POSIX
+                                                  ? (stats.mode >> 6) & 7        // user
+                                                  : (stats.gid === user_info.gid)
+                                                        ? (stats.mode >> 3) & 7  // group
+                                                        : stats.mode & 7;        // other
                                         return {
-                                            name:        file_name,
-                                            mode:        stats.mode,
-                                            size:        stats.size,
-                                            size:        stats.size,
-                                            atimeMs:     stats.atimeMs,
-                                            mtimeMs:     stats.mtimeMs,
-                                            ctimeMs:     stats.ctimeMs,
-                                            birthtimeMs: stats.birthtimeMs,
+                                            name:           file_name,
+                                            type,
+                                            size:           stats.size,
+                                            mode:           relevant_access_mode,
+                                            birth_time_ms:  stats.birthtimeMs,
+                                            create_time_ms: stats.ctimeMs,
+                                            access_time_ms: stats.atimeMs,
+                                            modify_time_ms: stats.mtimeMs,
                                         };
                                     });
                             }));

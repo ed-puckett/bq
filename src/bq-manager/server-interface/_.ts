@@ -33,6 +33,16 @@ const DEFAULT_SERVER_FEATURES: SERVER_FEATURES = {
     },
 };
 
+/** FileType describes the values returned in the"type" property of
+ *  DirInfo objects.
+ */
+export enum FileType {
+    file,
+    directory,
+    other,
+};
+
+export type FileTypeString = keyof typeof FileType;
 
 /** DirInfoTemplate defines the contents of entries of the array returned by
  *  ServerInterface when a directory is read.  Actually, DirInfoTemplate
@@ -47,20 +57,21 @@ const DEFAULT_SERVER_FEATURES: SERVER_FEATURES = {
  *  use that.  However, no such utility type exists.
  */
 class DirInfoTemplate {
-    name:        string = '';
-    mode:        number = NaN;
-    size:        number = NaN;
-    atimeMs:     number = NaN;
-    mtimeMs:     number = NaN;
-    ctimeMs:     number = NaN;
-    birthtimeMs: number = NaN;
+    name:           string         = '';
+    type:           FileTypeString = 'other';
+    size:           number         = NaN;
+    mode:           number         = NaN;
+    birth_time_ms:  number         = NaN;
+    create_time_ms: number         = NaN;
+    access_time_ms: number         = NaN;
+    modify_time_ms: number         = NaN;
 };
 const dir_info_template = new DirInfoTemplate();
 const dir_info_keys_set = (() => { const s = new Set<string>(); for (const key in dir_info_template) s.add(key); return s; })();
 
 /** DirInfo is a typescript type compatible with DirInfoTemplate
  */
-export type DirInfo = typeof DirInfoTemplate;
+export type DirInfo = typeof dir_info_template;
 
 /** is_DirInfo() is a typescript type predicate for DirInfo types
  */

@@ -6,7 +6,7 @@ import {
 
 import {
     create_stylesheet_link,
-    create_element,
+    clear_element,
 } from 'lib/ui/dom-tools';
 
 import {
@@ -75,11 +75,12 @@ export class ServerFsDialog extends HTMLDialogElement {
                 </caption>
                 <thead>
                     <tr data-sort-col={sort_col}>
-                        <th scope="col" data-sort-prop="mode/0xfff">Type</th>
+                        <th scope="col" data-sort-prop="type">Type</th>
+                        <th scope="col" data-sort-prop="mode">Access</th>
                         <th scope="col" data-sort-prop="name">Name</th>
                         <th scope="col" data-sort-prop="size">Size</th>
-                        <th scope="col" data-sort-prop="mode%0xfff">Access</th>
-                        <th scope="col" data-sort-prop="mtimeMs">Modified</th>
+                        <th scope="col" data-sort-prop="modify_time_ms">Modified</th>
+                        <td>{/* manipulation links */}</td>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -102,6 +103,20 @@ export class ServerFsDialog extends HTMLDialogElement {
 
         const col_headers = Array.from(thead_tr.querySelectorAll('tr[data-sort-col] th[scope="col"][data-sort-prop] th'));
         const col_count   = col_headers.length;
+
+        function make_file_row(di: DirInfo, selected: boolean): HTMLElement {
+            //!!!
+            const row_markup =
+                <tr>
+                    <td>{/*type*/} {di.type}</td>
+                    <td>{/*mode*/} {di.mode}</td>
+                    <td>{/*name*/} {di.name}</td>
+                    <td>{/*size*/} {di.size}</td>
+                    <td>{/*time*/} {di.modify_time_ms}</td>
+                    <td>{/*mods*/} !!!</td>
+                </tr>;
+            return row_markup;
+        }
 
         function validate_sort_col(throw_error_if_invalid=false) {
             const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count )
@@ -134,10 +149,11 @@ export class ServerFsDialog extends HTMLDialogElement {
             if (!match) {
                 throw new Error(`illegal data-sort-prop value for header "${col_header.textContent?.trim()}"`);
             }
-            const { prop, op, divisor } = (match as any);
+            const { prop, op, divisor } = match.groups as { [key: string]: string };
+            
             if (!op) {
                 // compare as strings
-                return (a: any, b: any): number => (((a as string) === (b as string)) ? 0 : ((a as string) < (b as string)) ? -1 : 1);
+                return (a: any, b: any): number => (((a[prop] as any) === (b[prop] as any)) ? 0 : ((a[prop] as any) < (b[prop] as any)) ? -1 : 1);
             } else {
                 // compare as numbers and divide or mod by divisor
                 // note: SORT_PROP_RE guarantees that divisor is defined when op is defined
@@ -146,17 +162,28 @@ export class ServerFsDialog extends HTMLDialogElement {
                     throw new Error(`data-sort-prop with illegal divisor for header "${col_header.textContent?.trim()}"`);
                 }
                 const xf = (op === '/')
-                    ? (x: any) => Math.trunc((x as number) / divisor_number)
-                    : (x: any) => (x as number) % divisor_number // (op === '%')
-                return (a: any, b: any): number => (xf(a) - xf(b));
+                    ? (di: any) => Math.trunc(di[prop] / divisor_number)
+                    : (di: any) => di[prop] % divisor_number // (op === '%')
+                return (a: any, b: any): number => (xf(a[prop]) - xf(b[prop]));
             }
         }
 
-        function add_file_row() {
-            //!!!
+        function render() {
+            if (!tbody) {  // typescript can't figure out that this was already guaranteed above...
+                throw new Error('unexpected: tbody not found');
+            }
+            validate_sort_col(true);
+            clamp_selected_row();
+            dir_info.sort(make_sort_function());
+            clear_element(tbody);
+            dir_info.forEach((di, index) => {
+                tbody.appendChild(
+                    make_file_row(di, (index === selected_row))
+                );
+            });
         }
 
-        //...
+        render();
 
         return table;
     }
