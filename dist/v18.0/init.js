@@ -15751,6 +15751,7 @@ const current_script_url = (/* unused pure expression or super */ null && ("file
 async function load_stylesheet() {
     create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 }
+const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+))?$/;
 class ServerFsDialog extends HTMLDialogElement {
     get CLASS() { return this.constructor; }
     static css_class = 'fs-dialog';
@@ -15821,13 +15822,32 @@ class ServerFsDialog extends HTMLDialogElement {
         }
         function make_sort_function() {
             const col = validate_sort_col() ? 0 : sort_col;
-            const sort_prop = col_headers[sort_col].getAttribute('data-sort-prop');
+            const col_header = col_headers[sort_col];
+            const sort_prop = col_header.getAttribute('data-sort-prop');
             if (!sort_prop) {
                 throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
             }
-            return (a, b) => {
-                return false; //!!!
-            };
+            const match = sort_prop.match(SORT_PROP_RE);
+            if (!match) {
+                throw new Error(`illegal data-sort-prop value for header "${col_header.textContent?.trim()}"`);
+            }
+            const { prop, op, divisor } = match;
+            if (!op) {
+                // compare as strings
+                return (a, b) => ((a === b) ? 0 : (a < b) ? -1 : 1);
+            }
+            else {
+                // compare as numbers and divide or mod by divisor
+                // note: SORT_PROP_RE guarantees that divisor is defined when op is defined
+                const divisor_number = +divisor;
+                if (Number.isNaN(divisor_number) || divisor_number === 0) {
+                    throw new Error(`data-sort-prop with illegal divisor for header "${col_header.textContent?.trim()}"`);
+                }
+                const xf = (op === '/')
+                    ? (x) => Math.trunc(x / divisor_number)
+                    : (x) => x % divisor_number; // (op === '%')
+                return (a, b) => (xf(a) - xf(b));
+            }
         }
         function add_file_row() {
             //!!!
