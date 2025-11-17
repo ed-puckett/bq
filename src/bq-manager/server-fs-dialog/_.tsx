@@ -28,26 +28,63 @@ export async function load_stylesheet(): Promise<void> {
 
 type TABLE_FROM_DIR_INFO_OPTIONS = {
     caption?:      string,
-    sort_col?:     number,  // 0-based, must be a postive integer
-    selected_row?: number,  // 0-based, must be a postive integer
+    sort_col?:     number,  // 0-based, must be a non-negative integer
+    selected_row?: number,  // 0-based, must be a non-negative integer
 };
 
 const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+))?$/;
 
 
-export class ServerFsDialog extends HTMLDialogElement {
+export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
     static css_class = 'fs-dialog';
 
-    constructor(server_interface: ServerInterface, start_url: URL, for_save=false) {
-        super();
-        this.classList.add(this.CLASS.css_class);
-        //!!! populate !!!
+    async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
+        const dialog = this.#create_dialog();
+        document.body.appendChild(dialog);//!!!
+        const parent = dialog;//!!!
+        const slash_index = start_url.pathname?.lastIndexOf('/');
+        if (!slash_index || slash_index === -1) {
+            throw new TypeError('start_url pathname does not contain "/"');  // should never happen
+        }
+        const dir_url = new URL(start_url.pathname.slice(0, slash_index+1), start_url);  // grab the containing directory including the trailing "/"
+        const res = await fetch(dir_url);
+        const res_json = await res.text();
+        const raw_dir_info = JSON.parse(res_json);
+        if (!res.body) {
+            console.error('unable to read directory for start_url', { start_url, dir_url, res });
+            throw new Error('unable to read directory for start_url');
+        }
+        if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => is_DirInfo(test))) {
+            console.error('bad response when reading directory', { raw_dir_info });
+            throw new Error('bad response when reading directory');
+        }
+        const dir_info: DirInfo[] = raw_dir_info;
+        parent.appendChild(this.#table_from_dir_info(dir_info, {
+            caption: 'FILE LIST',
+        }));
+        const {
+            promise,
+            resolve,
+            reject,
+        } = Promise.withResolvers();
+        const cleanup = () => {
+console.log('CLEANUP');//!!!
+            dialog.remove();
+        };
+        dialog.oncancel = () => { cleanup(); resolve(undefined); }
+        dialog.onclose  = () => { cleanup(); resolve('XYZZY!!!'); }
+        dialog.showModal();
+        return promise as Promise<undefined|string>;
     }
 
-    // disable dangerous setter that may open the dialog in a bad way
-    set open (_: any){ throw new Error('setter for "open" disabled'); }
+    /** create the HTMLServerDialog object by instantiating it from HTML
+     */
+    #create_dialog(): HTMLDialogElement {
+        const dialog = <dialog> </dialog>;
+        return dialog as HTMLDialogElement;
+    }
 
     /** create HTML table markup from the given dir_info
      */
@@ -101,7 +138,7 @@ export class ServerFsDialog extends HTMLDialogElement {
             throw new Error('unexpected: table elements not found');
         }
 
-        const col_headers = Array.from(thead_tr.querySelectorAll('tr[data-sort-col] th[scope="col"][data-sort-prop] th'));
+        const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]'));
         const col_count   = col_headers.length;
 
         function make_file_row(di: DirInfo, selected: boolean): HTMLElement {
@@ -109,10 +146,10 @@ export class ServerFsDialog extends HTMLDialogElement {
             const row_markup =
                 <tr>
                     <td>{/*type*/} {di.type}</td>
-                    <td>{/*mode*/} {di.mode}</td>
+                    <td>{/*mode*/} {di.mode.toString()}</td>
                     <td>{/*name*/} {di.name}</td>
-                    <td>{/*size*/} {di.size}</td>
-                    <td>{/*time*/} {di.modify_time_ms}</td>
+                    <td>{/*size*/} {di.size.toString()}</td>
+                    <td>{/*time*/} {di.modify_time_ms.toString()}</td>
                     <td>{/*mods*/} !!!</td>
                 </tr>;
             return row_markup;
@@ -172,7 +209,6 @@ export class ServerFsDialog extends HTMLDialogElement {
             if (!tbody) {  // typescript can't figure out that this was already guaranteed above...
                 throw new Error('unexpected: tbody not found');
             }
-            validate_sort_col(true);
             clamp_selected_row();
             dir_info.sort(make_sort_function());
             clear_element(tbody);
@@ -188,3 +224,4 @@ export class ServerFsDialog extends HTMLDialogElement {
         return table;
     }
 }
+(globalThis as any).ServerFsDialog = ServerFsDialog;//!!!

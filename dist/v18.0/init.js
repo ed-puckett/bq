@@ -11569,7 +11569,15 @@ function create_element_or_mapping(options, return_mapping = false) {
     if (parent) {
         parent.insertBefore(element, before);
     }
-    return return_mapping ? mapping : element;
+    if (return_mapping) {
+        if (!mapping) {
+            throw new Error('this is just for typescript and should never occur!');
+        }
+        return mapping;
+    }
+    else {
+        return element;
+    }
 }
 function create_element(options) {
     return create_element_or_mapping(options, false);
@@ -11839,6 +11847,37 @@ function find_child_offset(child) {
     else {
         return Array.prototype.indexOf.call(parent_child_nodes, child);
     }
+}
+
+
+/***/ }),
+
+/***/ 5855:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   t: () => (/* binding */ _jsx_create_element)
+/* harmony export */ });
+/* harmony import */ var _dom_tools__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3854);
+
+function _jsx_create_element(type, props, ...children) {
+    const node = (0,_dom_tools__WEBPACK_IMPORTED_MODULE_0__/* .create_element */ .Wh)({ tag: type, attrs: { ...props } });
+    children.forEach(child => {
+        // note: the type signatre for children is ignored when it is actually
+        // used, so do a run-time check.
+        if (typeof child === 'string') {
+            node.appendChild(document.createTextNode(child));
+        }
+        else if (child instanceof Node) {
+            node.appendChild(child);
+        }
+        else {
+            console.error('child must be a string or an instance of Node', { child });
+            throw new TypeError('child must be a string or an instance of Node');
+        }
+    });
+    return node;
 }
 
 
@@ -13787,7 +13826,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(742);
 /* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3787);
-/* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1488);
+/* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3594);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8890);
 /* harmony import */ var lib_ui_dialog___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(8380);
@@ -13805,8 +13844,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
 
@@ -13884,6 +13923,8 @@ class BqManager {
     #start_called = false;
     static get version_string() { return dist_version_info__WEBPACK_IMPORTED_MODULE_19__/* .version_string */ .N; }
     constructor() {
+        globalThis.server_interface = this.#server_interface; //!!!
+        globalThis.T = () => new _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ServerFsDialog */ .V().run(this.#server_interface, new URL(location.href)); //!!!
         this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_global_command_bindings */ .yU)();
         let initial_key_maps;
         try {
@@ -15706,45 +15747,23 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 1488:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ 3594:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  V: () => (/* binding */ ServerFsDialog)
-});
-
-// UNUSED EXPORTS: load_stylesheet
-
-// EXTERNAL MODULE: ./lib/sys/assets-server-url.ts
-var sys_assets_server_url = __webpack_require__(9432);
-// EXTERNAL MODULE: ./lib/ui/dom-tools.ts
-var dom_tools = __webpack_require__(3854);
-;// ./lib/ui/jsx-create-element.ts
-
-function _jsx_create_element(type, props, ...children) {
-    const node = (0,dom_tools/* create_element */.Wh)({ tag: type, attrs: { ...props } });
-    children.forEach(child => {
-        // note: the type signatre for children is ignored when it is actually
-        // used, so do a run-time check.
-        if (typeof child === 'string') {
-            node.appendChild(document.createTextNode(child));
-        }
-        else if (child instanceof Node) {
-            node.appendChild(child);
-        }
-        else {
-            console.error('child must be a string or an instance of Node', { child });
-            throw new TypeError('child must be a string or an instance of Node');
-        }
-    });
-    return node;
-}
-
-;// ./src/bq-manager/server-fs-dialog/_.tsx
+__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   V: () => (/* binding */ ServerFsDialog)
+/* harmony export */ });
+/* unused harmony export load_stylesheet */
+/* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
+/* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
+/* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3787);
+/* harmony import */ var lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5855);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_server_interface___WEBPACK_IMPORTED_MODULE_2__]);
+_server_interface___WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/server-fs-dialog/_.tsx")); // save for later
+
 
 
 
@@ -15752,16 +15771,49 @@ async function load_stylesheet() {
     create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 }
 const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+))?$/;
-class ServerFsDialog extends HTMLDialogElement {
+class ServerFsDialog {
     get CLASS() { return this.constructor; }
     static css_class = 'fs-dialog';
-    constructor(server_interface, start_url, for_save = false) {
-        super();
-        this.classList.add(this.CLASS.css_class);
-        //!!! populate !!!
+    async run(server_interface, start_url, for_save = false) {
+        const dialog = this.#create_dialog();
+        document.body.appendChild(dialog); //!!!
+        const parent = dialog; //!!!
+        const slash_index = start_url.pathname?.lastIndexOf('/');
+        if (!slash_index || slash_index === -1) {
+            throw new TypeError('start_url pathname does not contain "/"'); // should never happen
+        }
+        const dir_url = new URL(start_url.pathname.slice(0, slash_index + 1), start_url); // grab the containing directory including the trailing "/"
+        const res = await fetch(dir_url);
+        const res_json = await res.text();
+        const raw_dir_info = JSON.parse(res_json);
+        if (!res.body) {
+            console.error('unable to read directory for start_url', { start_url, dir_url, res });
+            throw new Error('unable to read directory for start_url');
+        }
+        if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => (0,_server_interface___WEBPACK_IMPORTED_MODULE_2__/* .is_DirInfo */ .fN)(test))) {
+            console.error('bad response when reading directory', { raw_dir_info });
+            throw new Error('bad response when reading directory');
+        }
+        const dir_info = raw_dir_info;
+        parent.appendChild(this.#table_from_dir_info(dir_info, {
+            caption: 'FILE LIST',
+        }));
+        const { promise, resolve, reject, } = Promise.withResolvers();
+        const cleanup = () => {
+            console.log('CLEANUP'); //!!!
+            dialog.remove();
+        };
+        dialog.oncancel = () => { cleanup(); resolve(undefined); };
+        dialog.onclose = () => { cleanup(); resolve('XYZZY!!!'); };
+        dialog.showModal();
+        return promise;
     }
-    // disable dangerous setter that may open the dialog in a bad way
-    set open(_) { throw new Error('setter for "open" disabled'); }
+    /** create the HTMLServerDialog object by instantiating it from HTML
+     */
+    #create_dialog() {
+        const dialog = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("dialog", null, " ");
+        return dialog;
+    }
     /** create HTML table markup from the given dir_info
      */
     #table_from_dir_info(dir_info, options = {}) {
@@ -15776,17 +15828,17 @@ class ServerFsDialog extends HTMLDialogElement {
             throw new TypeError('selected_row must be a non-negative integer');
         }
         // selected_row will be clamped to the integer rangle [0, dir_info.length-1].
-        const table = _jsx_create_element("table", null,
-            _jsx_create_element("caption", null, caption ?? ''),
-            _jsx_create_element("thead", null,
-                _jsx_create_element("tr", { "data-sort-col": sort_col },
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "type" }, "Type"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "mode" }, "Access"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "name" }, "Name"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "size" }, "Size"),
-                    _jsx_create_element("th", { scope: "col", "data-sort-prop": "modify_time_ms" }, "Modified"),
-                    _jsx_create_element("td", null))),
-            _jsx_create_element("tbody", null));
+        const table = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("table", null,
+            (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("caption", null, caption ?? ''),
+            (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("thead", null,
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("tr", { "data-sort-col": sort_col },
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "type" }, "Type"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "mode" }, "Access"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "name" }, "Name"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "size" }, "Size"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "modify_time_ms" }, "Modified"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null))),
+            (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("tbody", null));
         // remove the caption element if no caption was specified
         if (!caption) {
             const caption_element = table.querySelector('table caption');
@@ -15799,27 +15851,27 @@ class ServerFsDialog extends HTMLDialogElement {
         if (!thead_tr || !tbody) {
             throw new Error('unexpected: table elements not found');
         }
-        const col_headers = Array.from(thead_tr.querySelectorAll('tr[data-sort-col] th[scope="col"][data-sort-prop] th'));
+        const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]'));
         const col_count = col_headers.length;
         function make_file_row(di, selected) {
             //!!!
-            const row_markup = _jsx_create_element("tr", null,
-                _jsx_create_element("td", null,
+            const row_markup = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("tr", null,
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
                     " ",
                     di.type),
-                _jsx_create_element("td", null,
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
                     " ",
-                    di.mode),
-                _jsx_create_element("td", null,
+                    di.mode.toString()),
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
                     " ",
                     di.name),
-                _jsx_create_element("td", null,
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
                     " ",
-                    di.size),
-                _jsx_create_element("td", null,
+                    di.size.toString()),
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
                     " ",
-                    di.modify_time_ms),
-                _jsx_create_element("td", null, " !!!"));
+                    di.modify_time_ms.toString()),
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null, " !!!"));
             return row_markup;
         }
         function validate_sort_col(throw_error_if_invalid = false) {
@@ -15875,10 +15927,9 @@ class ServerFsDialog extends HTMLDialogElement {
             if (!tbody) { // typescript can't figure out that this was already guaranteed above...
                 throw new Error('unexpected: tbody not found');
             }
-            validate_sort_col(true);
             clamp_selected_row();
             dir_info.sort(make_sort_function());
-            (0,dom_tools/* clear_element */.ho)(tbody);
+            (0,lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__/* .clear_element */ .ho)(tbody);
             dir_info.forEach((di, index) => {
                 tbody.appendChild(make_file_row(di, (index === selected_row)));
             });
@@ -15887,7 +15938,10 @@ class ServerFsDialog extends HTMLDialogElement {
         return table;
     }
 }
+globalThis.ServerFsDialog = ServerFsDialog; //!!!
 
+__webpack_async_result__();
+} catch(e) { __webpack_async_result__(e); } });
 
 /***/ }),
 
@@ -15897,9 +15951,10 @@ class ServerFsDialog extends HTMLDialogElement {
 "use strict";
 __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   VI: () => (/* binding */ ServerInterface)
+/* harmony export */   VI: () => (/* binding */ ServerInterface),
+/* harmony export */   fN: () => (/* binding */ is_DirInfo)
 /* harmony export */ });
-/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, FileType, is_DirInfo */
+/* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, FileType */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface/_.ts"; // save for later
 

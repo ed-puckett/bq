@@ -422,7 +422,14 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
         parent.insertBefore(element, before);
     }
 
-    return return_mapping ? mapping : element;
+    if (return_mapping) {
+        if (!mapping) {
+            throw new Error('this is just for typescript and should never occur!');
+        }
+        return mapping;
+    } else {
+        return element;
+    }
 }
 
 export function create_element(options?: object): Element {

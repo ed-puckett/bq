@@ -47,7 +47,10 @@ ${
 For options that require an argument, the argument may be specified as
 the next command line argument or by appeneding =value to the key.
 
-Access capabilities are specified as a string of one or more of the characters:
+Access is specified as {dir_access}/{file_access} or just {file_access}
+where the second form permits only file access but not directory access.
+Each of these access specifiers specify capabilities as a string of one
+or more of the characters:
 
 ${
     Object.entries(ACCESS_SPECIFIERS)
@@ -55,7 +58,10 @@ ${
         .join('\n')
 }
 
-Options my also be specified with environment variables.  However,
+For example, full access is specified as "crd/crud" and the standard
+restrictive access (files only, read only) is specified as "r".
+
+Options may also be specified with environment variables.  However,
 command-line arguments take precedence.  Flag-type variables are
 considered "true" iff any non-empty string is speficied.  The available
 variables are:
