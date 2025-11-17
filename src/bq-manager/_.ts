@@ -19,7 +19,7 @@ import {
 
 import {
     ServerInterface,
-} from './server-interface/_';
+} from './server-interface';
 
 import {
     ServerFsDialog,

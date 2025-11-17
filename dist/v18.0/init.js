@@ -13825,7 +13825,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var dist_version_info__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(5252);
 /* harmony import */ var src_init__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6336);
 /* harmony import */ var lib_sys_fs_interface__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(742);
-/* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3787);
+/* harmony import */ var _server_interface__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7805);
 /* harmony import */ var _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3594);
 /* harmony import */ var lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9888);
 /* harmony import */ var lib_ui_key___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8890);
@@ -13844,8 +13844,8 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony import */ var lib_ui_beep__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(5934);
 /* harmony import */ var src_style_css__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(4511);
 /* harmony import */ var src_style_hacks_css__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(6762);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__]);
-([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface___WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface__WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__]);
+([src_init__WEBPACK_IMPORTED_MODULE_0__, _server_interface__WEBPACK_IMPORTED_MODULE_1__, _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__, _settings_dialog___WEBPACK_IMPORTED_MODULE_6__, src_renderer___WEBPACK_IMPORTED_MODULE_9__, src_output_context__WEBPACK_IMPORTED_MODULE_10__, src_bq_cell_element___WEBPACK_IMPORTED_MODULE_12__, src_settings___WEBPACK_IMPORTED_MODULE_14__, _global_bindings__WEBPACK_IMPORTED_MODULE_15__, _export_options_dialog___WEBPACK_IMPORTED_MODULE_16__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/_.ts")); // save for later
 // @ts-ignore  // types not available for the imported module
 
@@ -13970,8 +13970,8 @@ class BqManager {
             (0,src_init__WEBPACK_IMPORTED_MODULE_0__/* .show_initialization_failed */ .$W)(error);
         }
     }
-    #server_features = _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI.get_features(); // these remain the same during operation
-    #server_interface = new _server_interface___WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI();
+    #server_features = _server_interface__WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI.get_features(); // these remain the same during operation
+    #server_interface = new _server_interface__WEBPACK_IMPORTED_MODULE_1__/* .ServerInterface */ .VI();
     #activity_manager = new lib_sys_activity_manager__WEBPACK_IMPORTED_MODULE_3__/* .ActivityManager */ .BT(true); // true: multiple_stops
     #command_bindings;
     #key_event_manager;
@@ -15758,10 +15758,10 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* unused harmony export load_stylesheet */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
 /* harmony import */ var lib_ui_dom_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3854);
-/* harmony import */ var _server_interface___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3787);
+/* harmony import */ var _server_interface__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7805);
 /* harmony import */ var lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5855);
-var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_server_interface___WEBPACK_IMPORTED_MODULE_2__]);
-_server_interface___WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
+var __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_server_interface__WEBPACK_IMPORTED_MODULE_2__]);
+_server_interface__WEBPACK_IMPORTED_MODULE_2__ = (__webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__)[0];
 const current_script_url = (/* unused pure expression or super */ null && ("file:///home/ed/code/bq/src/bq-manager/server-fs-dialog/_.tsx")); // save for later
 
 
@@ -15770,7 +15770,21 @@ const current_script_url = (/* unused pure expression or super */ null && ("file
 async function load_stylesheet() {
     create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 }
-const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+))?$/;
+const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+)))?$/;
+// data- props:
+//
+//     data-sort-col ....... on thead_tr, 0-based number specifying current sort column
+//
+//     data-sort-prop ...... on thead_tr_th, specify property name in DirInfo
+//                           with optional /{N} or %{N} suffix.  If the optional
+//                           suffix is given, then sorting is performed numerically
+//                           (instead of textually, the normal way), and the value
+//                           used for sorting is the value divided/mod-ed by {N}.
+//                           N may be a positive or negative integer.
+//
+//     data-sort-reverse ... on thead_tr_th, if this attribute not present or its
+//                           value is an empty string then the sort direction is
+//                           forward, otherwise the sort direction is reverse.
 class ServerFsDialog {
     get CLASS() { return this.constructor; }
     static css_class = 'fs-dialog';
@@ -15790,7 +15804,7 @@ class ServerFsDialog {
             console.error('unable to read directory for start_url', { start_url, dir_url, res });
             throw new Error('unable to read directory for start_url');
         }
-        if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => (0,_server_interface___WEBPACK_IMPORTED_MODULE_2__/* .is_DirInfo */ .fN)(test))) {
+        if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => (0,_server_interface__WEBPACK_IMPORTED_MODULE_2__/* .is_DirInfo */ .fN)(test))) {
             console.error('bad response when reading directory', { raw_dir_info });
             throw new Error('bad response when reading directory');
         }
@@ -15800,7 +15814,6 @@ class ServerFsDialog {
         }));
         const { promise, resolve, reject, } = Promise.withResolvers();
         const cleanup = () => {
-            console.log('CLEANUP'); //!!!
             dialog.remove();
         };
         dialog.oncancel = () => { cleanup(); resolve(undefined); };
@@ -15835,7 +15848,7 @@ class ServerFsDialog {
                     (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "type" }, "Type"),
                     (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "mode" }, "Access"),
                     (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "name" }, "Name"),
-                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "size" }, "Size"),
+                    (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "size/1" }, "Size"),
                     (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("th", { scope: "col", "data-sort-prop": "modify_time_ms" }, "Modified"),
                     (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null))),
             (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("tbody", null));
@@ -15853,7 +15866,7 @@ class ServerFsDialog {
         }
         const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]'));
         const col_count = col_headers.length;
-        function make_file_row(di, selected) {
+        const make_file_row = (di, selected) => {
             //!!!
             const row_markup = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("tr", null,
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null,
@@ -15873,8 +15886,8 @@ class ServerFsDialog {
                     di.modify_time_ms.toString()),
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("td", null, " !!!"));
             return row_markup;
-        }
-        function validate_sort_col(throw_error_if_invalid = false) {
+        };
+        const validate_sort_col = (throw_error_if_invalid = false) => {
             const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count)
                 ? undefined
                 : `col_count must be in the integer range [0, ${col_count - 1}]`;
@@ -15882,8 +15895,8 @@ class ServerFsDialog {
                 throw new TypeError(complaint);
             }
             return complaint;
-        }
-        function clamp_selected_row() {
+        };
+        const clamp_selected_row = () => {
             if (dir_info.length === 0) {
                 selected_row = 0;
             }
@@ -15893,10 +15906,11 @@ class ServerFsDialog {
             else if (selected_row >= dir_info.length) {
                 selected_row = dir_info.length - 1;
             }
-        }
-        function make_sort_function() {
+        };
+        const make_sort_function = () => {
             const col = validate_sort_col() ? 0 : sort_col;
             const col_header = col_headers[sort_col];
+            const sort_reverse = !!col_header.getAttribute('data-sort-reverse');
             const sort_prop = col_header.getAttribute('data-sort-prop');
             if (!sort_prop) {
                 throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
@@ -15908,7 +15922,9 @@ class ServerFsDialog {
             const { prop, op, divisor } = match.groups;
             if (!op) {
                 // compare as strings
-                return (a, b) => ((a[prop] === b[prop]) ? 0 : (a[prop] < b[prop]) ? -1 : 1);
+                return !sort_reverse
+                    ? (a, b) => ((a[prop] === b[prop]) ? 0 : (a[prop] < b[prop]) ? -1 : 1)
+                    : (a, b) => ((a[prop] === b[prop]) ? 0 : (a[prop] < b[prop]) ? 1 : -1);
             }
             else {
                 // compare as numbers and divide or mod by divisor
@@ -15920,10 +15936,12 @@ class ServerFsDialog {
                 const xf = (op === '/')
                     ? (di) => Math.trunc(di[prop] / divisor_number)
                     : (di) => di[prop] % divisor_number; // (op === '%')
-                return (a, b) => (xf(a[prop]) - xf(b[prop]));
+                return !sort_reverse
+                    ? (a, b) => (xf(a[prop]) - xf(b[prop]))
+                    : (a, b) => (xf(b[prop]) - xf(a[prop]));
             }
-        }
-        function render() {
+        };
+        const render = () => {
             if (!tbody) { // typescript can't figure out that this was already guaranteed above...
                 throw new Error('unexpected: tbody not found');
             }
@@ -15933,7 +15951,7 @@ class ServerFsDialog {
             dir_info.forEach((di, index) => {
                 tbody.appendChild(make_file_row(di, (index === selected_row)));
             });
-        }
+        };
         render();
         return table;
     }
@@ -15945,7 +15963,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 3787:
+/***/ 7805:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15956,7 +15974,7 @@ __webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 /* harmony export */ });
 /* unused harmony exports HTTP_ENDPOINT_QUIT_PATH, HTTP_ENDPOINT_FEATURES_PATH, HTTP_ENDPOINT_BASE_URL, HTTP_ENDPOINT_QUIT_URL, HTTP_ENDPOINT_FEATURES_URL, FileType */
 /* harmony import */ var lib_sys_assets_server_url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9432);
-const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface/_.ts"; // save for later
+const current_script_url = "file:///home/ed/code/bq/src/bq-manager/server-interface.ts"; // save for later
 
 const HTTP_ENDPOINT_QUIT_PATH = '/-QUIT-';
 const HTTP_ENDPOINT_FEATURES_PATH = '/-FEATURES-';

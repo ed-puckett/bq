@@ -13,7 +13,7 @@ import {
     ServerInterface,
     DirInfo,
     is_DirInfo,
-} from '../server-interface/_';
+} from '../server-interface';
 
 import {
     _jsx_create_element,
@@ -32,7 +32,22 @@ type TABLE_FROM_DIR_INFO_OPTIONS = {
     selected_row?: number,  // 0-based, must be a non-negative integer
 };
 
-const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+))?$/;
+const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+)))?$/;
+
+// data- props:
+//
+//     data-sort-col ....... on thead_tr, 0-based number specifying current sort column
+//
+//     data-sort-prop ...... on thead_tr_th, specify property name in DirInfo
+//                           with optional /{N} or %{N} suffix.  If the optional
+//                           suffix is given, then sorting is performed numerically
+//                           (instead of textually, the normal way), and the value
+//                           used for sorting is the value divided/mod-ed by {N}.
+//                           N may be a positive or negative integer.
+//
+//     data-sort-reverse ... on thead_tr_th, if this attribute not present or its
+//                           value is an empty string then the sort direction is
+//                           forward, otherwise the sort direction is reverse.
 
 
 export class ServerFsDialog {
@@ -70,7 +85,6 @@ export class ServerFsDialog {
             reject,
         } = Promise.withResolvers();
         const cleanup = () => {
-console.log('CLEANUP');//!!!
             dialog.remove();
         };
         dialog.oncancel = () => { cleanup(); resolve(undefined); }
@@ -115,7 +129,7 @@ console.log('CLEANUP');//!!!
                         <th scope="col" data-sort-prop="type">Type</th>
                         <th scope="col" data-sort-prop="mode">Access</th>
                         <th scope="col" data-sort-prop="name">Name</th>
-                        <th scope="col" data-sort-prop="size">Size</th>
+                        <th scope="col" data-sort-prop="size/1">Size</th>
                         <th scope="col" data-sort-prop="modify_time_ms">Modified</th>
                         <td>{/* manipulation links */}</td>
                     </tr>
@@ -141,7 +155,7 @@ console.log('CLEANUP');//!!!
         const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]'));
         const col_count   = col_headers.length;
 
-        function make_file_row(di: DirInfo, selected: boolean): HTMLElement {
+        const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
             //!!!
             const row_markup =
                 <tr>
@@ -155,7 +169,7 @@ console.log('CLEANUP');//!!!
             return row_markup;
         }
 
-        function validate_sort_col(throw_error_if_invalid=false) {
+        const validate_sort_col = (throw_error_if_invalid=false) => {
             const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count )
                 ? undefined
                 : `col_count must be in the integer range [0, ${col_count-1}]`;
@@ -165,7 +179,7 @@ console.log('CLEANUP');//!!!
            return complaint;
         }
 
-        function clamp_selected_row() {  // clamp selected_row to the range [0, dir_info.length-1] or 0 if dir_info is empty
+        const clamp_selected_row = () => {  // clamp selected_row to the range [0, dir_info.length-1] or 0 if dir_info is empty
             if (dir_info.length === 0) {
                 selected_row = 0;
             } else if (selected_row < 0) {
@@ -175,9 +189,10 @@ console.log('CLEANUP');//!!!
             }
         }
 
-        function make_sort_function(): ((a: any, b: any) => number) {
+        const make_sort_function = (): ((a: any, b: any) => number) => {
             const col = validate_sort_col() ? 0 : sort_col;
             const col_header = col_headers[sort_col];
+            const sort_reverse: boolean = !!col_header.getAttribute('data-sort-reverse');
             const sort_prop  = col_header.getAttribute('data-sort-prop');
             if (!sort_prop) {
                 throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
@@ -190,7 +205,9 @@ console.log('CLEANUP');//!!!
             
             if (!op) {
                 // compare as strings
-                return (a: any, b: any): number => (((a[prop] as any) === (b[prop] as any)) ? 0 : ((a[prop] as any) < (b[prop] as any)) ? -1 : 1);
+                return !sort_reverse
+                    ? (a: any, b: any): number => (((a[prop] as any) === (b[prop] as any)) ? 0 : ((a[prop] as any) < (b[prop] as any)) ? -1 :  1)
+                    : (a: any, b: any): number => (((a[prop] as any) === (b[prop] as any)) ? 0 : ((a[prop] as any) < (b[prop] as any)) ?  1 : -1);
             } else {
                 // compare as numbers and divide or mod by divisor
                 // note: SORT_PROP_RE guarantees that divisor is defined when op is defined
@@ -201,11 +218,13 @@ console.log('CLEANUP');//!!!
                 const xf = (op === '/')
                     ? (di: any) => Math.trunc(di[prop] / divisor_number)
                     : (di: any) => di[prop] % divisor_number // (op === '%')
-                return (a: any, b: any): number => (xf(a[prop]) - xf(b[prop]));
+                return !sort_reverse
+                    ? (a: any, b: any): number => (xf(a[prop]) - xf(b[prop]))
+                    : (a: any, b: any): number => (xf(b[prop]) - xf(a[prop]));
             }
         }
 
-        function render() {
+        const render = () => {
             if (!tbody) {  // typescript can't figure out that this was already guaranteed above...
                 throw new Error('unexpected: tbody not found');
             }
