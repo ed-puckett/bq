@@ -57,7 +57,7 @@ export class ServerFsDialog {
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
-        document.body.appendChild(dialog);//!!!
+        document.body.appendChild(dialog);
         const parent = dialog;//!!!
         const slash_index = start_url.pathname?.lastIndexOf('/');
         if (!slash_index || slash_index === -1) {
@@ -113,6 +113,10 @@ export class ServerFsDialog {
             selected_row = 0,                 // 0-based
         } = options;
 
+        if (dir_info.length === 0) {
+            throw new TypeError('dir_info must not be empty');
+        }
+
         // sort_col is validated below
         if (!Number.isInteger(selected_row) || selected_row < 0) {
             throw new TypeError('selected_row must be a non-negative integer');
@@ -145,20 +149,10 @@ export class ServerFsDialog {
             }
         }
 
-        const thead_tr = table.querySelector('thead tr[data-sort-col]');
-        const tbody    = table.querySelector('tbody');
-
-        if (!thead_tr || !tbody) {
-            throw new Error('unexpected: table elements not found');
-        }
-
-        const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]'));
-        const col_count   = col_headers.length;
-
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
             //!!!
             const row_markup =
-                <tr>
+                <tr role="row" aria-selected={selected.toString()}>
                     <td>{/*type*/} {di.type}</td>
                     <td>{/*mode*/} {di.mode.toString()}</td>
                     <td>{/*name*/} {di.name}</td>
@@ -169,6 +163,56 @@ export class ServerFsDialog {
             return row_markup;
         }
 
+        const thead_tr = table.querySelector('thead tr[data-sort-col]');
+        const tbody    = table.querySelector('tbody');
+
+        if (!thead_tr || !tbody) {
+            throw new Error('unexpected: table elements not found');
+        }
+
+        const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]')) as Array<HTMLElement>;
+        const col_count   = col_headers.length;
+
+        const access_sort_direction = (col_header: HTMLElement, toggle_first: boolean = false) => {
+            const sort_reverse_attribute_name = 'data-sort-reverse';
+            // "reverse" is considered false if the attribute value for
+            // sort_reverse_attribute_name is either null (meaning not present)
+            // or an empty string.  Otherwise, "reverse" is considered true.
+            let value = !!col_header.getAttribute(sort_reverse_attribute_name);  // false if getAttribute returns null or an empty string
+            if (toggle_first) {
+                value = !value;
+                col_header.setAttribute(sort_reverse_attribute_name, (value ? 'reverse' : ''));
+            }
+            return value;
+        };
+
+        const find_checked_header = (): HTMLElement => {
+            const checked_header = thead_tr.querySelector('th[aria-checked="true"]') as HTMLElement;
+            if (!checked_header) {
+                console.error('unable to find checked header');
+                throw new Error('unable to find checked header');
+            }
+            return checked_header;
+        };
+
+        // set aria-checked and click handlers for the column headers
+        col_headers.forEach((col_header: HTMLElement, col_index: number) => {
+            col_header.setAttribute('aria-checked', (col_index === sort_col).toString());
+            col_header.onclick = (event) => {
+                const clicked_header = (event.target as null|Element)?.closest('th');
+                if (clicked_header) {  // should always be true
+                    const checked_header = find_checked_header();
+                    if (clicked_header === checked_header) {
+                        access_sort_direction(clicked_header, true);  // toggle
+                    } else {
+                        checked_header.setAttribute('aria-checked', 'false');
+                        clicked_header.setAttribute('aria-checked', 'true');
+                    }
+                    render();
+                }
+            };
+        });
+
         const validate_sort_col = (throw_error_if_invalid=false) => {
             const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count )
                 ? undefined
@@ -178,28 +222,28 @@ export class ServerFsDialog {
             }
            return complaint;
         }
+        validate_sort_col(true);  // will throw error if sort_col is not valid
 
         const clamp_selected_row = () => {  // clamp selected_row to the range [0, dir_info.length-1] or 0 if dir_info is empty
-            if (dir_info.length === 0) {
-                selected_row = 0;
-            } else if (selected_row < 0) {
+            if (selected_row < 0) {
                 selected_row = 0;
             } else if (selected_row >= dir_info.length) {
-                selected_row = dir_info.length-1;
+                selected_row = dir_info.length-1;  // dir_info has already been guaranteed not to be empty
             }
         }
 
         const make_sort_function = (): ((a: any, b: any) => number) => {
-            const col = validate_sort_col() ? 0 : sort_col;
-            const col_header = col_headers[sort_col];
-            const sort_reverse: boolean = !!col_header.getAttribute('data-sort-reverse');
-            const sort_prop  = col_header.getAttribute('data-sort-prop');
+            const sort_header = find_checked_header();
+            const sort_reverse: boolean = access_sort_direction(sort_header);
+            const sort_prop  = sort_header.getAttribute('data-sort-prop');
+console.log({ sort_header, sort_reverse, sort_prop });//!!!
             if (!sort_prop) {
                 throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
             }
             const match = sort_prop.match(SORT_PROP_RE);
+console.log({ match });//!!!
             if (!match) {
-                throw new Error(`illegal data-sort-prop value for header "${col_header.textContent?.trim()}"`);
+                throw new Error(`illegal data-sort-prop value for header "${sort_header.textContent?.trim()}"`);
             }
             const { prop, op, divisor } = match.groups as { [key: string]: string };
             
@@ -213,14 +257,14 @@ export class ServerFsDialog {
                 // note: SORT_PROP_RE guarantees that divisor is defined when op is defined
                 const divisor_number = +divisor;
                 if (Number.isNaN(divisor_number) || divisor_number === 0) {
-                    throw new Error(`data-sort-prop with illegal divisor for header "${col_header.textContent?.trim()}"`);
+                    throw new Error(`data-sort-prop with illegal divisor for header "${sort_header.textContent?.trim()}"`);
                 }
                 const xf = (op === '/')
                     ? (di: any) => Math.trunc(di[prop] / divisor_number)
                     : (di: any) => di[prop] % divisor_number // (op === '%')
                 return !sort_reverse
-                    ? (a: any, b: any): number => (xf(a[prop]) - xf(b[prop]))
-                    : (a: any, b: any): number => (xf(b[prop]) - xf(a[prop]));
+                    ? (a: any, b: any): number => (xf(a) - xf(b))
+                    : (a: any, b: any): number => (xf(b) - xf(a));
             }
         }
 
@@ -237,8 +281,7 @@ export class ServerFsDialog {
                 );
             });
         }
-
-        render();
+        render();  // initial render
 
         return table;
     }
