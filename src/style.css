@@ -522,7 +522,7 @@ dialog .dialog-text {
 }
 
 
-/* === dialog === */
+/* === export-options-dialog === */
 
 dialog.export-options-dialog {
     max-width: min(85dvw, 75ch);
@@ -585,6 +585,45 @@ dialog.export-options-dialog {
 
         & label:has(input[type="radio"]:checked) {
             outline: 1px solid var(--theme-si-fg, hotpink);
+        }
+    }
+}
+
+
+/* === server-fs-dialog === */
+
+.server-fs-dialog {
+    & table {
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        & thead {
+            & th {
+                border-left:   1px solid var(--theme-si-fg, hotpink);
+                border-bottom: 1px solid var(--theme-si-fg, hotpink);
+                text-align: left;
+
+                &::after {
+                    content: " ";
+                    display: inline-block;
+                    width: 3em;
+                    text-align: right;
+                    float: right;
+                }
+                &[aria-checked="true"] {
+                    &:not([data-sort-reverse])::after,
+                    &[data-sort-reverse=""]::after {
+                        content: " \25B4";  /* up */
+                    }
+                    &[data-sort-reverse]:not([data-sort-reverse=""])::after {
+                        content: " \25BE";  /* down */
+                    }
+                }
+            }
+        }
+
+        & th, & td {
+            padding: 0.25em;
         }
     }
 }

@@ -53,7 +53,7 @@ const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[
 export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
-    static css_class = 'fs-dialog';
+    static css_class = 'server-fs-dialog';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
@@ -97,6 +97,7 @@ export class ServerFsDialog {
      */
     #create_dialog(): HTMLDialogElement {
         const dialog = <dialog> </dialog>;
+        dialog.classList.add(this.CLASS.css_class);
         return dialog as HTMLDialogElement;
     }
 
@@ -236,12 +237,10 @@ export class ServerFsDialog {
             const sort_header = find_checked_header();
             const sort_reverse: boolean = access_sort_direction(sort_header);
             const sort_prop  = sort_header.getAttribute('data-sort-prop');
-console.log({ sort_header, sort_reverse, sort_prop });//!!!
             if (!sort_prop) {
                 throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
             }
             const match = sort_prop.match(SORT_PROP_RE);
-console.log({ match });//!!!
             if (!match) {
                 throw new Error(`illegal data-sort-prop value for header "${sort_header.textContent?.trim()}"`);
             }
