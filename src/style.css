@@ -608,8 +608,8 @@ dialog.export-options-dialog {
                     display: inline-block;
                     width: 3em;
                     text-align: right;
-                    float: right;
                 }
+
                 &[aria-checked="true"] {
                     &:not([data-sort-reverse])::after,
                     &[data-sort-reverse=""]::after {
@@ -622,7 +622,15 @@ dialog.export-options-dialog {
             }
         }
 
-        & th, & td {
+        & tbody > tr > td {
+            &[data-numeric]:not([data-numeric=""]) {
+                text-align: right;
+                padding-right: 1em;  /* make column look less crowded to the right, especially with the left-justified headings */
+            }
+        }
+
+        & th,
+        & td {
             padding: 0.25em;
         }
     }

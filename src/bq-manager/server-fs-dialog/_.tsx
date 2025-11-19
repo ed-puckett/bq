@@ -48,6 +48,10 @@ const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[
 //     data-sort-reverse ... on thead_tr_th, if this attribute not present or its
 //                           value is an empty string then the sort direction is
 //                           forward, otherwise the sort direction is reverse.
+//
+//     data-numeric ........ on <td> elements in tbody, if present and set, then
+//                           the <td> contents should be formatted as a number,
+//                           otherwise it should be formatted as text.
 
 
 export class ServerFsDialog {
@@ -132,7 +136,7 @@ export class ServerFsDialog {
                 <thead>
                     <tr data-sort-col={sort_col}>
                         <th scope="col" data-sort-prop="type">Type</th>
-                        <th scope="col" data-sort-prop="mode">Access</th>
+                        <th scope="col" data-sort-prop="mode_string">Access</th>
                         <th scope="col" data-sort-prop="name">Name</th>
                         <th scope="col" data-sort-prop="size/1">Size</th>
                         <th scope="col" data-sort-prop="modify_time_ms">Modified</th>
@@ -150,20 +154,6 @@ export class ServerFsDialog {
             }
         }
 
-        const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
-            //!!!
-            const row_markup =
-                <tr role="row" aria-selected={selected.toString()}>
-                    <td>{/*type*/} {di.type}</td>
-                    <td>{/*mode*/} {di.mode.toString()}</td>
-                    <td>{/*name*/} {di.name}</td>
-                    <td>{/*size*/} {di.size.toString()}</td>
-                    <td>{/*time*/} {di.modify_time_ms.toString()}</td>
-                    <td>{/*mods*/} !!!</td>
-                </tr>;
-            return row_markup;
-        }
-
         const thead_tr = table.querySelector('thead tr[data-sort-col]');
         const tbody    = table.querySelector('tbody');
 
@@ -173,6 +163,49 @@ export class ServerFsDialog {
 
         const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]')) as Array<HTMLElement>;
         const col_count   = col_headers.length;
+
+        const get_col_info = (col_header: HTMLElement) => {
+            const sort_reverse: boolean = access_sort_direction(col_header);
+            const sort_prop = col_header.getAttribute('data-sort-prop');
+            if (!sort_prop) {
+                throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
+            }
+            const sort_match = sort_prop.match(SORT_PROP_RE);
+            if (!sort_match) {
+                throw new Error(`illegal data-sort-prop value for header "${col_header.textContent?.trim()}"`);
+            }
+            const { prop, op, divisor } = sort_match.groups as { [key: string]: string };
+            const divisor_number = +divisor;
+            if (op && (Number.isNaN(divisor_number) || divisor_number === 0)) {
+                throw new Error(`data-sort-prop with illegal divisor for header "${col_header.textContent?.trim()}"`);
+            }
+            return {
+                sort_reverse,
+                sort_prop,
+                sort_match,
+                prop, op, divisor, divisor_number,
+            };
+        };
+
+        const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
+            //!!!
+            const row_markup =
+                <tr role="row" aria-selected={selected.toString()}>
+                    <td>{/*type*/}        {di.type}</td>
+                    <td>{/*mode_string*/} {di.mode_string}</td>
+                    <td>{/*name*/}        {di.name}</td>
+                    <td>{/*size*/}        {di.size.toString()}</td>
+                    <td>{/*time*/}        {di.modify_time_ms.toString()}</td>
+                    <td>{/*mods*/}        !!!</td>
+                </tr>;
+            col_headers.forEach((col_header: HTMLElement, col_index: number) => {
+                // columns that specify an op (and therefore divisor) are considered numeric
+                if (get_col_info(col_header).op) {
+                    row_markup.children[col_index]?.setAttribute('data-numeric', 'numeric');
+                }
+            });
+            return row_markup;
+        }
 
         const access_sort_direction = (col_header: HTMLElement, toggle_first: boolean = false) => {
             const sort_reverse_attribute_name = 'data-sort-reverse';
@@ -234,18 +267,14 @@ export class ServerFsDialog {
         }
 
         const make_sort_function = (): ((a: any, b: any) => number) => {
-            const sort_header = find_checked_header();
-            const sort_reverse: boolean = access_sort_direction(sort_header);
-            const sort_prop  = sort_header.getAttribute('data-sort-prop');
-            if (!sort_prop) {
-                throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
-            }
-            const match = sort_prop.match(SORT_PROP_RE);
-            if (!match) {
-                throw new Error(`illegal data-sort-prop value for header "${sort_header.textContent?.trim()}"`);
-            }
-            const { prop, op, divisor } = match.groups as { [key: string]: string };
-            
+            const checked_header = find_checked_header();
+            const {
+                sort_reverse,
+                sort_prop,
+                sort_match,
+                prop, op, divisor, divisor_number,
+            } = get_col_info(checked_header);
+
             if (!op) {
                 // compare as strings
                 return !sort_reverse
@@ -253,11 +282,8 @@ export class ServerFsDialog {
                     : (a: any, b: any): number => (((a[prop] as any) === (b[prop] as any)) ? 0 : ((a[prop] as any) < (b[prop] as any)) ?  1 : -1);
             } else {
                 // compare as numbers and divide or mod by divisor
-                // note: SORT_PROP_RE guarantees that divisor is defined when op is defined
-                const divisor_number = +divisor;
-                if (Number.isNaN(divisor_number) || divisor_number === 0) {
-                    throw new Error(`data-sort-prop with illegal divisor for header "${sort_header.textContent?.trim()}"`);
-                }
+                // note: get_col_info() (via SORT_PROP_RE) guarantees that divisor is defined when op is defined
+                // note: divisor_number was already validated (integer, not NaN, not 0) by get_col_info()
                 const xf = (op === '/')
                     ? (di: any) => Math.trunc(di[prop] / divisor_number)
                     : (di: any) => di[prop] % divisor_number // (op === '%')

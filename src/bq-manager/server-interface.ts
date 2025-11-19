@@ -61,6 +61,7 @@ class DirInfoTemplate {
     type:           FileTypeString = 'other';
     size:           number         = NaN;
     mode:           number         = NaN;
+    mode_string:    string         = '';
     birth_time_ms:  number         = NaN;
     create_time_ms: number         = NaN;
     access_time_ms: number         = NaN;
