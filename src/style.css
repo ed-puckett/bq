@@ -595,6 +595,7 @@ dialog.export-options-dialog {
 .server-fs-dialog {
     max-width:  80dvw;
     max-height: 80dvh;
+    resize: both;
 
     .server-fs-dialog-file-list {
         font-family: 'monospace';
@@ -614,7 +615,8 @@ dialog.export-options-dialog {
         .server-fs-dialog-file-list-header-container > div,
         .server-fs-dialog-file-list-content-container > div > div {  /* note: content rows are wrapped in a div to allow for row selection */
             & > div {
-                min-width: 0;
+                /*min-width: 0;*/
+                grid-auto-rows: max-content;
                 overflow: hidden;
             }
         }
