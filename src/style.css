@@ -604,6 +604,7 @@ dialog.export-options-dialog {
         .server-fs-dialog-file-list-content-container {
             display: grid;
             grid-template-columns: 5fr 1fr 1fr 1fr 3fr 3fr;
+            grid-auto-rows: max-content;
         }
 
         /* fr units by default have a min value of auto and this can result in
@@ -616,7 +617,6 @@ dialog.export-options-dialog {
         .server-fs-dialog-file-list-content-container > div > div {  /* note: content rows are wrapped in a div to allow for row selection */
             & > div {
                 /*min-width: 0;*/
-                grid-auto-rows: max-content;
                 overflow: hidden;
             }
         }
@@ -652,6 +652,9 @@ dialog.export-options-dialog {
         }
 
         .server-fs-dialog-file-list-content-container {
+            overflow: auto;
+            height: 70dvh;
+
             & > div {
                 /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
                 display: contents;
