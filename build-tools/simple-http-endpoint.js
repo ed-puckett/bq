@@ -356,13 +356,11 @@ http
                                                   : (stats.gid === user_info.gid)
                                                         ? (stats.mode >> 3) & 7  // group
                                                         : stats.mode & 7;        // other
-                                        const relevant_access_mode_string = `${(relevant_access_mode & 0b100) ? 'r' : '-'}${(relevant_access_mode & 0b010) ? 'w' : '-'}${(relevant_access_mode & 0b001) ? 'x' : '-'}`;
                                         return {
                                             name:           file_name,
                                             type,
                                             size:           stats.size,
                                             mode:           relevant_access_mode,
-                                            mode_string:    relevant_access_mode_string,  // included for convenience when displaying...
                                             birth_time_ms:  stats.birthtimeMs,
                                             create_time_ms: stats.ctimeMs,
                                             access_time_ms: stats.atimeMs,

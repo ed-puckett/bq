@@ -26,8 +26,7 @@ export async function load_stylesheet(): Promise<void> {
 
 
 
-type TABLE_FROM_DIR_INFO_OPTIONS = {
-    caption?:      string,
+type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
     sort_col?:     number,  // 0-based, must be a non-negative integer
     selected_row?: number,  // 0-based, must be a non-negative integer
 };
@@ -36,35 +35,44 @@ const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[
 
 // data- props:
 //
-//     data-sort-col ....... on thead_tr, 0-based number specifying current sort column
-//
-//     data-sort-prop ...... on thead_tr_th, specify property name in DirInfo
-//                           with optional /{N} or %{N} suffix.  If the optional
-//                           suffix is given, then sorting is performed numerically
-//                           (instead of textually, the normal way), and the value
-//                           used for sorting is the value divided/mod-ed by {N}.
+//     data-sort-prop ...... on individual file list header elements, specify a
+//                           property name in DirInfo with optional /{N} or
+//                           %{N} suffix.  If the optional suffix is given,
+//                           then sorting is performed numerically (instead
+//                           of textually, the normal way), and the value used
+//                           for sorting is the value divided/mod-ed by {N}.
 //                           N may be a positive or negative integer.
 //
-//     data-sort-reverse ... on thead_tr_th, if this attribute not present or its
-//                           value is an empty string then the sort direction is
-//                           forward, otherwise the sort direction is reverse.
+//     data-sort-reverse ... on individual file list header elements, if this
+//                           attribute is not present or its value is an empty
+//                           string then the sort direction is forward, otherwise
+//                           the sort direction is reverse.
 //
-//     data-numeric ........ on <td> elements in tbody, if present and set, then
-//                           the <td> contents should be formatted as a number,
-//                           otherwise it should be formatted as text.
+//     data-numeric ........ on individual data elements in a file row in the
+//                           file list content container, if present and set,
+//                           then the data element's contents should be formatted
+//                           as a number, otherwise it should be formatted as text.
 
 
 export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
-    static css_class = 'server-fs-dialog';
+    static dialog_css_class                      = 'server-fs-dialog';
+    static file_list_container_css_class         = 'server-fs-dialog-file-list-container';
+    static file_list_css_class                   = 'server-fs-dialog-file-list';
+    static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
+    static file_list_header_css_class            = 'server-fs-dialog-file-list-header';
+    static file_list_content_container_css_class = 'server-fs-dialog-file-list-content-container';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
         document.body.appendChild(dialog);
-        const parent = dialog;//!!!
+        const files_container = dialog.querySelector(`.${this.CLASS.file_list_container_css_class}`);
+        if (!files_container) {
+            throw new Error('unexpected: could not find file list container element');
+        }
         const slash_index = start_url.pathname?.lastIndexOf('/');
-        if (!slash_index || slash_index === -1) {
+        if (slash_index === -1) {
             throw new TypeError('start_url pathname does not contain "/"');  // should never happen
         }
         const dir_url = new URL(start_url.pathname.slice(0, slash_index+1), start_url);  // grab the containing directory including the trailing "/"
@@ -80,9 +88,7 @@ export class ServerFsDialog {
             throw new Error('bad response when reading directory');
         }
         const dir_info: DirInfo[] = raw_dir_info;
-        parent.appendChild(this.#table_from_dir_info(dir_info, {
-            caption: 'FILE LIST',
-        }));
+        files_container.appendChild(this.#file_list_from_dir_info(dir_info));
         const {
             promise,
             resolve,
@@ -100,19 +106,23 @@ export class ServerFsDialog {
     /** create the HTMLServerDialog object by instantiating it from HTML
      */
     #create_dialog(): HTMLDialogElement {
-        const dialog = <dialog> </dialog>;
-        dialog.classList.add(this.CLASS.css_class);
+        const dialog =
+            <dialog class={this.CLASS.dialog_css_class}>
+                <form>
+                    <div class={this.CLASS.file_list_container_css_class}>
+                    </div>
+                    <input type="cancel" name="cancel" />
+                    <input type="submit" name="submit" />
+                </form>
+            </dialog>;
         return dialog as HTMLDialogElement;
     }
 
-    /** create HTML table markup from the given dir_info
+    /** create HTML markup for a file list from the given dir_info
      */
-    #table_from_dir_info(dir_info: DirInfo[], options: TABLE_FROM_DIR_INFO_OPTIONS={}): Element {
-        const default_sort_col = 1;  // 0-based
+    #file_list_from_dir_info(dir_info: DirInfo[], options: FILE_LIST_FROM_DIR_INFO_OPTIONS={}): Element {
+        const default_sort_col = 0;  // 0-based
         dir_info = [ ...dir_info ];  // copy so that sorting does not affect passed value
-        const {
-            caption,
-        } = options;
         let {
             sort_col     = default_sort_col,  // 0-based
             selected_row = 0,                 // 0-based
@@ -128,40 +138,28 @@ export class ServerFsDialog {
         }
         // selected_row will be clamped to the integer rangle [0, dir_info.length-1].
 
-        const table =
-            <table>
-                <caption>
-                    {caption ?? ''}
-                </caption>
-                <thead>
-                    <tr data-sort-col={sort_col}>
-                        <th scope="col" data-sort-prop="type">Type</th>
-                        <th scope="col" data-sort-prop="mode_string">Access</th>
-                        <th scope="col" data-sort-prop="name">Name</th>
-                        <th scope="col" data-sort-prop="size/1">Size</th>
-                        <th scope="col" data-sort-prop="modify_time_ms">Modified</th>
-                        <td>{/* manipulation links */}</td>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>;
+        const file_list =
+            <div class={this.CLASS.file_list_css_class}>
+                <div class={this.CLASS.file_list_header_container_css_class}>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="name">Name</div>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="type">Type</div>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="size/1">Size</div>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="mode">Access</div>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="modify_time_ms">Modified</div>
+                    <div>{/* manipulation links */}</div>
+                </div>
+                <div class={this.CLASS.file_list_content_container_css_class}>
+                </div>
+            </div>;
 
-        // remove the caption element if no caption was specified
-        if (!caption) {
-            const caption_element = table.querySelector('table caption');
-            if (caption_element) {  // this test is only to please typescript
-                caption_element.remove();
-            }
-        }
+        const header_container  = file_list.querySelector(`.${this.CLASS.file_list_header_container_css_class}`);
+        const content_container = file_list.querySelector(`.${this.CLASS.file_list_content_container_css_class}`);
 
-        const thead_tr = table.querySelector('thead tr[data-sort-col]');
-        const tbody    = table.querySelector('tbody');
-
-        if (!thead_tr || !tbody) {
+        if (!header_container || !content_container) {
             throw new Error('unexpected: table elements not found');
         }
 
-        const col_headers = Array.from(thead_tr.querySelectorAll('th[scope="col"][data-sort-prop]')) as Array<HTMLElement>;
+        const col_headers = Array.from(header_container.querySelectorAll(`.${this.CLASS.file_list_header_css_class}`)) as Array<HTMLElement>;
         const col_count   = col_headers.length;
 
         const get_col_info = (col_header: HTMLElement) => {
@@ -187,17 +185,37 @@ export class ServerFsDialog {
             };
         };
 
+        const format_time = (time: Date): string => {
+            const formatter = new Intl.DateTimeFormat(undefined, {
+                year:   "numeric",
+                month:  "short",
+                day:    "2-digit",
+                hour:   "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            });
+            const parts = formatter.formatToParts(time)
+                .reduce( (acc: any, desc: any) => { acc[desc.type] = desc.value; return acc },
+                         {} );
+            return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+        };
+
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
             //!!!
+            // Note that the formatting of each column is not determined by
+            // the header's 'data-sort-prop'--that is used for sorting/styling
+            // purposes.  The actual formatting of the entries' data is
+            // implemented here.
+            const mode_string = `${(di.mode & 0b100) ? 'r' : '-'}${(di.mode & 0b010) ? 'w' : '-'}${(di.mode & 0b001) ? 'x' : '-'}`;
             const row_markup =
-                <tr role="row" aria-selected={selected.toString()}>
-                    <td>{/*type*/}        {di.type}</td>
-                    <td>{/*mode_string*/} {di.mode_string}</td>
-                    <td>{/*name*/}        {di.name}</td>
-                    <td>{/*size*/}        {di.size.toString()}</td>
-                    <td>{/*time*/}        {di.modify_time_ms.toString()}</td>
-                    <td>{/*mods*/}        !!!</td>
-                </tr>;
+                <div role="row" aria-selected={selected.toString()}>
+                    <div>{/*name*/} {di.name}</div>
+                    <div>{/*type*/} {di.type}</div>
+                    <div>{/*size*/} {di.size.toString()}</div>
+                    <div>{/*mode*/} {mode_string}</div>
+                    <div>{/*time*/} {format_time(new Date(di.modify_time_ms))}</div>
+                    <div>{/*mods*/} !!!</div>
+                </div>;
             col_headers.forEach((col_header: HTMLElement, col_index: number) => {
                 // columns that specify an op (and therefore divisor) are considered numeric
                 if (get_col_info(col_header).op) {
@@ -221,7 +239,7 @@ export class ServerFsDialog {
         };
 
         const find_checked_header = (): HTMLElement => {
-            const checked_header = thead_tr.querySelector('th[aria-checked="true"]') as HTMLElement;
+            const checked_header = header_container.querySelector('[aria-checked="true"]') as HTMLElement;
             if (!checked_header) {
                 console.error('unable to find checked header');
                 throw new Error('unable to find checked header');
@@ -232,8 +250,8 @@ export class ServerFsDialog {
         // set aria-checked and click handlers for the column headers
         col_headers.forEach((col_header: HTMLElement, col_index: number) => {
             col_header.setAttribute('aria-checked', (col_index === sort_col).toString());
-            col_header.onclick = (event) => {
-                const clicked_header = (event.target as null|Element)?.closest('th');
+            const handle_header_interaction = (event: Event) => {
+                const clicked_header = col_header;
                 if (clicked_header) {  // should always be true
                     const checked_header = find_checked_header();
                     if (clicked_header === checked_header) {
@@ -243,6 +261,15 @@ export class ServerFsDialog {
                         clicked_header.setAttribute('aria-checked', 'true');
                     }
                     render();
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            };
+            col_header.onclick = handle_header_interaction;
+            col_header.onkeydown = (event: KeyboardEvent) => {
+                const { key, shiftKey, ctrlKey, altKey, metaKey } = event;
+                if ([ 'Enter', ' ' ].includes(key) && !shiftKey && !ctrlKey && !altKey && !metaKey) {
+                    handle_header_interaction(event);
                 }
             };
         });
@@ -294,21 +321,19 @@ export class ServerFsDialog {
         }
 
         const render = () => {
-            if (!tbody) {  // typescript can't figure out that this was already guaranteed above...
-                throw new Error('unexpected: tbody not found');
-            }
             clamp_selected_row();
             dir_info.sort(make_sort_function());
-            clear_element(tbody);
+            clear_element(content_container);
             dir_info.forEach((di, index) => {
-                tbody.appendChild(
+                content_container.appendChild(
                     make_file_row(di, (index === selected_row))
                 );
             });
         }
+
         render();  // initial render
 
-        return table;
+        return file_list;
     }
 }
 (globalThis as any).ServerFsDialog = ServerFsDialog;//!!!

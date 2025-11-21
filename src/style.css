@@ -593,45 +593,89 @@ dialog.export-options-dialog {
 /* === server-fs-dialog === */
 
 .server-fs-dialog {
-    & table {
-        border-spacing: 0;
-        border-collapse: collapse;
+    max-width:  80dvw;
+    max-height: 80dvh;
 
-        & thead {
-            & th {
+    .server-fs-dialog-file-list {
+        font-family: 'monospace';
+
+        .server-fs-dialog-file-list-header-container,
+        .server-fs-dialog-file-list-content-container {
+            display: grid;
+            grid-template-columns: 5fr 1fr 1fr 1fr 3fr 3fr;
+        }
+
+        /* fr units by default have a min value of auto and this can result in
+         * the header and content grids not aligning.  This can be fixed by
+         * repacing Xfr with minmax(0, Xfr), but that kind of clutters the
+         * grid-template-columns specification, so instead set min-width: 0
+         * on all child divs (kind of brute force but it works...).
+         */
+        .server-fs-dialog-file-list-header-container > div,
+        .server-fs-dialog-file-list-content-container > div > div {  /* note: content rows are wrapped in a div to allow for row selection */
+            & > div {
+                min-width: 0;
+                overflow: hidden;
+            }
+        }
+
+        .server-fs-dialog-file-list-header-container {
+            .server-fs-dialog-file-list-header,
+            & > div {
+                user-select: none;
                 border-left:   1px solid var(--theme-si-fg, hotpink);
                 border-bottom: 1px solid var(--theme-si-fg, hotpink);
+            }
+            .server-fs-dialog-file-list-header {
                 text-align: left;
 
                 &::after {
                     content: " ";
                     display: inline-block;
-                    width: 3em;
+                    width:       1em;  /* fixed-width so that columns don't grow/shrink when indicator changes */
                     text-align: right;
+                    float:      right;
                 }
 
                 &[aria-checked="true"] {
                     &:not([data-sort-reverse])::after,
                     &[data-sort-reverse=""]::after {
-                        content: " \25B4";  /* up */
+                        content: "\25B2";  /* up */
                     }
                     &[data-sort-reverse]:not([data-sort-reverse=""])::after {
-                        content: " \25BE";  /* down */
+                        content: "\25BC";  /* down */
                     }
                 }
             }
         }
 
-        & tbody > tr > td {
-            &[data-numeric]:not([data-numeric=""]) {
+        .server-fs-dialog-file-list-content-container {
+            & > div {
+                /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
+                display: contents;
+
+                & > div {
+                    min-width: 0;
+                    overflow: hidden;
+                }
+
+                &[aria-selected="true"] {
+                    & > div {
+                        background-color: var(--theme-si-hb, hotpink);
+                    }
+                }
+            }
+            [data-numeric]:not([data-numeric=""]) {
                 text-align: right;
                 padding-right: 1em;  /* make column look less crowded to the right, especially with the left-justified headings */
             }
         }
 
-        & th,
-        & td {
-            padding: 0.25em;
+        .server-fs-dialog-file-list-header-container,
+        .server-fs-dialog-file-list-content-container {
+            & > div {
+                padding: 0.25em;
+            }
         }
     }
 }

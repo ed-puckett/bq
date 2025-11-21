@@ -24,7 +24,6 @@ import {
 import {
     ServerFsDialog,
 } from './server-fs-dialog/_';
-console.log({ ServerFsDialog });//!!! force load for testing
 
 import {
     SerialDataSource,
@@ -172,7 +171,7 @@ export class BqManager {
 
     constructor() {
 (globalThis as any).server_interface = this.#server_interface;//!!!
-(globalThis as any).T = () => new ServerFsDialog().run(this.#server_interface, new URL(location.href));//!!!
+(globalThis as any).T = () => new ServerFsDialog().run(this.#server_interface, new URL('/current/', location.href));//!!!
         this.#command_bindings = get_global_command_bindings();
 
         let initial_key_maps: undefined|Array<KeyMap>;
