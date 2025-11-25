@@ -58,7 +58,7 @@ export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
     static dialog_css_class                      = 'server-fs-dialog';
-    static file_list_container_css_class         = 'server-fs-dialog-file-list-container';
+    static file_list_holder_css_class            = 'server-fs-dialog-file-list-holder';
     static file_list_css_class                   = 'server-fs-dialog-file-list';
     static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
     static file_list_header_css_class            = 'server-fs-dialog-file-list-header';
@@ -67,7 +67,7 @@ export class ServerFsDialog {
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
         document.body.appendChild(dialog);
-        const files_container = dialog.querySelector(`.${this.CLASS.file_list_container_css_class}`);
+        const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
         if (!files_container) {
             throw new Error('unexpected: could not find file list container element');
         }
@@ -109,8 +109,7 @@ export class ServerFsDialog {
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
                 <form>
-                    <div class={this.CLASS.file_list_container_css_class}>
-                    </div>
+                    <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <input type="cancel" name="cancel" />
                     <input type="submit" name="submit" />
                 </form>
