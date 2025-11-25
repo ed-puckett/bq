@@ -63,6 +63,7 @@ export class ServerFsDialog {
     static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
     static file_list_header_css_class            = 'server-fs-dialog-file-list-header';
     static file_list_content_container_css_class = 'server-fs-dialog-file-list-content-container';
+    static file_list_controls_footer_css_class   = 'server-fs-dialog-file-list-controls-footer';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
@@ -110,8 +111,10 @@ export class ServerFsDialog {
             <dialog class={this.CLASS.dialog_css_class}>
                 <form>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
-                    <input type="cancel" name="cancel" />
-                    <input type="submit" name="submit" />
+                    <div class={this.CLASS.file_list_controls_footer_css_class}>
+                        <input type="cancel" name="cancel" />
+                        <input type="submit" name="submit" />
+                    </div>
                 </form>
             </dialog>;
         return dialog as HTMLDialogElement;

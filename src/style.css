@@ -593,18 +593,43 @@ dialog.export-options-dialog {
 /* === server-fs-dialog === */
 
 .server-fs-dialog {
+    @property --server-fs-dialog-header-height {
+        inherit:       true;
+        syntax:        <length>;
+        initial-value: 3em;
+    }
+    @property --server-fs-dialog-header-padding {
+        inherit:       true;
+        syntax:        <length>;
+        initial-value: 3em;
+    }
+    @property --server-fs-dialog-content-padding {
+        inherit:       true;
+        syntax:        <length>;
+        initial-value: 3em;
+    }
+    @property --server-fs-dialog-footer-height {
+        inherit:       true;
+        syntax:        <length>;
+        initial-value: 3em;
+    }
+    --server-fs-dialog-header-height:   2.5em;
+    --server-fs-dialog-header-padding:  0.25em;
+    --server-fs-dialog-content-padding: 0.25em;
+    --server-fs-dialog-footer-height:   2em;
+    --server-fs-dialog-border-size:     1px;
+
     width:  80dvw;
     height: 80dvh;
     resize: both;
 
     form {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: calc(100% - var(--server-fs-dialog-footer-height)) var(--server-fs-dialog-footer-height);
         height: 100%;
 
         .server-fs-dialog-file-list-holder {
-            max-height: calc(100% - 3em);/*!!!*/
-            flex-grow: 1;
+            height: calc(100% - var(--server-fs-dialog-border-size));  /* account for bottom border */
 
             .server-fs-dialog-file-list {
                 height: 100%;
@@ -615,6 +640,7 @@ dialog.export-options-dialog {
                     display: grid;
                     grid-template-columns: 5fr 1fr 1fr 1fr 3fr 3fr;
                     grid-auto-rows: max-content;
+                    overflow-y: scroll;
                 }
 
                 /* fr units by default have a min value of auto and this can result in
@@ -632,22 +658,23 @@ dialog.export-options-dialog {
                 }
 
                 .server-fs-dialog-file-list-header-container {
-                    container: header-container / inline-size;
-                    overflow: scroll;
+                    align-content: end;
+                    height: var(--server-fs-dialog-header-height);
+                    border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
 
                     .server-fs-dialog-file-list-header,
                     & > div {
                         user-select: none;
-                        border-left:   1px solid var(--theme-si-fg, hotpink);
-                        border-bottom: 1px solid var(--theme-si-fg, hotpink);
+                        border-left: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
                     }
                     .server-fs-dialog-file-list-header {
                         text-align: left;
+                        text-overflow: ellipsis;
 
                         &::after {
                             content: " ";
                             display: inline-block;
-                            width:       1em;  /* fixed-width so that columns don't grow/shrink when indicator changes */
+                            width: 1em;  /* fixed-width so that columns don't grow/shrink when indicator changes (UNFORTUNATELY NOT WORKING) */
                             text-align: right;
                             float:      right;
                         }
@@ -665,8 +692,9 @@ dialog.export-options-dialog {
                 }
 
                 .server-fs-dialog-file-list-content-container {
-                    overflow: auto;
-                    height: calc(100% - 3em);/*!!!*/
+                    border-left:   var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+                    border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+                    height: calc(100% - var(--server-fs-dialog-header-height) - var(--server-fs-dialog-border-size));  /* account for bottom border */
 
                     & > div {
                         /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
@@ -674,6 +702,7 @@ dialog.export-options-dialog {
 
                         & > div {
                             min-width: 0;
+                            padding-left: 0.25em;
                             overflow: hidden;
                             text-overflow: ellipsis;
                         }
@@ -693,10 +722,17 @@ dialog.export-options-dialog {
                 .server-fs-dialog-file-list-header-container,
                 .server-fs-dialog-file-list-content-container {
                     & > div {
-                        padding: 0.25em;
+                        padding: var(--server-fs-dialog-content-padding);
                     }
                 }
             }
+        }
+
+        .server-fs-dialog-file-list-controls-footer {
+            justify-self: end;
+            align-content: end;
+            height: var(--server-fs-dialog-footer-height);
+            padding: var(--server-fs-dialog-header-padding);
         }
     }
 }
