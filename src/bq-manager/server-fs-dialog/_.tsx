@@ -58,6 +58,7 @@ export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
     static dialog_css_class                      = 'server-fs-dialog';
+    static directory_chooser_css_class           = 'server-fs-dialog-directory-chooser';
     static file_list_holder_css_class            = 'server-fs-dialog-file-list-holder';
     static file_list_css_class                   = 'server-fs-dialog-file-list';
     static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
@@ -68,6 +69,8 @@ export class ServerFsDialog {
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
         const dialog = this.#create_dialog();
         document.body.appendChild(dialog);
+        const directory_chooser = this.#directory_chooser_from_url(start_url);
+        dialog.insertBefore(directory_chooser, dialog.firstChild);
         const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
         if (!files_container) {
             throw new Error('unexpected: could not find file list container element');
@@ -120,6 +123,19 @@ export class ServerFsDialog {
         return dialog as HTMLDialogElement;
     }
 
+    #directory_chooser_from_url(url: URL): Element {
+        const directory_chooser =
+            <ol class={this.CLASS.directory_chooser_css_class}>
+            </ol>;
+        const subdirs = url.pathname.split('/');
+        for (const subdir of subdirs.slice(1, -1)) {  // omit the first (it's empty) and the last (it's a file)
+            const li = document.createElement('li');
+            li.textContent = subdir;
+            directory_chooser.appendChild(li);
+        }
+        return directory_chooser;
+    }
+
     /** create HTML markup for a file list from the given dir_info
      */
     #file_list_from_dir_info(dir_info: DirInfo[], options: FILE_LIST_FROM_DIR_INFO_OPTIONS={}): Element {
@@ -144,9 +160,7 @@ export class ServerFsDialog {
             <div class={this.CLASS.file_list_css_class}>
                 <div class={this.CLASS.file_list_header_container_css_class}>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="name">Name</div>
-                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="type">Type</div>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="size/1">Size</div>
-                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="mode">Access</div>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="modify_time_ms">Modified</div>
                     <div>{/* manipulation links */}</div>
                 </div>
@@ -187,34 +201,73 @@ export class ServerFsDialog {
             };
         };
 
-        const format_time = (time: Date): string => {
+        //                    0    1      2      3      4      5      6      7      8
+        const units_1024 = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB' ];
+        const units_1000 = [ 'B', 'KB',  'MB',  'GB',  'TB',  'PB',  'EB',  'ZB',  'YB'  ];
+
+        const format_size = (size: number, powers_of_2: boolean = false, with_space: boolean = false) => {
+            if (typeof size !== 'number' || Number.isNaN(size)) {
+                throw new TypeError('size must be a non-NaN number');
+            }
+            let units, divisor;
+            if (powers_of_2) {
+                units   = units_1024;
+                divisor = 1024;
+            } else {
+                units   = units_1000;
+                divisor = 1000;
+            }
+            const negative = (size < 0);
+            let n = negative ? -size : size;
+            let units_index = 0;
+            for ( ; ; units_index++) {
+                if (n < divisor) {
+                    break;
+                }
+                if (units_index >= units.length-1) {
+                    break;  // units overflow
+                }
+                n /= divisor;
+            }
+
+            const decimals =
+                Number.isInteger(n) ? 0
+                : (n < 10) ? 1
+                : 0;
+            return `${negative ? '-' : ''}${n.toFixed(decimals)}${with_space ? ' ' : ''}${units[units_index]}`;
+        }
+
+        const format_time = (time: Date, full: boolean = false): string => {
             const formatter = new Intl.DateTimeFormat(undefined, {
                 year:   "numeric",
                 month:  "short",
                 day:    "2-digit",
-                hour:   "2-digit",
+                hour:   "2-digit", hour12: false,
                 minute: "2-digit",
                 second: "2-digit",
             });
             const parts = formatter.formatToParts(time)
                 .reduce( (acc: any, desc: any) => { acc[desc.type] = desc.value; return acc },
                          {} );
-            return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+            if (full) {
+                return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+            } else {
+                const days_from_now = Math.abs(Date.now() - time.getTime()) / (24 * 60 * 60 * 1000);
+                return (days_from_now < 1)
+                    ? `${parts.hour}:${parts.minute}:${parts.second}`
+                    : `${parts.year}-${parts.month}-${parts.day}`;
+            }
         };
 
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
-            //!!!
             // Note that the formatting of each column is not determined by
             // the header's 'data-sort-prop'--that is used for sorting/styling
             // purposes.  The actual formatting of the entries' data is
             // implemented here.
-            const mode_string = `${(di.mode & 0b100) ? 'r' : '-'}${(di.mode & 0b010) ? 'w' : '-'}${(di.mode & 0b001) ? 'x' : '-'}`;
             const row_markup =
                 <div role="row" aria-selected={selected.toString()}>
                     <div>{/*name*/} {di.name}</div>
-                    <div>{/*type*/} {di.type}</div>
-                    <div>{/*size*/} {di.size.toString()}</div>
-                    <div>{/*mode*/} {mode_string}</div>
+                    <div>{/*size*/} {format_size(di.size, true, true)}</div>
                     <div>{/*time*/} {format_time(new Date(di.modify_time_ms))}</div>
                     <div>{/*mods*/} !!!</div>
                 </div>;
