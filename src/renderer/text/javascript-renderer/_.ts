@@ -89,6 +89,7 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     plotly
 //     control_tools
 //     canvas_tools
+//     formatters
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -231,6 +232,8 @@ import * as rxjs from 'rxjs';
 import * as controls_tools from 'lib/ui/controls-tools';
 
 import * as canvas_tools from 'lib/ui/canvas-tools/_';
+
+import * as formatters from 'lib/sys/formatters';
 
 import {
     parse as babel_parse,
@@ -522,6 +525,7 @@ export class JavaScriptRenderer extends TextBasedRenderer {
 
             controls_tools,
             canvas_tools,
+            formatters,
 
             d3,  // for use with Plotly
             load_Plotly,

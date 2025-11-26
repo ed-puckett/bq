@@ -30,10 +30,14 @@ export async function load_stylesheet(): Promise<void> {
 }
 
 
-
 type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
     sort_col?:     number,  // 0-based, must be a non-negative integer
     selected_row?: number,  // 0-based, must be a non-negative integer
+};
+
+type DIALOG_CONTROLS = {
+    perform_submit: ((result: string) => void),
+    perform_cancel: (() => void),
 };
 
 const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+)))?$/;
@@ -72,30 +76,6 @@ export class ServerFsDialog {
     static file_list_controls_footer_css_class   = 'server-fs-dialog-file-list-controls-footer';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
-        const dialog = this.#create_dialog(start_url);
-        document.body.appendChild(dialog);
-        const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
-        if (!files_container) {
-            throw new Error('unexpected: could not find file list container element');
-        }
-        const slash_index = start_url.pathname?.lastIndexOf('/');
-        if (slash_index === -1) {
-            throw new TypeError('start_url pathname does not contain "/"');  // should never happen
-        }
-        const dir_url = new URL(start_url.pathname.slice(0, slash_index+1), start_url);  // grab the containing directory including the trailing "/"
-        const res = await fetch(dir_url);
-        const res_json = await res.text();
-        const raw_dir_info = JSON.parse(res_json);
-        if (!res.body) {
-            console.error('unable to read directory for start_url', { start_url, dir_url, res });
-            throw new Error('unable to read directory for start_url');
-        }
-        if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => is_DirInfo(test))) {
-            console.error('bad response when reading directory', { raw_dir_info });
-            throw new Error('bad response when reading directory');
-        }
-        const dir_info: DirInfo[] = raw_dir_info;
-        files_container.appendChild(this.#file_list_from_dir_info(dir_info));
         const {
             promise,
             resolve,
@@ -104,15 +84,57 @@ export class ServerFsDialog {
         const cleanup = () => {
             dialog.remove();
         };
-        dialog.oncancel = () => { cleanup(); resolve(undefined); }
-        dialog.onclose  = () => { cleanup(); resolve('XYZZY!!!'); }
-        dialog.showModal();
-        return promise as Promise<undefined|string>;
+        const perform_submit = (result: string) => { cleanup(); resolve(result); };
+        const perform_cancel = ()               => { cleanup(); resolve(undefined); };
+        const dialog_controls: DIALOG_CONTROLS = { perform_submit, perform_cancel };
+        const dialog = this.#create_dialog(start_url, dialog_controls);
+        dialog.onclose  = () => perform_submit(dialog.returnValue);
+        dialog.oncancel = () => perform_cancel();
+
+        try {  // to catch errors and close dialog
+
+            document.body.appendChild(dialog);
+            const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
+            if (!files_container) {
+                throw new Error('unexpected: could not find file list container element');
+            }
+            const slash_index = start_url.pathname?.lastIndexOf('/');
+            if (slash_index === -1) {
+                throw new TypeError('start_url pathname does not contain "/"');  // should never happen
+            }
+            const dir_url = new URL(start_url.pathname.slice(0, slash_index+1), start_url);  // grab the containing directory including the trailing "/"
+            const res = await fetch(dir_url);
+            const res_json = await res.text();
+            let raw_dir_info: any;
+            try {
+                raw_dir_info = JSON.parse(res_json);
+            } catch (_) {
+                console.error('reading directory for start_url returned bad JSON', { start_url, dir_url, res });
+                throw new Error('reading directory for start_url returned bad JSON');
+            }
+            if (!res.body) {
+                console.error('unable to read directory for start_url', { start_url, dir_url, res });
+                throw new Error('unable to read directory for start_url');
+            }
+            if (!Array.isArray(raw_dir_info) || !raw_dir_info.every(test => is_DirInfo(test))) {
+                console.error('bad response when reading directory', { raw_dir_info });
+                throw new Error('bad response when reading directory');
+            }
+            const dir_info: DirInfo[] = raw_dir_info;
+            files_container.appendChild(this.#file_list_from_dir_info(dir_url, dir_info, dialog_controls));
+            dialog.showModal();
+            return promise as Promise<undefined|string>;
+
+        } catch (error) {
+            dialog.close();
+            dialog.remove();
+            throw error;
+        }
     }
 
     /** create the HTMLServerDialog object by instantiating it from HTML
      */
-    #create_dialog(start_url: URL): HTMLDialogElement {
+    #create_dialog(start_url: URL, dialog_controls: DIALOG_CONTROLS): HTMLDialogElement {
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
                 <ol class={this.CLASS.directory_chooser_css_class}>
@@ -141,7 +163,12 @@ export class ServerFsDialog {
 
     /** create HTML markup for a file list from the given dir_info
      */
-    #file_list_from_dir_info(dir_info: DirInfo[], options: FILE_LIST_FROM_DIR_INFO_OPTIONS={}): Element {
+    #file_list_from_dir_info(
+        dir_url:         URL,
+        dir_info:        DirInfo[],
+        dialog_controls: DIALOG_CONTROLS,
+        options:         FILE_LIST_FROM_DIR_INFO_OPTIONS={},
+    ): Element {
         const default_sort_col = 0;  // 0-based
         dir_info = [ ...dir_info ];  // copy so that sorting does not affect passed value
         let {
@@ -204,6 +231,15 @@ export class ServerFsDialog {
             };
         };
 
+        const select_row = (row: HTMLElement) => {
+            if (row.getAttribute('role') !== 'row') {
+                throw new TypeError('row does not look incorrect');
+            }
+            content_container.querySelectorAll('[role="row"][aria-selected="true"]')
+                .forEach((selected_row) => selected_row.setAttribute('aria-selected', "false"));
+            row.setAttribute('aria-selected', "true");
+        };
+
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
             // Note that the formatting of each column is not determined by
             // the header's 'data-sort-prop'--that is used for sorting/styling
@@ -222,6 +258,12 @@ export class ServerFsDialog {
                     row_markup.children[col_index]?.setAttribute('data-numeric', 'numeric');
                 }
             });
+            row_markup.onclick = () => {
+                select_row(row_markup);
+            };
+            row_markup.ondblclick = () => {
+                dialog_controls.perform_submit(new URL(di.name, dir_url).href);
+            };
             return row_markup;
         }
 
@@ -247,7 +289,7 @@ export class ServerFsDialog {
             return checked_header;
         };
 
-        // set aria-checked and click handlers for the column headers
+        // set aria-checked and event handlers for the column headers
         col_headers.forEach((col_header: HTMLElement, col_index: number) => {
             col_header.setAttribute('aria-checked', (col_index === sort_col).toString());
             const handle_header_interaction = (event: Event) => {

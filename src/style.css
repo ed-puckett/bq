@@ -725,6 +725,12 @@ dialog.export-options-dialog {
                                 background-color: var(--theme-si-hb, hotpink);
                             }
                         }
+
+                        &:hover {
+                            & > div {
+                                background-color: var(--theme-si-vb, hotpink);
+                            }
+                        }
                     }
                     [data-numeric]:not([data-numeric=""]) {
                         text-align: right;
