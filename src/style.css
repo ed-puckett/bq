@@ -594,9 +594,11 @@ dialog.export-options-dialog {
 
 .server-fs-dialog {
     --server-fs-dialog-chooser-height:  2em;
+    --server-fs-dialog-chooser-padding: 0.25em;
     --server-fs-dialog-header-height:   2.5em;
     --server-fs-dialog-header-padding:  0.25em;
     --server-fs-dialog-content-padding: 0.25em;
+    --server-fs-dialog-footer-padding:  0.25em;
     --server-fs-dialog-footer-height:   2em;
     --server-fs-dialog-border-size:     1px;
 
@@ -605,17 +607,33 @@ dialog.export-options-dialog {
     height: 80dvh;
     display: grid;
     grid-template-rows:
-        var(--server-fs-dialog-footer-height)
-        calc(100% - var(--server-fs-dialog-chooser-height) - var(--server-fs-dialog-footer-height))
-        var(--server-fs-dialog-footer-height);
+        var(--server-fs-dialog-chooser-height)               /* directory chooser */
+        calc(100% - var(--server-fs-dialog-chooser-height))  /* file list plus controls form */
+    ;
 
-    ol {
+    ol.server-fs-dialog-directory-chooser {
+        /* override the standard spacing configuration for <ol> elements */
+        margin-block-start: 0;
+        margin-block-end: 0;
+        padding-inline-start: 0;
+        /* end of overrides */
+        box-sizing: border-box;  /* make --server-fs-dialog-chooser-height encompass border, padding, etc */
         height: var(--server-fs-dialog-chooser-height);
+        padding: var(--server-fs-dialog-chooser-padding);
+
+        li {
+            display: inline;
+            padding: var(--server-fs-dialog-chooser-padding) 1em var(--server-fs-dialog-chooser-padding) 0em;
+            list-style-type: none;
+        }
     }
 
     form {
         display: grid;
-        grid-template-rows: calc(100% - var(--server-fs-dialog-footer-height)) var(--server-fs-dialog-footer-height);
+        grid-template-rows:
+            calc(100% - var(--server-fs-dialog-footer-height))  /* file list */
+            var(--server-fs-dialog-footer-height)               /* controls */
+        ;
         height: 100%;
 
         .server-fs-dialog-file-list-holder {
@@ -628,7 +646,12 @@ dialog.export-options-dialog {
                 .server-fs-dialog-file-list-header-container,
                 .server-fs-dialog-file-list-content-container {
                     display: grid;
-                    grid-template-columns: minmax(4em, 8fr) 6em 8em 5em;
+                    grid-template-columns:
+                        minmax(4em, 8fr)  /* name field */
+                        6em               /* size field */
+                        8em               /* modified field */
+                        5em               /* manipulation links */
+                    ;
                     grid-auto-rows: max-content;
                     overflow-y: scroll;
                 }
@@ -642,7 +665,6 @@ dialog.export-options-dialog {
                 .server-fs-dialog-file-list-header-container > div,
                 .server-fs-dialog-file-list-content-container > div > div {  /* note: content rows are wrapped in a div to allow for row selection */
                     & > div {
-                        /*min-width: 0;*/
                         overflow: hidden;
                     }
                 }
@@ -722,8 +744,9 @@ dialog.export-options-dialog {
         .server-fs-dialog-file-list-controls-footer {
             justify-self: end;
             align-content: end;
+            box-sizing: border-box;  /* make --server-fs-dialog-footer-height encompass border, padding, etc */
             height: var(--server-fs-dialog-footer-height);
-            padding: var(--server-fs-dialog-header-padding);
+            padding: var(--server-fs-dialog-footer-padding);
         }
     }
 }

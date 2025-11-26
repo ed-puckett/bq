@@ -16,6 +16,11 @@ import {
 } from '../server-interface';
 
 import {
+    format_size,
+    format_time,
+} from 'lib/sys/formatters';
+
+import {
     _jsx_create_element,
 } from 'lib/ui/jsx-create-element';
 
@@ -67,10 +72,8 @@ export class ServerFsDialog {
     static file_list_controls_footer_css_class   = 'server-fs-dialog-file-list-controls-footer';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
-        const dialog = this.#create_dialog();
+        const dialog = this.#create_dialog(start_url);
         document.body.appendChild(dialog);
-        const directory_chooser = this.#directory_chooser_from_url(start_url);
-        dialog.insertBefore(directory_chooser, dialog.firstChild);
         const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
         if (!files_container) {
             throw new Error('unexpected: could not find file list container element');
@@ -109,9 +112,11 @@ export class ServerFsDialog {
 
     /** create the HTMLServerDialog object by instantiating it from HTML
      */
-    #create_dialog(): HTMLDialogElement {
+    #create_dialog(start_url: URL): HTMLDialogElement {
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
+                <ol class={this.CLASS.directory_chooser_css_class}>
+                </ol>
                 <form>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <div class={this.CLASS.file_list_controls_footer_css_class}>
@@ -120,20 +125,18 @@ export class ServerFsDialog {
                     </div>
                 </form>
             </dialog>;
-        return dialog as HTMLDialogElement;
-    }
 
-    #directory_chooser_from_url(url: URL): Element {
-        const directory_chooser =
-            <ol class={this.CLASS.directory_chooser_css_class}>
-            </ol>;
-        const subdirs = url.pathname.split('/');
-        for (const subdir of subdirs.slice(1, -1)) {  // omit the first (it's empty) and the last (it's a file)
-            const li = document.createElement('li');
-            li.textContent = subdir;
-            directory_chooser.appendChild(li);
+        const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
+        if (!directory_chooser) {
+            throw new Error('unexpected: directory chooser element not found');
         }
-        return directory_chooser;
+        const subdirs = start_url.pathname.split('/');
+        for (const subdir of subdirs.slice(1, -1)) {  // omit the last (it represents a file/non-directory or is empty)
+            const subdir_element = directory_chooser.appendChild(<li>{subdir || '/'}</li>);
+            directory_chooser.appendChild(subdir_element);
+        }
+
+        return dialog as HTMLDialogElement;
     }
 
     /** create HTML markup for a file list from the given dir_info
@@ -199,64 +202,6 @@ export class ServerFsDialog {
                 sort_match,
                 prop, op, divisor, divisor_number,
             };
-        };
-
-        //                    0    1      2      3      4      5      6      7      8
-        const units_1024 = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB' ];
-        const units_1000 = [ 'B', 'KB',  'MB',  'GB',  'TB',  'PB',  'EB',  'ZB',  'YB'  ];
-
-        const format_size = (size: number, powers_of_2: boolean = false, with_space: boolean = false) => {
-            if (typeof size !== 'number' || Number.isNaN(size)) {
-                throw new TypeError('size must be a non-NaN number');
-            }
-            let units, divisor;
-            if (powers_of_2) {
-                units   = units_1024;
-                divisor = 1024;
-            } else {
-                units   = units_1000;
-                divisor = 1000;
-            }
-            const negative = (size < 0);
-            let n = negative ? -size : size;
-            let units_index = 0;
-            for ( ; ; units_index++) {
-                if (n < divisor) {
-                    break;
-                }
-                if (units_index >= units.length-1) {
-                    break;  // units overflow
-                }
-                n /= divisor;
-            }
-
-            const decimals =
-                Number.isInteger(n) ? 0
-                : (n < 10) ? 1
-                : 0;
-            return `${negative ? '-' : ''}${n.toFixed(decimals)}${with_space ? ' ' : ''}${units[units_index]}`;
-        }
-
-        const format_time = (time: Date, full: boolean = false): string => {
-            const formatter = new Intl.DateTimeFormat(undefined, {
-                year:   "numeric",
-                month:  "short",
-                day:    "2-digit",
-                hour:   "2-digit", hour12: false,
-                minute: "2-digit",
-                second: "2-digit",
-            });
-            const parts = formatter.formatToParts(time)
-                .reduce( (acc: any, desc: any) => { acc[desc.type] = desc.value; return acc },
-                         {} );
-            if (full) {
-                return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
-            } else {
-                const days_from_now = Math.abs(Date.now() - time.getTime()) / (24 * 60 * 60 * 1000);
-                return (days_from_now < 1)
-                    ? `${parts.hour}:${parts.minute}:${parts.second}`
-                    : `${parts.year}-${parts.month}-${parts.day}`;
-            }
         };
 
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
