@@ -603,8 +603,8 @@ dialog.export-options-dialog {
     --server-fs-dialog-border-size:     1px;
 
     resize: both;
-    width:  80dvw;
-    height: 80dvh;
+    width:  min(100dvw, 1024px);
+    height: min(100dvh,  768px);
     display: grid;
     grid-template-rows:
         var(--server-fs-dialog-chooser-height)               /* directory chooser */
@@ -628,7 +628,7 @@ dialog.export-options-dialog {
         }
     }
 
-    form {
+    .server-fs-dialog-files-form {
         display: grid;
         grid-template-rows:
             calc(100% - var(--server-fs-dialog-footer-height))  /* file list */

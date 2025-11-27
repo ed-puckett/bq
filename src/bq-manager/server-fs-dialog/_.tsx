@@ -68,6 +68,7 @@ export class ServerFsDialog {
 
     static dialog_css_class                      = 'server-fs-dialog';
     static directory_chooser_css_class           = 'server-fs-dialog-directory-chooser';
+    static files_form_css_class                  = 'server-fs-dialog-files-form';
     static file_list_holder_css_class            = 'server-fs-dialog-file-list-holder';
     static file_list_css_class                   = 'server-fs-dialog-file-list';
     static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
@@ -139,13 +140,13 @@ export class ServerFsDialog {
             <dialog class={this.CLASS.dialog_css_class}>
                 <ol class={this.CLASS.directory_chooser_css_class}>
                 </ol>
-                <form>
+                <div class={this.CLASS.files_form_css_class}>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <div class={this.CLASS.file_list_controls_footer_css_class}>
                         <input type="cancel" name="cancel" />
-                        <input type="submit" name="submit" />
+                        <input type="submit" name="submit" autofocus />
                     </div>
-                </form>
+                </div>
             </dialog>;
 
         const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
@@ -281,11 +282,11 @@ export class ServerFsDialog {
             // purposes.  The actual formatting of the entries' data is
             // implemented here.
             const row_markup =
-                <div tabindex="0" role="row" aria-selected={selected.toString()}>
-                    <div>{/*name*/} {di.name}</div>
-                    <div>{/*size*/} {format_size(di.size, true, true)}</div>
-                    <div>{/*time*/} {format_time(new Date(di.modify_time_ms))}</div>
-                    <div>{/*mods*/} !!!</div>
+                <div role="row" aria-selected={selected.toString()}>
+                    <div tabindex="0">{/*name, tab-selectable*/}{di.name}</div>
+                    <div>{/*size*/}{format_size(di.size, true, true)}</div>
+                    <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>
+                    <div>{/*mods*/}!!!</div>
                 </div>;
             col_headers.forEach((col_header: HTMLElement, col_index: number) => {
                 // columns that specify an op (and therefore divisor) are considered numeric
