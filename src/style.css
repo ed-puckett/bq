@@ -726,7 +726,7 @@ dialog.export-options-dialog {
                             }
                         }
 
-                        &:hover {
+                        &[aria-selected="false"]:hover {
                             & > div {
                                 background-color: var(--theme-si-vb, hotpink);
                             }

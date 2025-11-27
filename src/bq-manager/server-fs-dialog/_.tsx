@@ -204,6 +204,9 @@ export class ServerFsDialog {
         if (!header_container || !content_container) {
             throw new Error('unexpected: table elements not found');
         }
+        if (!(content_container instanceof HTMLElement)) {
+            throw new Error('unexpected: content_container is not an instance of HTMLElement');
+        }
 
         const col_headers = Array.from(header_container.querySelectorAll(`.${this.CLASS.file_list_header_css_class}`)) as Array<HTMLElement>;
         const col_count   = col_headers.length;
@@ -240,13 +243,45 @@ export class ServerFsDialog {
             row.setAttribute('aria-selected', "true");
         };
 
+        const select_adjacent_row = (up: boolean) => {
+            const current = content_container.querySelector('[role="row"][aria-selected="true"]');
+            if (!current) {
+                throw new TypeError('unexpected: selected row not found');
+            }
+            const adjacent_element = up ? current.previousElementSibling : current.nextElementSibling;
+            if (adjacent_element instanceof HTMLElement) {
+                select_row(adjacent_element);
+            }
+        };
+
+        const submit_url_for_filename = (filename: string) => {
+            dialog_controls.perform_submit(new URL(filename, dir_url).href);
+        };
+
+        content_container.onkeydown = (event: KeyboardEvent) => {
+            let up: null|boolean = null;
+            switch (event.key) {
+                case 'ArrowUp':
+                    up = true;
+                    break;
+                case 'ArrowDown':
+                    up = false;
+                    break;
+            }
+            if (up !== null) {
+                select_adjacent_row(up);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
             // Note that the formatting of each column is not determined by
             // the header's 'data-sort-prop'--that is used for sorting/styling
             // purposes.  The actual formatting of the entries' data is
             // implemented here.
             const row_markup =
-                <div role="row" aria-selected={selected.toString()}>
+                <div tabindex="0" role="row" aria-selected={selected.toString()}>
                     <div>{/*name*/} {di.name}</div>
                     <div>{/*size*/} {format_size(di.size, true, true)}</div>
                     <div>{/*time*/} {format_time(new Date(di.modify_time_ms))}</div>
