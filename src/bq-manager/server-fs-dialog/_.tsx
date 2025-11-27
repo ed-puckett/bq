@@ -246,6 +246,8 @@ export class ServerFsDialog {
             row.setAttribute('aria-selected', "true");
         };
 
+        /** @return {Element} now-selected element
+         */
         const select_adjacent_row = (up: boolean) => {
             const current = content_container.querySelector('[role="row"][aria-selected="true"]');
             if (!current) {
@@ -254,28 +256,19 @@ export class ServerFsDialog {
             const adjacent_element = up ? current.previousElementSibling : current.nextElementSibling;
             if (adjacent_element instanceof HTMLElement) {
                 select_row(adjacent_element);
+                (adjacent_element.firstChild as null|HTMLElement)?.focus();//!!!
+                const scroll_element = adjacent_element.firstChild;  // does not work on container, must use firstChild
+                if (scroll_element instanceof Element) {
+                    scroll_element.scrollIntoView({ block: "nearest" });
+                }
+                return adjacent_element;
+            } else {
+                return current;
             }
         };
 
         const submit_url_for_filename = (filename: string) => {
             dialog_controls.perform_submit(new URL(filename, dir_url).href);
-        };
-
-        content_container.onkeydown = (event: KeyboardEvent) => {
-            let up: null|boolean = null;
-            switch (event.key) {
-                case 'ArrowUp':
-                    up = true;
-                    break;
-                case 'ArrowDown':
-                    up = false;
-                    break;
-            }
-            if (up !== null) {
-                select_adjacent_row(up);
-                event.preventDefault();
-                event.stopPropagation();
-            }
         };
 
         const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
@@ -290,6 +283,10 @@ export class ServerFsDialog {
                     <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>
                     <div>{/*mods*/}!!!</div>
                 </div>;
+            const selectable_part = row_markup.querySelector('[tabindex="0"]');
+            if (!(selectable_part instanceof HTMLElement)) {
+                throw new Error('unexpected: selectable_part is not an instanceof HTMLElement');
+            }
             col_headers.forEach((col_header: HTMLElement, col_index: number) => {
                 // columns that specify an op (and therefore divisor) are considered numeric
                 if (get_col_info(col_header).op) {
@@ -302,6 +299,24 @@ export class ServerFsDialog {
             row_markup.ondblclick = () => {
                 dialog_controls.perform_submit(new URL(di.name, dir_url).href);
             };
+            row_markup.onkeydown = (event: KeyboardEvent) => {
+                let stop_event = false;;
+                switch (event.key) {
+                    case 'ArrowUp':
+                        select_adjacent_row(true);
+                        stop_event = true;
+                        break;
+                    case 'ArrowDown':
+                        select_adjacent_row(false);
+                        stop_event = true;
+                        break;
+                }
+                if (stop_event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            };
+            selectable_part.onfocus = () => select_row(row_markup);
             return row_markup;
         }
 

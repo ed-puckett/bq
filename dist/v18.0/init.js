@@ -16173,6 +16173,8 @@ class ServerFsDialog {
                 .forEach((selected_row) => selected_row.setAttribute('aria-selected', "false"));
             row.setAttribute('aria-selected', "true");
         };
+        /** @return {Element} now-selected element
+         */
         const select_adjacent_row = (up) => {
             const current = content_container.querySelector('[role="row"][aria-selected="true"]');
             if (!current) {
@@ -16181,26 +16183,19 @@ class ServerFsDialog {
             const adjacent_element = up ? current.previousElementSibling : current.nextElementSibling;
             if (adjacent_element instanceof HTMLElement) {
                 select_row(adjacent_element);
+                adjacent_element.firstChild?.focus(); //!!!
+                const scroll_element = adjacent_element.firstChild; // does not work on container, must use firstChild
+                if (scroll_element instanceof Element) {
+                    scroll_element.scrollIntoView({ block: "nearest" });
+                }
+                return adjacent_element;
+            }
+            else {
+                return current;
             }
         };
         const submit_url_for_filename = (filename) => {
             dialog_controls.perform_submit(new URL(filename, dir_url).href);
-        };
-        content_container.onkeydown = (event) => {
-            let up = null;
-            switch (event.key) {
-                case 'ArrowUp':
-                    up = true;
-                    break;
-                case 'ArrowDown':
-                    up = false;
-                    break;
-            }
-            if (up !== null) {
-                select_adjacent_row(up);
-                event.preventDefault();
-                event.stopPropagation();
-            }
         };
         const make_file_row = (di, selected) => {
             // Note that the formatting of each column is not determined by
@@ -16212,6 +16207,10 @@ class ServerFsDialog {
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", null, (0,lib_sys_formatters__WEBPACK_IMPORTED_MODULE_4__.format_size)(di.size, true, true)),
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", null, (0,lib_sys_formatters__WEBPACK_IMPORTED_MODULE_4__.format_time)(new Date(di.modify_time_ms))),
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", null, "!!!"));
+            const selectable_part = row_markup.querySelector('[tabindex="0"]');
+            if (!(selectable_part instanceof HTMLElement)) {
+                throw new Error('unexpected: selectable_part is not an instanceof HTMLElement');
+            }
             col_headers.forEach((col_header, col_index) => {
                 // columns that specify an op (and therefore divisor) are considered numeric
                 if (get_col_info(col_header).op) {
@@ -16224,6 +16223,25 @@ class ServerFsDialog {
             row_markup.ondblclick = () => {
                 dialog_controls.perform_submit(new URL(di.name, dir_url).href);
             };
+            row_markup.onkeydown = (event) => {
+                let stop_event = false;
+                ;
+                switch (event.key) {
+                    case 'ArrowUp':
+                        select_adjacent_row(true);
+                        stop_event = true;
+                        break;
+                    case 'ArrowDown':
+                        select_adjacent_row(false);
+                        stop_event = true;
+                        break;
+                }
+                if (stop_event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            };
+            selectable_part.onfocus = () => select_row(row_markup);
             return row_markup;
         };
         const access_sort_direction = (col_header, toggle_first = false) => {
