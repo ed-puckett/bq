@@ -138,8 +138,10 @@ export class ServerFsDialog {
     #create_dialog(start_url: URL, dialog_controls: DIALOG_CONTROLS): HTMLDialogElement {
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
-                <ol class={this.CLASS.directory_chooser_css_class}>
-                </ol>
+                <nav>
+                    <ol class={this.CLASS.directory_chooser_css_class}>
+                    </ol>
+                </nav>
                 <div class={this.CLASS.files_form_css_class}>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <div class={this.CLASS.file_list_controls_footer_css_class}>

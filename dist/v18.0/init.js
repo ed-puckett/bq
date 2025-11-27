@@ -16092,7 +16092,8 @@ class ServerFsDialog {
      */
     #create_dialog(start_url, dialog_controls) {
         const dialog = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("dialog", { class: this.CLASS.dialog_css_class },
-            (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("ol", { class: this.CLASS.directory_chooser_css_class }),
+            (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("nav", null,
+                (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("ol", { class: this.CLASS.directory_chooser_css_class })),
             (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", { class: this.CLASS.files_form_css_class },
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", { class: this.CLASS.file_list_holder_css_class }, " "),
                 (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("div", { class: this.CLASS.file_list_controls_footer_css_class },
