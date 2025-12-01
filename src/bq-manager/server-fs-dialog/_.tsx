@@ -430,7 +430,7 @@ export class ServerFsDialog {
             const row_markup =
                 <div role="row" data-url={url} aria-selected={selected.toString()}>
                     <div tabindex="0">{/*name, tab-selectable*/}{di.name}</div>
-                    <div>{/*size*/}{is_directory ? '-' : format_size(di.size, true, true)}</div>
+                    <div>{/*size*/}{is_directory ? '-' : format_size(di.size, { powers_of_2: true, with_space: true, pad_units: true })}</div>
                     <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>
                     <div>{/*mods*/}!!!</div>
                 </div>;

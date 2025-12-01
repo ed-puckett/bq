@@ -2,17 +2,33 @@
 const units_1024 = [ 'B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB' ];
 const units_1000 = [ 'B', 'KB',  'MB',  'GB',  'TB',  'PB',  'EB',  'ZB',  'YB'  ];
 
-export const format_size = (size: number, powers_of_2: boolean = false, with_space: boolean = false) => {
+const units_1024_max_width = units_1024.reduce<number>((max: number, label: string): number => (max >= label.length) ? max : label.length, -Infinity);
+const units_1000_max_width = units_1000.reduce<number>((max: number, label: string): number => (max >= label.length) ? max : label.length, -Infinity);
+
+export type FORMAT_SIZE_OPTIONS = {
+    powers_of_2?: boolean,
+    with_space?:  boolean,
+    pad_units?:   boolean,
+};
+
+export const format_size = (size: number, options: FORMAT_SIZE_OPTIONS = {}) => {
+    const {
+        powers_of_2 = false,
+        with_space  = false,
+        pad_units   = false,
+    } = options;
     if (typeof size !== 'number' || Number.isNaN(size)) {
         throw new TypeError('size must be a non-NaN number');
     }
-    let units, divisor;
+    let units, divisor, max_width;
     if (powers_of_2) {
-        units   = units_1024;
-        divisor = 1024;
+        units     = units_1024;
+        divisor   = 1024;
+        max_width = units_1024_max_width;
     } else {
-        units   = units_1000;
-        divisor = 1000;
+        units     = units_1000;
+        divisor   = 1000;
+        max_width = units_1000_max_width;
     }
     const negative = (size < 0);
     let n = negative ? -size : size;
@@ -31,7 +47,10 @@ export const format_size = (size: number, powers_of_2: boolean = false, with_spa
         Number.isInteger(n) ? 0
         : (n < 10) ? 1
         : 0;
-    return `${negative ? '-' : ''}${n.toFixed(decimals)}${with_space ? ' ' : ''}${units[units_index]}`;
+    const units_label = pad_units
+        ? units[units_index].padEnd(max_width)
+        : units[units_index];
+    return `${negative ? '-' : ''}${n.toFixed(decimals)}${with_space ? ' ' : ''}${units_label}`;
 }
 
 export const format_time = (time: Date, full: boolean = false): string => {

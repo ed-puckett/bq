@@ -747,6 +747,7 @@ dialog.export-options-dialog {
                             padding-left: 0.25em;
                             overflow: hidden;
                             text-overflow: ellipsis;
+                            white-space: pre-wrap;
                         }
 
                         &[aria-selected="true"] {
@@ -783,7 +784,7 @@ dialog.export-options-dialog {
             padding: var(--server-fs-dialog-footer-padding);
 
             & > button {
-                padding: 0.25em;
+                margin: 0.25em;
             }
         }
     }
