@@ -16072,11 +16072,40 @@ class ServerFsDialog {
                 if (!directory_chooser) {
                     throw new Error('unexpected: directory chooser element not found');
                 }
+                const current_subdir_label_elements = (Array).from(directory_chooser.children);
+                const current_subdir_labels = current_subdir_label_elements.map(label_element => label_element.textContent);
                 const subdirs = start_url.pathname.split('/');
-                for (const subdir of subdirs.slice(0, -1)) { // omit the last (it represents a file/non-directory or is empty)
-                    const subdir_element = directory_chooser.appendChild((0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("li", null, subdir || '/'));
-                    directory_chooser.appendChild(subdir_element);
-                }
+                let chooser_update_diverged = false;
+                let path_so_far = '';
+                subdirs.slice(0, -1) // omit the last (it represents a file/non-directory or is empty)
+                    .map(subdir => `${subdir}/`)
+                    .forEach((subdir_label, index) => {
+                    path_so_far += subdir_label;
+                    let add_new_subdir_label = chooser_update_diverged || // will add if already diverged or 
+                        (index >= current_subdir_labels.length); // will add if beyond current
+                    if (!chooser_update_diverged &&
+                        index < current_subdir_labels.length &&
+                        subdir_label !== current_subdir_labels[index]) {
+                        // first divergence, remove all existing labels from this point forward
+                        chooser_update_diverged = true;
+                        for (let i = index; i < current_subdir_label_elements.length; i++) {
+                            current_subdir_label_elements[i].remove();
+                        }
+                        // note: current_subdir_label_elements and current_subdir_labels will no longer be used...
+                        // now, trigger adding this new divergent label (all subsequent labels will be added
+                        // from this point forward becase chooser_update_diverged is now true).
+                        add_new_subdir_label = true;
+                    }
+                    if (add_new_subdir_label) {
+                        // this new element will be added only if we have diverged
+                        const url = new URL(path_so_far, start_url);
+                        const subdir_element = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("li", { tabindex: "0", url: url.href }, subdir_label);
+                        const activation_action = () => update(url);
+                        subdir_element.onclick = activation_action;
+                        subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(activation_action);
+                        directory_chooser.appendChild(subdir_element);
+                    }
+                });
                 // update file list
                 const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
                 if (!files_container) {
