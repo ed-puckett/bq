@@ -40,7 +40,6 @@ type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
 type DIALOG_ACTIONS = {
     perform_submit: (() => void),
     perform_cancel: (() => void),
-    update:         ((new_start_url: URL) => void),
 };
 
 const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+)))?$/;
@@ -115,19 +114,29 @@ export class ServerFsDialog {
                 cleanup();
                 promise_data.resolve(undefined);
             },
-            update: async (new_start_url: URL) => {
-                return update(new_start_url);  // update defined below
-            },
         };
+
         const dialog = this.#create_dialog(start_url, dialog_actions, for_save);
         document.body.appendChild(dialog);
         dialog.showModal();
 
         const update = async (new_start_url: URL) => {
-            try {  // to catch errors and close dialog
+            try {  // catch errors and close dialog if they occur
 
                 start_url = new_start_url;
 
+                // update directory chooser
+                const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
+                if (!directory_chooser) {
+                    throw new Error('unexpected: directory chooser element not found');
+                }
+                const subdirs = start_url.pathname.split('/');
+                for (const subdir of subdirs.slice(0, -1)) {  // omit the last (it represents a file/non-directory or is empty)
+                    const subdir_element = directory_chooser.appendChild(<li>{subdir || '/'}</li>);
+                    directory_chooser.appendChild(subdir_element);
+                }
+
+                // update file list
                 const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
                 if (!files_container) {
                     throw new Error('unexpected: could not find file list container element');
@@ -200,6 +209,7 @@ export class ServerFsDialog {
                     </div>
                 </div>
             </dialog>;
+
         if (!(dialog instanceof HTMLDialogElement)) {
             throw new Error('unexpected: dialog is not an instance of HTMLDialogElement');
         }
@@ -220,16 +230,6 @@ export class ServerFsDialog {
         const submit_button_action = () => dialog_actions.perform_submit()
         submit_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(submit_button_action);
         submit_button.onclick   = submit_button_action;
-
-        const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
-        if (!directory_chooser) {
-            throw new Error('unexpected: directory chooser element not found');
-        }
-        const subdirs = start_url.pathname.split('/');
-        for (const subdir of subdirs.slice(0, -1)) {  // omit the last (it represents a file/non-directory or is empty)
-            const subdir_element = directory_chooser.appendChild(<li>{subdir || '/'}</li>);
-            directory_chooser.appendChild(subdir_element);
-        }
 
         return dialog as HTMLDialogElement;
     }

@@ -16060,16 +16060,24 @@ class ServerFsDialog {
                 cleanup();
                 promise_data.resolve(undefined);
             },
-            update: async (new_start_url) => {
-                return update(new_start_url); // update defined below
-            },
         };
         const dialog = this.#create_dialog(start_url, dialog_actions, for_save);
         document.body.appendChild(dialog);
         dialog.showModal();
         const update = async (new_start_url) => {
-            try { // to catch errors and close dialog
+            try { // catch errors and close dialog if they occur
                 start_url = new_start_url;
+                // update directory chooser
+                const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
+                if (!directory_chooser) {
+                    throw new Error('unexpected: directory chooser element not found');
+                }
+                const subdirs = start_url.pathname.split('/');
+                for (const subdir of subdirs.slice(0, -1)) { // omit the last (it represents a file/non-directory or is empty)
+                    const subdir_element = directory_chooser.appendChild((0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("li", null, subdir || '/'));
+                    directory_chooser.appendChild(subdir_element);
+                }
+                // update file list
                 const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
                 if (!files_container) {
                     throw new Error('unexpected: could not find file list container element');
@@ -16152,15 +16160,6 @@ class ServerFsDialog {
         const submit_button_action = () => dialog_actions.perform_submit();
         submit_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(submit_button_action);
         submit_button.onclick = submit_button_action;
-        const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
-        if (!directory_chooser) {
-            throw new Error('unexpected: directory chooser element not found');
-        }
-        const subdirs = start_url.pathname.split('/');
-        for (const subdir of subdirs.slice(0, -1)) { // omit the last (it represents a file/non-directory or is empty)
-            const subdir_element = directory_chooser.appendChild((0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_3__/* ._jsx_create_element */ .t)("li", null, subdir || '/'));
-            directory_chooser.appendChild(subdir_element);
-        }
         return dialog;
     }
     /** create HTML markup for a file list from the given dir_info
