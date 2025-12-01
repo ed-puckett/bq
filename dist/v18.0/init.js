@@ -14176,7 +14176,7 @@ class BqManager {
     static get version_string() { return dist_version_info__WEBPACK_IMPORTED_MODULE_19__/* .version_string */ .N; }
     constructor() {
         globalThis.server_interface = this.#server_interface; //!!!
-        globalThis.T = async () => new _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ServerFsDialog */ .V().run(this.#server_interface, new URL(location.href)).then(console.log, console.error); //!!!
+        globalThis.T = async (for_save = false) => new _server_fs_dialog___WEBPACK_IMPORTED_MODULE_2__/* .ServerFsDialog */ .V().run(this.#server_interface, new URL(location.href), for_save); //!!!
         this.#command_bindings = (0,_global_bindings__WEBPACK_IMPORTED_MODULE_15__/* .get_global_command_bindings */ .yU)();
         let initial_key_maps;
         try {
