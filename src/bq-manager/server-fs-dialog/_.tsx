@@ -40,11 +40,15 @@ type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
 type DIALOG_ACTIONS = {
     perform_submit: (() => void),
     perform_cancel: (() => void),
+    set_filename_if_not_updated: ((text: string) => void),
 };
 
 const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[0-1]+|0o[0-7]+|0x[0-9a-fA-F]+)))?$/;
 
-// data- props:
+// data-* props:
+//
+//     data-user-updated ... on filename input control, set to "true" if the user
+//                           has updated the contained value.
 //
 //     data-sort-prop ...... on individual file list header elements, specify a
 //                           property name in DirInfo with optional /{N} or
@@ -71,7 +75,9 @@ export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
     static dialog_css_class                      = 'server-fs-dialog';
+    static server_css_class                      = 'server-fs-dialog-server';
     static directory_chooser_css_class           = 'server-fs-dialog-directory-chooser';
+    static filename_css_class                    = 'server-fs-dialog-filename';
     static files_form_css_class                  = 'server-fs-dialog-files-form';
     static files_form_cancel_button_css_class    = 'server-fs-dialog-files-form-cancel-button';
     static files_form_submit_button_css_class    = 'server-fs-dialog-files-form-submit-button';
@@ -101,7 +107,9 @@ export class ServerFsDialog {
                         } else {
                             // non-directory file: cleanup and then fulfill the promise with url_string
                             cleanup();
-                            promise_data.resolve(url_string);
+                            const filename = (filename_element as null|HTMLInputElement)?.value;
+                            const result_url_string = (for_save && filename) ? new URL(filename, url).href : url_string  // relative to filename (if given)
+                            promise_data.resolve(result_url_string);
                         }
                         return;  // skip over error handling at end
                     }
@@ -114,9 +122,34 @@ export class ServerFsDialog {
                 cleanup();
                 promise_data.resolve(undefined);
             },
+            set_filename_if_not_updated: (text: string) => {
+                if (filename_element) {  // this test is for typescript...
+                    if (filename_element.getAttribute('data-user-updated') !== true.toString()) {
+                        (filename_element as HTMLInputElement).value = text;
+                    }
+                }
+            }
         };
 
         const dialog = this.#create_dialog(start_url, dialog_actions, for_save);
+        const server_element = dialog.querySelector(`.${this.CLASS.server_css_class}`);
+        if (!server_element) {
+            throw new Error('unexpected: server element not found');
+        }
+        const directory_chooser_element = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
+        if (!directory_chooser_element) {
+            throw new Error('unexpected: directory chooser element not found');
+        }
+        const filename_element = dialog.querySelector(`.${this.CLASS.filename_css_class}`);
+        if (!filename_element || !(filename_element instanceof HTMLInputElement)) {
+            throw new Error('unexpected: filename element not found or not an instance of HTMLInputElement');
+        }
+        if (for_save) {
+            filename_element.onchange = () => filename_element.setAttribute('data-user-updated', true.toString());
+        } else {
+            filename_element.setAttribute('readonly', '');
+        }
+
         document.body.appendChild(dialog);
         dialog.showModal();
 
@@ -125,17 +158,20 @@ export class ServerFsDialog {
 
                 start_url = new_start_url;
 
+                // update server
+                server_element.textContent = start_url.origin;
+
                 // update directory chooser
-                const directory_chooser = dialog.querySelector(`.${this.CLASS.directory_chooser_css_class}`);
-                if (!directory_chooser) {
-                    throw new Error('unexpected: directory chooser element not found');
+                if (!(Array<Element>).from(directory_chooser_element.children).every(element => element instanceof HTMLLIElement)) {
+                    throw new Error('unexpected: directory_chooser_element.children contains non-HTMLLIElement elements');
                 }
-                const current_subdir_label_elements = (Array<Element>).from(directory_chooser.children);
+                const current_subdir_label_elements = (Array<HTMLLIElement>).from(directory_chooser_element.children);
                 const current_subdir_labels = current_subdir_label_elements.map(label_element => label_element.textContent);
                 const subdirs = start_url.pathname.split('/');
+                const filename = subdirs.splice(-1, 1)[0]  // omit the last subdir from subdirs (it represents a file/non-directory or is empty) and use that for filename
                 let chooser_update_diverged = false;
                 let path_so_far = '';
-                subdirs.slice(0, -1)  // omit the last (it represents a file/non-directory or is empty)
+                subdirs
                     .map(subdir => `${subdir}/`)
                     .forEach((subdir_label, index) => {
                         path_so_far += subdir_label;
@@ -163,9 +199,16 @@ export class ServerFsDialog {
                             const activation_action = () => update(url);
                             subdir_element.onclick = activation_action;
                             subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(activation_action);
-                            directory_chooser.appendChild(subdir_element);
+                            directory_chooser_element.appendChild(subdir_element);
                         }
                     });
+                // finally, update directory chooser elements aria-checked attribute
+                (Array<HTMLLIElement>).from(directory_chooser_element.children).forEach((label_element, index) => {
+                    label_element.setAttribute('aria-checked', (index === subdirs.length-1).toString());
+                });
+
+                // update filename
+                filename_element.value = filename;
 
                 // update file list
                 const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
@@ -229,14 +272,15 @@ export class ServerFsDialog {
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
                 <nav>
-                    <ol class={this.CLASS.directory_chooser_css_class}>
-                    </ol>
+                    <div>server:</div>   <div class={this.CLASS.server_css_class}>{/* will be populated by update() */}</div>
+                    <div>path:</div>     <ol class={this.CLASS.directory_chooser_css_class}>{/* will be populated by update() */}</ol>
+                    <div>filename:</div> <input tabindex={for_save ? "0" : "-1"} type="text" class={this.CLASS.filename_css_class} />
                 </nav>
                 <div class={this.CLASS.files_form_css_class}>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <div class={this.CLASS.file_list_controls_footer_css_class}>
                         <button tabindex="0" class={this.CLASS.files_form_cancel_button_css_class}>Cancel</button>
-                        <button tabindex="0" class={this.CLASS.files_form_submit_button_css_class}>{for_save ? 'Save' : 'Open'}</button>
+                        <button tabindex="0" autofocus class={this.CLASS.files_form_submit_button_css_class}>{for_save ? 'Save' : 'Open'}</button>
                     </div>
                 </div>
             </dialog>;
@@ -346,6 +390,15 @@ export class ServerFsDialog {
             content_container.querySelectorAll('[role="row"][aria-selected="true"]')
                 .forEach((selected_row) => selected_row.setAttribute('aria-selected', "false"));
             row.setAttribute('aria-selected', "true");
+            const url_string = row.getAttribute('data-url');
+            if (!url_string) {
+                console.warn('data-url attribute has empty value', { row });
+            } else {
+                const filename = new URL(url_string).pathname.split('/').slice(-1)[0];
+                if (filename) {  // otherwise, it's a directory so don't update
+                    dialog_actions.set_filename_if_not_updated(filename);
+                }
+            }
         };
 
         /** @return {Element} now-selected element

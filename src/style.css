@@ -593,7 +593,8 @@ dialog.export-options-dialog {
 /* === server-fs-dialog === */
 
 .server-fs-dialog {
-    --server-fs-dialog-chooser-height:  2em;
+    --server-fs-dialog-nav-height:      4em;
+    --server-fs-dialog-nav-gap:         0.25em;
     --server-fs-dialog-chooser-padding: 0.25em;
     --server-fs-dialog-header-height:   2.5em;
     --server-fs-dialog-header-padding:  0.25em;
@@ -607,24 +608,52 @@ dialog.export-options-dialog {
     height: min(100dvh,  768px);
     display: grid;
     grid-template-rows:
-        var(--server-fs-dialog-chooser-height)               /* directory chooser */
-        calc(100% - var(--server-fs-dialog-chooser-height))  /* file list plus controls form */
+        var(--server-fs-dialog-nav-height)               /* directory chooser */
+        calc(100% - var(--server-fs-dialog-nav-height))  /* file list plus controls form */
     ;
 
-    ol.server-fs-dialog-directory-chooser {
-        /* override the standard spacing configuration for <ol> elements */
-        margin-block-start: 0;
-        margin-block-end: 0;
-        padding-inline-start: 0;
-        /* end of overrides */
-        box-sizing: border-box;  /* make --server-fs-dialog-chooser-height encompass border, padding, etc */
-        height: var(--server-fs-dialog-chooser-height);
-        padding: var(--server-fs-dialog-chooser-padding);
+    nav {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: var(--server-fs-dialog-nav-gap);
 
-        li {
-            display: inline;
-            padding: var(--server-fs-dialog-chooser-padding) 1em var(--server-fs-dialog-chooser-padding) 0em;
-            list-style-type: none;
+        box-sizing: border-box;  /* make --server-fs-dialog-nav-height encompass border, padding, etc */
+        max-width: min(80ch, 90%);
+        height: var(--server-fs-dialog-nav-height);
+
+        ol.server-fs-dialog-directory-chooser {
+            /* override the standard spacing configuration for <ol> elements */
+            margin-block-start: 0;
+            margin-block-end: 0;
+            padding-inline-start: 0;
+            /* end of overrides */
+
+            li {
+                display: inline-block;
+                padding: var(--server-fs-dialog-chooser-padding) 0.25em var(--server-fs-dialog-chooser-padding) 0em;
+                list-style-type: none;
+
+                &[aria-checked="true"] {
+                    background-color: var(--theme-si-hb, hotpink);
+                }
+                &[aria-checked="false"]:hover {
+                    background-color: var(--theme-si-vb, hotpink);
+                }
+
+                &:has(~ [aria-checked="true"]),
+                &[aria-checked="true"] {
+                    font-weight: bold;
+                }
+                [aria-checked="true"] ~ & {
+                    font-style: italic;
+                }
+            }
+        }
+
+        input.server-fs-dialog-filename[type="text"][readonly] {
+            /* when for_save is false, filename input is set to readonly */
+            border: none;
+            outline: none;
         }
     }
 
@@ -725,7 +754,6 @@ dialog.export-options-dialog {
                                 background-color: var(--theme-si-hb, hotpink);
                             }
                         }
-
                         &[aria-selected="false"]:hover {
                             & > div {
                                 background-color: var(--theme-si-vb, hotpink);
@@ -753,6 +781,10 @@ dialog.export-options-dialog {
             box-sizing: border-box;  /* make --server-fs-dialog-footer-height encompass border, padding, etc */
             height: var(--server-fs-dialog-footer-height);
             padding: var(--server-fs-dialog-footer-padding);
+
+            & > button {
+                padding: 0.25em;
+            }
         }
     }
 }
