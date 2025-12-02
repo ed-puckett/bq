@@ -137,7 +137,7 @@ const standard_themes_spec = {
     "--theme-si-ef":         [ 'red',                           'red' ],
     "--theme-si-df":         [ '#bbb',                          '#666' ],
     "--theme-si-hb":         [ '#dd8',                          '#773' ],
-    "--theme-si-vb":         [ '#0004',                         '#fff4' ],
+    "--theme-si-vb":         [ '#1e42a820',                     '#fff4' ],
     "--theme-si-rc":         [ '#ccc',                          '#4a4a4a' ],
     "--theme-si-sc":         [ 'grey',                          '#444' ],
 
@@ -146,7 +146,7 @@ const standard_themes_spec = {
     "--theme-ui-ef":         [ 'red',                           'red' ],
     "--theme-ui-df":         [ '#bbb',                          '#666' ],
     "--theme-ui-hb":         [ '#dd8',                          '#773' ],
-    "--theme-ui-vb":         [ '#0004',                         '#fff4' ],
+    "--theme-ui-vb":         [ '#1e42a820',                     '#fff4' ],
     "--theme-ui-rc":         [ '#ccc',                          '#4a4a4a' ],
     "--theme-ui-sc":         [ 'grey',                          '#444' ],
 
@@ -155,7 +155,7 @@ const standard_themes_spec = {
     "--theme-ou-ef":         [ 'red',                           'red' ],
     "--theme-ou-df":         [ '#bbb',                          '#666' ],
     "--theme-ou-hb":         [ '#dd8',                          '#773' ],
-    "--theme-ou-vb":         [ '#0004',                         '#fff4' ],
+    "--theme-ou-vb":         [ '#1e42a820',                     '#fff4' ],
     "--theme-ou-rc":         [ '#ccc',                          '#4a4a4a' ],
     "--theme-ou-sc":         [ 'grey',                          '#444' ],
 

@@ -635,6 +635,10 @@ dialog.export-options-dialog {
 
                 &[aria-checked="true"] {
                     background-color: var(--theme-si-hb, hotpink);
+
+                    &:not(:focus) {
+                        outline: 1px dotted var(--theme-si-fg, hotpink);
+                    }
                 }
                 &[aria-checked="false"]:hover {
                     background-color: var(--theme-si-vb, hotpink);
@@ -785,6 +789,7 @@ dialog.export-options-dialog {
 
             & > button {
                 margin: 0.25em;
+                user-select: none;
             }
         }
     }

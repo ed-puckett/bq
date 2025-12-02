@@ -145,7 +145,9 @@ export class ServerFsDialog {
             throw new Error('unexpected: filename element not found or not an instance of HTMLInputElement');
         }
         if (for_save) {
-            filename_element.onchange = () => filename_element.setAttribute('data-user-updated', true.toString());
+            filename_element.onchange = () => {
+                filename_element.setAttribute('data-user-updated', (!!filename_element.value).toString());
+            };
         } else {
             filename_element.setAttribute('readonly', '');
         }
@@ -198,7 +200,7 @@ export class ServerFsDialog {
                             const subdir_element = <li tabindex="0" url={url.href}>{subdir_label}</li> as HTMLElement;
                             const activation_action = () => update(url);
                             subdir_element.onclick = activation_action;
-                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(activation_action);
+                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(() => dialog_actions.perform_submit(), activation_action);
                             directory_chooser_element.appendChild(subdir_element);
                         }
                     });
@@ -250,17 +252,23 @@ export class ServerFsDialog {
         return promise_data.promise as Promise<undefined|string>;
     }
 
-    static #make_keyboard_activation_handler(action: (() => void)) {
+    static #make_keyboard_activation_handler(action: (() => void), space_action?: (() => void)) {
+        space_action ??= action;
         return (event: KeyboardEvent) => {
-            switch (event.key) {
-                case ' ':
-                case 'Enter': {
-                    if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+            if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                switch (event.key) {
+                    case ' ':
+                        space_action();
+                        event.preventDefault();
+                        event.stopPropagation();
+                        break;
+
+                    case 'Enter': {
                         action();
                         event.preventDefault();
                         event.stopPropagation();
+                        break;
                     }
-                    break;
                 }
             }
         };
@@ -285,24 +293,30 @@ export class ServerFsDialog {
                 </div>
             </dialog>;
 
+        // validate
         if (!(dialog instanceof HTMLDialogElement)) {
             throw new Error('unexpected: dialog is not an instance of HTMLDialogElement');
         }
-        dialog.onclose  = () => dialog_actions.perform_submit();
-        dialog.oncancel = () => dialog_actions.perform_cancel();
 
         const cancel_button = dialog.querySelector(`.${this.CLASS.files_form_cancel_button_css_class}`);
         if (!(cancel_button instanceof HTMLElement)) {
             throw new Error('unexpected: cancel button not found');
         }
-        cancel_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(dialog_actions.perform_cancel);
-        cancel_button.onclick   = () => dialog_actions.perform_cancel();
+        const cancel_button_action = () => dialog_actions.perform_cancel();
 
         const submit_button = dialog.querySelector(`.${this.CLASS.files_form_submit_button_css_class}`);
         if (!(submit_button instanceof HTMLElement)) {
             throw new Error('unexpected: submit button not found');
         }
-        const submit_button_action = () => dialog_actions.perform_submit()
+        const submit_button_action = () => dialog_actions.perform_submit();
+
+        // hook events
+        dialog.onclose  = submit_button_action;
+        dialog.oncancel = cancel_button_action;
+
+        cancel_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(cancel_button_action);
+        cancel_button.onclick   = cancel_button_action;
+
         submit_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(submit_button_action);
         submit_button.onclick   = submit_button_action;
 
@@ -460,6 +474,10 @@ export class ServerFsDialog {
                         select_adjacent_row(false);
                         break;
                     case ' ':
+                        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                            select_row(row_markup);
+                        }
+                        break;
                     case 'Enter':
                         if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
                             dialog_actions.perform_submit();
@@ -474,6 +492,9 @@ export class ServerFsDialog {
                 }
             };
             selectable_part.onfocus = () => select_row(row_markup);
+            if (selected) {
+                select_row(row_markup);  // will update other UI elements
+            }
             return row_markup;
         }
 
