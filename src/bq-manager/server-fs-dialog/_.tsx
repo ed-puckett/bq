@@ -34,11 +34,10 @@ export async function load_stylesheet(): Promise<void> {
 type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
     for_save?:     boolean,
     sort_col?:     number,  // 0-based, must be a non-negative integer
-    selected_row?: number,  // 0-based, must be a non-negative integer
 };
 
 type DIALOG_ACTIONS = {
-    perform_submit: (() => void),
+    perform_submit: ((direct_activation?: boolean) => void),
     perform_cancel: (() => void),
     set_filename_if_not_updated: ((text: string) => void),
 };
@@ -95,28 +94,32 @@ export class ServerFsDialog {
             dialog.remove();
         };
         const dialog_actions: DIALOG_ACTIONS = {
-            perform_submit: () => {
+            perform_submit: (direct_activation?: boolean) => {
+                const chosen_filename = (filename_element as null|HTMLInputElement)?.value ?? '';
+                const submit_url = (url: URL) => {
+                    if (url.pathname.endsWith('/') && direct_activation) {
+                        // directory: keep dialog open and populate from new url
+                        update(url);
+                    } else {
+                        // non-directory file: cleanup and then fulfill the promise with url_string
+                        cleanup();
+                        const result_url_string = (for_save && chosen_filename) ? new URL(chosen_filename, url).href : url.href
+                        promise_data.resolve(result_url_string);
+                    }
+                };
                 const selected_row = dialog.querySelector(`.${this.CLASS.file_list_content_container_css_class} [role="row"][aria-selected="true"][data-url]`);
                 if (selected_row instanceof HTMLElement) {
                     const url_string = selected_row.getAttribute('data-url');
-                    if (typeof url_string === 'string') {
-                        const url = new URL(url_string);
-                        if (url.pathname.endsWith('/')) {
-                            // directory: keep dialog open and populate from new url
-                            update(url);
-                        } else {
-                            // non-directory file: cleanup and then fulfill the promise with url_string
-                            cleanup();
-                            const filename = (filename_element as null|HTMLInputElement)?.value;
-                            const result_url_string = (for_save && filename) ? new URL(filename, url).href : url_string  // relative to filename (if given)
-                            promise_data.resolve(result_url_string);
-                        }
-                        return;  // skip over error handling at end
+                    if (typeof url_string !== 'string') {
+                        console.error('unexpected: selected_row does not have a "data-url" attribute', { selected_row });
+                        throw new Error('unexpected: selected_row does not have a "data-url" attribute');
                     }
+                    submit_url(new URL(url_string));
+                } else {
+                    // cannot find currently-selected url
+                    // use chosen_filename relative to start_url
+                    submit_url(new URL(chosen_filename, start_url));
                 }
-                // fall through to here if cannot find currently-selected url
-                console.error('unexpected: perform_submit: unable to find selected row in dialog, performing cancel instead', { selected_row });
-                promise_data.resolve(undefined);
             },
             perform_cancel: () => {
                 cleanup();
@@ -145,7 +148,7 @@ export class ServerFsDialog {
             throw new Error('unexpected: filename element not found or not an instance of HTMLInputElement');
         }
         if (for_save) {
-            filename_element.onchange = () => {
+            filename_element.oninput = () => {
                 filename_element.setAttribute('data-user-updated', (!!filename_element.value).toString());
             };
         } else {
@@ -198,9 +201,8 @@ export class ServerFsDialog {
                             // this new element will be added only if we have diverged
                             const url = new URL(path_so_far, start_url);
                             const subdir_element = <li tabindex="0" url={url.href}>{subdir_label}</li> as HTMLElement;
-                            const activation_action = () => update(url);
-                            subdir_element.onclick = activation_action;
-                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(() => dialog_actions.perform_submit(), activation_action);
+                            subdir_element.onclick = () => update(url);
+                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(() => dialog_actions.perform_submit(), () => update(url));
                             directory_chooser_element.appendChild(subdir_element);
                         }
                     });
@@ -210,7 +212,9 @@ export class ServerFsDialog {
                 });
 
                 // update filename
-                filename_element.value = filename;
+                if (filename_element.getAttribute('data-user-updated') !== true.toString()) {  // don't update if user-modified
+                    filename_element.value = filename;
+                }
 
                 // update file list
                 const files_container = dialog.querySelector(`.${this.CLASS.file_list_holder_css_class}`);
@@ -237,9 +241,12 @@ export class ServerFsDialog {
                 }
                 const dir_info: DirInfo[] = raw_dir_info;
                 files_container.textContent = '';  // clear all children
-                files_container.appendChild(this.#file_list_from_dir_info(dir_url, dir_info, dialog_actions, {
+                files_container.appendChild(this.#file_list_from_dir_info(dir_info, dir_url, filename, dialog_actions, {
                     for_save,
                 }));
+                // focus on file entry if possible
+                (files_container.querySelector('[role="row"][aria-selected="true"] [tabindex="0"]') as null|HTMLElement)?.focus();
+
 
             } catch (error) {
                 dialog.close();
@@ -288,7 +295,7 @@ export class ServerFsDialog {
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
                     <div class={this.CLASS.file_list_controls_footer_css_class}>
                         <button tabindex="0" class={this.CLASS.files_form_cancel_button_css_class}>Cancel</button>
-                        <button tabindex="0" autofocus class={this.CLASS.files_form_submit_button_css_class}>{for_save ? 'Save' : 'Open'}</button>
+                        <button tabindex="0" class={this.CLASS.files_form_submit_button_css_class}>{for_save ? 'Save' : 'Open'}</button>
                     </div>
                 </div>
             </dialog>;
@@ -326,28 +333,18 @@ export class ServerFsDialog {
     /** create HTML markup for a file list from the given dir_info
      */
     #file_list_from_dir_info(
-        dir_url:        URL,
         dir_info:       DirInfo[],
+        dir_url:        URL,
+        filename:       string,
         dialog_actions: DIALOG_ACTIONS,
         options:        FILE_LIST_FROM_DIR_INFO_OPTIONS={},
     ): Element {
         const default_sort_col = 0;  // 0-based
         dir_info = [ ...dir_info ];  // copy so that sorting does not affect passed value
         let {
-            for_save     = false,
-            sort_col     = default_sort_col,  // 0-based
-            selected_row = 0,                 // 0-based
+            for_save = false,
+            sort_col = default_sort_col,  // 0-based, validated below
         } = options;
-
-        if (dir_info.length === 0) {
-            throw new TypeError('dir_info must not be empty');
-        }
-
-        // sort_col is validated below
-        if (!Number.isInteger(selected_row) || selected_row < 0) {
-            throw new TypeError('selected_row must be a non-negative integer');
-        }
-        // selected_row will be clamped to the integer rangle [0, dir_info.length-1].
 
         const file_list =
             <div class={this.CLASS.file_list_css_class}>
@@ -408,10 +405,8 @@ export class ServerFsDialog {
             if (!url_string) {
                 console.warn('data-url attribute has empty value', { row });
             } else {
-                const filename = new URL(url_string).pathname.split('/').slice(-1)[0];
-                if (filename) {  // otherwise, it's a directory so don't update
-                    dialog_actions.set_filename_if_not_updated(filename);
-                }
+                const selected_filename = new URL(url_string).pathname.split('/').slice(-1)[0];
+                dialog_actions.set_filename_if_not_updated(selected_filename);
             }
         };
 
@@ -434,11 +429,12 @@ export class ServerFsDialog {
             }
         };
 
-        const make_file_row = (di: DirInfo, selected: boolean): HTMLElement => {
+        const make_file_row = (di: DirInfo, filename: string): HTMLElement => {
             // Note that the formatting of each column is not determined by
             // the header's 'data-sort-prop'--that is used for sorting/styling
             // purposes.  The actual formatting of the entries' data is
             // implemented here.
+            const selected = (di.name === filename);
             const is_directory = (di.type === FileType[FileType.directory]);
             const url = new URL(`${di.name}${is_directory ? '/' : ''}`, dir_url).href
             const row_markup =
@@ -462,7 +458,7 @@ export class ServerFsDialog {
                 select_row(row_markup);
             };
             row_markup.ondblclick = () => {
-                dialog_actions.perform_submit();
+                dialog_actions.perform_submit(true);
             };
             row_markup.onkeydown = (event: KeyboardEvent) => {
                 let stop_event = true;  // will be reset in default, i.e. if event not handled
@@ -474,13 +470,9 @@ export class ServerFsDialog {
                         select_adjacent_row(false);
                         break;
                     case ' ':
-                        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-                            select_row(row_markup);
-                        }
-                        break;
                     case 'Enter':
                         if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-                            dialog_actions.perform_submit();
+                            dialog_actions.perform_submit(event.key === ' ');
                         }
                         break;
                     default:
@@ -551,14 +543,6 @@ export class ServerFsDialog {
         }
         validate_sort_col(true);  // will throw error if sort_col is not valid
 
-        const clamp_selected_row = () => {  // clamp selected_row to the range [0, dir_info.length-1] or 0 if dir_info is empty
-            if (selected_row < 0) {
-                selected_row = 0;
-            } else if (selected_row >= dir_info.length) {
-                selected_row = dir_info.length-1;  // dir_info has already been guaranteed not to be empty
-            }
-        }
-
         const make_sort_function = (): ((a: any, b: any) => number) => {
             const checked_header = find_checked_header();
             const {
@@ -597,14 +581,21 @@ export class ServerFsDialog {
         }
 
         const render = () => {
-            clamp_selected_row();
             dir_info.sort(make_sort_function());
             clear_element(content_container);
             dir_info.forEach((di, index) => {
                 content_container.appendChild(
-                    make_file_row(di, (index === selected_row))
+                    make_file_row(di, filename)
                 );
             });
+            // if no row is selected, select the first row (if it exists)
+            if (dir_info.length > 0 && !content_container.querySelector('[role="row"][aria-selected="true"]')) {
+                const first_row = content_container.firstElementChild;
+                if (first_row instanceof HTMLElement) {  // satisfy typescript
+                    select_row(first_row);
+                    first_row.focus();
+                }
+            }
         }
 
         render();  // initial render
