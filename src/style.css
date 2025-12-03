@@ -797,14 +797,16 @@ dialog.export-options-dialog {
                 user-select: none;
                 border-radius: 5px;
             }
-
-            /* cancel if default when focused, otherwise submit is the default */
-            & > button.server-fs-dialog-files-form-cancel-button:focus,
-            & > button.server-fs-dialog-files-form-cancel-button:not(:focus) ~ button.server-fs-dialog-files-form-submit-button {
-                outline: 1px solid var(--theme-si-fg, hotpink);
-                outline-offset: 2px;
-            }
         }
+    }
+
+    /* cancel if default when focused, otherwise submit is the default,
+     * however no button is default when the the file list rows are selected
+     */
+    button.server-fs-dialog-files-form-cancel-button:focus,
+    &:not(:has(.server-fs-dialog-file-list-content-container:focus-within)) button.server-fs-dialog-files-form-cancel-button:not(:focus) ~ button.server-fs-dialog-files-form-submit-button {
+        outline: 1px solid var(--theme-si-fg, hotpink);
+        outline-offset: 2px;
     }
 }
 

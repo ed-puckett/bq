@@ -69,7 +69,6 @@ const SORT_PROP_RE = /^(?<prop>[\w]+)(?:(?<op>[\/%])(?<divisor>[-]?(?:[0-9]+|0b[
 //                           then the data element's contents should be formatted
 //                           as a number, otherwise it should be formatted as text.
 
-
 export class ServerFsDialog {
     get CLASS (){ return this.constructor as typeof ServerFsDialog; }
 
@@ -96,6 +95,8 @@ export class ServerFsDialog {
         const dialog_actions: DIALOG_ACTIONS = {
             perform_submit: (direct_activation?: boolean) => {
                 const chosen_filename = (filename_element as null|HTMLInputElement)?.value ?? '';
+                const selected_row = dialog.querySelector(`.${this.CLASS.file_list_content_container_css_class} [role="row"][aria-selected="true"][data-url]`);
+                const chosen_filename_url = new URL(`./${chosen_filename}`, start_url);
                 const submit_url = (url: URL) => {
                     if (url.pathname.endsWith('/')) {
                         // directory: keep dialog open and populate from new url
@@ -107,8 +108,6 @@ export class ServerFsDialog {
                         promise_data.resolve(result_url_string);
                     }
                 };
-                const selected_row = dialog.querySelector(`.${this.CLASS.file_list_content_container_css_class} [role="row"][aria-selected="true"][data-url]`);
-                const chosen_filename_url = new URL(`./${chosen_filename}`, start_url);
                 if (direct_activation) {
                     if (selected_row instanceof HTMLElement) {
                         const url_string = selected_row.getAttribute('data-url');
@@ -118,7 +117,7 @@ export class ServerFsDialog {
                         }
                         submit_url(new URL(url_string));
                     } else {
-                        // cannot find currently-selected url
+                        // cannot find currently-selected url and/or there is no row (selected or not),
                         // use chosen_filename relative to start_url's directory
                         submit_url(chosen_filename_url);
                     }
@@ -257,8 +256,13 @@ export class ServerFsDialog {
                 files_container.appendChild(this.#file_list_from_dir_info(dir_info, dir_url, filename, dialog_actions, {
                     for_save,
                 }));
-                // focus on file entry if possible
-                (files_container.querySelector('[role="row"][aria-selected="true"] [tabindex="0"]') as null|HTMLElement)?.focus();
+                // focus on file entry if possible, otherwise focus on filename_element
+                const selected_row: null|HTMLElement = files_container.querySelector('[role="row"][aria-selected="true"] [tabindex="0"]');
+                if (selected_row) {
+                    selected_row.focus();
+                } else {
+                    filename_element.focus();
+                }
 
 
             } catch (error) {
@@ -471,10 +475,10 @@ export class ServerFsDialog {
                 dialog_actions.perform_submit(true);
             };
             row_markup.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+                ' ':         () => dialog_actions.perform_submit(true),
+                'Enter':     () => dialog_actions.perform_submit(true),  // 'Enter' on a row submits with direct_activation = true (like ' ')
                 'ArrowUp':   () => select_adjacent_row(true),
                 'ArrowDown': () => select_adjacent_row(false),
-                ' ':         () => dialog_actions.perform_submit(true),
-                'Enter':     () => dialog_actions.perform_submit(false),
             });
             selectable_part.onfocus = () => select_row(row_markup);
             if (selected) {
@@ -524,7 +528,7 @@ export class ServerFsDialog {
             col_header.onclick = () => handle_header_interaction();
             col_header.onkeydown = this.CLASS.#make_keyboard_activation_handler({
                 ' ':     handle_header_interaction,
-                'Enter': handle_header_interaction,
+                'Enter': () => dialog_actions.perform_submit(),
             });
         });
 
