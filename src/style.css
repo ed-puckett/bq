@@ -635,7 +635,7 @@ dialog.export-options-dialog {
             li {
                 display: inline-block;
                 margin:  var(--server-fs-dialog-chooser-margin) 0.25em var(--server-fs-dialog-chooser-margin) 0em;
-                padding: 0.25em;
+                padding: 0.1em 0.25em;
                 list-style-type: none;
 
                 &[aria-checked="true"] {
@@ -795,6 +795,14 @@ dialog.export-options-dialog {
             & > button {
                 margin: 0.25em;
                 user-select: none;
+                border-radius: 5px;
+            }
+
+            /* cancel if default when focused, otherwise submit is the default */
+            & > button.server-fs-dialog-files-form-cancel-button:focus,
+            & > button.server-fs-dialog-files-form-cancel-button:not(:focus) ~ button.server-fs-dialog-files-form-submit-button {
+                outline: 1px solid var(--theme-si-fg, hotpink);
+                outline-offset: 2px;
             }
         }
     }

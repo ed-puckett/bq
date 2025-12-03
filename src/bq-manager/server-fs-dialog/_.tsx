@@ -158,6 +158,9 @@ export class ServerFsDialog {
             filename_element.oninput = () => {
                 filename_element.setAttribute('data-user-updated', (!!filename_element.value).toString());
             };
+            filename_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+                'Enter': () => dialog_actions.perform_submit(),
+            });
         } else {
             filename_element.setAttribute('readonly', '');
         }
