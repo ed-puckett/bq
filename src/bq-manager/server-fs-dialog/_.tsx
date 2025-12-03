@@ -97,7 +97,7 @@ export class ServerFsDialog {
             perform_submit: (direct_activation?: boolean) => {
                 const chosen_filename = (filename_element as null|HTMLInputElement)?.value ?? '';
                 const submit_url = (url: URL) => {
-                    if (url.pathname.endsWith('/') && direct_activation) {
+                    if (url.pathname.endsWith('/')) {
                         // directory: keep dialog open and populate from new url
                         update(url);
                     } else {
@@ -108,23 +108,30 @@ export class ServerFsDialog {
                     }
                 };
                 const selected_row = dialog.querySelector(`.${this.CLASS.file_list_content_container_css_class} [role="row"][aria-selected="true"][data-url]`);
-                if (selected_row instanceof HTMLElement) {
-                    const url_string = selected_row.getAttribute('data-url');
-                    if (typeof url_string !== 'string') {
-                        console.error('unexpected: selected_row does not have a "data-url" attribute', { selected_row });
-                        throw new Error('unexpected: selected_row does not have a "data-url" attribute');
+                const chosen_filename_url = new URL(`./${chosen_filename}`, start_url);
+                if (direct_activation) {
+                    if (selected_row instanceof HTMLElement) {
+                        const url_string = selected_row.getAttribute('data-url');
+                        if (typeof url_string !== 'string') {
+                            console.error('unexpected: selected_row does not have a "data-url" attribute', { selected_row });
+                            throw new Error('unexpected: selected_row does not have a "data-url" attribute');
+                        }
+                        submit_url(new URL(url_string));
+                    } else {
+                        // cannot find currently-selected url
+                        // use chosen_filename relative to start_url's directory
+                        submit_url(chosen_filename_url);
                     }
-                    submit_url(new URL(url_string));
-                } else {
-                    // cannot find currently-selected url
-                    // use chosen_filename relative to start_url
-                    submit_url(new URL(chosen_filename, start_url));
+                } else {  // !direct_activation
+                    submit_url(chosen_filename_url);
                 }
             },
+
             perform_cancel: () => {
                 cleanup();
                 promise_data.resolve(undefined);
             },
+
             set_filename_if_not_updated: (text: string) => {
                 if (filename_element) {  // this test is for typescript...
                     if (filename_element.getAttribute('data-user-updated') !== true.toString()) {
@@ -202,7 +209,10 @@ export class ServerFsDialog {
                             const url = new URL(path_so_far, start_url);
                             const subdir_element = <li tabindex="0" url={url.href}>{subdir_label}</li> as HTMLElement;
                             subdir_element.onclick = () => update(url);
-                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler(() => dialog_actions.perform_submit(), () => update(url));
+                            subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+                                ' ':     () => update(url),
+                                'Enter': () => dialog_actions.perform_submit(),
+                            });
                             directory_chooser_element.appendChild(subdir_element);
                         }
                     });
@@ -259,23 +269,14 @@ export class ServerFsDialog {
         return promise_data.promise as Promise<undefined|string>;
     }
 
-    static #make_keyboard_activation_handler(action: (() => void), space_action?: (() => void)) {
-        space_action ??= action;
+    static #make_keyboard_activation_handler(action_map: { [event_key: string]: (() => void) }, allow_modifiers: boolean = false) {
         return (event: KeyboardEvent) => {
-            if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-                switch (event.key) {
-                    case ' ':
-                        space_action();
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
-
-                    case 'Enter': {
-                        action();
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
-                    }
+            if (allow_modifiers || (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey)) {
+                const action: undefined|(() => void) = action_map[event.key];
+                if (action) {
+                    action();
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
             }
         };
@@ -321,11 +322,17 @@ export class ServerFsDialog {
         dialog.onclose  = submit_button_action;
         dialog.oncancel = cancel_button_action;
 
-        cancel_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(cancel_button_action);
-        cancel_button.onclick   = cancel_button_action;
+        cancel_button.onclick = cancel_button_action;
+        cancel_button.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+            ' ':     cancel_button_action,
+            'Enter': cancel_button_action,
+        });
 
-        submit_button.onkeydown = this.CLASS.#make_keyboard_activation_handler(submit_button_action);
-        submit_button.onclick   = submit_button_action;
+        submit_button.onclick = submit_button_action;
+        submit_button.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+            ' ':     submit_button_action,
+            'Enter': submit_button_action,
+        });
 
         return dialog as HTMLDialogElement;
     }
@@ -460,29 +467,12 @@ export class ServerFsDialog {
             row_markup.ondblclick = () => {
                 dialog_actions.perform_submit(true);
             };
-            row_markup.onkeydown = (event: KeyboardEvent) => {
-                let stop_event = true;  // will be reset in default, i.e. if event not handled
-                switch (event.key) {
-                    case 'ArrowUp':
-                        select_adjacent_row(true);
-                        break;
-                    case 'ArrowDown':
-                        select_adjacent_row(false);
-                        break;
-                    case ' ':
-                    case 'Enter':
-                        if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-                            dialog_actions.perform_submit(event.key === ' ');
-                        }
-                        break;
-                    default:
-                        stop_event = false;
-                }
-                if (stop_event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            };
+            row_markup.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+                'ArrowUp':   () => select_adjacent_row(true),
+                'ArrowDown': () => select_adjacent_row(false),
+                ' ':         () => dialog_actions.perform_submit(true),
+                'Enter':     () => dialog_actions.perform_submit(false),
+            });
             selectable_part.onfocus = () => select_row(row_markup);
             if (selected) {
                 select_row(row_markup);  // will update other UI elements
@@ -528,8 +518,11 @@ export class ServerFsDialog {
                     render();
                 }
             };
-            col_header.onclick   = () => handle_header_interaction();
-            col_header.onkeydown = this.CLASS.#make_keyboard_activation_handler(handle_header_interaction);
+            col_header.onclick = () => handle_header_interaction();
+            col_header.onkeydown = this.CLASS.#make_keyboard_activation_handler({
+                ' ':     handle_header_interaction,
+                'Enter': handle_header_interaction,
+            });
         });
 
         const validate_sort_col = (throw_error_if_invalid=false) => {
