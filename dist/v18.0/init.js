@@ -16165,7 +16165,7 @@ class ServerFsDialog {
                 filename_element.setAttribute('data-user-updated', (!!filename_element.value).toString());
             };
             filename_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
-                'Enter': () => dialog_actions.perform_submit(),
+                'Enter': dialog_actions.perform_submit,
             });
         }
         else {
@@ -16211,10 +16211,11 @@ class ServerFsDialog {
                         // this new element will be added only if we have diverged
                         const url = new URL(path_so_far, start_url);
                         const subdir_element = (0,lib_ui_jsx_create_element__WEBPACK_IMPORTED_MODULE_4__/* ._jsx_create_element */ .t)("li", { tabindex: "0", url: url.href }, subdir_label);
-                        subdir_element.onclick = () => update(url);
+                        const handle_update = () => update(url);
+                        subdir_element.onclick = handle_update;
                         subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
-                            ' ': () => update(url),
-                            'Enter': () => dialog_actions.perform_submit(),
+                            ' ': handle_update,
+                            'Enter': dialog_actions.perform_submit,
                         });
                         directory_chooser_element.appendChild(subdir_element);
                     }
@@ -16438,12 +16439,8 @@ class ServerFsDialog {
                     row_markup.children[col_index]?.setAttribute('data-numeric', 'numeric');
                 }
             });
-            row_markup.onclick = () => {
-                select_row(row_markup);
-            };
-            row_markup.ondblclick = () => {
-                dialog_actions.perform_submit(true);
-            };
+            row_markup.onclick = () => select_row(row_markup);
+            row_markup.ondblclick = () => dialog_actions.perform_submit(true);
             row_markup.onkeydown = this.CLASS.#make_keyboard_activation_handler({
                 ' ': () => dialog_actions.perform_submit(true),
                 'Enter': () => dialog_actions.perform_submit(true), // 'Enter' on a row submits with direct_activation = true (like ' ')
@@ -16493,10 +16490,10 @@ class ServerFsDialog {
                     render();
                 }
             };
-            col_header.onclick = () => handle_header_interaction();
+            col_header.onclick = handle_header_interaction;
             col_header.onkeydown = this.CLASS.#make_keyboard_activation_handler({
                 ' ': handle_header_interaction,
-                'Enter': () => dialog_actions.perform_submit(),
+                'Enter': dialog_actions.perform_submit,
             });
         });
         const validate_sort_col = (throw_error_if_invalid = false) => {
