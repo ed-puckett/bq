@@ -60,7 +60,7 @@ install: ./node_modules $(DIST_DIR)
 lint: ./node_modules
 #!!!	./node_modules/.bin/eslint --config .eslintrc.cjs src lib
 
-$(DIST_DIR): Makefile package.json webpack.config.js tsconfig.json ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./src/*/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
+$(DIST_DIR): Makefile package.json webpack.config.js tsconfig.json svg-loader.d.ts ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./src/*/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
 	@make check-version >/dev/null
 	@./build-tools/build-dist.sh `./build-tools/check-version.js $(VERSION)` $(VERSION_DIR)
 
@@ -99,7 +99,7 @@ kill-server:
 
 .PHONY: dev-server
 dev-server:
-	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch webpack.config.js --watch tsconfig.json --watch build-tools --watch node_modules  --ext ts,tsx,js,cjs,mjs,json,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
+	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch webpack.config.js --watch tsconfig.json --watch svg-loader.d.ts --watch build-tools --watch node_modules  --ext ts,tsx,js,cjs,mjs,json,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
 
 .PHONY: client
 client:

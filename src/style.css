@@ -685,6 +685,8 @@ dialog.export-options-dialog {
                 .server-fs-dialog-file-list-content-container {
                     display: grid;
                     grid-template-columns:
+                        /* use fixed widths to make header and content columns be aligned */
+                        auto              /* type field (icon) -- using auto here will make the header and content columns be misaligned, but only a little */
                         minmax(4em, 8fr)  /* name field */
                         6em               /* size field */
                         8em               /* modified field */
@@ -745,11 +747,21 @@ dialog.export-options-dialog {
                 .server-fs-dialog-file-list-content-container {
                     border-left:   var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
                     border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
-                    height: calc(100% - var(--server-fs-dialog-header-height) - var(--server-fs-dialog-border-size));  /* account for bottom border */
+                    height: calc(100% - var(--server-fs-dialog-header-height) - var(--server-fs-dialog-border-size));  /* account for bottom border, too */
+
+                    img.server-fs-dialog-file-list-content-icon {
+                        width:  1.1em;
+                        height: 1.1em;
+                        vertical-align: middle;
+                    }
 
                     & > div {
                         /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
                         display: contents;
+
+                        & div:has(img.server-fs-dialog-file-list-content-icon) {
+                            justify-self: end;
+                        }
 
                         & > div {
                             min-width: 0;

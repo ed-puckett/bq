@@ -25,6 +25,10 @@ import {
     _jsx_create_element,
 } from 'lib/ui/jsx-create-element';
 
+import directory_icon_svg from './directory-icon.svg';  // via special "assets module" loader
+import file_icon_svg      from './file-icon.svg';       // via special "assets module" loader
+import unknown_icon_svg   from './unknown-icon.svg';    // via special "assets module" loader
+
 
 export async function load_stylesheet(): Promise<void> {
     create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
@@ -84,6 +88,7 @@ export class ServerFsDialog {
     static file_list_header_container_css_class  = 'server-fs-dialog-file-list-header-container';
     static file_list_header_css_class            = 'server-fs-dialog-file-list-header';
     static file_list_content_container_css_class = 'server-fs-dialog-file-list-content-container';
+    static file_list_content_icon_css_class      = 'server-fs-dialog-file-list-content-icon';
     static file_list_controls_footer_css_class   = 'server-fs-dialog-file-list-controls-footer';
 
     async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
@@ -364,6 +369,7 @@ export class ServerFsDialog {
         const file_list =
             <div class={this.CLASS.file_list_css_class}>
                 <div class={this.CLASS.file_list_header_container_css_class}>
+                    <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="type"></div>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="name">Name</div>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="size/1">Size</div>
                     <div class={this.CLASS.file_list_header_css_class} scope="col" tabindex="0" data-sort-prop="modify_time_ms">Modified</div>
@@ -451,9 +457,14 @@ export class ServerFsDialog {
             // implemented here.
             const selected = (di.name === filename);
             const is_directory = (di.type === FileType[FileType.directory]);
+            const is_file      = (di.type === FileType[FileType.file]);
+            const is_unknown   = !is_directory && !is_file;
             const url = new URL(`${di.name}${is_directory ? '/' : ''}`, dir_url).href
+            const icon_description = di.type[0].toUpperCase() + di.type.slice(1);
+            const icon = <img class={this.CLASS.file_list_content_icon_css_class} title={icon_description} alt={icon_description} src={is_directory ? directory_icon_svg : is_file ? file_icon_svg : unknown_icon_svg}/>
             const row_markup =
                 <div role="row" data-url={url} aria-selected={selected.toString()}>
+                    <div>{/*type*/}{icon}</div>
                     <div tabindex="0">{/*name, tab-selectable*/}{di.name}</div>
                     <div>{/*size*/}{is_directory ? '-' : format_size(di.size, { powers_of_2: true, with_space: true, pad_units: true })}</div>
                     <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>

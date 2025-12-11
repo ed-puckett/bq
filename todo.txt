@@ -1,3 +1,4 @@
+server-fs-dialog: svg icons need to be dark/light-mode aware
 cell chains?  cells that render other cells, ...
 cells should support a context menu
 is_RendererFactory() should do more work to identify that the class is correct

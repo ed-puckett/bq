@@ -43,12 +43,16 @@ const webpack_config = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.tsx?$/i,
                 use: 'ts-loader',
             },
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.svg$/i,
+                type: 'asset/inline',
             },
         ],
     },

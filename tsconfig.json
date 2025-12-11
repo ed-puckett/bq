@@ -1,4 +1,6 @@
 {
+    "include": [ "svg-loader.d.ts" ],
+
     "extends": "@tsconfig/node20/tsconfig.json",
 
     "exclude": [ "node_modules" ],
