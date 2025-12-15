@@ -25,24 +25,40 @@ import {
     _jsx_create_element,
 } from 'lib/ui/jsx-create-element';
 
-import directory_icon_svg from './directory-icon.svg';  // via special "assets module" loader
-import file_icon_svg      from './file-icon.svg';       // via special "assets module" loader
-import unknown_icon_svg   from './unknown-icon.svg';    // via special "assets module" loader
+import directory_icon_light_svg from './directory-icon-light.svg';  // via special "assets module" loader
+import directory_icon_dark_svg  from './directory-icon-dark.svg';   // via special "assets module" loader
+import file_icon_light_svg      from './file-icon-light.svg';       // via special "assets module" loader
+import file_icon_dark_svg       from './file-icon-dark.svg';        // via special "assets module" loader
+import other_icon_light_svg     from './other-icon-light.svg';      // via special "assets module" loader
+import other_icon_dark_svg      from './other-icon-dark.svg';       // via special "assets module" loader
 
 
 export async function load_stylesheet(): Promise<void> {
     create_stylesheet_link(document.head, new URL('./style.css', assets_server_url(current_script_url)));
 }
 
-
-type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
-    for_save?:     boolean,
-    sort_col?:     number,  // 0-based, must be a non-negative integer
+export type RUN_OPTIONS = {
+    for_save?: boolean,
+    signal?:   AbortSignal,
 };
 
+export type CREATE_DIALOG_OPTIONS = {
+    for_save?: boolean,
+    signal?:   AbortSignal,
+};
+
+type FILE_LIST_FROM_DIR_INFO_OPTIONS = {
+    for_save?:  boolean,
+    signal?:    AbortSignal,
+};
+
+
 type DIALOG_ACTIONS = {
-    perform_submit: ((direct_activation?: boolean) => void),
-    perform_cancel: (() => void),
+    perform_submit:   ((direct_activation?: boolean) => void),
+    perform_cancel:   (() => void),
+    create_directory?: ((url: URL) => Promise<void>),  // undefined if not supported by server
+    delete_file?:      ((url: URL) => Promise<void>),  // undefined if not supported by server
+    delete_directory?: ((url: URL) => Promise<void>),  // undefined if not supported by server
     set_filename_if_not_updated: ((text: string) => void),
 };
 
@@ -91,7 +107,14 @@ export class ServerFsDialog {
     static file_list_content_icon_css_class      = 'server-fs-dialog-file-list-content-icon';
     static file_list_controls_footer_css_class   = 'server-fs-dialog-file-list-controls-footer';
 
-    async run(server_interface: ServerInterface, start_url: URL, for_save: boolean = false): Promise<undefined|string> {
+    async run(server_interface: ServerInterface, start_url: URL, options: RUN_OPTIONS = {}): Promise<undefined|string> {
+        const {
+            for_save = false,
+            signal   = undefined,
+        } = options;
+
+        const server_features = server_interface.CLASS.get_features();
+
         const promise_data = Promise.withResolvers();
         const cleanup = () => {
             dialog.close();
@@ -136,6 +159,18 @@ export class ServerFsDialog {
                 promise_data.resolve(undefined);
             },
 
+            create_directory: !server_features.access.directory.create ? undefined : async (url: URL) => {
+                await fetch(url, { method: 'POST', signal });
+            },
+
+            delete_file: !server_features.access.file.delete ? undefined : async (url: URL) => {
+                await fetch(url, { method: 'DELETE', signal });
+            },
+
+            delete_directory: !server_features.access.directory.delete ? undefined : async (url: URL) => {
+                await fetch(url, { method: 'DELETE', signal });
+            },
+
             set_filename_if_not_updated: (text: string) => {
                 if (filename_element) {  // this test is for typescript...
                     if (filename_element.getAttribute('data-user-updated') !== true.toString()) {
@@ -145,7 +180,17 @@ export class ServerFsDialog {
             }
         };
 
-        const dialog = this.#create_dialog(start_url, dialog_actions, for_save);
+        if (signal) {
+            signal.throwIfAborted();
+            const signal_abort_handler = dialog_actions.perform_cancel;
+            signal.addEventListener('abort', signal_abort_handler);
+            promise_data.promise.finally(() => signal.removeEventListener('abort', signal_abort_handler));
+        }
+        
+        const dialog = this.#create_dialog(start_url, dialog_actions, {
+            for_save,
+            signal,
+        });
         const server_element = dialog.querySelector(`.${this.CLASS.server_css_class}`);
         if (!server_element) {
             throw new Error('unexpected: server element not found');
@@ -240,7 +285,7 @@ export class ServerFsDialog {
                     throw new Error('unexpected: could not find file list container element');
                 }
                 const dir_url = new URL('.', start_url);  // new pathname will be containing directory including trailing "/"
-                const res = await fetch(dir_url);
+                const res = await fetch(dir_url, { signal });
                 if (!res.body) {
                     console.error('unable to read directory for start_url', { start_url, dir_url, res });
                     throw new Error('unable to read directory for start_url');
@@ -261,6 +306,7 @@ export class ServerFsDialog {
                 files_container.textContent = '';  // clear all children
                 files_container.appendChild(this.#file_list_from_dir_info(dir_info, dir_url, filename, dialog_actions, {
                     for_save,
+                    signal,
                 }));
                 // focus on file entry if possible, otherwise focus on filename_element
                 const selected_row: null|HTMLElement = files_container.querySelector('[role="row"][aria-selected="true"] [tabindex="0"]');
@@ -297,7 +343,15 @@ export class ServerFsDialog {
 
     /** create the HTMLServerDialog object by instantiating it from HTML
      */
-    #create_dialog(start_url: URL, dialog_actions: DIALOG_ACTIONS, for_save: boolean): HTMLDialogElement {
+    #create_dialog(
+        start_url:      URL,
+        dialog_actions: DIALOG_ACTIONS,
+        options:        CREATE_DIALOG_OPTIONS = {},
+    ): HTMLDialogElement {
+        const {
+            for_save = false,
+            signal   = undefined,
+        } = options;
         const dialog =
             <dialog class={this.CLASS.dialog_css_class}>
                 <nav>
@@ -359,11 +413,11 @@ export class ServerFsDialog {
         dialog_actions: DIALOG_ACTIONS,
         options:        FILE_LIST_FROM_DIR_INFO_OPTIONS={},
     ): Element {
-        const default_sort_col = 0;  // 0-based
+        let sort_col = 0;  // 0-based
         dir_info = [ ...dir_info ];  // copy so that sorting does not affect passed value
         let {
             for_save = false,
-            sort_col = default_sort_col,  // 0-based, validated below
+            signal   = undefined,
         } = options;
 
         const file_list =
@@ -396,7 +450,7 @@ export class ServerFsDialog {
             const sort_reverse: boolean = access_sort_direction(col_header);
             const sort_prop = col_header.getAttribute('data-sort-prop');
             if (!sort_prop) {
-                throw new Error(`unexpected: could not find data-sort-prop attribute for column ${sort_col}`);
+                throw new Error(`unexpected: could not find data-sort-prop attribute "data-sort-prop" in column headers`);
             }
             const sort_match = sort_prop.match(SORT_PROP_RE);
             if (!sort_match) {
@@ -458,13 +512,24 @@ export class ServerFsDialog {
             const selected = (di.name === filename);
             const is_directory = (di.type === FileType[FileType.directory]);
             const is_file      = (di.type === FileType[FileType.file]);
-            const is_unknown   = !is_directory && !is_file;
+            const is_other     = !is_directory && !is_file;
             const url = new URL(`${di.name}${is_directory ? '/' : ''}`, dir_url).href
             const icon_description = di.type[0].toUpperCase() + di.type.slice(1);
-            const icon = <img class={this.CLASS.file_list_content_icon_css_class} title={icon_description} alt={icon_description} src={is_directory ? directory_icon_svg : is_file ? file_icon_svg : unknown_icon_svg}/>
+            const make_icon = (dark: boolean) => {
+                return <img
+                    class={`${this.CLASS.file_list_content_icon_css_class} ${dark ? 'dark' : 'light'}`}
+                    title={icon_description} alt={icon_description}
+                    src={is_directory
+                             ? (dark ? directory_icon_dark_svg : directory_icon_light_svg)
+                             : is_file
+                                   ? (dark ? file_icon_dark_svg  : file_icon_light_svg)
+                                   : (dark ? other_icon_dark_svg : other_icon_light_svg)
+                    }
+                />;
+            }
             const row_markup =
                 <div role="row" data-url={url} aria-selected={selected.toString()}>
-                    <div>{/*type*/}{icon}</div>
+                    <div>{/*type*/}{make_icon(false)}{make_icon(true)}</div>
                     <div tabindex="0">{/*name, tab-selectable*/}{di.name}</div>
                     <div>{/*size*/}{is_directory ? '-' : format_size(di.size, { powers_of_2: true, with_space: true, pad_units: true })}</div>
                     <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>
@@ -523,6 +588,7 @@ export class ServerFsDialog {
             const handle_header_interaction = () => {
                 const clicked_header = col_header;
                 if (clicked_header) {  // should always be true
+                    sort_col = col_index;
                     const checked_header = find_checked_header();
                     if (clicked_header === checked_header) {
                         access_sort_direction(clicked_header, true);  // toggle
@@ -539,17 +605,6 @@ export class ServerFsDialog {
                 'Enter': dialog_actions.perform_submit,
             });
         });
-
-        const validate_sort_col = (throw_error_if_invalid=false) => {
-            const complaint = (Number.isInteger(sort_col) && 0 <= sort_col && sort_col < col_count )
-                ? undefined
-                : `col_count must be in the integer range [0, ${col_count-1}]`;
-            if (complaint && throw_error_if_invalid) {
-                throw new TypeError(complaint);
-            }
-           return complaint;
-        }
-        validate_sort_col(true);  // will throw error if sort_col is not valid
 
         const make_sort_function = (): ((a: any, b: any) => number) => {
             const checked_header = find_checked_header();

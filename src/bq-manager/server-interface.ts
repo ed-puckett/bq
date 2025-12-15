@@ -104,7 +104,7 @@ interface FetchOptions {
 
 
 // Fetch SERVER_FEATURES from the server during initialization.
-// It is assumed these remain the same during operation.
+// It is assumed this remains the same during operation.
 const _server_features: SERVER_FEATURES = await fetch(HTTP_ENDPOINT_FEATURES_URL)
     .then(response => {
         if (!response.ok) {
