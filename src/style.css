@@ -659,9 +659,8 @@ dialog.export-options-dialog {
             }
         }
 
-        span.server-fs-dialog-directory-creator-holder > span {
-            /* space before create directory controls */
-            padding-left: 0.5em;
+        .server-fs-dialog-directory-creator-holder img.icon {
+            padding: 0 0.25em 0 0.5em;
         }
 
         .server-fs-dialog-directory-creator-controls {
@@ -671,9 +670,11 @@ dialog.export-options-dialog {
 
             & > * {
                 max-width: 100%;
+                transition: max-width 0s;
+            }
+            &:focus-within > * {
                 transition: max-width 2s;
             }
-
             &:not(:focus-within),
             &:not(:focus-within) > * {
                 /* hide the controls but still permit focus */
@@ -683,9 +684,6 @@ dialog.export-options-dialog {
                 border: none;                
                 overflow: hidden;
             }
-        }
-        img.icon:has(~ .server-fs-dialog-directory-creator-controls:focus-within) {
-            display: none;
         }
 
         input.server-fs-dialog-filename[type="text"][readonly] {

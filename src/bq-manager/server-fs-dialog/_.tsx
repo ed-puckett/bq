@@ -150,7 +150,9 @@ export class ServerFsDialog {
                     } else {
                         // non-directory file: cleanup and then fulfill the promise with url_string
                         cleanup();
-                        const result_url_string = (for_save && chosen_filename) ? new URL(chosen_filename, url).href : url.href
+                        const result_url_string = (for_save && chosen_filename && !direct_activation)
+                            ? new URL(chosen_filename, url).href
+                            : url.href
                         promise_data.resolve(result_url_string);
                     }
                 };
@@ -226,7 +228,7 @@ export class ServerFsDialog {
                 filename_element.setAttribute('data-user-updated', (!!filename_element.value).toString());
             };
             filename_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
-                'Enter': dialog_actions.perform_submit,
+                'Enter': () => dialog_actions.perform_submit(),
             });
         } else {
             filename_element.setAttribute('readonly', '');
@@ -282,7 +284,7 @@ export class ServerFsDialog {
                             subdir_element.onclick = handle_update;
                             subdir_element.onkeydown = this.CLASS.#make_keyboard_activation_handler({
                                 ' ':     handle_update,
-                                'Enter': dialog_actions.perform_submit,
+                                'Enter': () => dialog_actions.perform_submit(),
                             });
                             directory_chooser_element.appendChild(subdir_element);
                         }
@@ -657,7 +659,7 @@ export class ServerFsDialog {
             col_header.onclick = handle_header_interaction;
             col_header.onkeydown = this.CLASS.#make_keyboard_activation_handler({
                 ' ':     handle_header_interaction,
-                'Enter': dialog_actions.perform_submit,
+                'Enter': () => dialog_actions.perform_submit(),
             });
         });
 
