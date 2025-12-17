@@ -659,11 +659,46 @@ dialog.export-options-dialog {
             }
         }
 
+        span.server-fs-dialog-directory-creator-holder > span {
+            /* space before create directory controls */
+            padding-left: 0.5em;
+        }
+
+        .server-fs-dialog-directory-creator-controls {
+            overflow: hidden;
+            max-width: 100%;
+            transition: max-width 2s;
+
+            & > * {
+                max-width: 100%;
+                transition: max-width 2s;
+            }
+
+            &:not(:focus-within),
+            &:not(:focus-within) > * {
+                /* hide the controls but still permit focus */
+                max-width: 0px;
+                margin: 0;
+                padding: 0;
+                border: none;                
+                overflow: hidden;
+            }
+        }
+        img.icon:has(~ .server-fs-dialog-directory-creator-controls:focus-within) {
+            display: none;
+        }
+
         input.server-fs-dialog-filename[type="text"][readonly] {
             /* when for_save is false, filename input is set to readonly */
             border: none;
             outline: none;
         }
+    }
+
+    img.icon {
+        width:  1.2em;
+        height: 1.2em;
+        vertical-align: middle;
     }
 
     .server-fs-dialog-files-form {
@@ -749,12 +784,6 @@ dialog.export-options-dialog {
                     border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
                     height: calc(100% - var(--server-fs-dialog-header-height) - var(--server-fs-dialog-border-size));  /* account for bottom border, too */
 
-                    img.server-fs-dialog-file-list-content-icon {
-                        width:  1.1em;
-                        height: 1.1em;
-                        vertical-align: middle;
-                    }
-
                     & > div {
                         /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
                         display: contents;
@@ -769,6 +798,7 @@ dialog.export-options-dialog {
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: pre-wrap;
+                            outline-offset: calc(var(--server-fs-dialog-content-padding) / -3);  /* prevent clipping */
                         }
 
                         &[aria-selected="true"] {

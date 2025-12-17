@@ -22,15 +22,24 @@ import {
 } from 'lib/sys/formatters';
 
 import {
+    AlertDialog,
+    ConfirmDialog,
+} from 'lib/ui/dialog/_';
+
+import {
     _jsx_create_element,
 } from 'lib/ui/jsx-create-element';
 
-import directory_icon_light_svg from './directory-icon-light.svg';  // via special "assets module" loader
-import directory_icon_dark_svg  from './directory-icon-dark.svg';   // via special "assets module" loader
-import file_icon_light_svg      from './file-icon-light.svg';       // via special "assets module" loader
-import file_icon_dark_svg       from './file-icon-dark.svg';        // via special "assets module" loader
-import other_icon_light_svg     from './other-icon-light.svg';      // via special "assets module" loader
-import other_icon_dark_svg      from './other-icon-dark.svg';       // via special "assets module" loader
+import directory_icon_light_svg     from './directory-icon-light.svg';      // via special "assets module" loader
+import directory_icon_dark_svg      from './directory-icon-dark.svg';       // via special "assets module" loader
+import file_icon_light_svg          from './file-icon-light.svg';           // via special "assets module" loader
+import file_icon_dark_svg           from './file-icon-dark.svg';            // via special "assets module" loader
+import other_icon_light_svg         from './other-icon-light.svg';          // via special "assets module" loader
+import other_icon_dark_svg          from './other-icon-dark.svg';           // via special "assets module" loader
+import add_directory_icon_light_svg from './add-directory-icon-light.svg';  // via special "assets module" loader
+import add_directory_icon_dark_svg  from './add-directory-icon-dark.svg';   // via special "assets module" loader
+import delete_icon_light_svg        from './delete-icon-light.svg';         // via special "assets module" loader
+import delete_icon_dark_svg         from './delete-icon-dark.svg';          // via special "assets module" loader
 
 
 export async function load_stylesheet(): Promise<void> {
@@ -42,7 +51,14 @@ export type RUN_OPTIONS = {
     signal?:   AbortSignal,
 };
 
-export type CREATE_DIALOG_OPTIONS = {
+type MAKE_LIGHT_DARK_ICON_PAIR_OPTIONS = {
+    class:       string,
+    description: string,
+    light_src:   string,
+    dark_src?:   string,  // uses light_src if dark_src not given
+};
+
+type CREATE_DIALOG_OPTIONS = {
     for_save?: boolean,
     signal?:   AbortSignal,
 };
@@ -96,6 +112,8 @@ export class ServerFsDialog {
     static server_css_class                      = 'server-fs-dialog-server';
     static directory_chooser_css_class           = 'server-fs-dialog-directory-chooser';
     static filename_css_class                    = 'server-fs-dialog-filename';
+    static directory_creator_holder_css_class    = 'server-fs-dialog-directory-creator-holder';
+    static directory_creator_controls_css_class  = 'server-fs-dialog-directory-creator-controls';
     static files_form_css_class                  = 'server-fs-dialog-files-form';
     static files_form_cancel_button_css_class    = 'server-fs-dialog-files-form-cancel-button';
     static files_form_submit_button_css_class    = 'server-fs-dialog-files-form-submit-button';
@@ -341,6 +359,15 @@ export class ServerFsDialog {
         };
     }
 
+    static #make_light_dark_icon_pair(options: MAKE_LIGHT_DARK_ICON_PAIR_OPTIONS) {
+        const common_classes = [ options.class, 'icon' ].filter(x => !!x).join(' ');
+        return {
+            light: <img class={`${common_classes} light`} title={options.description} alt={options.description} src={options.light_src} />,
+            dark:  <img class={`${common_classes} dark`}  title={options.description} alt={options.description} src={options.dark_src ?? options.light_src} />,
+        };
+    }
+
+
     /** create the HTMLServerDialog object by instantiating it from HTML
      */
     #create_dialog(
@@ -357,7 +384,8 @@ export class ServerFsDialog {
                 <nav>
                     <div>server:</div>   <div class={this.CLASS.server_css_class}>{/* will be populated by update() */}</div>
                     <div>path:</div>     <ol class={this.CLASS.directory_chooser_css_class}>{/* will be populated by update() */}</ol>
-                    <div>filename:</div> <input tabindex={for_save ? "0" : "-1"} type="text" class={this.CLASS.filename_css_class} />
+                    <div>filename:</div> <span><input tabindex={for_save ? "0" : "-1"} type="text" class={this.CLASS.filename_css_class} />
+                                               <span class={this.CLASS.directory_creator_holder_css_class}></span></span>
                 </nav>
                 <div class={this.CLASS.files_form_css_class}>
                     <div class={this.CLASS.file_list_holder_css_class}> </div>
@@ -400,6 +428,31 @@ export class ServerFsDialog {
             ' ':     submit_button_action,
             'Enter': submit_button_action,
         });
+
+        const directory_creator_holder = dialog.querySelector(`.${this.CLASS.directory_creator_holder_css_class}`);
+        if (!(directory_creator_holder instanceof HTMLElement)) {
+            throw new Error('unexpected: directory creator holder not found');
+        }
+        if (dialog_actions.create_directory) {
+            // server supports create directory
+            const icons = this.CLASS.#make_light_dark_icon_pair({
+                class:       '',
+                description: 'create subdirectory',
+                light_src:   add_directory_icon_light_svg,
+                dark_src:    add_directory_icon_dark_svg,
+            });
+            directory_creator_holder.appendChild(
+                <span>
+                    {icons.light}
+                    {icons.dark}
+                    <span class={this.CLASS.directory_creator_controls_css_class}>
+                        <input tabindex="0" type="text" />
+                        <button tabindex="0">&#x274c;{/*cross symbol*/}</button>
+                        <button tabindex="0">&#x2705;{/*check mark*/}</button>
+                    </span>
+                </span>
+            );
+        }
 
         return dialog as HTMLDialogElement;
     }
@@ -515,21 +568,23 @@ export class ServerFsDialog {
             const is_other     = !is_directory && !is_file;
             const url = new URL(`${di.name}${is_directory ? '/' : ''}`, dir_url).href
             const icon_description = di.type[0].toUpperCase() + di.type.slice(1);
-            const make_icon = (dark: boolean) => {
-                return <img
-                    class={`${this.CLASS.file_list_content_icon_css_class} ${dark ? 'dark' : 'light'}`}
-                    title={icon_description} alt={icon_description}
-                    src={is_directory
-                             ? (dark ? directory_icon_dark_svg : directory_icon_light_svg)
-                             : is_file
-                                   ? (dark ? file_icon_dark_svg  : file_icon_light_svg)
-                                   : (dark ? other_icon_dark_svg : other_icon_light_svg)
-                    }
-                />;
-            }
+            const icons = this.CLASS.#make_light_dark_icon_pair({
+                class: this.CLASS.file_list_content_icon_css_class,
+                description: icon_description,
+                light_src: is_directory
+                    ? directory_icon_light_svg
+                    : is_file
+                          ? file_icon_light_svg
+                          : other_icon_light_svg,
+                dark_src: is_directory
+                    ? directory_icon_dark_svg
+                    : is_file
+                          ? file_icon_dark_svg
+                          : other_icon_dark_svg,
+            });
             const row_markup =
                 <div role="row" data-url={url} aria-selected={selected.toString()}>
-                    <div>{/*type*/}{make_icon(false)}{make_icon(true)}</div>
+                    <div>{/*type*/}{icons.light}{icons.dark}</div>
                     <div tabindex="0">{/*name, tab-selectable*/}{di.name}</div>
                     <div>{/*size*/}{is_directory ? '-' : format_size(di.size, { powers_of_2: true, with_space: true, pad_units: true })}</div>
                     <div>{/*time*/}{format_time(new Date(di.modify_time_ms))}</div>
