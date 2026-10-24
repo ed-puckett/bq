@@ -2,8 +2,8 @@
 # CHANGING VERSION NUMBER
 #
 # The version number for this product is the version number stored in package.json.
-# The VERSION string below is varified that its "major" and "minor" parts match
-# package.json.
+# The VERSION string below is verified that its "major" and "minor" parts match
+# that of "version" in package.json.
 #
 # To move to a next major or minor version:
 # 1. do a final build
@@ -17,8 +17,8 @@
 # get VERSION as <major>.<minor> from package.json
 VERSION := $(shell ./build-tools/get-package-json-version | sed -e 's/[.][^.]*$$//' )
 
-SERVER_ADDRESS    = 127.0.0.127
-SERVER_PORT       = 4320
+SERVER_ADDRESS = 127.0.0.127
+SERVER_PORT    = 4320
 
 DIST_VERSIONS_DIR = ./dist
 
@@ -60,7 +60,7 @@ install: ./node_modules $(DIST_DIR)
 lint: ./node_modules
 #!!!	./node_modules/.bin/eslint --config .eslintrc.cjs src lib
 
-$(DIST_DIR): Makefile package.json webpack.config.js ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./src/*/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
+$(DIST_DIR): Makefile package.json webpack.config.js tsconfig.json svg-loader.d.ts ./src ./src/* ./src/*/* ./src/*/*/* ./src/*/*/*/* ./src/*/*/*/*/* ./lib ./lib/* ./lib/*/* ./lib/*/*/* ./node_modules README.md
 	@make check-version >/dev/null
 	@./build-tools/build-dist.sh `./build-tools/check-version.js $(VERSION)` $(VERSION_DIR)
 
@@ -82,27 +82,25 @@ copy-files:
 test:
 	npm test
 
-# kill the server by performing a GET on /QUIT
-# uses Linux commands: lsof, grep, cut
-# server uses python (version 3)
-# start the server in the directory $(DIST_VERSIONS_DIR)
 .PHONY: server
+# kill the server by performing a GET on /-QUIT-
+# start the server in the directory $(DIST_VERSIONS_DIR)
 server: $(DIST_DIR)
-	( cd "$(DIST_VERSIONS_DIR)" && python ../build-tools/server.py $(SERVER_ADDRESS) $(SERVER_PORT) 2>&1 | tee >(grep -q -m1 '"GET /QUIT'; echo QUITTING; sleep 0.1; kill $$(lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN -Fp | grep ^p | cut -c2-)) )
+	( ./build-tools/simple-http-endpoint.js --root="$(DIST_VERSIONS_DIR)" --host=$(SERVER_ADDRESS) --port=$(SERVER_PORT) --quit=-QUIT- --features=-FEATURES- --access=crd/crud 2>&1 )
 
-# uses curl
+.PHONY: plain-server;
+plain-server: $(DIST_DIR)
+	( ./build-tools/simple-http-endpoint.js --root="$(DIST_VERSIONS_DIR)" --host=$(SERVER_ADDRESS) --port=$(SERVER_PORT) --quit=-QUIT- --access=r 2>&1 )
+
 .PHONY: kill-server
+# uses curl and lsof
 kill-server:
-	@if lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN >/dev/null 2>&1; then echo 'sending QUIT to server'; curl -s http://$(SERVER_ADDRESS):$(SERVER_PORT)/QUIT >/dev/null 2>&1; true; fi
+	@if lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN >/dev/null 2>&1; then echo 'sending -QUIT- to server'; curl -s http://$(SERVER_ADDRESS):$(SERVER_PORT)/-QUIT- >/dev/null 2>&1; true; fi
 
 .PHONY: dev-server
 dev-server:
-	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch .eslintrc.cjs --watch webpack.config.js --watch build-tools --watch node_modules  --ext ts,js,cjs,mjs,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
+	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch webpack.config.js --watch tsconfig.json --watch svg-loader.d.ts --watch build-tools --watch node_modules  --ext ts,tsx,js,cjs,mjs,json,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
 
 .PHONY: client
 client:
 	chromium --new-window http://$(SERVER_ADDRESS):$(SERVER_PORT)/current/index.html &
-
-.PHONY: start
-start: $(DIST_DIR)
-	if ! lsof -itcp:$(SERVER_PORT) -sTCP:LISTEN; then make server <&- >/dev/null 2>&1 & sleep 1; fi; make client

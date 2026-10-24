@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" data-auto-render>
+<head>
+    <meta charset="utf-8">
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript">
+const for_save = true;
+ocx.bq.set_neutral();
+await ocx.printf('%s\n', (await T(for_save)) ?? 'undefined');
+await sleep(0.1);
+ocx.bq.set_neutral();
+</bq-cell>
+</body>
+</html>

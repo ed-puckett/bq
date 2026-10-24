@@ -36,7 +36,7 @@ function _setup_assets_server_root() {
 
 /** @return {URL} url resolved against the running server url
  */
-export function assets_server_url(local_url: string|URL): URL {
+export function assets_server_url(local_url: string|URL|Location): URL {
     _setup_assets_server_root();
     if (!assets_server_root) {  // this is for the sake of typescript
         throw new Error('unexpected: assets_server_root is not set');
@@ -49,10 +49,30 @@ export function assets_server_url(local_url: string|URL): URL {
     let result: URL;
     if (local_url.href.startsWith(local_server_root.href)) {
         const relative = local_url.href.slice(local_server_root.href.length);
-        result = new URL(assets_server_root.href + relative);
+        result = new URL(relative, assets_server_root.href);
     } else {
         // we have no basis to reinterpret local_url with respect to assets_server_root
-        result = local_url;
+        result = (local_url instanceof URL) ? local_url : new URL(local_url.href);
     }
     return result;
+}
+
+/** return true iff url references the assets server and not some other server.
+*/
+export function url_references_assets_server(url: URL|Location): boolean {
+    _setup_assets_server_root();
+    if (!assets_server_root) {  // this is for the sake of typescript
+        throw new Error('unexpected: assets_server_root is not set');
+    }
+
+    // We assume that instances of URL return an empty string
+    // for the port when the port is unspecified or is specified
+    // but is the default for the protocol.  This assures
+    // consistent comparison below.
+    return (
+        url.protocol === assets_server_root.protocol &&
+        url.host     === assets_server_root.host     &&  // host includes port if specified and not default
+        ((url instanceof Location) ? '' : url.username) === assets_server_root.username &&  // Location has no username property
+        url.pathname.startsWith(assets_server_root.pathname)
+    );
 }

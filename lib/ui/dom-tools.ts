@@ -75,19 +75,7 @@ export function find_matching_ancestor(node: Node, selector: string, strict_ance
  *  @param {Node} element
  */
 export function clear_element(element: Node): void {
-    if (element instanceof HTMLElement) {
-        element.innerText = '';  // removes all child elements and nodes, and their event handlers
-    } else if (element instanceof Node) {
-        while (element.firstChild) {
-            // note that removeChild() does not remove the
-            // event handlers from the removed node, but
-            // we are letting the node go so it will be
-            // garbage-collected soon....
-            element.removeChild(element.firstChild);
-        }
-    } else {
-        throw new TypeError('element must be an instance of Node');
-    }
+    element.textContent = '';  // removes all child elements and nodes, and their event handlers
 }
 
 /** Test if element is in DOM and visible.
@@ -422,7 +410,14 @@ export function create_element_or_mapping(options?: object, return_mapping: bool
         parent.insertBefore(element, before);
     }
 
-    return return_mapping ? mapping : element;
+    if (return_mapping) {
+        if (!mapping) {
+            throw new Error('this is just for typescript and should never occur!');
+        }
+        return mapping;
+    } else {
+        return element;
+    }
 }
 
 export function create_element(options?: object): Element {

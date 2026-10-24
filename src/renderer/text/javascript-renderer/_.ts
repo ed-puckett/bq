@@ -87,7 +87,9 @@ const dynamic_import = new Function('path', 'return import(path);');
 //     image_data
 //     graphviz
 //     plotly
+//     control_tools
 //     canvas_tools
+//     formatters
 //     d3
 //     load_Plotly
 //     load_Algebrite
@@ -227,7 +229,11 @@ import {
 
 import * as rxjs from 'rxjs';
 
+import * as controls_tools from 'lib/ui/controls-tools';
+
 import * as canvas_tools from 'lib/ui/canvas-tools/_';
+
+import * as formatters from 'lib/sys/formatters';
 
 import {
     parse as babel_parse,
@@ -516,7 +522,10 @@ export class JavaScriptRenderer extends TextBasedRenderer {
             image_data:       ocx.image_data.bind(ocx),
             graphviz:         ocx.graphviz.bind(ocx),
             plotly:           ocx.plotly.bind(ocx),
+
+            controls_tools,
             canvas_tools,
+            formatters,
 
             d3,  // for use with Plotly
             load_Plotly,

@@ -522,7 +522,7 @@ dialog .dialog-text {
 }
 
 
-/* === dialog === */
+/* === export-options-dialog === */
 
 dialog.export-options-dialog {
     max-width: min(85dvw, 75ch);
@@ -588,6 +588,282 @@ dialog.export-options-dialog {
         }
     }
 }
+
+
+/* === server-fs-dialog === */
+
+.server-fs-dialog {
+    --server-fs-dialog-nav-row-height:  1.4em;
+    --server-fs-dialog-nav-gap:         0.25em;
+    --server-fs-dialog-chooser-margin:  0.25em;
+    --server-fs-dialog-header-height:   2.5em;
+    --server-fs-dialog-header-padding:  0.25em;
+    --server-fs-dialog-content-padding: 0.25em;
+    --server-fs-dialog-footer-padding:  0.25em;
+    --server-fs-dialog-footer-height:   2em;
+    --server-fs-dialog-border-size:     1px;
+
+    --server-fs-dialog-nav-height: calc(3*var(--server-fs-dialog-nav-row-height) + 2*var(--server-fs-dialog-nav-gap));
+
+    resize: both;
+    width:  min(100dvw, 1024px);
+    height: min(100dvh,  768px);
+    display: grid;
+    grid-template-rows:
+        var(--server-fs-dialog-nav-height)               /* directory chooser */
+        calc(100% - var(--server-fs-dialog-nav-height))  /* file list plus controls form */
+    ;
+
+    nav {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-auto-rows: var(--server-fs-dialog-nav-row-height);
+        align-items: center;
+        gap: var(--server-fs-dialog-nav-gap);
+
+        box-sizing: border-box;  /* make --server-fs-dialog-nav-height encompass border, padding, etc */
+        max-width: min(80ch, 90%);
+        height: var(--server-fs-dialog-nav-height);
+
+        ol.server-fs-dialog-directory-chooser {
+            /* override the standard spacing configuration for <ol> elements */
+            margin-block-start: 0;
+            margin-block-end: 0;
+            padding-inline-start: 0;
+            /* end of overrides */
+
+            li {
+                display: inline-block;
+                margin:  var(--server-fs-dialog-chooser-margin) 0.25em var(--server-fs-dialog-chooser-margin) 0em;
+                padding: 0.1em 0.25em;
+                list-style-type: none;
+
+                &[aria-checked="true"] {
+                    background-color: var(--theme-si-hb, hotpink);
+
+                    &:not(:focus) {
+                        outline: 1px dotted var(--theme-si-fg, hotpink);
+                    }
+                }
+                &[aria-checked="false"]:hover {
+                    background-color: var(--theme-si-vb, hotpink);
+                }
+
+                &:has(~ [aria-checked="true"]),
+                &[aria-checked="true"] {
+                    font-weight: bold;
+                }
+                [aria-checked="true"] ~ & {
+                    font-style: italic;
+                }
+            }
+        }
+
+        .server-fs-dialog-directory-creator-holder img.icon {
+            padding: 0 0.25em 0 0.5em;
+        }
+
+        .server-fs-dialog-directory-creator-controls {
+            overflow: hidden;
+            max-width: 100%;
+            transition: max-width 2s;
+
+            & > * {
+                max-width: 100%;
+                transition: max-width 0s;
+            }
+            &:focus-within > * {
+                transition: max-width 2s;
+            }
+            &:not(:focus-within),
+            &:not(:focus-within) > * {
+                /* hide the controls but still permit focus */
+                max-width: 0px;
+                margin: 0;
+                padding: 0;
+                border: none;                
+                overflow: hidden;
+            }
+        }
+
+        input.server-fs-dialog-filename[type="text"][readonly] {
+            /* when for_save is false, filename input is set to readonly */
+            border: none;
+            outline: none;
+        }
+    }
+
+    img.icon {
+        width:  1.2em;
+        height: 1.2em;
+        vertical-align: middle;
+    }
+
+    .server-fs-dialog-files-form {
+        display: grid;
+        grid-template-rows:
+            calc(100% - var(--server-fs-dialog-footer-height))  /* file list */
+            var(--server-fs-dialog-footer-height)               /* controls */
+        ;
+        height: 100%;
+
+        .server-fs-dialog-file-list-holder {
+            height: calc(100% - var(--server-fs-dialog-border-size));  /* account for bottom border */
+
+            .server-fs-dialog-file-list {
+                height: 100%;
+                font-family: 'monospace';
+
+                .server-fs-dialog-file-list-header-container,
+                .server-fs-dialog-file-list-content-container {
+                    display: grid;
+                    grid-template-columns:
+                        /* use fixed widths to make header and content columns be aligned */
+                        auto              /* type field (icon) -- using auto here will make the header and content columns be misaligned, but only a little */
+                        minmax(4em, 8fr)  /* name field */
+                        6em               /* size field */
+                        8em               /* modified field */
+                        5em               /* manipulation links */
+                    ;
+                    grid-auto-rows: max-content;
+                    overflow-y: scroll;
+                }
+
+                /* fr units by default have a min value of auto and this can result in
+                 * the header and content grids not aligning.  This can be fixed by
+                 * repacing Xfr with minmax(0, Xfr), but that kind of clutters the
+                 * grid-template-columns specification, so instead set min-width: 0
+                 * on all child divs (kind of brute force but it works...).
+                 */
+                .server-fs-dialog-file-list-header-container > div,
+                .server-fs-dialog-file-list-content-container > div > div {  /* note: content rows are wrapped in a div to allow for row selection */
+                    & > div {
+                        overflow: hidden;
+                    }
+                }
+
+                .server-fs-dialog-file-list-header-container {
+                    align-content: end;
+                    height: var(--server-fs-dialog-header-height);
+                    border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+
+                    .server-fs-dialog-file-list-header,
+                    & > div {
+                        user-select: none;
+                        border-left: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+                    }
+                    .server-fs-dialog-file-list-header {
+                        text-align: left;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+
+                        &::after {
+                            content: " ";
+                            display: inline-block;
+                            width: 1em;  /* fixed-width so that columns don't grow/shrink when indicator changes (UNFORTUNATELY NOT WORKING) */
+                            text-align: right;
+                            float:      right;
+                        }
+
+                        &[aria-checked="true"] {
+                            &:not([data-sort-reverse])::after,
+                            &[data-sort-reverse=""]::after {
+                                content: "\25B2";  /* up */
+                            }
+                            &[data-sort-reverse]:not([data-sort-reverse=""])::after {
+                                content: "\25BC";  /* down */
+                            }
+                        }
+                    }
+                }
+
+                .server-fs-dialog-file-list-content-container {
+                    border-left:   var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+                    border-bottom: var(--server-fs-dialog-border-size) solid var(--theme-si-fg, hotpink);
+                    height: calc(100% - var(--server-fs-dialog-header-height) - var(--server-fs-dialog-border-size));  /* account for bottom border, too */
+
+                    & > div {
+                        /* these divs wrap rows (for selection, etc), but we want to use the children for the grid */
+                        display: contents;
+
+                        & div:has(img.server-fs-dialog-file-list-content-icon) {
+                            justify-self: end;
+                        }
+
+                        & > div {
+                            min-width: 0;
+                            padding-left: 0.25em;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: pre-wrap;
+                            outline-offset: calc(var(--server-fs-dialog-content-padding) / -3);  /* prevent clipping */
+                        }
+
+                        &[aria-selected="true"] {
+                            & > div {
+                                background-color: var(--theme-si-hb, hotpink);
+                            }
+                        }
+                        &[aria-selected="false"]:hover {
+                            & > div {
+                                background-color: var(--theme-si-vb, hotpink);
+                            }
+                        }
+                    }
+                    [data-numeric]:not([data-numeric=""]) {
+                        text-align: right;
+                        padding-right: 1em;  /* make column look less crowded to the right, especially with the left-justified headings */
+                    }
+                }
+
+                .server-fs-dialog-file-list-header-container,
+                .server-fs-dialog-file-list-content-container {
+                    & > div {
+                        padding: var(--server-fs-dialog-content-padding);
+                    }
+                }
+            }
+        }
+
+        .server-fs-dialog-file-list-controls-footer {
+            justify-self: end;
+            align-content: end;
+            box-sizing: border-box;  /* make --server-fs-dialog-footer-height encompass border, padding, etc */
+            height: var(--server-fs-dialog-footer-height);
+            padding: var(--server-fs-dialog-footer-padding);
+
+            & > button {
+                margin: 0.25em;
+                user-select: none;
+                border-radius: 5px;
+            }
+        }
+    }
+
+    /* cancel is the default when focused, otherwise submit is the default,
+     * however no button is default when the the file list rows are selected
+     */
+    button.server-fs-dialog-files-form-cancel-button:focus,
+    &:not(:has(.server-fs-dialog-file-list-content-container:focus-within)) button.server-fs-dialog-files-form-cancel-button:not(:focus) ~ button.server-fs-dialog-files-form-submit-button {
+        outline: 1px solid var(--theme-si-fg, hotpink);
+        outline-offset: 2px;
+    }
+}
+
+
+:root[data-theme="dark"] .server-fs-dialog img.dark {
+    display: inline;
+}
+:root[data-theme="dark"] .server-fs-dialog img.light {
+    display: none;
+}
+:root:not([data-theme="dark"]) .server-fs-dialog img.dark {
+    display: none;
+}
+:root:not([data-theme="dark"]) .server-fs-dialog img.light {
+    display: inline;
+}
+
 
 
 /* === print media queries === */

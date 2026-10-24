@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-cell-view="normal">
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell id="id-e6272102-ff91-43e6-b2f1-3d52295e9627" data-active="true" data-type="javascript">const A = await load_Algebrite();
+printf(A.factor(484))</bq-cell><output class="bq-cell-output" data-source-element="id-e6272102-ff91-43e6-b2f1-3d52295e9627" data-source-media-type="text/javascript"><div data-source-media-type="text/javascript"><span data-source-media-type="text/plain" class="bq-plain-text">2^2*11^2</span></div></output>
+<bq-cell data-type="markdown">
+General equation for ellipse, parameterized by $\theta$, with radii $r_x$ and $r_y$, center $(c_x, c_y)$ and rotated by angle $\phi$:
+~~~! latex
+\begin{pmatrix}
+x \\
+y \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\cos{\phi} & -\sin{\phi} \\
+\sin{\phi} &  \cos{\phi} \\
+\end{pmatrix}
+\begin{pmatrix}
+r_x \cos{\theta} \\
+r_y \sin{\theta} \\
+\end{pmatrix}
++
+\begin{pmatrix}
+c_x \\
+c_y \\
+\end{pmatrix}
+~~~
+We are given two points on an elliptical arc starting at $(x_1, y_1)$ and ending at $(x_2, y_2)$.  These correspond to a starting parameter $\theta_1$ and an ending parameter $\theta_2$.
+
+Primed coordinates represent transformed coordinates after by rotating $-\phi$ around $(c_x, c_y)$ and translating the midpoint between $(x_1, y_1)$ and $(x_2, y_2)$ to the origin.
+~~~! latex
+\begin{align*}
+x_1^\prime & = c_x^\prime + r_x \cos{\theta_1} \\
+y_1^\prime & = c_y^\prime + r_y \sin{\theta_1} \\
+\\
+x_2^\prime & = c_x^\prime + r_x \cos{\theta_2} \\
+y_2^\prime & = c_y^\prime + r_y \sin{\theta_2} \\
+\end{align*}
+~~~
+The starting point $(x_1^\prime, y_1^\prime)$ and ending point at $(x_2^\prime, y_2^\prime)$ form two congruent right triangles with bases along the x-axis and hypotenuse from the origin to the point.  Call $D$ the distance between $(x_1^\prime, y_1^\prime)$ and $(x_2^\prime, y_2^\prime)$.  Each hypotenuse has length $D/2$.
+~~~! latex
+\begin{align*}
+D^2 & = ({x_2} - {x_1})^2 + ({y_2} - {y_1})^2 \\
+\end{align*}
+\newline
+\begin{align*}
+\\
+D^2/4 & = {x_1^\prime}^2 + {y_1^\prime}^2 \\
+      & = {x_2^\prime}^2 + {y_2^\prime}^2 \\
+\\
+D^2/4 = ~ & {c_x^\prime}^2 + 2 c_x^\prime r_x \cos{\theta_1} + r_x^2 \cos^2{\theta_1} ~ + \\
+          & {c_y^\prime}^2 + 2 c_y^\prime r_y \sin{\theta_1} + r_y^2 \sin^2{\theta_1} \\
+\\
+D^2/4 = { } & {c_x^\prime}^2 + 2 c_x^\prime r_x \cos{\theta_2} + r_x^2 \cos^2{\theta_2} ~ + \\
+            & {c_y^\prime}^2 + 2 c_y^\prime r_y \sin{\theta_2} + r_y^2 \sin^2{\theta_2} \\
+\end{align*}
+~~~
+The points $(x_1^\prime, y_1^\prime)$, the Origin $\mathcal{O}$, and $(x_2^\prime, y_2^\prime)$ are colinear, with midpoint $\mathcal{O}$.  Therefore:
+~~~! latex
+\begin{align*}
+x_2^\prime & = - x_1^\prime\\
+y_2^\prime & = - y_1^\prime\\
+\end{align*}
+~~~
+The angle between vector $(1, 0)$ (i.e., the x-axis) and vector $((x_1^\prime-c_x^\prime)/r_x, (y_1^\prime-c_y^\prime)/r_y)$ is $\theta_1$,
+and the angle between vector $((x_1^\prime-c_x^\prime)/r_x, (y_1^\prime-c_y^\prime)/r_y)$ and vector $((x_2^\prime-c_x^\prime)/r_x, (y_2^\prime-c_y^\prime)/r_y)$ is $\theta_2$.  Therefore:
+~~~! latex
+\gdef\VAx{1}
+\gdef\VAy{0}
+\gdef\VBx{\frac{x_1^\prime - c_x^\prime}{r_x}}
+\gdef\VBy{\frac{y_1^\prime - c_y^\prime}{r_y}}
+\gdef\VCx{\frac{x_2^\prime - c_x^\prime}{r_x}}
+\gdef\VCy{\frac{y_2^\prime - c_y^\prime}{r_y}}
+\begin{align*}
+\cos\theta_1 & = \frac{\VBx - \VAx}
+                      {\sqrt{(\VBx - \VAx)^2 + (\VBy - \VAy)^2}} \\
+\\
+\sin\theta_1 & = \frac{\VBy - 0}
+                      {\sqrt{(\VBx - \VAx)^2 + (\VBy - \VAy)^2}} \\
+\\
+\cos\theta_2 & = \frac{\VCx - \VBx}
+                      {\sqrt{(\VCx - \VBx)^2 + (\VCy - \VBy)^2}} \\
+\\
+\sin\theta_2 & = \frac{\VCy - \VBy}
+                      {\sqrt{(\VCx - \VBx)^2 + (\VCy - \VBy)^2}} \\
+\\
+\end{align*}
+~~~
+Simplifying:
+~~~! latex
+\gdef\DENa{\sqrt{\frac{1}{r_x^2} (x_1^\prime - c_x^\prime - r_x)^2 + \frac{1}{r_y^2} (y_1^\prime - c_y^\prime)^2}}
+\gdef\DENb{\sqrt{(\frac{x_2^\prime - x_1^\prime}{r_x})^2 + (\frac{y_2^\prime - y_1^\prime}{r_y})^2}}
+\gdef\DENbs{\sqrt{(\frac{x_1^\prime}{r_x})^2 + (\frac{y_1^\prime}{r_y})^2}}
+\begin{align*}
+\cos\theta_1 & = \frac{\frac{1}{r_x} (x_1^\prime - c_x^\prime - rx)}{\DENa} \\
+\\
+\sin\theta_1 & = \frac{\frac{1}{r_y} (y_1^\prime - c_y^\prime)}{\DENa} \\
+\\
+\cos\theta_2 & = \frac{\frac{1}{r_x} (x_2^\prime - x_1^\prime)}{\DENb} \\
+             & = \frac{\frac{- x_1^\prime}{r_x}}{\DENbs} \\
+\\
+\sin\theta_2 & = \frac{\frac{1}{r_y} (y_2^\prime - y_1^\prime)}{\DENb} \\
+             & = \frac{\frac{- y_1^\prime}{r_y}}{\DENbs} \\
+\\
+\end{align*}
+~~~
+</bq-cell>
+<bq-cell data-type="javascript">
+</bq-cell>
+</body>
+</html>

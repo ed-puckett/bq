@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en" data-cell-view="presentation" data-auto-render>
+<head>
+    <meta charset="utf-8">
+    <!-- the build process puts these assets in the top of the dist/<version_dir> directory; load relative to the repository root: -->
+    <script src="../bq-bootstrap.js"></script>
+</head>
+<body>
+<bq-cell data-type="javascript">
+class WorkerPool {
+    static async create() {
+        const worker_pool = new this();
+        worker_pool.#update_pool();
+        return worker_pool;
+    }
+
+    constructor(worker_count=navigator.hardwareConcurrency) {
+        Object.defineProperties(this, {
+            worker_count: {
+                value: worker_count,
+                enumerable: true,
+            },
+        });
+        this.#workers = [];
+    }
+    #workers;
+
+    get workers (){
+        if (this.#workers.some(w =&gt; w.terminated)) {
+            this.#update_pool();
+        }
+        return this.#workers;
+    }
+
+    async #update_pool() {
+        this.#workers = this.#workers.filter(w =&gt; !w.terminated);
+        for (let i = this.#workers.length; i &lt; this.worker_count; i++) {
+            this.#workers.push(await create_worker({ keepalive: true }));
+        }
+    }
+};
+
+keepalive();
+bqv.WorkerPool = WorkerPool;</bq-cell>
+<bq-cell data-type="javascript">
+const html = `
+&lt;style&gt;
+    #ode_plotter_info_display {
+        display: flex;
+        gap: 2rem;
+    }
+
+    #ode_plotter_play_controls {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    #ode_plotter_controls {
+        width: fit-content;
+    }
+    #ode_plotter_controls div * {
+        vertical-align: middle;
+    }
+
+    #ode_plotter_adjustments {
+        display: grid;
+        grid-template-columns: max-content max-content;
+        gap: 0.5rem;
+    }
+    #ode_plotter_adjustments label {
+        justify-self: end;
+    }
+
+    #ode_plotter_config_display {
+        width: fit-content;
+        font-family: monospace;
+    }
+
+    .ode_plotter_display {
+        margin-left: 0.1rem;
+        padding: 0 0.5rem;
+        background-color: #eee;
+    }
+
+    .hidden {
+        display: none;
+    }
+&lt;/style&gt;
+
+&lt;div id="ode_plotter_play_controls"&gt;
+    &lt;button id="ode_plotter_go"&gt;Go&lt;/button&gt;
+    &lt;button id="ode_plotter_pause" class="hidden"&gt;Pause&lt;/button&gt;
+&lt;/div&gt;
+&lt;div id="ode_plotter_info_display"&gt;
+    &lt;div id="ode_plotter_controls"&gt;
+        &lt;div id="ode_plotter_adjustments"&gt;
+            &lt;label for="points_per_loop"&gt;Time steps per loop&lt;/label&gt;
+            &lt;div&gt;
+                &lt;input id="points_per_loop" type="range" min="1" max="10000" value="1000"&gt;
+                &lt;span id="points_per_loop_display" class="ode_plotter_display"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;label for="loop_delay"&gt;Loop delay&lt;/label&gt;
+            &lt;div&gt;
+                &lt;input id="loop_delay" type="range" min="0" max="500" value="0"&gt;
+                &lt;span id="loop_delay_display" class="ode_plotter_display"&gt;&lt;/span&gt; ms
+            &lt;/div&gt;
+            &lt;label for="points_shown"&gt;Time steps shown&lt;/label&gt;
+            &lt;div&gt;
+                &lt;input id="points_shown" type="range" min="0" max="100000" step="10" value="20000"&gt;
+                &lt;span id="points_shown_display" class="ode_plotter_display"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;label for="point_count_display"&gt;Total time steps&lt;/label&gt;
+            &lt;div&gt;
+                &lt;span id="point_count_display" class="ode_plotter_display"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;label class="hidden" for="point_cloud_loop_display"&gt;Point cloud steps&lt;/label&gt;
+            &lt;div class="hidden"&gt;
+                &lt;span id="point_cloud_loop_display" class="ode_plotter_display"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;label class="hidden" for="point_cloud_points_per_loop"&gt;PC steps per loop&lt;/label&gt;
+            &lt;div class="hidden"&gt;
+                &lt;input id="point_cloud_points_per_loop" type="range" min="1" max="100" value="1"&gt;
+                &lt;span id="point_cloud_points_per_loop_display" class="ode_plotter_display"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id="ode_plotter_config_display"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="ode_plotter_plot"&gt;&lt;/div&gt;
+`;
+
+const worker_pool = await bqv.WorkerPool.create();
+
+const Plotly = await load_Plotly();
+
+function setup(ocx, the_equation_def) {
+    ocx.update_style({
+        "white-space": "normal",
+    });
+    ocx.create_child().innerHTML = html;
+
+    const plot_el = document.getElementById('ode_plotter_plot');
+
+    const go_button    = document.getElementById('ode_plotter_go');
+    const pause_button = document.getElementById('ode_plotter_pause');
+
+    function set_go_button_state(running) {
+        if (running) {
+            go_button.innerText = 'Stop';
+        } else {
+            go_button.innerText = 'Go';
+        }
+    }
+
+    function set_pause_button_state(paused, running) {
+        pause_button.innerText = paused ? 'Resume' : 'Pause';
+        if (running) {
+            pause_button.classList.remove('hidden');
+        } else {
+            pause_button.classList.add('hidden');
+        }
+    }
+    set_go_button_state(false);
+    set_pause_button_state(false, false);
+
+    const points_per_loop_el     = document.getElementById('points_per_loop');
+    const loop_delay_el          = document.getElementById('loop_delay');
+    const points_shown_el        = document.getElementById('points_shown');
+    const point_count_display_el = document.getElementById('point_count_display');
+
+    const point_cloud_loop_display_el           = document.getElementById('point_cloud_loop_display');
+    const point_cloud_loop_display_parent_el    = point_cloud_loop_display_el.parentElement;
+    const point_cloud_loop_display_label_el     = document.querySelector('label[for="point_cloud_loop_display"]');
+    const point_cloud_points_per_loop_label_el  = document.querySelector('label[for="point_cloud_points_per_loop"]');
+    const point_cloud_points_per_loop_el        = document.getElementById('point_cloud_points_per_loop');
+    const point_cloud_points_per_loop_parent_el = point_cloud_points_per_loop_el.parentElement;
+
+    for (const range_id of [
+        'points_per_loop',
+        'loop_delay',
+        'points_shown',
+        'point_cloud_points_per_loop',
+    ]) {
+        const range_el   = document.getElementById(range_id);
+        const display_el = document.getElementById(`${range_id}_display`);
+        display_el.innerText = range_el.value;
+        range_el.addEventListener('input', (event) =&gt; {
+            display_el.innerText = range_el.value;
+        });
+    }
+
+    function set_point_cloud_loop_display(visible, value='') {
+        point_cloud_loop_display.innerText = value;
+        const affected_els = [
+            point_cloud_loop_display_parent_el,
+            point_cloud_loop_display_label_el,
+            point_cloud_points_per_loop_label_el,
+            point_cloud_points_per_loop_parent_el,
+        ];
+        if (visible) {
+            for (const el of affected_els) {
+                el.classList.remove('hidden');
+            }
+        } else {
+            for (const el of affected_els) {
+                el.classList.add('hidden');
+            }
+        }
+    }
+    set_point_cloud_loop_display(false);
+
+    const config_display_el = document.getElementById('ode_plotter_config_display');
+
+    function display_config(config) {
+        if (!config) {
+            config_display_el.classList.add('hidden');
+            config_display_el.innerText = '';
+        } else {
+            config_display_el.classList.remove('hidden');
+            const { dt, x0, params, skip, steps, point_cloud } = config;
+            const lines = [];
+            lines.push('--- CONFIG ---');
+            lines.push(`dt: ${dt}`);
+            lines.push(`x0: [${x0.join(', ')}]`);
+            if (params) {
+                let params_str;
+                if (typeof params === 'object') {
+                    try {
+                        params_str = JSON.stringify(params);
+                    } catch (_) {
+                        params_str = params.toString();
+                    }
+                } else {
+                    params_str = params.toString();
+                }
+                lines.push(`params: ${params_str}`);
+            }
+            if (skip) {
+                lines.push(`skip: ${skip}`);
+            }
+            if (steps) {
+                lines.push(`steps: ${steps}`);
+            }
+            if (point_cloud) {
+                const { n, c, r, dt:pc_dt=dt, steps:pc_steps } = point_cloud;
+                lines.push(`--- point cloud ---`);
+                lines.push(`n: ${n}, c: [${c.join(', ')}], dt: ${pc_dt}${pc_steps ? `, steps:${pc_steps}` : ''}}`);
+            }
+            config_display_el.innerText = lines.join('\n');
+        }
+    }
+
+    display_config();
+
+    const plot_height = 720;
+    plot_el.style = `height: ${plot_height}px`;
+
+    const Generator = Object.getPrototypeOf(function*(){}).constructor;
+
+    function validate_f(f) {
+        if (typeof f !== 'function') {
+            throw new TypeError('f must be a function');
+        }
+    }
+    function validate_integrator(integrator) {
+        if (typeof integrator !== 'function') {
+            throw new TypeError('integrator must be a function');
+        }
+    }
+    function validate_point_cloud(point_cloud) {
+        if ( typeof point_cloud !== 'object') {
+            throw new TypeError('point_cloud must be an object')
+        }
+        const { n, c, r, dt, steps } = point_cloud;
+        if (typeof n === 'undefined') {
+            throw new TypeError('point_cloud.n must be defined');
+        } else if (!Number.isInteger(n) || n &lt;= 0) {
+            throw new TypeError('point_cloud.n must be a positive integer');
+        }
+        if (typeof c === 'undefined') {
+            throw new TypeError('point_cloud.c must be defined');
+        } else if (!Array.isArray(c) || c.length &lt;= 0 || c.some(e =&gt; (typeof e !== 'number'))) {
+            throw new TypeError(`point_cloud.c must be a non-empty array of numbers`);
+        }
+        if (typeof r === 'undefined') {
+            throw new TypeError('point_cloud.r must be defined');
+        } else if (typeof r !== 'number' || r &lt;= 0) {
+            throw new TypeError('point_cloud.r must be a positive number');
+        }
+        if (typeof dt !== 'undefined' && (typeof dt !== 'number' || dt &lt;= 0)) {
+            throw new TypeError(`point_cloud.dt must be a positive number`);
+        }
+        if (typeof steps !== 'undefined' && (!Number.isInteger(steps) || steps &lt; 0)) {
+            throw new TypeError('steps point_cloudmust be a non-negative integer');
+        }
+    }
+    function validate_config(config, structure_name='config') {
+        if ( typeof config !== 'object') {
+            throw new TypeError(`${structure_name} must be an object`)
+        }
+        const { integrator, dt, x0, skip, steps, point_cloud } = config;  // params is unrestricted
+        if (integrator) {
+            validate_integrator(integrator);
+        }
+        if (typeof dt !== 'undefined' && (typeof dt !== 'number' || dt &lt;= 0)) {
+            throw new TypeError(`${structure_name}.dt must be a positive number`);
+        }
+        if (typeof x0 !== 'undefined' &&
+             (!Array.isArray(x0) || x0.length &lt;= 0 || x0.some(e =&gt; (typeof e !== 'number'))) ) {
+            throw new TypeError(`${structure_name}.x0 must be a non-empty array of numbers`);
+        }
+        if (typeof skip !== 'undefined' && (!Number.isInteger(skip) || skip &lt; 0)) {
+            throw new TypeError(`${structure_name}.skip must be a non-negative integer`);
+        }
+        if (typeof steps !== 'undefined' && (!Number.isInteger(steps) || steps &lt; 0)) {
+            throw new TypeError(`${structure_name}.steps must be a non-negative integer`);
+        }
+        if (point_cloud) {
+            validate_point_cloud(point_cloud);
+        }
+    }
+    function validate_equation_def(equation_def) {
+        if ( typeof equation_def !== 'object') {
+            throw new TypeError('equation definition must be an object')
+        }
+        validate_config(equation_def, 'equation_def');  // equation_def is a subclass of config
+        const { title, f, iter, iter_delay } = equation_def;
+        if (typeof title !== 'undefined' && typeof title !== 'string') {
+            throw new TypeError('equation_def.title must be a string');
+        }
+        if (iter) {
+            const iterator_fn = iter[Symbol.iterator];
+            if ( (typeof iterator_fn !== 'undefined' && typeof iterator_fn !== 'function') &&
+                 !(iter instanceof Generator) ) {
+                throw new TypeError('equation_def.iter must be an iterable or a generator function');
+            }
+        }
+        if (typeof iter_delay !== 'undefined' && (typeof iter_delay !== 'number' || iter_delay &lt; 0)) {
+            throw new TypeError('equation_def.iter_delay must be a non-negative number');
+        }
+        if (typeof f === 'undefined') {
+            throw new TypeError('equation_def.f must be defined');
+        } else {
+            validate_f(f);
+        }
+    }
+
+    let runner;
+    const set_running_state = (running) =&gt; {
+        runner?.stop();
+        if (running) {
+            const new_runner = new Runner(the_equation_def);
+            runner = new_runner;
+            new_runner.done.then(
+                () =&gt; {
+                    if (!new_runner.stopped) {
+                        set_running_state(false);
+                    }
+                },
+                error =&gt; {
+                    if (!new_runner.stopped) {
+                        set_running_state(false);
+                    }
+                }
+            );
+            point_count_display_el.innerText = '';
+            go_button.innerText = 'Stop';
+            document.getElementById('ode_plotter_play_controls').scrollIntoView();
+        } else {
+            runner = undefined;
+            go_button.innerText = 'Go';
+        }
+    }
+    go_button.addEventListener('click', async (event) =&gt; {
+        set_running_state(!runner);
+    });
+
+    class Runner {
+        constructor(equation_def) {
+            validate_equation_def(equation_def);
+
+            this._equation_def = equation_def;
+
+            this._xs = [];
+            this._ys = [];
+            this._zs = [];
+            this._cs = [];
+
+            this._gdata = [{
+                name: 'equation',
+                type: 'scatter3d',
+                mode: 'lines',
+                x: this._xs,
+                y: this._ys,
+                z: this._zs,
+                opacity: 1,
+                line: {
+                    width: 3,
+                    color: this._cs,
+                    reversescale: false,
+                },
+            }];
+            this._extrema_trace = {
+                name: 'extrema',
+                showlegend: false,
+                type: 'scatter3d',
+                mode: 'markers',
+                x: [],
+                y: [],
+                z: [],
+                marker: {
+                    color: 'rgba(0, 0, 0, 0.01)',
+                    size: 1,
+                },
+            };
+            this._gdata.push(this._extrema_trace);
+
+
+            display_config();
+            set_point_cloud_loop_display(false);
+
+            this._mouse_paused = false;
+            this._the_plot_el_mousedown_handler = (event) =&gt; { this._mouse_paused = true; };
+            this._the_plot_el_mousedown_handler_options = { capture: true };
+            this._the_plot_el_mouseup_handler = (event) =&gt; { this._mouse_paused = false; };
+            this._the_plot_el_mouseup_handler_options = { capture: true };
+            plot_el.addEventListener(
+                'mousedown',
+                this._the_plot_el_mousedown_handler,
+                this._the_plot_el_mousedown_handler_options
+            );
+            plot_el.addEventListener(
+                'mouseup',
+                this._the_plot_el_mouseup_handler,
+                this._the_plot_el_mouseup_handler_options
+            );
+
+            this._button_paused = false;
+            this._the_pause_button_click_handler = (event) =&gt; {
+                this._button_paused = !this._button_paused;
+                set_pause_button_state(this._button_paused, this._running);
+            };
+            this._the_pause_button_click_handler_options = {};
+            pause_button.addEventListener(
+                'click',
+                this._the_pause_button_click_handler,
+                this._the_pause_button_click_handler_options
+            );
+
+            this._stopped = false;
+            this._running = false;
+
+            this._done = new Promise(async (resolve, reject) =&gt; {
+                this._running = true;
+                set_go_button_state(this._running);
+                set_pause_button_state(this._button_paused, this._running);
+
+                try {
+                    const { title, f, iter_delay } = this._equation_def;
+
+                    let { iter } = this._equation_def;
+                    if (!iter) {
+                        iter = [{}];  // one empty config
+                    } else if (iter instanceof Generator) {
+                        iter = iter(this._equation_def);
+                    }
+                    // iter is now an iterable
+
+                    let first_iteration = true;
+                    for (const config of iter) {
+                        if (!this._running) {
+                            break;
+                        }
+
+                        this._clear_data();
+
+                        const merged_config = {
+                            ...this._equation_def,  // this._equation_def may contain config properties
+                            ...config,              // config properties override those in this._equation_def
+                        };
+                        validate_config(merged_config);
+
+                        if (iter_delay && !first_iteration) {
+                            await new Promise(resolve =&gt; setTimeout(resolve, iter_delay));
+                        }
+                        first_iteration = false;
+
+                        const { integrator, dt, x0, params, skip=0, steps=Infinity, point_cloud } = merged_config;
+                        if (typeof integrator === 'undefined') {
+                            throw new TypeError('integrator was not specified');
+                        }
+                        if (typeof dt === 'undefined') {
+                            throw new TypeError('dt was not specified');
+                        }
+                        if (typeof x0 === 'undefined') {
+                            throw new TypeError('x0 was not specified');
+                        }
+
+                        display_config(merged_config);
+
+                        let x = [ ...x0 ];  // copy x0 to insulate from mutation
+                        if (skip &lt;= 0) {
+                            this._add(x);
+                        }
+
+                        let plot_fn = Plotly.newPlot;
+                        let point_count = 0;
+                        while (this._running && point_count &lt; skip+steps) {
+                            if (!this.paused) {
+                                const points_per_loop = parseInt(points_per_loop_el.value);
+                                for (let lp = 0; lp &lt; points_per_loop; lp++) {
+                                    if (!this._running) {
+                                        break;
+                                    }
+                                    x = integrator(dt, f, x, params);
+                                    point_count++;
+                                    if (point_count &gt;= skip) {
+                                        this._add(x);
+                                    }
+                                    if (point_count &gt;= skip+steps) {
+                                        break;
+                                    }
+                                }
+
+                                this._trim_data();
+
+                                if (point_count &gt;= skip) {
+                                    this._draw_data(plot_fn);
+                                    plot_fn = Plotly.react;
+                                }
+
+                                point_count_display_el.innerText = point_count;
+                            }
+
+                            if (point_count &lt; skip+steps) {
+                                const loop_delay = parseInt(loop_delay_el.value);
+                                await new Promise(resolve =&gt; setTimeout(resolve, loop_delay));
+                            }
+                        }
+
+                        // Done plotting graph for this config.
+                        // Finally, run its point cloud, if any.
+                        if (this._running && point_cloud) {
+                            await this._run_point_cloud(f, merged_config);
+                        }
+                    }
+
+                    // done
+                    resolve();
+
+                } catch (err) {
+                    console.error(err.message, err.stack);
+                    alert(`${err.message}\n\n${err.stack}`);
+                    reject(err);
+                }
+            });
+        }
+
+        get running (){ return this._running; }
+        get paused  (){ return this._mouse_paused || this._button_paused; }
+        get stopped (){ return this._stopped; }
+        get done    (){ return this._done; }
+
+        stop() {
+            this._stopped = true;
+            this._running = false;
+            plot_el.removeEventListener(
+                'mousedown',
+                this._the_plot_el_mousedown_handler,
+                this._the_plot_el_mousedown_handler_options
+            );
+            plot_el.removeEventListener(
+                'mouseup',
+                this._the_plot_el_mouseup_handler,
+                this._the_plot_el_mouseup_handler_options
+            );
+            pause_button.removeEventListener(
+                'click',
+                this._the_pause_button_click_handler,
+                this._the_pause_button_click_handler_options
+            );
+            this._button_paused = false;
+            set_pause_button_state(this._button_paused, this._running);
+        }
+
+        // internal
+
+        _clear_data() {
+            this._xs.splice(0, this._xs.length);
+            this._ys.splice(0, this._ys.length);
+            this._zs.splice(0, this._zs.length);
+            this._cs.splice(0, this._cs.length);
+        }
+
+        _trim_data() {
+            let limit = parseInt(points_shown_el.value);
+            if (isNaN(limit)) {
+                limit = 0;
+            }
+            if (this._xs.length &gt; limit) {
+                this._xs.splice(0, this._xs.length-limit);
+                this._ys.splice(0, this._ys.length-limit);
+                this._zs.splice(0, this._zs.length-limit);
+                this._cs.splice(0, this._cs.length-limit);
+            }
+        }
+
+        _add([x, y, z], c=1) {
+            this._xs.push(x ?? 0);
+            this._ys.push(y ?? 0);
+            this._zs.push(z ?? 0);
+            this._cs.push(c);
+        }
+
+        _draw_data(plot_fn, no_update_revision=false) {
+            // update extrema
+            let values_seen = false;
+            let min_x = Infinity, max_x = -Infinity,
+                min_y = Infinity, max_y = -Infinity,
+                min_z = Infinity, max_z = -Infinity;
+            for (const trace of this._gdata) {
+                if (trace.x.length &gt; 0 || trace.y.length &gt; 0 || trace.z.length &gt; 0) {
+                    values_seen = true;
+                }
+
+                for (const v of trace.x) {
+                    if (v &lt; min_x) {
+                        min_x = v;
+                    }
+                    if (v &gt; max_x) {
+                        max_x = v;
+                    }
+                }
+                for (const v of trace.y) {
+                    if (v &lt; min_y) {
+                        min_y = v;
+                    }
+                    if (v &gt; max_y) {
+                        max_y = v;
+                    }
+                }
+                for (const v of trace.z) {
+                    if (v &lt; min_z) {
+                        min_z = v;
+                    }
+                    if (v &gt; max_z) {
+                        max_z = v;
+                    }
+                }
+            }
+            if (values_seen) {
+                this._extrema_trace.x = [ min_x, max_x ];
+                this._extrema_trace.y = [ min_y, max_y ];
+                this._extrema_trace.z = [ min_z, max_z ];
+            }
+
+            // update layout
+            const layout = {
+                height: plot_height,
+            };
+            if (!no_update_revision) {
+                layout.datarevision = Date.now();
+            }
+            // note: plot_el._fullLayout is undocumented...
+            if (plot_el._fullLayout?.scene?.camera) {
+                layout.scene = {
+                    camera: plot_el._fullLayout.scene.camera,
+                };
+            }
+            if (this._equation_def?.title) {
+                layout.title = this._equation_def.title;
+            }
+            plot_fn(plot_el, this._gdata, layout);
+        }
+
+        async _run_point_cloud(f, config) {
+            const { integrator, dt, x0, params, point_cloud } = config;
+            const { n, c, r, dt:pc_dt=dt, steps=Infinity } = point_cloud;
+
+            const ArrayType = Float64Array;
+
+            set_point_cloud_loop_display(true, '');
+
+            // config contains point_cloud
+            // assume config has already been validated
+            if (!this._gdata) {
+                throw new Error('unexpected: !this._gdata');
+            }
+
+            // set up workers
+            const worker_count = worker_pool.workers.length;
+            const points_per_worker = Math.floor(n / worker_count);
+            const worker_descs = [ ...worker_pool.workers ].map((worker, index) =&gt; {
+                const start = index*points_per_worker;
+                const end   = (index &gt;= worker_count-1) ? n : (start + points_per_worker);
+
+                const point_count = (end - start);
+
+                const pc_trace = {
+                    name: 'point cloud',
+                    showlegend: true,
+                    type: 'scatter3d',
+                    mode: 'markers',
+                    marker: {
+                        color: 'rgba(0, 0, 255, 1.0)',
+                        size: 1,
+                    },
+
+                    x: new ArrayType(point_count),
+                    y: new ArrayType(point_count),
+                    z: new ArrayType(point_count),
+                };
+
+                return {
+                    worker,
+                    index,
+                    point_count,
+                    pc_trace,
+                };
+            });
+            // initialize worker state, etc
+            for (const worker_desc of worker_descs) {
+                const worker   = worker_desc.worker;
+                const pc_trace = worker_desc.pc_trace;
+                // initialize pc_trace x, y, z arrays with the initial values
+                for (let i = 0; i &lt; worker_desc.point_count; i++) {
+                    // generate the initial positions of the points
+                    // the points we generate here lie in a N-cube centered at c
+                    // with side length 2*r (where N = c.length).
+                    const [ x, y, z ] = c.map(xi =&gt; xi + r*2*(Math.random() - 0.5));
+                    pc_trace.x[i] = x;
+                    pc_trace.y[i] = y;
+                    pc_trace.z[i] = z;
+                }
+
+                // add new trace to the graphics data
+                this._gdata.push(pc_trace);
+
+                // set up worker state
+                await worker.eval(`
+                    const { pc_dt, params, point_count, x, y, z } = this;
+                    Object.assign(globalThis, { pc_dt, params, point_count, x, y, z });
+                    globalThis.integrator = ${integrator.toString()};
+                    globalThis.f = ${f.toString()};
+                    globalThis.points_buffer = new ArrayBuffer(point_count*3*Float64Array.BYTES_PER_ELEMENT);
+                    globalThis.points = [];
+                    for (let i = 0; i &lt; point_count; i++) {
+                        const point_view = new Float64Array(globalThis.points_buffer, i*3*Float64Array.BYTES_PER_ELEMENT, 3);
+                        point_view[0] = x[i];
+                        point_view[1] = y[i];
+                        point_view[2] = z[i];
+                        globalThis.points.push(point_view);
+                    }
+                `, {
+                       pc_dt,
+                       params,
+                       point_count: worker_desc.point_count,
+                       x: pc_trace.x,
+                       y: pc_trace.y,
+                       z: pc_trace.z,
+                   });
+            }
+
+            main_loop:
+            for (let s = 0; s &lt; steps; /* s incremented below */) {
+                while (this.paused && this._running) {
+                    await new Promise(resolve =&gt; setTimeout(resolve), 100);
+                }
+                if (!this._running) {
+                    break main_loop;
+                }
+
+                // start calculations in workers first, then draw,
+                // then wait for calculations to complete
+
+                const iterations = parseInt(point_cloud_points_per_loop_el.value);
+                const calc_promise = Promise.all(
+                    worker_descs.map(worker_desc =&gt; {
+                        return worker_desc.worker
+                            .eval(`
+                                const { iterations } = this;
+                                for (let iteration = 0; iteration &lt; iterations; iteration++) {
+                                    for (let i = 0; i &lt; point_count; i++) {
+                                        const point = points[i];
+                                        const p = integrator(pc_dt, f, point, params);
+                                        x[i] = point[0] = p[0];
+                                        y[i] = point[1] = p[1];
+                                        z[i] = point[2] = p[2];
+                                    }
+                                }
+                                return [ x, y, z ];
+                            `, { iterations } )
+                            .then(([ new_x, new_y, new_z ]) =&gt; {
+                                worker_desc.pc_trace.x = new_x;
+                                worker_desc.pc_trace.y = new_y;
+                                worker_desc.pc_trace.z = new_z;
+                            })
+                    })
+                );
+
+                this._draw_data(Plotly.react, true);
+
+                await calc_promise;
+                s += iterations;
+
+                set_point_cloud_loop_display(true, s+1);
+
+                const loop_delay = parseInt(loop_delay_el.value);
+                await new Promise(resolve =&gt; setTimeout(resolve, loop_delay));
+            }
+        }
+    }
+
+    setTimeout(() =&gt; {
+        document.getElementById('ode_plotter_adjustments').scrollIntoView(false);
+        go_button.focus();
+    }, 500);
+}
+
+bqv.setup = setup;</bq-cell>
+<bq-cell data-type="javascript">
+// integrator:
+// f(x) returns xdot which has the same dimension as x
+// integrator returns a new x with the same dimension as the original
+
+function runge_kutta_integrator(dt, f, x, params) {
+    // This is an implementation of the fourth-order Runge-Kutta method
+    // as presented in Nonlinear Dynamics and Chaos, Second Edition, by
+    // Steven H. Strogatz, page 34.
+    // This implementation works for x with arbitrary dimension.
+    const k1 = f( x,                                   params ).map( xidot =&gt; xidot*dt );
+    const k2 = f( x.map( (xi, i) =&gt; xi + k1[i]/2 ), params ).map( xidot =&gt; xidot*dt );
+    const k3 = f( x.map( (xi, i) =&gt; xi + k2[i]/2 ), params ).map( xidot =&gt; xidot*dt );
+    const k4 = f( x.map( (xi, i) =&gt; xi + k3[i]),    params ).map( xidot =&gt; xidot*dt );
+    return x.map( (xi, i) =&gt; xi + (k1[i] + 2*k2[i] + 2*k3[i] + k4[i])/6 );
+}
+
+bqv.runge_kutta_integrator = runge_kutta_integrator;</bq-cell>
+<bq-cell data-type="javascript">
+const go = bqv.setup.bind(bqv, ocx);
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// EquationDef = Config + {
+//     title?: string,
+//     f: Function,
+//     iter?: iterable&lt;Config&gt;|generator&lt;Config&gt;(def: EquationDef),
+//     iter_delay?: number,
+// }
+//
+// Config = {
+//     integrator?: (dt: number, f: Function, x: number[], params: any) =&gt; number[],
+//     dt?: number,
+//     x0?: number[],
+//     params?: any,
+//     skip?:  integer,
+//     steps?: integer,
+//     point_cloud?: PointCloud,
+// }
+//
+// PointCloud = {
+//     n: integer,
+//     c: number[];
+//     r: number,
+//     dt?: number,
+//     steps?: integer,
+// }
+//
+// Function = (x: number[], params?: any) =&gt; number[]
+//
+//////////////////////////////////////////////////////////////////////////////
+
+
+// Definitions for some chaotic attractors provided by Dr. James P. Crutchfield
+// (one of the pioneers of Chaos Theory).
+//
+// For more information on chaotic attractors see Lecture 3 on the Roadmap page at the course:
+//
+//     http://csc.ucdavis.edu/~chaos/courses/poci/
+
+const integrator = bqv.runge_kutta_integrator;
+
+const lorenz_def = {
+    title: 'Lorenz Attractor',
+    integrator,
+    dt: 0.005,
+    x0: [3, 3, 1],
+    f:  ( (sigma=10, r=28, b=8/3) =&gt;
+          ([x, y, z]) =&gt; [  // this is f, and it takes 1 argument which is decomposed into [x, y, z]
+              sigma*(y - x),
+              r*x - y - x*z,
+              x*y - b*z,
+          ]
+        )()
+};
+
+const owl_def = {
+    title: 'Owl Attractor',
+    integrator,
+    dt: 0.005,
+    x0: [3, 3, 1],
+    f:  ( (a=10, b=10, c=13) =&gt;
+          ([x, y, z]) =&gt; [
+              -a*(x + y),
+              -y - b*x*z,
+              10*x*y + c,
+          ]
+        )()
+};
+
+const rossler_def = {
+    title: 'Rössler Attractor',
+    integrator,
+    dt: 0.008,
+    x0: [10, 10, 1],
+    f:  ( (a=0.2, b=0.2, c=5.7) =&gt;
+         ([x, y, z]) =&gt; [
+             -y - z,
+             x + a*y,
+             b + z*(x - c),
+         ]
+        )()
+};
+
+const rikitake0_def = {  // see: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7517210/
+    title: 'Rikitake Attractor ( from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7517210/ )',
+    integrator,
+    dt: 0.01,
+    x0: [3, 1, 6],
+    f:  ( (alpha=5, beta=2) =&gt;
+          ([x, y, z]) =&gt; [
+              -beta*x + y*z,
+              -beta*y - alpha*x + x*z,
+              1 - x*y,
+          ]
+        )()
+};
+
+const rikitake_def = {
+    title: 'Rikitake Attractor',
+    integrator,
+    dt: 0.009,
+    x0: [0.268, 2, 0],
+    f:  ( (a=1, b=3.75) =&gt;
+          ([x, y, z]) =&gt; [
+              -a*x + z*y,
+              -a*y - (z - b)*x,
+              1 - x*y,
+          ]
+        )()
+};
+
+const hyperchaos_def = {
+    title: 'Hyperchaos Attractor',
+    integrator,
+    dt: 0.005,
+    x0: [-20, 15, 0, 35],
+    f:  ( (a=0.25, b=-0.5, c=2.2, d=0.05) =&gt;
+          ([x, y, z, w]) =&gt; [
+              -y - z,
+              x + a*y + w,
+              c + x*z,
+              b*z + d*w,
+          ]
+        )()
+};
+
+const point_cloud_def = {
+    title: 'Lorenz Attractor With Point Cloud',
+    integrator,
+    dt: 0.005,
+    x0: [3, 3, 1],
+    params: { sigma: 10, r: 28, b: 8/3 },
+    f:  ([x, y, z], {sigma, r, b}) =&gt; [
+             sigma*(y - x),
+             r*x - y - x*z,
+             x*y - b*z,
+        ],
+    skip:  1000,
+    steps: 10000,
+    point_cloud: {
+        n: 10000,
+        c: [1, 1, 1],
+        r: 0.05,
+        dt: 0.05,
+    }
+};
+
+// set the equation definition to plot
+
+// go(lorenz_def);
+// go(owl_def);
+// go(rossler_def);
+// go(rikitake0_def);
+// go(rikitake_def);
+// go(hyperchaos_def);
+
+go(point_cloud_def);
+</bq-cell>
+</body>
+</html>

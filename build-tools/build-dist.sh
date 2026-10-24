@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+
 
 declare THIS_FILE=${BASH_SOURCE##*/}
 declare THIS_FILE_DIR=$([[ -z "${BASH_SOURCE%/*}" ]] && echo '' || { cd "${BASH_SOURCE%/*}"; pwd; })
@@ -45,7 +45,8 @@ declare -a FILES_TO_COPY=(
     'src/renderer/text/javascript-renderer/eval-worker/web-worker.js'
     'node_modules/sprintf-js/dist/sprintf.min.js'
     'node_modules/sprintf-js/dist/sprintf.min.js.map'
-    'node_modules/marked/marked.min.js'
+    'node_modules/marked/lib/marked.umd.js'
+    'node_modules/marked/lib/marked.umd.js.map'
     'node_modules/rxjs/dist/bundles/rxjs.umd.min.js'
     'node_modules/rxjs/dist/bundles/rxjs.umd.min.js.map'
     'node_modules/d3/dist/d3.min.js'
@@ -65,7 +66,7 @@ declare -a DIRECTORIES_TO_COPY=(
 declare -a LICENSES_TO_GATHER=(
 #   ---package-name---             ---license-file--- <<< (pairs of entries)
     'sprintf'                      'node_modules/sprintf-js/LICENSE'
-    'marked'                       'node_modules/marked/LICENSE.md'
+    'marked'                       'node_modules/marked/LICENSE'
     'rxjs'                         'node_modules/rxjs/LICENSE.txt'
     'd3'                           'node_modules/d3/LICENSE'
     'plotly'                       'node_modules/plotly.js-dist/LICENSE'

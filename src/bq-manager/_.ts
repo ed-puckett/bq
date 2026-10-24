@@ -14,8 +14,16 @@ import {
 } from 'src/init';
 
 import {
-    fs_interface,
+    fs_perform_save,
 } from 'lib/sys/fs-interface';
+
+import {
+    ServerInterface,
+} from './server-interface';
+
+import {
+    ServerFsDialog,
+} from './server-fs-dialog/_';
 
 import {
     SerialDataSource,
@@ -162,6 +170,9 @@ export class BqManager {
 
 
     constructor() {
+(globalThis as any).server_interface = this.#server_interface;//!!!
+(globalThis as any).abort_controller = new AbortController();//!!!
+(globalThis as any).T = async (for_save: boolean = false) => new ServerFsDialog().run(this.#server_interface, new URL(location.href), { for_save, signal: (globalThis as any).abort_controller.signal });//!!!
         this.#command_bindings = get_global_command_bindings();
 
         let initial_key_maps: undefined|Array<KeyMap>;
@@ -216,6 +227,8 @@ export class BqManager {
         }
     }
 
+    #server_features = ServerInterface.get_features();  // these remain the same during operation
+    #server_interface = new ServerInterface();
     #activity_manager: ActivityManager = new ActivityManager(true);  // true: multiple_stops
     #command_bindings: { [command: string]: ((...args: any[]) => any) };
     #key_event_manager: KeyEventManager<BqManager>;
@@ -223,7 +236,6 @@ export class BqManager {
     #menu: undefined|Menu<BqManager> = undefined;
     #menu_commands_subscription: undefined|SerialDataSourceSubscription = undefined;
     #menu_selects_subscription:  undefined|SerialDataSourceSubscription = undefined;
-    #file_handle: any = null;
     #editable: boolean = true;
     #active_cell: null|BqCellElement = null;
     #global_state: object = {};  // persistent state for renderers
@@ -302,8 +314,7 @@ export class BqManager {
         this.#global_state = {};
     }
     /** reset the document, meaning that all cells will be reset,
-     *  and this.#global_state will be reset.  Also, the saved file
-     *  handle this.#file_handle set to undefined.
+     *  and this.#global_state will be reset.
      *  @return {BqManager} this
      */
     reset() {
@@ -314,7 +325,6 @@ export class BqManager {
         }
         TextBasedRenderer.reset_to_initial_text_based_renderer_factories();
         this.reset_global_state();
-        this.#file_handle = undefined;
         for (const cell of this.get_cells()) {
             try {
                 cell.reset();
@@ -501,17 +511,16 @@ export class BqManager {
 
     // === SAVE HANDLING ====
 
-    async perform_save(perform_save_as: boolean = false, show_options_dialog: boolean = false): Promise<boolean> {
-        if (show_options_dialog) {
-            perform_save_as = true;  // show_options_dialog implies perform_save_as
+    async perform_save(perform_save_as: boolean = false, perform_export: boolean = false): Promise<boolean> {
+        if (perform_export) {
+            perform_save_as = true;  // perform_export implies perform_save_as
         }
-        if (!perform_save_as && !show_options_dialog) {
-            if (this.is_neutral()) {
-                // no need to actually save
-                this.notification_manager.add('no changes need to be saved');
-                return true;  // indicate: not canceled
-            }
+        if (!perform_save_as && !perform_export && this.is_neutral()) {
+            // no need to actually save
+            this.notification_manager.add('no changes need to be saved');
+            return true;  // indicate: not canceled
         }
+        const show_options_dialog = perform_save_as || perform_export;
 
         let bootstrap_script_src = bootstrap_script_src_alternatives_default;
         let cell_view            = undefined;
@@ -534,17 +543,13 @@ export class BqManager {
             }
         }
 
-        const bound_serializer = save_serializer.bind(null, bootstrap_script_src, {
+        const contents = save_serializer(bootstrap_script_src, {
             cell_view,
             auto_render,
             active_cell,
         });
-        const save_result = await fs_interface.save(bound_serializer, {
-            file_handle: perform_save_as ? undefined : this.#file_handle,
-            prompt_options: {
-                suggestedName: this.#get_suggested_filename(),//!!!
-            },
-        });
+        const save_interface = perform_export ? fs_perform_save : this.#server_interface.write.bind(this.#server_interface);
+        const save_result = await save_interface(document.location, contents);
         const {
             canceled,
             file_handle,
@@ -553,15 +558,10 @@ export class BqManager {
         if (canceled) {
             this.notification_manager.add('save canceled');
         } else {
-            this.#file_handle = file_handle ?? undefined;
             this.set_neutral();
             this.notification_manager.add('document saved');
         }
         return !canceled;
-    }
-
-    #get_suggested_filename(): string {
-        return window.location.pathname.split('/').slice(-1)[0];
     }
 
 
@@ -869,22 +869,22 @@ export class BqManager {
         //!!! review this !!!
         const menu = this.#menu;
         if (menu) {
-            const presentation    = this.in_presentation_view;
-            const interactive     = this.interactive;
-            const all_cells       = this.get_cells();
-            const cells           = all_cells.filter(cell => cell.showing);
-            const active_cell     = this.active_cell;
-            const active_index    = active_cell ? cells.indexOf(active_cell) : -1;
-            const editable        = this.editable;
-            const cell_type       = active_cell?.type;
-            const cell_view       = this.cell_view;
-            const has_save_handle = !!this.#file_handle;
-            const is_neutral      = this.is_neutral();
+            const presentation       = this.in_presentation_view;
+            const interactive        = this.interactive;
+            const all_cells          = this.get_cells();
+            const cells              = all_cells.filter(cell => cell.showing);
+            const active_cell        = this.active_cell;
+            const active_index       = active_cell ? cells.indexOf(active_cell) : -1;
+            const editable           = this.editable;
+            const cell_type          = active_cell?.type;
+            const cell_view          = this.cell_view;
+            const is_neutral         = this.is_neutral();
+            const can_save_to_server = this.#server_features.access.file.create;
 
             menu.set_menu_state('clear-all',                   { enabled: !presentation && editable });
 
-            menu.set_menu_state('save',                        { enabled: !is_neutral && has_save_handle });
-            // no update to command 'save-as'
+            menu.set_menu_state('save',                        { enabled: can_save_to_server && !is_neutral });
+            menu.set_menu_state('save-as',                     { enabled: can_save_to_server });
             // no update to command 'export'
 
             menu.set_menu_state('toggle-auto-render',          { checked: get_auto_render(), enabled: !presentation });

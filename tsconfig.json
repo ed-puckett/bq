@@ -1,4 +1,6 @@
 {
+    "include": [ "svg-loader.d.ts" ],
+
     "extends": "@tsconfig/node20/tsconfig.json",
 
     "exclude": [ "node_modules" ],
@@ -6,11 +8,20 @@
     "compilerOptions": {
         "baseUrl": "./",
 
-        "lib": [ "es2023", "dom", "dom.iterable" ],
+        "lib": [ "es2024", "dom", "dom.iterable" ],
 
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "bundler",
+
+        // force TS 6 to keep legacy emissions clean for Babel:
+        "ignoreDeprecations": "6.0",
+
+        // prevent TS2882: Cannot find module or type declarations for side-effect import of 'XXX.css':
+        "noUncheckedSideEffectImports": false,
+
+        "jsx":        "react",
+        "jsxFactory": "_jsx_create_element",
 
         "strict":                       true,
         "alwaysStrict":                 true,
