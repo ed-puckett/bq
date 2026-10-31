@@ -99,7 +99,8 @@ kill-server:
 
 .PHONY: dev-server
 dev-server:
-	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch webpack.config.js --watch tsconfig.json --watch svg-loader.d.ts --watch build-tools --watch node_modules  --ext ts,tsx,js,cjs,mjs,json,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
+	echo "DISABLED"
+#	npx nodemon --watch src --watch lib --watch package.json --watch Makefile --watch webpack.config.js --watch tsconfig.json --watch svg-loader.d.ts --watch build-tools --watch node_modules  --ext ts,tsx,js,cjs,mjs,json,html,css,ico,svg,py,sh  --exec "bash -c 'make server' || exit 1"
 
 .PHONY: client
 client:
